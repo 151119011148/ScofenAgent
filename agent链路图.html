@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agent 链路图 — 从你回车到文字出现</title>
+<style>
+  :root{--bg:#000;--panel:#0e1218;--panel2:#151b24;--line:#272f3a;--ink:#e9ecf1;
+         --sub:#8c97a6;--acc:#2ed0a8;--gold:#e8c16a}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.75 "PingFang SC","Hiragino Sans GB",system-ui,sans-serif}
+  .wrap{max-width:1280px;margin:0 auto;padding:34px 22px 80px}
+  h1{font-size:28px;margin:0 0 8px}
+  h2{font-size:21px;margin:40px 0 12px;padding-left:12px;border-left:3px solid var(--acc)}
+  .meta{color:var(--sub);font-size:13.5px;margin-bottom:22px}
+  .meta b{color:var(--ink)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:18px;margin:14px 0}
+  .cap{color:var(--sub);font-size:12.5px;margin:10px 2px 0}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}
+  th,td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left;vertical-align:top}
+  th{color:var(--acc);background:var(--panel)}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:13px;background:var(--panel2);padding:1.5px 5px;border-radius:3px;color:var(--gold)}
+  .no{color:var(--gold);font-weight:600}
+  @media print{:root{--bg:#fff;--panel:#fff;--panel2:#eef0f3;--line:#ccd2da;--ink:#111;--sub:#5a6472;--acc:#0a8f6e;--gold:#8a6d1b}
+    body{font-size:11pt} .wrap{max-width:none;padding:0}
+    svg text{fill:#111 !important} svg rect,svg path{stroke:#888 !important}
+    @page{size:A4 landscape;margin:12mm}}
+</style></head><body><div class="wrap">
+<h1>Agent 链路图</h1>
+<div class="meta">代码基线 <b>~/Desktop/study/ai学习/smolagents</b>（1.27.0.dev0，editable 安装）· 每个框和每根箭头都对应真实 <code>文件:行号</code> · 内联 SVG，无外部依赖，离线可看</div>
+
+<h2>1 序列图：一次提问从回车到出字</h2>
+<div class="panel"><svg viewBox="0 0 1248 1770" width="100%" xmlns="http://www.w3.org/2000/svg">
+<rect x="14" y="56" width="164" height="48" rx="7" fill="#151b24" stroke="#272f3a"/>
+<text x="96" y="75" fill="#e9ecf1" font-size="12.5" font-weight="600" text-anchor="middle">你</text>
+<text x="96" y="90" fill="#8c97a6" font-size="10" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">客户端窗口</text>
+<line x1="96" y1="108" x2="96" y2="1754" stroke="#272f3a" stroke-dasharray="4 5"/>
+<rect x="190" y="56" width="164" height="48" rx="7" fill="#151b24" stroke="#272f3a"/>
+<text x="272" y="75" fill="#e9ecf1" font-size="12.5" font-weight="600" text-anchor="middle">GradioUI</text>
+<text x="272" y="90" fill="#8c97a6" font-size="10" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">gradio_ui.py:388</text>
+<line x1="272" y1="108" x2="272" y2="1754" stroke="#272f3a" stroke-dasharray="4 5"/>
+<rect x="366" y="56" width="164" height="48" rx="7" fill="#151b24" stroke="#272f3a"/>
+<text x="448" y="75" fill="#e9ecf1" font-size="12.5" font-weight="600" text-anchor="middle">主循环 run()</text>
+<text x="448" y="90" fill="#8c97a6" font-size="10" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">agents.py:545</text>
+<line x1="448" y1="108" x2="448" y2="1754" stroke="#272f3a" stroke-dasharray="4 5"/>
+<rect x="542" y="56" width="164" height="48" rx="7" fill="#151b24" stroke="#272f3a"/>
+<text x="624" y="75" fill="#e9ecf1" font-size="12.5" font-weight="600" text-anchor="middle">Memory + 提示词</text>
+<text x="624" y="90" fill="#8c97a6" font-size="10" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">agents.py:758 / 1265</text>
+<line x1="624" y1="108" x2="624" y2="1754" stroke="#272f3a" stroke-dasharray="4 5"/>
+<rect x="718" y="56" width="164" height="48" rx="7" fill="#151b24" stroke="#272f3a"/>
+<text x="800" y="75" fill="#e9ecf1" font-size="12.5" font-weight="600" text-anchor="middle">OpenAIServerModel</text>
+<text x="800" y="90" fill="#8c97a6" font-size="10" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">models.py:1707</text>
+<line x1="800" y1="108" x2="800" y2="1754" stroke="#272f3a" stroke-dasharray="4 5"/>
+<rect x="894" y="56" width="164" height="48" rx="7" fill="#151b24" stroke="#272f3a"/>
+<text x="976" y="75" fill="#e9ecf1" font-size="12.5" font-weight="600" text-anchor="middle">百炼 qwen-plus</text>
+<text x="976" y="90" fill="#8c97a6" font-size="10" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">远端</text>
+<line x1="976" y1="108" x2="976" y2="1754" stroke="#272f3a" stroke-dasharray="4 5"/>
+<rect x="1070" y="56" width="164" height="48" rx="7" fill="#151b24" stroke="#272f3a"/>
+<text x="1152" y="75" fill="#e9ecf1" font-size="12.5" font-weight="600" text-anchor="middle">闸门 + 你的工具</text>
+<text x="1152" y="90" fill="#8c97a6" font-size="10" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">agents.py:1464 / my_agent.py</text>
+<line x1="1152" y1="108" x2="1152" y2="1754" stroke="#272f3a" stroke-dasharray="4 5"/>
+<line x1="96" y1="158" x2="272" y2="158" stroke="#2ed0a8" stroke-width="1.4"/>
+<path d="M 272 158 l -7 -4.5 l 0 9 z" fill="#2ed0a8"/>
+<text x="34" y="177" fill="#e9ecf1" font-size="12">回车 → POST 问题文本</text>
+<line x1="272" y1="220" x2="448" y2="220" stroke="#2ed0a8" stroke-width="1.4"/>
+<path d="M 448 220 l -7 -4.5 l 0 9 z" fill="#2ed0a8"/>
+<text x="34" y="239" fill="#e9ecf1" font-size="12">for event in agent.run(task) —— UI 不含任何 agent 逻辑，只消费事件</text>
+<line x1="448" y1="282" x2="624" y2="282" stroke="#2ed0a8" stroke-width="1.4"/>
+<path d="M 624 282 l -7 -4.5 l 0 9 z" fill="#2ed0a8"/>
+<text x="34" y="301" fill="#e9ecf1" font-size="12">TaskStep 入 memory；max_steps 取构造值（框架默认 20，你设 6）</text>
+<rect x="414" y="344" width="772" height="1036" rx="7" fill="rgba(46,208,168,.05)" stroke="#2ed0a8" stroke-opacity=".5" stroke-dasharray="6 5"/>
+<path d="M 415 345 h 80 l 12 14 l -12 14 h -80 z" fill="#12352d"/>
+<text x="425" y="366" fill="#2ed0a8" font-size="11.5" font-weight="700" font-family="ui-monospace,Menlo,monospace">LOOP</text>
+<text x="518" y="366" fill="#e8c16a" font-size="11.5">while not returned_final_answer and step_number &lt;= max_steps —— 第 3 站，整条链路的心脏</text>
+<line x1="448" y1="406" x2="624" y2="406" stroke="#2ed0a8" stroke-width="1.4"/>
+<path d="M 624 406 l -7 -4.5 l 0 9 z" fill="#2ed0a8"/>
+<text x="34" y="425" fill="#e9ecf1" font-size="12">write_memory_to_messages()：把全部历史摊平成 messages（服务端无状态，每步重发）</text>
+<line x1="448" y1="468" x2="624" y2="468" stroke="#2ed0a8" stroke-width="1.4"/>
+<path d="M 624 468 l -7 -4.5 l 0 9 z" fill="#2ed0a8"/>
+<text x="34" y="487" fill="#e9ecf1" font-size="12">initialize_system_prompt()：工具的 name / description / inputs 渲染进 system prompt</text>
+<line x1="448" y1="530" x2="800" y2="530" stroke="#2ed0a8" stroke-width="1.4"/>
+<path d="M 800 530 l -7 -4.5 l 0 9 z" fill="#2ed0a8"/>
+<text x="34" y="549" fill="#e9ecf1" font-size="12">generate_stream(messages, tools_to_call=self.tools, stop_sequences=[…])</text>
+<line x1="800" y1="592" x2="976" y2="592" stroke="#2ed0a8" stroke-width="1.4"/>
+<path d="M 976 592 l -7 -4.5 l 0 9 z" fill="#2ed0a8"/>
+<text x="34" y="611" fill="#e9ecf1" font-size="12">HTTPS POST /compatible-mode/v1/chat/completions　stream=true　← 全场唯一出网点</text>
+<line x1="976" y1="654" x2="800" y2="654" stroke="#8c97a6" stroke-width="1.4" stroke-dasharray="5 4"/>
+<path d="M 800 654 l 7 -4.5 l 0 9 z" fill="#8c97a6"/>
+<text x="34" y="673" fill="#e9ecf1" font-size="12">SSE 增量 token</text>
+<line x1="800" y1="716" x2="448" y2="716" stroke="#8c97a6" stroke-width="1.4" stroke-dasharray="5 4"/>
+<path d="M 448 716 l 7 -4.5 l 0 9 z" fill="#8c97a6"/>
+<text x="34" y="735" fill="#e9ecf1" font-size="12">tool_calls = [{name:'max_drawdown', arguments:{prices:[…]}}]</text>
+<rect x="414" y="778" width="772" height="200" rx="7" fill="rgba(46,208,168,.05)" stroke="#2ed0a8" stroke-opacity=".5" stroke-dasharray="6 5"/>
+<path d="M 415 779 h 71 l 12 14 l -12 14 h -71 z" fill="#12352d"/>
+<text x="425" y="800" fill="#2ed0a8" font-size="11.5" font-weight="700" font-family="ui-monospace,Menlo,monospace">ALT</text>
+<text x="509" y="800" fill="#e8c16a" font-size="11.5">闸门一：工具名白名单 agents.py:1464-1467 —— 它拒绝你时，真正说话的就是这里</text>
+<line x1="448" y1="840" x2="1152" y2="840" stroke="#2ed0a8" stroke-width="1.4"/>
+<path d="M 1152 840 l -7 -4.5 l 0 9 z" fill="#2ed0a8"/>
+<text x="34" y="859" fill="#e9ecf1" font-size="12">名字不在 self.tools 里 → AgentToolExecutionError('Unknown tool …, should be one of: …')</text>
+<line x1="1152" y1="902" x2="448" y2="902" stroke="#8c97a6" stroke-width="1.4" stroke-dasharray="5 4"/>
+<path d="M 448 902 l 7 -4.5 l 0 9 z" fill="#8c97a6"/>
+<text x="34" y="921" fill="#e9ecf1" font-size="12">报错不抛异常，而是当 Observation 回灌，让模型下一圈自己改</text>
+<line x1="448" y1="994" x2="1152" y2="994" stroke="#2ed0a8" stroke-width="1.4"/>
+<path d="M 1152 994 l -7 -4.5 l 0 9 z" fill="#2ed0a8"/>
+<text x="34" y="1013" fill="#e9ecf1" font-size="12">闸门二：validate_tool_arguments 校参数类型与必填 tools.py:1361 / 1400-1409</text>
+<line x1="448" y1="1056" x2="1152" y2="1056" stroke="#2ed0a8" stroke-width="1.4"/>
+<path d="M 1152 1056 l -7 -4.5 l 0 9 z" fill="#2ed0a8"/>
+<text x="34" y="1075" fill="#e9ecf1" font-size="12">闸门三通过后 → forward() 在你这台 Mac 上真执行，算数不联网</text>
+<line x1="1152" y1="1118" x2="448" y2="1118" stroke="#8c97a6" stroke-width="1.4" stroke-dasharray="5 4"/>
+<path d="M 448 1118 l 7 -4.5 l 0 9 z" fill="#8c97a6"/>
+<text x="34" y="1137" fill="#e9ecf1" font-size="12">ToolOutput 字符串：最大回撤 -17.71%，区间 第2~7个交易日</text>
+<line x1="448" y1="1180" x2="624" y2="1180" stroke="#2ed0a8" stroke-width="1.4"/>
+<path d="M 624 1180 l -7 -4.5 l 0 9 z" fill="#2ed0a8"/>
+<text x="34" y="1199" fill="#e9ecf1" font-size="12">ActionStep（lim_output / action / observation）回灌 memory，step_number += 1</text>
+<line x1="448" y1="1242" x2="272" y2="1242" stroke="#2ed0a8" stroke-width="1.4"/>
+<path d="M 272 1242 l 7 -4.5 l 0 9 z" fill="#2ed0a8"/>
+<text x="34" y="1261" fill="#e9ecf1" font-size="12">事件流：Step N、模型想法、工具行、本步真实 token（gradio_ui.py:33）</text>
+<line x1="272" y1="1304" x2="96" y2="1304" stroke="#2ed0a8" stroke-width="1.4"/>
+<path d="M 96 1304 l 7 -4.5 l 0 9 z" fill="#2ed0a8"/>
+<text x="34" y="1323" fill="#e9ecf1" font-size="12">逐气泡渲染到窗口</text>
+<rect x="414" y="1396" width="244" height="200" rx="7" fill="rgba(46,208,168,.05)" stroke="#2ed0a8" stroke-opacity=".5" stroke-dasharray="6 5"/>
+<path d="M 415 1397 h 71 l 12 14 l -12 14 h -71 z" fill="#12352d"/>
+<text x="425" y="1418" fill="#2ed0a8" font-size="11.5" font-weight="700" font-family="ui-monospace,Menlo,monospace">ALT</text>
+<text x="509" y="1418" fill="#e8c16a" font-size="11.5">出口二选一</text>
+<line x1="448" y1="1458" x2="624" y2="1458" stroke="#2ed0a8" stroke-width="1.4"/>
+<path d="M 624 1458 l -7 -4.5 l 0 9 z" fill="#2ed0a8"/>
+<text x="34" y="1477" fill="#e9ecf1" font-size="12">拿到 final_answer → returned_final_answer=True，正常收尾 agents.py:582-592</text>
+<line x1="448" y1="1520" x2="624" y2="1520" stroke="#2ed0a8" stroke-width="1.4"/>
+<path d="M 624 1520 l -7 -4.5 l 0 9 z" fill="#2ed0a8"/>
+<text x="34" y="1539" fill="#e9ecf1" font-size="12">或步数耗尽 → state='max_steps_error'，框架不给你答案 agents.py:606</text>
+<line x1="448" y1="1612" x2="272" y2="1612" stroke="#2ed0a8" stroke-width="1.4"/>
+<path d="M 272 1612 l 7 -4.5 l 0 9 z" fill="#2ed0a8"/>
+<text x="34" y="1631" fill="#e9ecf1" font-size="12">FinalAnswerStep(output)</text>
+<line x1="272" y1="1674" x2="96" y2="1674" stroke="#2ed0a8" stroke-width="1.4"/>
+<path d="M 96 1674 l 7 -4.5 l 0 9 z" fill="#2ed0a8"/>
+<text x="34" y="1693" fill="#e9ecf1" font-size="12">最终答案文本（AgentText 是 str 的子类，所以 str(result) 才对）</text>
+</svg>
+<div class="cap">实线 = 正向调用，虚线 = 返回；文字统一放在箭头下方，避免压线。<b>只有穿过「百炼 qwen-plus」那一对箭头才出网</b>，其余全部发生在你这台 Mac 上。</div></div>
+
+<h2>2 活动图：循环里「一步」的内部决策</h2>
+<div class="panel"><svg viewBox="0 0 1280 852" width="100%" xmlns="http://www.w3.org/2000/svg">
+<defs><marker id="aG" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0L9,4.5L0,9z" fill="#2ed0a8"/></marker><marker id="aY" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0L9,4.5L0,9z" fill="#e8c16a"/></marker></defs>
+<rect x="180" y="91" width="300" height="54" rx="8" fill="#0e1218" stroke="#272f3a" stroke-width="1.5"/>
+<text x="330" y="115" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">解析模型这一段输出：tool_calls 还是 final_ans</text>
+<text x="330" y="129" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">wer？</text>
+<path d="M 330 172 L 508 218 L 330 264 L 152 218 Z" fill="#0e1218" stroke="#2ed0a8" stroke-width="1.5"/>
+<text x="330" y="208" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">闸门一</text>
+<text x="330" y="222" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">工具名在白名单里吗？</text>
+<text x="330" y="236" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">agents.py:1464-1467</text>
+<rect x="700" y="191" width="324" height="54" rx="8" fill="#0e1218" stroke="#272f3a" stroke-width="1.5"/>
+<text x="862" y="215" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">AgentToolExecutionError</text>
+<text x="862" y="229" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">'Unknown tool X, should be one of: …'</text>
+<path d="M 330 278 L 508 324 L 330 370 L 152 324 Z" fill="#0e1218" stroke="#2ed0a8" stroke-width="1.5"/>
+<text x="330" y="314" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">闸门二</text>
+<text x="330" y="328" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">参数类型 / 必填对不对？</text>
+<text x="330" y="342" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">tools.py:1361 / 1400-1409</text>
+<rect x="700" y="297" width="324" height="54" rx="8" fill="#0e1218" stroke="#272f3a" stroke-width="1.5"/>
+<text x="862" y="321" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">TypeError / ValueError</text>
+<text x="862" y="335" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">同样当 Observation 回灌，不崩</text>
+<rect x="180" y="403" width="300" height="54" rx="8" fill="#0e1218" stroke="#272f3a" stroke-width="1.5"/>
+<text x="330" y="427" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">本机执行 forward()</text>
+<text x="330" y="441" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">云端只出意图，算在这台 Mac 上</text>
+<rect x="180" y="493" width="300" height="54" rx="8" fill="#0e1218" stroke="#272f3a" stroke-width="1.5"/>
+<text x="330" y="517" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">Observation + ActionStep 回灌 memory</text>
+<text x="330" y="531" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">step_number += 1</text>
+<path d="M 330 574 L 508 620 L 330 666 L 152 620 Z" fill="#0e1218" stroke="#2ed0a8" stroke-width="1.5"/>
+<text x="330" y="610" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">闸门三</text>
+<text x="330" y="624" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">这是 final_answer 吗？</text>
+<text x="330" y="638" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">agents.py:582-592</text>
+<path d="M 330 714 L 508 760 L 330 806 L 152 760 Z" fill="#0e1218" stroke="#2ed0a8" stroke-width="1.5"/>
+<text x="330" y="757" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">还没到 max_steps？</text>
+<text x="330" y="771" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">agents.py:545</text>
+<rect x="700" y="733" width="324" height="54" rx="8" fill="#0e1218" stroke="#272f3a" stroke-width="1.5"/>
+<text x="862" y="750" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">state = 'max_steps_error'</text>
+<text x="862" y="764" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">熔断：框架不给你任何答案</text>
+<text x="862" y="778" fill="#e9ecf1" font-size="11.5" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">agents.py:606</text>
+<circle cx="330" cy="40" r="12" fill="#2ed0a8"/>
+<circle cx="862" cy="620" r="12" fill="#2ed0a8"/><circle cx="862" cy="620" r="5.5" fill="#000"/>
+<text x="862" y="650" fill="#8c97a6" font-size="11" text-anchor="middle" font-family="ui-monospace,Menlo,monospace">answer = 你看到的那版文字</text>
+<path d="M 330 52 L 330 91" fill="none" stroke="#2ed0a8" stroke-width="1.5" marker-end="url(#aG)"/>
+<path d="M 330 145 L 330 172" fill="none" stroke="#2ed0a8" stroke-width="1.5" marker-end="url(#aG)"/>
+<path d="M 508 218 L 700 218" fill="none" stroke="#e8c16a" stroke-width="1.5" marker-end="url(#aY)"/>
+<text x="522" y="210" fill="#e8c16a" font-size="11.5" font-weight="700">否</text>
+<path d="M 330 264 L 330 278" fill="none" stroke="#2ed0a8" stroke-width="1.5" marker-end="url(#aG)"/>
+<text x="340" y="256" fill="#2ed0a8" font-size="11.5" font-weight="700">是</text>
+<path d="M 508 324 L 700 324" fill="none" stroke="#e8c16a" stroke-width="1.5" marker-end="url(#aY)"/>
+<text x="522" y="316" fill="#e8c16a" font-size="11.5" font-weight="700">错</text>
+<path d="M 330 370 L 330 403" fill="none" stroke="#2ed0a8" stroke-width="1.5" marker-end="url(#aG)"/>
+<text x="340" y="362" fill="#2ed0a8" font-size="11.5" font-weight="700">对</text>
+<path d="M 330 457 L 330 493" fill="none" stroke="#2ed0a8" stroke-width="1.5" marker-end="url(#aG)"/>
+<path d="M 330 547 L 330 574" fill="none" stroke="#2ed0a8" stroke-width="1.5" marker-end="url(#aG)"/>
+<path d="M 508 620 L 848 620" fill="none" stroke="#2ed0a8" stroke-width="1.5" marker-end="url(#aG)"/>
+<text x="560" y="611" fill="#2ed0a8" font-size="11.5" font-weight="700">是 → 交卷</text>
+<path d="M 330 666 L 330 714" fill="none" stroke="#2ed0a8" stroke-width="1.5" marker-end="url(#aG)"/>
+<text x="342" y="700" fill="#2ed0a8" font-size="11.5" font-weight="700">否</text>
+<path d="M 508 760 L 700 760" fill="none" stroke="#e8c16a" stroke-width="1.5" marker-end="url(#aY)"/>
+<text x="518" y="745" fill="#e8c16a" font-size="11.5" font-weight="700">否 · 熔断</text>
+<path d="M 1024 218 L 1150 218 L 1150 118 L 480 118" fill="none" stroke="#e8c16a" stroke-width="1.5" stroke-dasharray="6 5" marker-end="url(#aY)"/>
+<path d="M 1024 324 L 1150 324 L 1150 132 L 480 132" fill="none" stroke="#e8c16a" stroke-width="1.5" stroke-dasharray="6 5" marker-end="url(#aY)"/>
+<path d="M 152 760 L 60 760 L 60 118 L 180 118" fill="none" stroke="#2ed0a8" stroke-width="1.5" stroke-dasharray="6 5" marker-end="url(#aG)"/>
+<text x="66" y="744" fill="#2ed0a8" font-size="11.5" font-weight="700">是 · 继续循环</text>
+<text x="1166" y="470" fill="#e8c16a" font-size="11.5" transform="rotate(90 1166 470)">报错也回灌 —— 这就是它「自我修正」的机制</text>
+<text x="46" y="470" fill="#8c97a6" font-size="11.5" transform="rotate(-90 46 470)">回到 while，再转一圈</text>
+</svg>
+<div class="cap">金色分支不是异常出口：报错被当作 Observation 喂回去，下一圈模型自己改。你那次「它拒绝生成 HTML」走的不是这条路——它没撞闸门，是<b>主动用 final_answer 交了一份"我做不到"</b>。</div></div>
+
+<h2>3 为什么刚才那个窗口拒了你</h2>
+<div class="panel">
+<table><tr><th></th><th>Smolagents 窗口（你刚才问的那个）</th><th>my_coding_agent.py（今天新做的）</th></tr>
+<tr><td>入口</td><td><code>my_ui.py</code> → <code>my_agent.py</code></td><td class="no">只有命令行，还没接 UI</td></tr>
+<tr><td>动作空间</td><td><code>max_drawdown</code> · <code>annualized_volatility</code> · <code>final_answer</code></td><td>换成 <code>read_file</code> · <code>list_dir</code> · <code>grep_files</code> · <code>write_file</code> · <code>run_python</code></td></tr>
+<tr><td>能读你的代码吗</td><td class="no">不能。动作表里没有"读文件"这个动作</td><td>能，且被 <code>guarded()</code> 限制在 <code>ai学习/</code> 之内</td></tr>
+<tr><td>能产出 HTML 吗</td><td class="no">不能</td><td>能，但只落到 <code>.agent-staging/</code> 并回 diff，不原地写</td></tr></table>
+<p>它那句「我无法生成 HTML」<b>不是客套，也不是失败</b>——是它照着自己 system prompt 里那份工具清单念出来的（<code>agents.py:1265</code> 渲染进去的）。证据就在你截图里：<code>Step 1</code>、入 1,322 token、<b>没调任何工具</b>，一步就交卷。因为没有任何工具可调。</p>
+<p class="cap">对照：今天让 <code>my_coding_agent.py</code> 查同一个源码问题，它走了 9 步（list_dir ×3 → grep 试错 ×3 → read_file ×2 → 作答），单步 prompt 2089 → 4673。有手之后它就开始浪费 token，这是 P2 那层的账。</p>
+</div>
+</div></body></html>

@@ -1,0 +1,648 @@
+  77 OK :70-72 -> :74-76 [v15 1.00] who=my_ui
+      OLD| "action_output", ⏎         "token_usage", ⏎         "is_final_answer",
+      NEW| "action_output", ⏎         "token_usage", ⏎         "is_final_answer",
+      2nd| :234-236 [v14 1.00] --spacing-md: 8px; ⏎ } ⏎ /* gradio 把浅色值硬写在 body 自己的规则里（非 @media），只改 var 覆盖不到它，得直接压。 */
+      CTX| ‖ `127.0.0.1`、`share=False`**（`smolagents/my_ui.py:1101-1104`，v1.1 前在 `:70-72`）。框架默认是 `share: bool = True`（`smolagents/src/smol
+ 647 OK :310-310 -> :314-314 [v15 1.00] who=my_ui
+      OLD| #sessions label {
+      NEW| #sessions label {
+      CTX| ‖gs)` 交副本给 gradio（`my_ui.py:868`；v1.1/v1.2 是 `list(msgs) + [stats]` 在 `:310`，v1.3 把统计并进了步骤卡，见 6.3.5）。收益是上游升级时冲突面只有这一个文件；代价是 g
+ 657 OK :642-691 -> :892-941 [v14 1.00] who=NONE
+      OLD| break ⏎                     try: ⏎                         kind, payload = q.get_nowait() ⏎                     except queue.Empty: ⏎                 
+      NEW| break ⏎                     try: ⏎                         kind, payload = q.get_nowait() ⏎                     except queue.Empty: ⏎                 
+      2nd| :672-727 [v15 0.92] def _step_card(self, step) -> gr.ChatMessage | None: ⏎         """一个 step 一张卡：把上游那 5~6 条无差
+      CTX| ‖**v1.3 起这条独立卡不再单发**：一个 step 只出一张卡，上面那串数字并进了步骤卡的标题（`_step_card`，`:642-691`；标题拼装 `:671-675`，末行 `:686-688`），三档口径一字未改。下面这张表和"为
+ 657 OK :671-675 -> :921-925 [v14 1.00] who=NONE
+      OLD| if changed: ⏎                     yield list(msgs) ⏎                 if stop: ⏎                     break
+      NEW| if changed: ⏎                     yield list(msgs) ⏎                 if stop: ⏎                     break
+      2nd| :705-710 [v15 0.89] title = ( ⏎             f"🛠 第 {step.step_number} 步 · {names} · {dot} {verdict}" ⏎         
+      CTX| ‖独立卡不再单发**：一个 step 只出一张卡，上面那串数字并进了步骤卡的标题（`_step_card`，`:642-691`；标题拼装 `:671-675`，末行 `:686-688`），三档口径一字未改。下面这张表和"为什么写在 title 里"那条实
+ 657 OK :686-688 -> :936-938 [v14 1.00] who=NONE
+      OLD| self.agent.interrupt() ⏎             self._settle_all("cancelled")
+      NEW| self.agent.interrupt() ⏎             self._settle_all("cancelled")
+      2nd| :721-724 [v15 0.78] parts.append( ⏎             f"{foot}\n本题累计（本次提问内）：in {self._run_in:,} / out {self._run_out
+      CTX| ‖tep 只出一张卡，上面那串数字并进了步骤卡的标题（`_step_card`，`:642-691`；标题拼装 `:671-675`，末行 `:686-688`），三档口径一字未改。下面这张表和"为什么写在 title 里"那条实测结论仍然照旧成立。
+ 669 OK :757-765 -> :800-808 [v15 1.00] who=NONE
+      OLD| finally: ⏎             # 内层生成器只能在起它的那条线程里关：上游 _run_stream 的 finally 里还有一次 ⏎             # yield（agents.py:599-602），关的时候会顶回来一条 RuntimeError，自己接住， ⏎    
+      NEW| finally: ⏎             # 内层生成器只能在起它的那条线程里关：上游 _run_stream 的 finally 里还有一次 ⏎             # yield（agents.py:599-602），关的时候会顶回来一条 RuntimeError，自己接住， ⏎    
+      2nd| :1038-1046 [v14 1.00] sid, ⏎                     vis, ⏎                     vis, ⏎                 ) ⏎          
+      CTX| ‖v1.3 又搬了一次：**agent 挪进 worker 线程**，于是"关内层生成器"这一步只能跟着挪进那条线程的 `finally`（`:757-765`），`_stream_response` 的 `finally` 只剩三个动作——置放弃标记、`i
+ 669 OK :873-882 -> :928-937 [v15 1.00] who=NONE
+      OLD| finally: ⏎             # v1.1 验过的刹车语义，搬进线程版： ⏎             # 1) interrupt_switch 置真，主循环在下一个步边界抛 AgentError（agents.py:546-547）， ⏎             #    正在执行
+      NEW| finally: ⏎             # v1.1 验过的刹车语义，搬进线程版： ⏎             # 1) interrupt_switch 置真，主循环在下一个步边界抛 AgentError（agents.py:546-547）， ⏎             #    正在执行
+      2nd| :1185-1194 [v14 1.00] radio.change(fn=self._select_session, inputs=[radio], outputs=[chatbot, status, sid]) ⏎   
+      CTX| ‖65`），`_stream_response` 的 `finally` 只剩三个动作——置放弃标记、`interrupt()`、结算待批（`:873-882`）：
+ 679 OK :678-678 -> :713-713 [v15 1.00] who=NONE
+      OLD| if thought:
+      NEW| if thought:
+      2nd| :928-928 [v14 1.00] finally:
+      CTX| ‖    G->>O: 关掉这层生成器（finally 在 :678）
+ 681 OK :685-685 -> :720-720 [v15 1.00] who=NONE
+      OLD| parts.append(f"**报错** {type(step.error).__name__}: {step.error}")
+      NEW| parts.append(f"**报错** {type(step.error).__name__}: {step.error}")
+      2nd| :935-935 [v14 1.00] self._abandoned.set()
+      CTX| ‖    O->>W: _abandoned.set()（:685）→ 那个 for 循环下一轮 break
+ 682 OK :570-570 -> :594-594 [v15 1.00] who=NONE
+      OLD| return original(*args, **kwargs)
+      NEW| return original(*args, **kwargs)
+      2nd| :805-805 [v14 1.00] inner.close()
+      CTX| ‖    O->>W: 生成器被弃 → 它的 finally 在起它的线程里 inner.close()（:570）
+ 684 OK :571-572 -> :595-596 [v15 1.00] who=NONE
+      OLD| return DENIED_OBSERVATION.get(decision, DENIED_OBSERVATION["denied"])
+      NEW| return DENIED_OBSERVATION.get(decision, DENIED_OBSERVATION["denied"])
+      2nd| :806-807 [v14 1.00] except RuntimeError: ⏎                 pass
+      CTX| ‖    A-->>W: 该 RuntimeError 由 W 自己吃掉（:571-572），否则 stderr 每次 Stop 喷一条 GeneratorExit
+ 686 OK :545-547 -> :564-566 [v15 1.00] who=NONE
+      OLD| return _self._gated_call(_name, _orig, a, kw) ⏎  ⏎             gated.__signature__ = inspect.signature(original)
+      NEW| return _self._gated_call(_name, _orig, a, kw) ⏎  ⏎             gated.__signature__ = inspect.signature(original)
+      2nd| :780-782 [v14 1.00] for k, v in pills ⏎         ) ⏎         return f'<div id="statusbar" class="st-{state}">{i
+      CTX| ‖    A->>A: 下一个 while 顶部检查 interrupt_switch → raise AgentError（:545-547）
+ 696 OK :4-4 -> :4-4 [v15 1.00] who=my_ui
+      OLD| import inspect
+      NEW| import inspect
+      2nd| :4-4 [v14 1.00] import inspect
+      CTX| ‖ → from my_coding_agent import …`（v1.2 前那条 import 在 `my_ui.py:10`，更早 `:4`）——**import 不执行 `__main__`**。目录当时存在，只是因为历史上直接跑过一次
+ 707 OK :712-712 -> :752-752 [v15 1.00] who=NONE
+      OLD| "step_error": bool(cur and cur[-1].error),
+      NEW| "step_error": bool(cur and cur[-1].error),
+      2nd| :988-988 [v14 1.00] def _user_message(self, message):
+      CTX| ‖    R --> U["_user_message<br/>:712 自建用户气泡"]
+ 708 OK :575-575 -> :599-599 [v15 1.00] who=NONE
+      OLD| return list(self._pending)
+      NEW| return list(self._pending)
+      2nd| :810-810 [v14 1.00] def _stream_response(self, message, history):  # noqa: ARG002
+      CTX| ‖    R --> S["_stream_response<br/>:575 v1.1 的刹车语义原样保留<br/>v1.3 起它只是取队列的壳"]
+ 709 OK :550-550 -> :569-569 [v15 1.00] who=NONE
+      OLD| self.agent.tools[name] = wrapped_tool
+      NEW| self.agent.tools[name] = wrapped_tool
+      2nd| :785-785 [v14 1.00] def _worker(self, task: str, files, q: queue.Queue) -> None:
+      CTX| ‖    S --> W["threading.Thread → _worker :550<br/>agent.run(stream=True)"]
+ 711 OK :367-367 -> :375-375 [v15 1.00] who=NONE
+      OLD| if not self._done.wait(APPROVAL_TIMEOUT):
+      NEW| if not self._done.wait(APPROVAL_TIMEOUT):
+      2nd| :571-571 [v14 1.00] def _gated_call(self, name: str, original, args: tuple, kwargs: dict) -> str:
+      CTX| ‖    W --> GT["工具实例上的审批门<br/>_gated_call :367（见 6.3.5）"]
+ 712 OK :502-502 -> :511-511 [v15 1.00] who=NONE
+      OLD| _pending: list[Approval] = []
+      NEW| _pending: list[Approval] = []
+      2nd| :730-730 [v14 1.00] def _stats(self) -> dict:
+      CTX| ‖    S --> ST["_stats :502 一份数字"]
+ 713 OK :450-450 -> :459-459 [v15 1.00] who=NONE
+      OLD| title = content.strip().replace("\n", " ")[:28] or None
+      NEW| title = content.strip().replace("\n", " ")[:28] or None
+      2nd| :672-672 [v14 1.00] def _step_card(self, step) -> gr.ChatMessage | None:
+      CTX| ‖    ST --> C1["_step_card :450 一步一张卡<br/>卡末行就是原来的统计卡"]
+ 714 OK :529-529 -> :761-761 [v14 1.00] who=NONE
+      OLD| def _status_html(self, state: str) -> str:
+      NEW| def _status_html(self, state: str) -> str:
+      CTX| ‖    ST --> C2["_status_html :529 顶部胶囊<br/>有待批时多一颗「待批」"]
+ 716 OK :277-277 -> :281-281 [v15 1.00] who=NONE
+      OLD| /* 气泡：gradio 把底色硬编成 rgb(250,250,250)（实测），深色底上就是一排白卡。 */
+      NEW| /* 气泡：gradio 把底色硬编成 rgb(250,250,250)（实测），深色底上就是一排白卡。 */
+      2nd| :451-451 [v14 1.00] def save(self, sid: int, messages) -> None:
+      CTX| ‖    R -->|"finally"| H["History.save 整条覆盖写<br/>:277，DELETE 在 :289"]
+ 716 OK :289-289 -> :293-293 [v15 1.00] who=NONE
+      OLD| background: var(--block-background-fill) !important;
+      NEW| background: var(--block-background-fill) !important;
+      2nd| :463-463 [v14 1.00] c.execute("DELETE FROM messages WHERE session_id = ?", (sid,))
+      CTX| ‖    R -->|"finally"| H["History.save 整条覆盖写<br/>:277，DELETE 在 :289"]
+ 718 OK :880-880 -> :935-935 [v15 1.00] who=NONE
+      OLD| self._abandoned.set()
+      NEW| self._abandoned.set()
+      2nd| :1192-1192 [v14 1.00] demo.load(fn=self._on_load, outputs=[radio, sid, status, chatbot])
+      CTX| ‖    L["demo.load :880"] --> DB2["History.choices / load"] --> OUT
+ 719 OK :843-843 -> :898-898 [v15 1.00] who=NONE
+      OLD| for ap in self._pending_snapshot():
+      NEW| for ap in self._pending_snapshot():
+      2nd| :1155-1155 [v14 1.00] stop_btn = gr.Button("■ 停止", variant="stop", scale=0, min_width=88)
+      CTX| ‖    SB["■ 停止 :843"] -->|"interrupt + 结算待批"| AG
+ 725 OK :913-927 -> :988-1002 [v15 1.00] who=NONE
+      OLD| def _user_message(self, message): ⏎         """把输入框的值转成一条 user 气泡。 ⏎  ⏎         必须自己加：上游 ChatInterface 会替我们把用户消息拼上，换成自建 Blocks 后 ⏎         _stream_res
+      NEW| def _user_message(self, message): ⏎         """把输入框的值转成一条 user 气泡。 ⏎  ⏎         必须自己加：上游 ChatInterface 会替我们把用户消息拼上，换成自建 Blocks 后 ⏎         _stream_res
+      CTX| ‖` 替你补上用户那句；换成自建 Blocks 后屏幕第一行会凭空消失、库里也没有。**必须自己拼**（`_user_message()`，`:913-927`），而且只拼显示、不重跑 `_process_message`——那句会把上传文件真复制一份。
+ 727 OK :1095-1095 -> :1192-1192 [v15 1.00] who=NONE
+      OLD| demo.load(fn=self._on_load, outputs=[radio, sid, status, chatbot])
+      NEW| demo.load(fn=self._on_load, outputs=[radio, sid, status, chatbot])
+      CTX| ‖`choices` 还停在建应用那一刻的空表，实测重载后侧栏是空的——这恰好是 V3 要消灭的那个缺陷。解法是挂 `demo.load`（`:1095`，回调 `:1025-1035`）把库里的会话重新推一遍，并自动展开最新一条。v1.4 起这条回调
+ 727 OK :1025-1035 -> :1118-1129 [v15 0.76] who=NONE
+      OLD| def _on_load(self): ⏎         """刷新页面时把库里的会话重新推上屏，并把 sid 指到最近一条。 ⏎  ⏎         gradio 不会重跑 create_app，Radio 的 choices 还是建应用那一刻的空表—— ⏎         实测重载后侧栏是空
+      NEW| def _on_load(self): ⏎         """刷新页面时把库里的会话重新推上屏，并把 sid 指到最近一条。 ⏎  ⏎         gradio 不会重跑 create_app，Radio 的 choices 还是建应用那一刻的空表—— ⏎         实测重载后侧栏是空
+      CTX| ‖停在建应用那一刻的空表，实测重载后侧栏是空的——这恰好是 V3 要消灭的那个缺陷。解法是挂 `demo.load`（`:1095`，回调 `:1025-1035`）把库里的会话重新推一遍，并自动展开最新一条。v1.4 起这条回调**同时把 `sid` 指到那条
+ 729 OK :373-488 -> :382-497 [v15 1.00] who=NONE
+      OLD| class History: ⏎     """会话侧栏的存储层：存**显示层**的那串消息，一条会话一行行按 ord 存。 ⏎  ⏎     save() 是「整条会话覆盖」（先 DELETE 再按 ord 重插），不是追加——它只有在调用方 ⏎     喂进完整列表时才等价于追加，D5 修的就是
+      NEW| class History: ⏎     """会话侧栏的存储层：存**显示层**的那串消息，一条会话一行行按 ord 存。 ⏎  ⏎     save() 是「整条会话覆盖」（先 DELETE 再按 ord 重插），不是追加——它只有在调用方 ⏎     喂进完整列表时才等价于追加，D5 修的就是
+      2nd| :577-715 [v14 0.89] ap = Approval(name, bound) ⏎         with self._gate_lock: ⏎             self._pending.app
+      CTX| ‖`History`（`:373-488`）管**三张表**：`sessions(id, title, created_at, update
+ 733 OK :30-30 -> :30-30 [v15 1.00] who=NONE
+      OLD| DB_PATH = Path(__file__).resolve().parent / ".agent-history.sqlite3"
+      NEW| DB_PATH = Path(__file__).resolve().parent / ".agent-history.sqlite3"
+      2nd| :32-32 [v14 1.00] # P0-2：只拦「会动东西」的两只手。只读工具（read_file / list_dir / grep_files）不弹审批，
+      CTX| ‖| `DB_PATH` 用 `Path(__file__).resolve()` 而不是 cwd | `:30` | 启动器 `cd smolagents` 与否都落在同一个文件，避免"换个起法历史就看不见了"
+ 734 OK :442-463 -> :451-472 [v15 1.00] who=NONE
+      OLD| def save(self, sid: int, messages) -> None: ⏎         rows = [] ⏎         title = None ⏎         for i, m in enumerate(messages): ⏎             d = da
+      NEW| def save(self, sid: int, messages) -> None: ⏎         rows = [] ⏎         title = None ⏎         for i, m in enumerate(messages): ⏎             d = da
+      2nd| :664-685 [v14 1.00] slim[k] = v[:limit] + f"…（共 {len(v)} 字，截掉 {len(v) - limit} 字）" ⏎             else: ⏎      
+      CTX| ‖| `save()` 是**整条覆盖写**（先删后插全量） | `:442-463`，`DELETE` 在 `:454` | 半截停止的那次也落库；重复保存不会产生双份消息。所以调用
+ 734 OK :454-454 -> :463-463 [v15 1.00] who=NONE
+      OLD| c.execute("DELETE FROM messages WHERE session_id = ?", (sid,))
+      NEW| c.execute("DELETE FROM messages WHERE session_id = ?", (sid,))
+      2nd| :676-676 [v14 1.00] DOM 里，只有标题可见（v1.1 就栽过一次，正文写了半天屏幕上看不见）。
+      CTX| ‖| `save()` 是**整条覆盖写**（先删后插全量） | `:442-463`，`DELETE` 在 `:454` | 半截停止的那次也落库；重复保存不会产生双份消息。所以调用方必须喂**完整列表**——v1.4
+ 735 OK :449-450 -> :458-459 [v15 1.00] who=NONE
+      OLD| if d.get("role") == "user" and title is None: ⏎                 title = content.strip().replace("\n", " ")[:28] or None
+      NEW| if d.get("role") == "user" and title is None: ⏎                 title = content.strip().replace("\n", " ")[:28] or None
+      2nd| :671-672 [v14 1.00] def _step_card(self, step) -> gr.ChatMessage | None:
+      CTX| ‖| 标题取首条 user 消息前 **28** 字，且只在仍是「新会话」时写；`updated_at` 每次存都刷 | `:449-450` 取值，`:460-463` 那条 `CASE WHEN title = '新会话'` | 侧栏一
+ 735 OK :460-463 -> :469-472 [v15 1.00] who=NONE
+      OLD| c.execute( ⏎                 "UPDATE sessions SET updated_at = ?, title = CASE WHEN title = '新会话' THEN ? ELSE title END WHERE id = ?", ⏎              
+      NEW| c.execute( ⏎                 "UPDATE sessions SET updated_at = ?, title = CASE WHEN title = '新会话' THEN ? ELSE title END WHERE id = ?", ⏎              
+      2nd| :682-685 [v14 1.00] metadata={"title": "🧭 计划步", "status": "done"}, ⏎             ) ⏎         if not isinstance
+      CTX| ‖首条 user 消息前 **28** 字，且只在仍是「新会话」时写；`updated_at` 每次存都刷 | `:449-450` 取值，`:460-463` 那条 `CASE WHEN title = '新会话'` | 侧栏一行放得下；重存不会把标题改掉
+ 736 OK :425-430 -> :434-439 [v15 1.00] who=NONE
+      OLD| def choices(self, limit: int = 50): ⏎         with self._tx() as c: ⏎             rows = c.execute( ⏎                 "SELECT id, title FROM sessions 
+      NEW| def choices(self, limit: int = 50): ⏎         with self._tx() as c: ⏎             rows = c.execute( ⏎                 "SELECT id, title FROM sessions 
+      2nd| :647-652 [v14 1.00] metadata={"title": title, "status": "pending" if state == "pending" else "done"}, ⏎       
+      CTX| ‖| `choices()` 按 `updated_at DESC` 取，上限 **50** 条 | `:425-430` | 不搜索、不分组、不分页——这是 v1.2 的已知边界 |
+ 737 OK :401-401 -> :410-410 [v15 1.00] who=NONE
+      OLD| CREATE TABLE IF NOT EXISTS memory(
+      NEW| CREATE TABLE IF NOT EXISTS memory(
+      2nd| :617-617 [v14 1.00] """停止 / 换题时把没人管的审批结算掉，否则 worker 线程会一直挂在 wait() 上。"""
+      CTX| ‖` 是 `INSERT OR REPLACE`，**一条会话一行**（主键就是 `session_id`），返回存了多少字符 | DDL `:401`，方法 `:465-473`，读回 `:475-478` | 和 `save()` 同样是覆盖式，
+ 737 OK :465-473 -> :474-482 [v15 1.00] who=NONE
+      OLD| def save_memory(self, sid: int, payload: str) -> int: ⏎         """整条覆盖这条会话的记忆（一条会话一行，主键就是 session_id）。返回存了多少字符。""" ⏎         blob = payload or "" ⏎  
+      NEW| def save_memory(self, sid: int, payload: str) -> int: ⏎         """整条覆盖这条会话的记忆（一条会话一行，主键就是 session_id）。返回存了多少字符。""" ⏎         blob = payload or "" ⏎  
+      2nd| :687-695 [v14 1.00] names = "、".join(dict.fromkeys(c.name for c in calls)) if calls else "无工具调用" ⏎         obs
+      CTX| ‖T OR REPLACE`，**一条会话一行**（主键就是 `session_id`），返回存了多少字符 | DDL `:401`，方法 `:465-473`，读回 `:475-478` | 和 `save()` 同样是覆盖式，所以调用方给的必须是**整份
+ 737 OK :475-478 -> :484-487 [v15 1.00] who=NONE
+      OLD| def load_memory(self, sid: int): ⏎         with self._tx() as c: ⏎             row = c.execute("SELECT payload FROM memory WHERE session_id = ?", (int
+      NEW| def load_memory(self, sid: int): ⏎         with self._tx() as c: ⏎             row = c.execute("SELECT payload FROM memory WHERE session_id = ?", (int
+      2nd| :697-700 [v14 0.64] dot, verdict = "🟢", "成功" ⏎         tk = step.token_usage ⏎         secs = step.timing.dura
+      CTX| ‖**一条会话一行**（主键就是 `session_id`），返回存了多少字符 | DDL `:401`，方法 `:465-473`，读回 `:475-478` | 和 `save()` 同样是覆盖式，所以调用方给的必须是**整份** steps；返回字符数
+ 739 OK :446-451 -> :455-460 [v15 1.00] who=NONE
+      OLD| d = dataclasses.asdict(m) if dataclasses.is_dataclass(m) else dict(m) ⏎             content = str(d.get("content") or "") ⏎             meta = d.get("
+      NEW| d = dataclasses.asdict(m) if dataclasses.is_dataclass(m) else dict(m) ⏎             content = str(d.get("content") or "") ⏎             meta = d.get("
+      2nd| :668-673 [v14 1.00] return json.dumps(slim, ensure_ascii=False, indent=2) ⏎         except (TypeError, ValueEr
+      CTX| ‖`meta` 列存的是 `gr.ChatMessage.metadata` 的 JSON（`role`/`content` 各自一列，`:446-451` 先用 `dataclasses.asdict` 把 dataclass 拍平成字典再拆），`lo
+ 739 OK :439-439 -> :448-448 [v15 1.00] who=NONE
+      OLD| out.append(gr.ChatMessage(role=role, content=content, metadata=json.loads(meta)))
+      NEW| out.append(gr.ChatMessage(role=role, content=content, metadata=json.loads(meta)))
+      2nd| :661-661 [v14 1.00] slim = {}
+      CTX| ‖aclasses.asdict` 把 dataclass 拍平成字典再拆），`load()` 拿它重建 `gr.ChatMessage`（`:439`），所以折叠卡、报错条这类带 `metadata.title` 的消息能原样贴回来。**但库里那两
+ 741 OK :213-332 -> :217-336 [v15 1.00] who=NONE
+      OLD| DARK_CSS = """ ⏎ :root { ⏎   color-scheme: dark; ⏎   --body-background-fill: #0d1117; ⏎   --body-text-color: #e6edf3; ⏎   --body-text-color-subdued: #
+      NEW| DARK_CSS = """ ⏎ :root { ⏎   color-scheme: dark; ⏎   --body-background-fill: #0d1117; ⏎   --body-text-color: #e6edf3; ⏎   --body-text-color-subdued: #
+      2nd| :382-530 [v14 0.87] class History: ⏎     """会话侧栏的存储层：存**显示层**的那串消息，一条会话一行行按 ord 存。 ⏎  ⏎     save() 是「整条会话覆盖」（先
+      CTX| ‖深色壳（`DARK_CSS`，`:213-332`）分两类活：一类是 `:root` 变量同名覆盖（`--body-background-fill`
+ 741 OK :265-275 -> :269-279 [v15 1.00] who=NONE
+      OLD| /* P0-2 审批键：平时不可见（visible=False），有待批项时才由后端点亮。 */ ⏎ #statusrow #approve-btn button { ⏎   background: #238636 !important; border: 1px solid #2ea043 !imp
+      NEW| /* P0-2 审批键：平时不可见（visible=False），有待批项时才由后端点亮。 */ ⏎ #statusrow #approve-btn button { ⏎   background: #238636 !important; border: 1px solid #2ea043 !imp
+      2nd| :439-449 [v14 1.00] return [(r[1], str(r[0])) for r in rows] ⏎  ⏎     def load(self, sid: int): ⏎         with
+      CTX| ‖叠卡只有 **353px**（容器 950px），这就是第一版截图里右边空一大片的原因。v1.3 在这段 CSS 里追加了审批相关的规则（`:265-275`：待批胶囊的描边、`#approve-btn` / `#deny-btn` 的配色），没有另起一个
+ 750 OK :547-547 -> :566-566 [v15 1.00] who=NONE
+      OLD| gated.__signature__ = inspect.signature(original)
+      NEW| gated.__signature__ = inspect.signature(original)
+      2nd| :782-782 [v14 1.00] return f'<div id="statusbar" class="st-{state}">{inner}</div>'
+      CTX| ‖- `gated.__signature__ = inspect.signature(original)`（`:547`）。不保签名的话，`*a, **kw` 会把参数吞成一个元组，审批卡就写不出「要往哪写、写什么」。
+ 750 OK :555-555 -> :574-574 [v15 1.00] who=NONE
+      OLD| bound = dict(inspect.signature(original).bind_partial(*args, **kwargs).arguments)
+      NEW| bound = dict(inspect.signature(original).bind_partial(*args, **kwargs).arguments)
+      2nd| :790-790 [v14 1.00] 不会出现「允许/拒绝」，死锁。换成线程 + 队列后，阻塞的是 worker，界面照刷。
+      CTX| ‖一个元组，审批卡就写不出「要往哪写、写什么」。有了它，`bind_partial(*args, **kwargs).arguments`（`:555`）能把参数还原成字典——**展示用的和执行用的是同一份**，不是我先格式化再另算一遍。
+ 751 OK :539-539 -> :558-558 [v15 1.00] who=NONE
+      OLD| if base is None or getattr(base, "_opsui_gated", False):
+      NEW| if base is None or getattr(base, "_opsui_gated", False):
+      2nd| :774-774 [v14 1.00] if un:
+      CTX| ‖- 幂等标记 `_opsui_gated`（`:539`、`:549`）。多个 `OpsUI` 实例（离线测试里反复建）不能把门套成两层：两层就是问两遍，
+ 751 OK :549-549 -> :568-568 [v15 1.00] who=NONE
+      OLD| wrapped_tool._opsui_gated = True
+      NEW| wrapped_tool._opsui_gated = True
+      2nd| :784-784 [v14 1.00] # ---- 驱动：agent 跑在 worker 线程，界面每 0.25 秒取一次队列 -------------------
+      CTX| ‖- 幂等标记 `_opsui_gated`（`:539`、`:549`）。多个 `OpsUI` 实例（离线测试里反复建）不能把门套成两层：两层就是问两遍，点一次「允许」
+ 752 OK :502-503 -> :511-512 [v15 1.00] who=NONE
+      OLD| _pending: list[Approval] = [] ⏎     _gate_lock = threading.Lock()
+      NEW| _pending: list[Approval] = [] ⏎     _gate_lock = threading.Lock()
+      2nd| :730-731 [v14 1.00] def _stats(self) -> dict: ⏎         steps = self.agent.memory.steps
+      CTX| ‖- `_pending` 和 `_gate_lock` 挂在**类**上（`:502-503`），不是实例上。因为门守的是**进程里那一个 agent** 的工具，第一个实例装好门之后别人不再
+ 754 OK :34-34 -> :34-34 [v15 1.00] who=NONE
+      OLD| GATED_TOOLS = ("write_file", "run_python")
+      NEW| GATED_TOOLS = ("write_file", "run_python")
+      2nd| :36-36 [v14 1.00] APPROVAL_TIMEOUT = 600.0
+      CTX| ‖**只拦会动东西的两只手。** `GATED_TOOLS = ("write_file", "run_python")`（`:34`）；`read_file` / `list_dir` / `grep_files` 不弹审批，否则
+ 756 OK :742-765 -> :785-808 [v15 1.00] who=NONE
+      OLD| def _worker(self, task: str, files, q: queue.Queue) -> None: ⏎         """在别的线程里消费 agent.run(stream=True)。 ⏎  ⏎         为什么非得换线程：审批是**阻塞**的，而 gradio 是
+      NEW| def _worker(self, task: str, files, q: queue.Queue) -> None: ⏎         """在别的线程里消费 agent.run(stream=True)。 ⏎  ⏎         为什么非得换线程：审批是**阻塞**的，而 gradio 是
+      2nd| :1020-1046 [v14 0.89] radio = lambda: gr.update(choices=self.hist.choices())  # noqa: E731 ⏎         hidden = (g
+      CTX| ‖面上根本没有「允许」可点 → 死锁。所以 v1.3 把 `agent.run(stream=True)` 挪进 `_worker` 线程（`:742-765`），事件塞 `queue.Queue`；`_stream_response`（`:767-882`
+ 756 OK :767-882 -> :810-937 [v15 0.94] who=NONE
+      OLD| def _stream_response(self, message, history):  # noqa: ARG002 ⏎         task, files = self._process_message(message) ⏎         # 换题开局：上一题遗留的未批项先结算再摘除。
+      NEW| def _stream_response(self, message, history):  # noqa: ARG002 ⏎         task, files = self._process_message(message) ⏎         # 换题开局：上一题遗留的未批项先结算再摘除。
+      2nd| :1048-1194 [v14 0.86] role="assistant", ⏎                     content=f"⏹ {type(exc).__name__}: {exc}", ⏎       
+      CTX| ‖e)` 挪进 `_worker` 线程（`:742-765`），事件塞 `queue.Queue`；`_stream_response`（`:767-882`）变成一条**只取队列**的壳，用 `q.get(timeout=0.25)`（`:794`）驱动
+ 756 OK :794-794 -> :841-841 [v15 1.00] who=NONE
+      OLD| kind, payload = q.get(timeout=0.25)
+      NEW| kind, payload = q.get(timeout=0.25)
+      2nd| :1093-1093 [v14 1.00] self._settle_all("cancelled")
+      CTX| ‖`_stream_response`（`:767-882`）变成一条**只取队列**的壳，用 `q.get(timeout=0.25)`（`:794`）驱动。关键一点：**空转的那 0.25 秒也要走一遍渲染判定**（`:843-865`），否则待
+ 756 OK :843-865 -> :898-920 [v15 1.00] who=NONE
+      OLD| for ap in self._pending_snapshot(): ⏎                     waited = time.time() - ap.created ⏎                     key = (ap.decision, int(waited) if a
+      NEW| for ap in self._pending_snapshot(): ⏎                     waited = time.time() - ap.created ⏎                     key = (ap.decision, int(waited) if a
+      2nd| :1155-1177 [v14 1.00] stop_btn = gr.Button("■ 停止", variant="stop", scale=0, min_width=88) ⏎                     
+      CTX| ‖**的壳，用 `q.get(timeout=0.25)`（`:794`）驱动。关键一点：**空转的那 0.25 秒也要走一遍渲染判定**（`:843-865`），否则待批卡要等下一个 agent 事件才画得出来——而下一个事件永远不来，因为 agent 正
+ 760 OK :728-728 -> :768-768 [v15 1.00] who=NONE
+      OLD| ("本题耗时", f"{s['task_secs']:.1f}s"),
+      NEW| ("本题耗时", f"{s['task_secs']:.1f}s"),
+      2nd| :1004-1004 [v14 1.00] def _respond(self, message, sid):
+      CTX| ‖    T["提问 box.submit"] --> RS["_respond :728<br/>7 元组输出"]
+ 761 OK :575-575 -> :599-599 [v15 1.00] who=NONE
+      OLD| return list(self._pending)
+      NEW| return list(self._pending)
+      2nd| :810-810 [v14 1.00] def _stream_response(self, message, history):  # noqa: ARG002
+      CTX| ‖    RS --> SR["_stream_response :575<br/>UI 线程 · q.get 0.25s"]
+ 762 OK :550-550 -> :569-569 [v15 1.00] who=NONE
+      OLD| self.agent.tools[name] = wrapped_tool
+      NEW| self.agent.tools[name] = wrapped_tool
+      2nd| :785-785 [v14 1.00] def _worker(self, task: str, files, q: queue.Queue) -> None:
+      CTX| ‖    SR -->|"起线程"| WK["_worker :550<br/>agent.run stream=True"]
+ 765 OK :367-367 -> :375-375 [v15 1.00] who=NONE
+      OLD| if not self._done.wait(APPROVAL_TIMEOUT):
+      NEW| if not self._done.wait(APPROVAL_TIMEOUT):
+      2nd| :571-571 [v14 1.00] def _gated_call(self, name: str, original, args: tuple, kwargs: dict) -> str:
+      CTX| ‖    CALL -->|"self.forward 已被实例属性盖住"| GATE["_gated_call :367<br/>Approval 入类级 _pending :322"]
+ 765 OK :322-322 -> :326-326 [v15 1.00] who=NONE
+      OLD| #statusbar .pill {
+      NEW| #statusbar .pill {
+      2nd| :511-511 [v14 1.00] _pending: list[Approval] = []
+      CTX| ‖f.forward 已被实例属性盖住"| GATE["_gated_call :367<br/>Approval 入类级 _pending :322"]
+ 766 OK :206-206 -> :210-210 [v15 1.00] who=NONE
+      OLD| )
+      NEW| )
+      2nd| :374-374 [v14 1.00] def wait(self) -> str:
+      CTX| ‖    GATE --> WAIT["ap.wait 600s :206<br/>只阻塞 worker 这一条线程"]
+ 767 OK :405-405 -> :414-414 [v15 1.00] who=NONE
+      OLD| """
+      NEW| """
+      2nd| :621-621 [v14 1.00] def _approval_card(self, ap: Approval, waited: float) -> gr.ChatMessage:
+      CTX| ‖    SR -->|"每轮扫 _pending_snapshot"| CARD["_approval_card :405<br/>🟡 待批 · 参数原样贴出"]
+ 769 OK :877-877 -> :932-932 [v15 1.00] who=NONE
+      OLD| # 2) 挂在审批上的那条线程必须一并结算，否则「停止」只是把界面停住，
+      NEW| # 2) 挂在审批上的那条线程必须一并结算，否则「停止」只是把界面停住，
+      2nd| :1189-1189 [v14 1.00] allow_btn.click(fn=lambda: self._decide("allowed"), outputs=[status, allow_btn, deny_btn])
+      CTX| ‖    BTN -->|"✔ 允许 :877"| OK["_decide allowed :388<br/>decision + Event.s
+ 769 OK :388-388 -> :397-397 [v15 1.00] who=NONE
+      OLD| CREATE TABLE IF NOT EXISTS sessions(
+      NEW| CREATE TABLE IF NOT EXISTS sessions(
+      2nd| :604-604 [v14 1.00] def _decide(self, decision: str):
+      CTX| ‖    BTN -->|"✔ 允许 :877"| OK["_decide allowed :388<br/>decision + Event.set"]
+ 770 OK :878-878 -> :933-933 [v15 1.00] who=NONE
+      OLD| #    worker 会永远等在 wait() 里；
+      NEW| #    worker 会永远等在 wait() 里；
+      2nd| :1190-1190 [v14 1.00] deny_btn.click(fn=lambda: self._decide("denied"), outputs=[status, allow_btn, deny_btn])
+      CTX| ‖    BTN -->|"✖ 拒绝 :878"| NO["_decide denied"]
+ 771 OK :874-874 -> :929-929 [v15 1.00] who=NONE
+      OLD| # v1.1 验过的刹车语义，搬进线程版：
+      NEW| # v1.1 验过的刹车语义，搬进线程版：
+      2nd| :1186-1186 [v14 1.00] stop_btn.click(fn=self._stop, outputs=[status])
+      CTX| ‖    BTN -->|"■ 停止 :874"| STOP["_stop :784 → _settle_all cancelled :400"]
+ 771 OK :784-784 -> :831-831 [v15 1.00] who=NONE
+      OLD| deltas: list[ChatMessageStreamDelta] = []
+      NEW| deltas: list[ChatMessageStreamDelta] = []
+      2nd| :1076-1076 [v14 1.00] def _stop(self):
+      CTX| ‖    BTN -->|"■ 停止 :874"| STOP["_stop :784 → _settle_all cancelled :400"]
+ 771 OK :400-400 -> :409-409 [v15 1.00] who=NONE
+      OLD| CREATE INDEX IF NOT EXISTS idx_messages_session ON messages(session_id, ord);
+      NEW| CREATE INDEX IF NOT EXISTS idx_messages_session ON messages(session_id, ord);
+      2nd| :616-616 [v14 1.00] def _settle_all(self, decision: str) -> None:
+      CTX| ‖    BTN -->|"■ 停止 :874"| STOP["_stop :784 → _settle_all cancelled :400"]
+ 773 OK :44-44 -> :48-48 [v15 1.00] who=NONE
+      OLD| DECISION_DOT = {"pending": "🟡", "allowed": "🟢", "denied": "⚪", "cancelled": "⏹", "timeout": "⏳"}
+      NEW| DECISION_DOT = {"pending": "🟡", "allowed": "🟢", "denied": "⚪", "cancelled": "⏹", "timeout": "⏳"}
+      2nd| :50-50 [v14 1.00] DENIED_OBSERVATION = {
+      CTX| ‖    NO --> OBS["观察值 DENIED_OBSERVATION :44<br/>写明未产生任何副作用"]
+ 776 OK :450-450 -> :459-459 [v15 1.00] who=NONE
+      OLD| title = content.strip().replace("\n", " ")[:28] or None
+      NEW| title = content.strip().replace("\n", " ")[:28] or None
+      2nd| :672-672 [v14 1.00] def _step_card(self, step) -> gr.ChatMessage | None:
+      CTX| ‖    EXEC --> STEP["_step_card :450<br/>🟢 成功 · 秒 · token"]
+ 780 OK :799-810 -> :846-857 [v15 1.00] who=NONE
+      OLD| if isinstance(payload, ChatMessageStreamDelta): ⏎                             deltas.append(payload) ⏎                             text = agglomerate_
+      NEW| if isinstance(payload, ChatMessageStreamDelta): ⏎                             deltas.append(payload) ⏎                             text = agglomerate_
+      2nd| :1098-1118 [v14 0.62] def _select_session(self, sid): ⏎         """点旧会话：屏幕换消息，**sid 也一起换**（V5）。 ⏎  ⏎         v1.
+      CTX| ‖**一条流上现在有三种卡，身份存对象不存下标。** 流式思考气泡（`:799-810`）、审批卡（`:843-865`）、步骤卡（`:811-829`）都往同一个 `msgs` 列表里
+ 780 OK :843-865 -> :898-920 [v15 1.00] who=NONE
+      OLD| for ap in self._pending_snapshot(): ⏎                     waited = time.time() - ap.created ⏎                     key = (ap.decision, int(waited) if a
+      NEW| for ap in self._pending_snapshot(): ⏎                     waited = time.time() - ap.created ⏎                     key = (ap.decision, int(waited) if a
+      2nd| :1155-1177 [v14 1.00] stop_btn = gr.Button("■ 停止", variant="stop", scale=0, min_width=88) ⏎                     
+      CTX| ‖**一条流上现在有三种卡，身份存对象不存下标。** 流式思考气泡（`:799-810`）、审批卡（`:843-865`）、步骤卡（`:811-829`）都往同一个 `msgs` 列表里写。审批卡按 `ap.id` 存
+ 780 OK :811-829 -> :1119-1141 [v14 0.85] who=NONE
+      OLD| """刷新页面时把库里的会话重新推上屏，并把 sid 指到最近一条。 ⏎  ⏎         gradio 不会重跑 create_app，Radio 的 choices 还是建应用那一刻的空表—— ⏎         实测重载后侧栏是空的，所以必须挂 load。 ⏎         """ ⏎ 
+      NEW| """刷新页面时把库里的会话重新推上屏，并把 sid 指到最近一条。 ⏎  ⏎         gradio 不会重跑 create_app，Radio 的 choices 还是建应用那一刻的空表—— ⏎         实测重载后侧栏是空的，所以必须挂 load。 ⏎         """ ⏎ 
+      2nd| :858-884 [v15 0.82] elif isinstance(payload, ActionStep | PlanningStep | FinalAnswerStep): ⏎                  
+      CTX| ‖**一条流上现在有三种卡，身份存对象不存下标。** 流式思考气泡（`:799-810`）、审批卡（`:843-865`）、步骤卡（`:811-829`）都往同一个 `msgs` 列表里写。审批卡按 `ap.id` 存**卡片对象**（`:786`、
+ 780 OK :786-786 -> :833-833 [v15 1.00] who=NONE
+      OLD| cards: dict[str, gr.ChatMessage] = {}   # 审批单 id -> 那张卡（存对象，不存下标）
+      NEW| cards: dict[str, gr.ChatMessage] = {}   # 审批单 id -> 那张卡（存对象，不存下标）
+      CTX| ‖（`:843-865`）、步骤卡（`:811-829`）都往同一个 `msgs` 列表里写。审批卡按 `ap.id` 存**卡片对象**（`:786`、`:850-851`），更新时**原地改** `content` / `metadata`（`:
+ 780 OK :850-851 -> :905-906 [v15 1.00] who=NONE
+      OLD| cards[ap.id] = self._approval_card(ap, waited) ⏎                         msgs.append(cards[ap.id])
+      NEW| cards[ap.id] = self._approval_card(ap, waited) ⏎                         msgs.append(cards[ap.id])
+      2nd| :1162-1163 [v14 1.00] placeholder='<div style="text-align:center;color:#6e7681">还没有会话。<br>左边「＋ 新会话」开一局，或直接提问。</d
+      CTX| ‖865`）、步骤卡（`:811-829`）都往同一个 `msgs` 列表里写。审批卡按 `ap.id` 存**卡片对象**（`:786`、`:850-851`），更新时**原地改** `content` / `metadata`（`:858-859`）——
+ 780 OK :858-859 -> :913-914 [v15 1.00] who=NONE
+      OLD| cards[ap.id].content = new.content ⏎                     cards[ap.id].metadata = new.metadata
+      NEW| cards[ap.id].content = new.content ⏎                     cards[ap.id].metadata = new.metadata
+      2nd| :1170-1171 [v14 1.00] box = gr.MultimodalTextbox( ⏎                         placeholder="问我一个问题…",
+      CTX| ‖p.id` 存**卡片对象**（`:786`、`:850-851`），更新时**原地改** `content` / `metadata`（`:858-859`）——因为步骤事件到达时会 `pop` 掉那条流式气泡（`:813`），任何存过的下标从那一刻起都
+ 780 OK :813-813 -> :860-860 [v15 1.00] who=NONE
+      OLD| msgs.pop(stream_idx)  # 思考已经并进卡片正文，不留两份
+      NEW| msgs.pop(stream_idx)  # 思考已经并进卡片正文，不留两份
+      2nd| :1121-1121 [v14 1.00] gradio 不会重跑 create_app，Radio 的 choices 还是建应用那一刻的空表——
+      CTX| ‖**原地改** `content` / `metadata`（`:858-859`）——因为步骤事件到达时会 `pop` 掉那条流式气泡（`:813`），任何存过的下标从那一刻起都不作数（踩过：按下标写回，把刚生成的步骤卡盖成了审批卡）。摘单也挪到
+ 780 OK :862-865 -> :917-920 [v15 1.00] who=NONE
+      OLD| if ap.decision != "pending": ⏎                         with self._gate_lock:  # 画上收尾状态了才摘，按钮随之收起 ⏎                             if ap in self._pending:
+      NEW| if ap.decision != "pending": ⏎                         with self._gate_lock:  # 画上收尾状态了才摘，按钮随之收起 ⏎                             if ap in self._pending:
+      2nd| :1174-1177 [v14 1.00] submit_btn=True, ⏎                         stop_btn=False, ⏎                     )
+      CTX| ‖气泡（`:813`），任何存过的下标从那一刻起都不作数（踩过：按下标写回，把刚生成的步骤卡盖成了审批卡）。摘单也挪到"画上收尾状态之后"（`:862-865`）：先前有一版只在更新分支里摘，结果**点得快**的那张卡第一次落笔时 `decision` 已经
+ 782 OK :642-691 -> :892-941 [v14 1.00] who=NONE
+      OLD| break ⏎                     try: ⏎                         kind, payload = q.get_nowait() ⏎                     except queue.Empty: ⏎                 
+      NEW| break ⏎                     try: ⏎                         kind, payload = q.get_nowait() ⏎                     except queue.Empty: ⏎                 
+      2nd| :672-727 [v15 0.92] def _step_card(self, step) -> gr.ChatMessage | None: ⏎         """一个 step 一张卡：把上游那 5~6 条无差
+      CTX| ‖**V4：一个 step 一张卡。** `_step_card`（`:642-691`）把上游那 5~6 条无差别折叠卡并成一条，标题带工具名、结果色点、秒数和 token（`:671
+ 782 OK :671-675 -> :921-925 [v14 1.00] who=NONE
+      OLD| if changed: ⏎                     yield list(msgs) ⏎                 if stop: ⏎                     break
+      NEW| if changed: ⏎                     yield list(msgs) ⏎                 if stop: ⏎                     break
+      2nd| :705-710 [v15 0.89] title = ( ⏎             f"🛠 第 {step.step_number} 步 · {names} · {dot} {verdict}" ⏎         
+      CTX| ‖* `_step_card`（`:642-691`）把上游那 5~6 条无差别折叠卡并成一条，标题带工具名、结果色点、秒数和 token（`:671-675`），正文依次是模型思考、调用参数、结果、报错，末行是本题累计（`:686-688`）。数字仍然必须
+ 782 OK :686-688 -> :936-938 [v14 1.00] who=NONE
+      OLD| self.agent.interrupt() ⏎             self._settle_all("cancelled")
+      NEW| self.agent.interrupt() ⏎             self._settle_all("cancelled")
+      2nd| :721-724 [v15 0.78] parts.append( ⏎             f"{foot}\n本题累计（本次提问内）：in {self._run_in:,} / out {self._run_out
+      CTX| ‖卡并成一条，标题带工具名、结果色点、秒数和 token（`:671-675`），正文依次是模型思考、调用参数、结果、报错，末行是本题累计（`:686-688`）。数字仍然必须写进 `metadata.title`——带 `title` 的消息 gradio
+ 784 OK :37-43 -> :41-47 [v15 1.00] who=NONE
+      OLD| DECISION_LABEL = { ⏎     "pending": "等待审批", ⏎     "allowed": "已允许", ⏎     "denied": "已拒绝", ⏎     "cancelled": "随停止取消", ⏎     "timeout": "超时未批", ⏎ }
+      NEW| DECISION_LABEL = { ⏎     "pending": "等待审批", ⏎     "allowed": "已允许", ⏎     "denied": "已拒绝", ⏎     "cancelled": "随停止取消", ⏎     "timeout": "超时未批", ⏎ }
+      2nd| :43-49 [v14 1.00] "allowed": "已允许", ⏎     "denied": "已拒绝", ⏎     "cancelled": "随停止取消", ⏎     "timeout": "超时未
+      CTX| ‖**三种"没执行"分开标，三处措辞要对得上。** 拒绝 / 停止取消 / 超时无人批，在审批卡上是 `DECISION_LABEL`（`:37-43`）的「已拒绝 / 随停止取消 / 超时未批」，在步骤卡上是 `DENIED_VERDICT`（`:
+ 784 OK :51-51 -> :55-55 [v15 1.00] who=NONE
+      OLD| DENIED_VERDICT = {"denied": "已拒绝", "cancelled": "已取消", "timeout": "超时未批"}
+      NEW| DENIED_VERDICT = {"denied": "已拒绝", "cancelled": "已取消", "timeout": "超时未批"}
+      2nd| :215-215 [v14 1.00] # V2：深色壳。左边这些变量名是 gradio 6.30 自己吐在 :root 上的那批（实测抓的，不是猜的），
+      CTX| ‖CISION_LABEL`（`:37-43`）的「已拒绝 / 随停止取消 / 超时未批」，在步骤卡上是 `DENIED_VERDICT`（`:51`）的「已拒绝 / 已取消 / 超时未批」，交回模型的是 `DENIED_OBSERVATION`（
+ 784 OK :46-50 -> :50-54 [v15 1.00] who=NONE
+      OLD| DENIED_OBSERVATION = { ⏎     "denied": "用户拒绝执行，未产生任何副作用。请改用只读工具，或直接把结论交出来。", ⏎     "cancelled": "用户按了停止，本次执行已取消，未产生任何副作用。", ⏎     "timeout": f"审批超过 {i
+      NEW| DENIED_OBSERVATION = { ⏎     "denied": "用户拒绝执行，未产生任何副作用。请改用只读工具，或直接把结论交出来。", ⏎     "cancelled": "用户按了停止，本次执行已取消，未产生任何副作用。", ⏎     "timeout": f"审批超过 {i
+      2nd| :52-214 [v14 0.06] "cancelled": "用户按了停止，本次执行已取消，未产生任何副作用。", ⏎     "timeout": f"审批超过 {int(APPROVAL_TIMEOUT)} 秒
+      CTX| ‖ENIED_VERDICT`（`:51`）的「已拒绝 / 已取消 / 超时未批」，交回模型的是 `DENIED_OBSERVATION`（`:46-50`）三条写明"未产生任何副作用"的话。步骤卡靠正文反查命中哪一条来上色（`:661`），所以**这三
+ 784 OK :661-661 -> :691-691 [v15 1.00] who=NONE
+      OLD| withheld = next((DENIED_VERDICT[k] for k, v in DENIED_OBSERVATION.items() if v.strip() in obs), None)
+      NEW| withheld = next((DENIED_VERDICT[k] for k, v in DENIED_OBSERVATION.items() if v.strip() in obs), None)
+      2nd| :911-911 [v14 1.00] # 任何存过的下标都不作数了（踩过——写回旧下标把刚生成的步骤卡盖成了审批卡）。
+      CTX| ‖模型的是 `DENIED_OBSERVATION`（`:46-50`）三条写明"未产生任何副作用"的话。步骤卡靠正文反查命中哪一条来上色（`:661`），所以**这三个字典必须同步改**，改一个不改另两个就会出现"审批卡说取消、步骤卡说拒绝"。
+ 786 OK :873-882 -> :928-937 [v15 1.00] who=NONE
+      OLD| finally: ⏎             # v1.1 验过的刹车语义，搬进线程版： ⏎             # 1) interrupt_switch 置真，主循环在下一个步边界抛 AgentError（agents.py:546-547）， ⏎             #    正在执行
+      NEW| finally: ⏎             # v1.1 验过的刹车语义，搬进线程版： ⏎             # 1) interrupt_switch 置真，主循环在下一个步边界抛 AgentError（agents.py:546-547）， ⏎             #    正在执行
+      2nd| :1185-1194 [v14 1.00] radio.change(fn=self._select_session, inputs=[radio], outputs=[chatbot, status, sid]) ⏎   
+      CTX| ‖**停止要多结算一处。** `_stream_response` 的 `finally`（`:873-882`）现在是三件事：`_abandoned.set()`（让 worker 的 `for` 下一轮 b
+ 786 OK :770-772 -> :813-815 [v15 1.00] who=NONE
+      OLD| self._settle_all("cancelled") ⏎         with self._gate_lock: ⏎             self._pending.clear()
+      NEW| self._settle_all("cancelled") ⏎         with self._gate_lock: ⏎             self._pending.clear()
+      2nd| :1051-1053 [v14 1.00] # "complete" 一直在，只是没人真在停止后去看气泡：gradio postprocess 抛 ⏎                     # ValidationErro
+      CTX| ‖加的——不然「停止」只把界面停住，worker 线程还挂在 `wait()` 上，`agent` 也就永远占着。换题开局同样先结算再摘除（`:770-772`）。
+ 788 OK :973-973 -> :1053-1053 [v15 1.00] who=NONE
+      OLD| metadata={"title": f"⏹ {STATE_LABEL[state]}：{type(exc).__name__}", "status": "done"},
+      NEW| metadata={"title": f"⏹ {STATE_LABEL[state]}：{type(exc).__name__}", "status": "done"},
+      CTX| ‖r`，被包成 `ComponentProcessingError`，**整条 chatbot 输出直接丢掉**。已改成 `"done"`（`:973`）。这条坑的通用形态是：折叠卡里任何字段不合 schema，掉的是整个输出而不是那一条。
+ 796 OK :442-463 -> :451-472 [v15 1.00] who=NONE
+      OLD| def save(self, sid: int, messages) -> None: ⏎         rows = [] ⏎         title = None ⏎         for i, m in enumerate(messages): ⏎             d = da
+      NEW| def save(self, sid: int, messages) -> None: ⏎         rows = [] ⏎         title = None ⏎         for i, m in enumerate(messages): ⏎             d = da
+      2nd| :664-685 [v14 1.00] slim[k] = v[:limit] + f"…（共 {len(v)} 字，截掉 {len(v) - limit} 字）" ⏎             else: ⏎      
+      CTX| ‖istory.save()` 是 `DELETE FROM messages WHERE session_id=?` 的**整条覆盖**（`:442-463`，`DELETE` 在 `:454`）——它只有在调用方喂进**完整列表**时才等价于追加；③ `
+ 796 OK :454-454 -> :463-463 [v15 1.00] who=NONE
+      OLD| c.execute("DELETE FROM messages WHERE session_id = ?", (sid,))
+      NEW| c.execute("DELETE FROM messages WHERE session_id = ?", (sid,))
+      2nd| :676-676 [v14 1.00] DOM 里，只有标题可见（v1.1 就栽过一次，正文写了半天屏幕上看不见）。
+      CTX| ‖TE FROM messages WHERE session_id=?` 的**整条覆盖**（`:442-463`，`DELETE` 在 `:454`）——它只有在调用方喂进**完整列表**时才等价于追加；③ `sid` 同时挂在 `box.sub
+ 796 OK :1081-1085 -> :1178-1182 [v15 1.00] who=NONE
+      OLD| box.submit( ⏎                 fn=self._respond, ⏎                 inputs=[box, sid], ⏎                 outputs=[chatbot, status, radio, box, sid, allo
+      NEW| box.submit( ⏎                 fn=self._respond, ⏎                 inputs=[box, sid], ⏎                 outputs=[chatbot, status, radio, box, sid, allo
+      CTX| ‖在调用方喂进**完整列表**时才等价于追加；③ `sid` 同时挂在 `box.submit` 的 inputs 和 outputs 上（`:1081-1085`），所以第二轮**沿用同一条会话**。三条凑齐 = 新的一题把旧的一题从屏上和库里**一起**抹掉
+ 796 OK :936-936 -> :1013-1013 [v15 1.00] who=NONE
+      OLD| base = self.hist.load(sid)
+      NEW| base = self.hist.load(sid)
+      CTX| ‖旧的一题从屏上和库里**一起**抹掉。修法因此也只能是一条：起点从库里那一串起（`base = self.hist.load(sid)`，`:936`；每一帧 `last = base + [user_msg] + list(msgs)`，`:94
+ 796 OK :948-948 -> :1028-1028 [v15 1.00] who=NONE
+      OLD| last = base + [user_msg] + list(msgs)
+      NEW| last = base + [user_msg] + list(msgs)
+      CTX| ‖f.hist.load(sid)`，`:936`；每一帧 `last = base + [user_msg] + list(msgs)`，`:948`）。**覆盖语义一个字都没改**，改的是喂给它的那串。
+ 798 OK :885-910 -> :940-965 [v15 1.00] who=NONE
+      OLD| def _bind_memory(self, sid: int) -> None: ⏎         """把 agent.memory 换成这条会话自己的那份。 ⏎  ⏎         只需要换引用：agent.run() 走的是 reset=False（GradioUI 的默认，gradio
+      NEW| def _bind_memory(self, sid: int) -> None: ⏎         """把 agent.memory 换成这条会话自己的那份。 ⏎  ⏎         只需要换引用：agent.run() 走的是 reset=False（GradioUI 的默认，gradio
+      2nd| :1197-1205 [v14 1.00] OpsUI(agent, file_upload_folder="./data").launch( ⏎         share=False, ⏎         server_
+      CTX| ‖**V5 的核心动作只有"换引用"这一件事。** `_bind_memory(sid)`（`:885-910`）把 `agent.memory` 指向 `_mem[sid]`（`:522-523` 那两个字段
+ 798 OK :522-523 -> :541-542 [v15 1.00] who=NONE
+      OLD| self._mem: dict[int, AgentMemory] = {} ⏎         self._mem_sid: int | None = None
+      NEW| self._mem: dict[int, AgentMemory] = {} ⏎         self._mem_sid: int | None = None
+      2nd| :754-755 [v14 1.00] # 自己补一步「给个结论」，把这一步的 error 标成 AgentMaxStepsError，step_number 到 9。 ⏎             # 所以只能从 mem
+      CTX| ‖件事。** `_bind_memory(sid)`（`:885-910`）把 `agent.memory` 指向 `_mem[sid]`（`:522-523` 那两个字段），依据是框架的两行事实：`GradioUI` 默认 `reset_agent_mem
+ 801 OK :694-694 -> :730-730 [v15 1.00] who=NONE
+      OLD| def _stats(self) -> dict:
+      NEW| def _stats(self) -> dict:
+      2nd| :944-944 [v14 1.00] 框架会把新任务**追加**进 self.memory（agents.py:477 还会顺手把 system_prompt 同步过去），
+      CTX| ‖worker 线程正在读 `self.memory.steps`，中途换引用等于把一条会话的历史灌进另一条的当前步，`_stats()`（`:694`）那条"最后一个 `TaskStep` 之后"的本题边界也会跟着错位。所以只在 `_respond
+ 801 OK :932-932 -> :1009-1009 [v15 1.00] who=NONE
+      OLD| self._bind_memory(sid)
+      NEW| self._bind_memory(sid)
+      CTX| ‖tats()`（`:694`）那条"最后一个 `TaskStep` 之后"的本题边界也会跟着错位。所以只在 `_respond` 开头调（`:932`）。
+ 806 OK :300-300 -> :304-304 [v15 1.00] who=NONE
+      OLD| #sidebar {
+      NEW| #sidebar {
+      2nd| :489-489 [v14 1.00] def ensure(self, sid):
+      CTX| ‖    Q["提问 message + sid"] --> EN["hist.ensure(sid) :300"]
+ 807 OK :690-690 -> :726-726 [v15 1.00] who=NONE
+      OLD| role="assistant", content="\n\n".join(parts), metadata={"title": title, "status": "done"}
+      NEW| role="assistant", content="\n\n".join(parts), metadata={"title": title, "status": "done"}
+      2nd| :940-940 [v14 1.00] def _bind_memory(self, sid: int) -> None:
+      CTX| ‖    EN --> BM["_bind_memory(sid) :690"]
+ 815 OK :267-267 -> :271-271 [v15 1.00] who=NONE
+      OLD| background: #238636 !important; border: 1px solid #2ea043 !important;
+      NEW| background: #238636 !important; border: 1px solid #2ea043 !important;
+      2nd| :441-441 [v14 1.00] def load(self, sid: int):
+      CTX| ‖    SWAP --> BASE["base = hist.load(sid) :267"]
+ 818 OK :737-737 -> :780-780 [v15 1.00] who=NONE
+      OLD| for k, v in pills
+      NEW| for k, v in pills
+      2nd| :1015-1015 [v14 1.00] last: list = base + [user_msg]
+      CTX| ‖    RUN --> FR["每一帧 last = base + 本题 + 本轮流<br/>:737 与 :747"]
+ 818 OK :747-747 -> :790-790 [v15 1.00] who=NONE
+      OLD| 不会出现「允许/拒绝」，死锁。换成线程 + 队列后，阻塞的是 worker，界面照刷。
+      NEW| 不会出现「允许/拒绝」，死锁。换成线程 + 队列后，阻塞的是 worker，界面照刷。
+      2nd| :1028-1028 [v14 1.00] last = base + [user_msg] + list(msgs)
+      CTX| ‖    RUN --> FR["每一帧 last = base + 本题 + 本轮流<br/>:737 与 :747"]
+ 819 OK :777-777 -> :824-824 [v15 1.00] who=NONE
+      OLD| with self._gate_lock:
+      NEW| with self._gate_lock:
+      2nd| :1058-1058 [v14 1.00] self.hist.save(sid, last)  # 停止时生成器被关掉，这一句保证半截内容也落库
+      CTX| ‖    FR --> SV["finally：hist.save(sid, last) :777<br/>整条覆盖，所以喂进去的必须是完整列表"]
+ 820 OK :873-873 -> :928-928 [v15 1.00] who=NONE
+      OLD| finally:
+      NEW| finally:
+      2nd| :1185-1185 [v14 1.00] radio.change(fn=self._select_session, inputs=[radio], outputs=[chatbot, status, sid])
+      CTX| ‖    SEL["侧栏 radio.change :873"] -->|"交出第三个值 int(sid) :808"| BM
+ 820 OK :808-808 -> :855-855 [v15 1.00] who=NONE
+      OLD| else:
+      NEW| else:
+      2nd| :1116-1116 [v14 1.00] return self.hist.load(int(sid)), self._status_html("idle"), int(sid)
+      CTX| ‖    SEL["侧栏 radio.change :873"] -->|"交出第三个值 int(sid) :808"| BM
+ 821 OK :880-880 -> :935-935 [v15 1.00] who=NONE
+      OLD| self._abandoned.set()
+      NEW| self._abandoned.set()
+      2nd| :1192-1192 [v14 1.00] demo.load(fn=self._on_load, outputs=[radio, sid, status, chatbot])
+      CTX| ‖    LD["demo.load :880"] -->|"最近一条的消息 + 它的 sid :820"| BM
+ 821 OK :820-820 -> :867-867 [v15 1.00] who=NONE
+      OLD| if isinstance(payload, ActionStep):
+      NEW| if isinstance(payload, ActionStep):
+      2nd| :1129-1129 [v14 0.09] return gr.update(choices=ch), (int(ch[0][1]) if ch else None), self._status_html("idle"), 
+      CTX| ‖    LD["demo.load :880"] -->|"最近一条的消息 + 它的 sid :820"| BM
+ 824 OK :1088-1088 -> :1185-1185 [v15 1.00] who=NONE
+      OLD| radio.change(fn=self._select_session, inputs=[radio], outputs=[chatbot, status, sid])
+      NEW| radio.change(fn=self._select_session, inputs=[radio], outputs=[chatbot, status, sid])
+      CTX| ‖和 State 的输出，这是 V5 接线的地方。** 三处一起改：`radio.change` 的 `outputs` 多带 `sid`（`:1088`）、`_select_session` 交出 `int(sid)`（`:1014-1023`）、`
+ 824 LOW :1014-1023 -> :1098-1116 [v15 0.62] who=NONE
+      OLD| def _select_session(self, sid): ⏎         """点旧会话：屏幕换消息，**sid 也一起换**（V5）。 ⏎  ⏎         v1.3 只换消息、不动 sid，于是下一条提问照样落进一条新会话——屏上看着接上了， ⏎         模型那边其实是开局
+      NEW| def _select_session(self, sid): ⏎         """点旧会话：屏幕换消息，**sid 也一起换**（V5）。 ⏎  ⏎         v1.3 只换消息、不动 sid，于是下一条提问照样落进一条新会话——屏上看着接上了， ⏎         模型那边其实是开局
+      CTX| ‖hange` 的 `outputs` 多带 `sid`（`:1088`）、`_select_session` 交出 `int(sid)`（`:1014-1023`）、`demo.load` 的回调把 `_on_load` 从闭包提成方法（`:1025-1035
+ 824 OK :1025-1035 -> :1118-1129 [v15 0.76] who=NONE
+      OLD| def _on_load(self): ⏎         """刷新页面时把库里的会话重新推上屏，并把 sid 指到最近一条。 ⏎  ⏎         gradio 不会重跑 create_app，Radio 的 choices 还是建应用那一刻的空表—— ⏎         实测重载后侧栏是空
+      NEW| def _on_load(self): ⏎         """刷新页面时把库里的会话重新推上屏，并把 sid 指到最近一条。 ⏎  ⏎         gradio 不会重跑 create_app，Radio 的 choices 还是建应用那一刻的空表—— ⏎         实测重载后侧栏是空
+      CTX| ‖ion` 交出 `int(sid)`（`:1014-1023`）、`demo.load` 的回调把 `_on_load` 从闭包提成方法（`:1025-1035`）并同样交出 `sid`。为什么刷新那条也要给 `sid`：屏上显示的就是最近一条会话，`sid`
+ 826 OK :460-463 -> :469-472 [v15 1.00] who=NONE
+      OLD| c.execute( ⏎                 "UPDATE sessions SET updated_at = ?, title = CASE WHEN title = '新会话' THEN ? ELSE title END WHERE id = ?", ⏎              
+      NEW| c.execute( ⏎                 "UPDATE sessions SET updated_at = ?, title = CASE WHEN title = '新会话' THEN ? ELSE title END WHERE id = ?", ⏎              
+      2nd| :682-685 [v14 1.00] metadata={"title": "🧭 计划步", "status": "done"}, ⏎             ) ⏎         if not isinstance
+      CTX| ‖地方，所以改成无条件刷时间、标题用 `CASE WHEN title = '新会话' THEN ? ELSE title END` 保住（`:460-463`）。离线 8c 就是这条的正向断言：老会话一有动作就回到第一。
+ 842 OK :88-103 -> :92-107 [v15 1.00] who=NONE
+      OLD| def _decode_error(d): ⏎     """从 {"type","message"} 还原一个 AgentError。 ⏎  ⏎     不能直接 cls(message, logger)——那个构造子第二参数是必需的 AgentLogger，并且会当场 ⏎     log_err
+      NEW| def _decode_error(d): ⏎     """从 {"type","message"} 还原一个 AgentError。 ⏎  ⏎     不能直接 cls(message, logger)——那个构造子第二参数是必需的 AgentLogger，并且会当场 ⏎     log_err
+      2nd| :252-267 [v14 1.00] color: #fff !important; ⏎ } ⏎ /* 停止键在非生成期也一直挂着（实测 idle 时 display:flex），压成"没按下去"的样子。 */ ⏎ b
+      CTX| ‖ls.__new__(cls)` + `Exception.__init__(err, message)` 再手设 `.message`（`:88-103`）。能落库的只有**类名**，所以 `_error_types()` 沿 `AgentError.
+ 842 OK :78-85 -> :82-89 [v15 1.00] who=NONE
+      OLD| def _error_types() -> dict: ⏎     """AgentError 及其全部子类，按类名索引（恢复报错步时要知道原类型）。""" ⏎     out, stack = {}, [AgentError] ⏎     while stack: ⏎         cls = 
+      NEW| def _error_types() -> dict: ⏎     """AgentError 及其全部子类，按类名索引（恢复报错步时要知道原类型）。""" ⏎     out, stack = {}, [AgentError] ⏎     while stack: ⏎         cls = 
+      2nd| :242-249 [v14 1.00] /* 块标题（Chatbot 的 label）gradio 硬编成白底，实测 rgb(255,255,255)。 */ ⏎ [data-testid="block-label"] 
+      CTX| ‖只有**类名**，所以 `_error_types()` 沿 `AgentError.__subclasses__()` 递归建类名索引（`:78-85`）——恢复出来 `type(step.error).__name__ == "AgentParsi
+ 843 OK :106-118 -> :110-122 [v15 1.00] who=NONE
+      OLD| def _decode_timing(d): ⏎     if not isinstance(d, dict) or d.get("start_time") is None: ⏎         return None ⏎     return Timing(start_time=float(d["
+      NEW| def _decode_timing(d): ⏎     if not isinstance(d, dict) or d.get("start_time") is None: ⏎         return None ⏎     return Timing(start_time=float(d["
+      2nd| :270-282 [v14 1.00] #statusrow #approve-btn button { ⏎   background: #238636 !important; border: 1px solid #2e
+      CTX| ‖y、`TokenUsage.total_tokens` 是 `init=False`，`dict()` 出来的键比构造参数多，只能挑着交（`:106-118`）。
+ 846 OK :153-209 -> :157-213 [v15 1.00] who=NONE
+      OLD| def decode_memory(blob) -> list: ⏎     """encode_memory 的逆操作。坏数据一律当"没有记忆"，别让它把提问带崩。""" ⏎     try: ⏎         data = json.loads(blob) ⏎     except (Type
+      NEW| def decode_memory(blob) -> list: ⏎     """encode_memory 的逆操作。坏数据一律当"没有记忆"，别让它把提问带崩。""" ⏎     try: ⏎         data = json.loads(blob) ⏎     except (Type
+      2nd| :317-378 [v14 0.95] } ⏎ #sessions label:hover { background: #1b222b; color: var(--body-text-color); } ⏎ #sessi
+      CTX| ‖坏数据的降级路径是**分层的**（`decode_memory`，`:153-209`）：整块坏 JSON / `fmt` 不符 / 顶层不是 dict → 返回 `[]`，当作这条会
+ 854 OK :465-473 -> :474-482 [v15 1.00] who=my_ui
+      OLD| def save_memory(self, sid: int, payload: str) -> int: ⏎         """整条覆盖这条会话的记忆（一条会话一行，主键就是 session_id）。返回存了多少字符。""" ⏎         blob = payload or "" ⏎  
+      NEW| def save_memory(self, sid: int, payload: str) -> int: ⏎         """整条覆盖这条会话的记忆（一条会话一行，主键就是 session_id）。返回存了多少字符。""" ⏎         blob = payload or "" ⏎  
+      2nd| :687-695 [v14 1.00] names = "、".join(dict.fromkeys(c.name for c in calls)) if calls else "无工具调用" ⏎         obs
+      CTX| ‖> T[("memory 表：一行一个 session_id<br/>INSERT OR REPLACE · my_ui.py:401 与 :465-473")]
+ 860 OK :401-401 -> :410-410 [v15 1.00] who=NONE
+      OLD| CREATE TABLE IF NOT EXISTS memory(
+      NEW| CREATE TABLE IF NOT EXISTS memory(
+      2nd| :617-617 [v14 1.00] """停止 / 换题时把没人管的审批结算掉，否则 worker 线程会一直挂在 wait() 上。"""
+      CTX| ‖**接进去只有三处，两处刻意保持小。** `History` 加一张 additive 的表（DDL `:401`，方法 `save_memory` `:465-473` / `load_memory` `:47
+ 860 OK :465-473 -> :474-482 [v15 1.00] who=NONE
+      OLD| def save_memory(self, sid: int, payload: str) -> int: ⏎         """整条覆盖这条会话的记忆（一条会话一行，主键就是 session_id）。返回存了多少字符。""" ⏎         blob = payload or "" ⏎  
+      NEW| def save_memory(self, sid: int, payload: str) -> int: ⏎         """整条覆盖这条会话的记忆（一条会话一行，主键就是 session_id）。返回存了多少字符。""" ⏎         blob = payload or "" ⏎  
+      2nd| :687-695 [v14 1.00] names = "、".join(dict.fromkeys(c.name for c in calls)) if calls else "无工具调用" ⏎         obs
+      CTX| ‖有三处，两处刻意保持小。** `History` 加一张 additive 的表（DDL `:401`，方法 `save_memory` `:465-473` / `load_memory` `:475-478`）；`_bind_memory`（`:885
+ 860 OK :475-478 -> :484-487 [v15 1.00] who=NONE
+      OLD| def load_memory(self, sid: int): ⏎         with self._tx() as c: ⏎             row = c.execute("SELECT payload FROM memory WHERE session_id = ?", (int
+      NEW| def load_memory(self, sid: int): ⏎         with self._tx() as c: ⏎             row = c.execute("SELECT payload FROM memory WHERE session_id = ?", (int
+      2nd| :697-700 [v14 0.64] dot, verdict = "🟢", "成功" ⏎         tk = step.token_usage ⏎         secs = step.timing.dura
+      CTX| ‖张 additive 的表（DDL `:401`，方法 `save_memory` `:465-473` / `load_memory` `:475-478`）；`_bind_memory`（`:885-910`）在进程内 `_mem` 未命中时回灌 st
+ 860 OK :885-910 -> :940-965 [v15 1.00] who=NONE
+      OLD| def _bind_memory(self, sid: int) -> None: ⏎         """把 agent.memory 换成这条会话自己的那份。 ⏎  ⏎         只需要换引用：agent.run() 走的是 reset=False（GradioUI 的默认，gradio
+      NEW| def _bind_memory(self, sid: int) -> None: ⏎         """把 agent.memory 换成这条会话自己的那份。 ⏎  ⏎         只需要换引用：agent.run() 走的是 reset=False（GradioUI 的默认，gradio
+      2nd| :1197-1205 [v14 1.00] OpsUI(agent, file_upload_folder="./data").launch( ⏎         share=False, ⏎         server_
+      CTX| ‖ `save_memory` `:465-473` / `load_memory` `:475-478`）；`_bind_memory`（`:885-910`）在进程内 `_mem` 未命中时回灌 steps——**只灌 steps**，`system_p
+ 860 OK :976-986 -> :1056-1066 [v15 1.00] who=NONE
+      OLD| finally: ⏎             self._state = state ⏎             self.hist.save(sid, last)  # 停止时生成器被关掉，这一句保证半截内容也落库 ⏎             # V6：记忆跟着这一题一起落库（覆盖式，和 save
+      NEW| finally: ⏎             self._state = state ⏎             self.hist.save(sid, last)  # 停止时生成器被关掉，这一句保证半截内容也落库 ⏎             # V6：记忆跟着这一题一起落库（覆盖式，和 save
+      CTX| ‖un()` 开头同步，`monitor` 更不能动（否则「进程累计」作废，见 6.3.6）；`_respond` 的 `finally`（`:976-986`）在 `hist.save(sid, last)` 之后紧接着存记忆。**那两个条件不能省**：`
+ 875 OK :507-508 -> :516-517 [v15 1.00] who=NONE
+      OLD| _run_seq: int = 0 ⏎     _cancelled_before: int = 0
+      NEW| _run_seq: int = 0 ⏎     _cancelled_before: int = 0
+      2nd| :735-736 [v14 1.00] used = [s.token_usage for s in cur if s.token_usage] ⏎         mon = self.agent.monitor.ge
+      CTX| ‖1. **类级**计数器 `_run_seq` / `_cancelled_before`（`:507-508`）。闸装在**进程唯一**的那个 agent 上，所以计数器必须和 `_pending`、`_ga
+ 875 OK :502-503 -> :511-512 [v15 1.00] who=NONE
+      OLD| _pending: list[Approval] = [] ⏎     _gate_lock = threading.Lock()
+      NEW| _pending: list[Approval] = [] ⏎     _gate_lock = threading.Lock()
+      2nd| :730-731 [v14 1.00] def _stats(self) -> dict: ⏎         steps = self.agent.memory.steps
+      CTX| ‖08`）。闸装在**进程唯一**的那个 agent 上，所以计数器必须和 `_pending`、`_gate_lock` 同侧（也是类级，`:502-503`）；放实例上就出现"A 领的号管不住 A 装的那道门"。
+ 876 OK :777-778 -> :824-825 [v15 1.00] who=NONE
+      OLD| with self._gate_lock: ⏎             OpsUI._run_seq += 1
+      NEW| with self._gate_lock: ⏎             OpsUI._run_seq += 1
+      2nd| :1058-1066 [v14 0.41] self.hist.save(sid, last)  # 停止时生成器被关掉，这一句保证半截内容也落库 ⏎         yield last, self._status_htm
+      CTX| ‖*：`_stream_response` 在计数器归零之后、**起 worker 线程之前**`OpsUI._run_seq += 1`（`:777-778`）。号没领上就开工，闸读到的还是上一轮的号。
+ 877 OK :564-567 -> :583-586 [v15 1.00] who=NONE
+      OLD| with self._gate_lock: ⏎             self._pending.append(ap) ⏎             if OpsUI._run_seq <= OpsUI._cancelled_before: ⏎                 ap.decide("
+      NEW| with self._gate_lock: ⏎             self._pending.append(ap) ⏎             if OpsUI._run_seq <= OpsUI._cancelled_before: ⏎                 ap.decide("
+      2nd| :799-802 [v14 1.00] q.put(("err", exc)) ⏎         finally: ⏎             # 内层生成器只能在起它的那条线程里关：上游 _run_stream 的 
+      CTX| ‖3. **入队与判停在同一个临界区**（`_gated_call`，`:564-567`）：`with self._gate_lock: self._pending.append(ap)
+ 878 OK :1007-1012 -> :1091-1096 [v15 1.00] who=NONE
+      OLD| with self._gate_lock: ⏎             OpsUI._cancelled_before = OpsUI._run_seq ⏎         self._settle_all("cancelled") ⏎         self.agent.interrupt() 
+      NEW| with self._gate_lock: ⏎             OpsUI._cancelled_before = OpsUI._run_seq ⏎         self._settle_all("cancelled") ⏎         self.agent.interrupt() 
+      CTX| ‖4. `_stop`（`:1007-1012`）先领取消号，再 `_settle_all("cancelled")`，最后 `interrupt
+1162 OK :159-159 -> :163-163 [v15 1.00] who=NONE
+      OLD| if not isinstance(data, dict) or data.get("fmt") != MEM_FMT:
+      NEW| if not isinstance(data, dict) or data.get("fmt") != MEM_FMT:
+      2nd| :323-323 [v14 1.00] }
+      CTX| ‖| 12 | `dify/api/core/workflow/workflow_entry.py:119`、`:159`、`:208` | 工作流入口 → graphon Engine → 事件流 |
+1162 OK :208-208 -> :212-212 [v15 1.00] who=NONE
+      OLD| continue  # 单条坏了就丢掉那一条，其余照旧
+      NEW| continue  # 单条坏了就丢掉那一条，其余照旧
+      2nd| :376-376 [v14 1.00] self.decision = "timeout"
+      CTX| ‖| 12 | `dify/api/core/workflow/workflow_entry.py:119`、`:159`、`:208` | 工作流入口 → graphon Engine → 事件流 |
+1164 OK :945-945 -> :1025-1025 [v15 1.00] who=NONE
+      OLD| state = "stopped"  # 生成器被中途关掉（刷新页面）时走的就是这个值
+      NEW| state = "stopped"  # 生成器被中途关掉（刷新页面）时走的就是这个值
+      CTX| ‖| 14 | `dify/api/services/app_dsl_service.py:187`、`:945` | DSL 导入 / 导出：应用即 YAML |
+1167 SKIP-TOOBIG :1134-1134  17 | `servers/src/memory/index.ts:780`、`
+1175 OK :31-36 -> :31-36 [v15 1.00] who=my_ui
+      OLD| # P0-2：只拦「会动东西」的两只手。只读工具（read_file / list_dir / grep_files）不弹审批， ⏎ # 否则一次检索三连问点三遍，比不加还慢。 ⏎ GATED_TOOLS = ("write_file", "run_python") ⏎ # 超时按拒绝处理：题可以重
+      NEW| # P0-2：只拦「会动东西」的两只手。只读工具（read_file / list_dir / grep_files）不弹审批， ⏎ # 否则一次检索三连问点三遍，比不加还慢。 ⏎ GATED_TOOLS = ("write_file", "run_python") ⏎ # 超时按拒绝处理：题可以重
+      2nd| :33-42 [v14 0.67] # 否则一次检索三连问点三遍，比不加还慢。 ⏎ GATED_TOOLS = ("write_file", "run_python") ⏎ # 超时按拒绝处理：题可以重问，worke
+      CTX| ‖把数字写进 `metadata.title` 而不是正文：gradio 折叠组收起时**正文不在 DOM 里**（v1.1 独立统计卡在 `:31-36`，v1.3 起并进这张卡） |
+1183 OK :767-882 -> :810-937 [v15 0.94] who=my_ui
+      OLD| def _stream_response(self, message, history):  # noqa: ARG002 ⏎         task, files = self._process_message(message) ⏎         # 换题开局：上一题遗留的未批项先结算再摘除。
+      NEW| def _stream_response(self, message, history):  # noqa: ARG002 ⏎         task, files = self._process_message(message) ⏎         # 换题开局：上一题遗留的未批项先结算再摘除。
+      2nd| :1048-1194 [v14 0.86] role="assistant", ⏎                     content=f"⏹ {type(exc).__name__}: {exc}", ⏎       
+      CTX| ‖| 33 | `smolagents/my_ui.py:742-765`、`:767-882` | 线程 + 队列的驱动骨架：`_worker` 消费 `agent.run(stream=Tr
+1188 OK :948-948 -> :1028-1028 [v15 1.00] who=my_ui
+      OLD| last = base + [user_msg] + list(msgs)
+      NEW| last = base + [user_msg] + list(msgs)
+      CTX| ‖| 38 | `smolagents/my_ui.py:936`、`:948` | D5 的全部修法就这两行：起点是库里那一串（`base`），每帧 `last = base 
+1189 OK :1088-1088 -> :1185-1185 [v15 1.00] who=my_ui
+      OLD| radio.change(fn=self._select_session, inputs=[radio], outputs=[chatbot, status, sid])
+      NEW| radio.change(fn=self._select_session, inputs=[radio], outputs=[chatbot, status, sid])
+      CTX| ‖| 39 | `smolagents/my_ui.py:1014`、`:1088`、`:1025`、`:1095` | V5 的接线：`_select_session` 交出第三个
+1189 OK :1025-1025 -> :1118-1118 [v15 1.00] who=my_ui
+      OLD| def _on_load(self):
+      NEW| def _on_load(self):
+      CTX| ‖| 39 | `smolagents/my_ui.py:1014`、`:1088`、`:1025`、`:1095` | V5 的接线：`_select_session` 交出第三个值 `int(s
+1189 OK :1095-1095 -> :1192-1192 [v15 1.00] who=my_ui
+      OLD| demo.load(fn=self._on_load, outputs=[radio, sid, status, chatbot])
+      NEW| demo.load(fn=self._on_load, outputs=[radio, sid, status, chatbot])
+      CTX| ‖| 39 | `smolagents/my_ui.py:1014`、`:1088`、`:1025`、`:1095` | V5 的接线：`_select_session` 交出第三个值 `int(sid)`、`ra
+1191 OK :905-907 -> :960-962 [v15 1.00] who=my_ui
+      OLD| steps = decode_memory(self.hist.load_memory(sid)) ⏎             if steps: ⏎                 mem.steps.extend(steps)
+      NEW| steps = decode_memory(self.hist.load_memory(sid)) ⏎             if steps: ⏎                 mem.steps.extend(steps)
+      CTX| ‖ages()`。所以持久化要存的是 **steps 的字段**而不是屏上的卡片文字；编码在 `my_ui.py:119-150`，回灌在 `:905-907` |
+1195 OK :777-778 -> :824-825 [v15 1.00] who=my_ui
+      OLD| with self._gate_lock: ⏎             OpsUI._run_seq += 1
+      NEW| with self._gate_lock: ⏎             OpsUI._run_seq += 1
+      2nd| :1058-1066 [v14 0.41] self.hist.save(sid, last)  # 停止时生成器被关掉，这一句保证半截内容也落库 ⏎         yield last, self._status_htm
+      CTX| ‖| 45 | `smolagents/my_ui.py:507-508`、`:777-778`、`:1007-1012` | 取消号三件套：**类级** `_run_seq` / `_canc
+1195 OK :1007-1012 -> :1091-1096 [v15 1.00] who=my_ui
+      OLD| with self._gate_lock: ⏎             OpsUI._cancelled_before = OpsUI._run_seq ⏎         self._settle_all("cancelled") ⏎         self.agent.interrupt() 
+      NEW| with self._gate_lock: ⏎             OpsUI._cancelled_before = OpsUI._run_seq ⏎         self._settle_all("cancelled") ⏎         self.agent.interrupt() 
+      CTX| ‖| 45 | `smolagents/my_ui.py:507-508`、`:777-778`、`:1007-1012` | 取消号三件套：**类级** `_run_seq` / `_cancelled_before`

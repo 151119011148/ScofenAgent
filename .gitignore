@@ -1,0 +1,47 @@
+# 这个仓库是 public，下面每一行都是一道「别把手上的东西顺手带进来」的闸。
+# 真正拦人的是 tools/prepush_check.py（它会读工作区 .env 的真值做字节比对），
+# 这份 .gitignore 的作用是让手滑的 `git add -A` 连暂存都进不去。
+
+# 凭证与运行时状态
+.env
+.env.*
+*.sqlite3
+*.db
+.agent-staging/
+.agent-history.sqlite3
+.agent-audit.jsonl
+.agent-ui.log
+.agent-ui.pid
+.rollback/
+
+# 依赖与上游源码：装 smolagents 用 uv/pip，不是把它 1.2M 的 src/ 和 290M 的 .venv 提交进来
+.venv/
+venv/
+__pycache__/
+*.egg-info/
+smolagents/src/
+smolagents/tests/
+smolagents/docs/
+node_modules/
+
+# 证据产物：run/ 目录、跑出来的 out/log、截图、浏览器演练用户目录
+run/
+*.out
+*.log
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.wasm
+*.pma
+mermaid.min.js
+
+# 第三方克隆（体积 537M，且不是本仓库的产物）
+/dify/
+/langchain4j/
+/servers/
+
+# 编辑器与系统
+.idea/
+.DS_Store
+*.app

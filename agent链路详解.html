@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent 链路详解 — 从你按下发送到文字出现</title>
+<style>
+  :root{
+    --bg:#000; --panel:#0e1218; --panel2:#151b24; --line:#272f3a;
+    --ink:#e9ecf1; --sub:#8c97a6; --acc:#2ed0a8; --gold:#e8c16a;
+    --code:#0b0f14; --okbg:#0a1b18; --warnbg:#1b1407;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.75 "PingFang SC","Hiragino Sans GB",system-ui,sans-serif;}
+  .wrap{max-width:980px;margin:0 auto;padding:34px 22px 90px}
+  header.top{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:26px}
+  h1{font-size:29px;margin:0 0 10px;letter-spacing:.3px}
+  .meta{color:var(--sub);font-size:13.5px}
+  .meta b{color:var(--ink);font-weight:600}
+  nav.toc{position:sticky;top:0;z-index:9;background:rgba(0,0,0,.94);
+    border-bottom:1px solid var(--line);padding:11px 0;margin:0 0 30px;font-size:13.5px}
+  nav.toc a{color:var(--sub);text-decoration:none;margin-right:17px;white-space:nowrap}
+  nav.toc a:hover{color:var(--acc)}
+  h2{font-size:22px;margin:44px 0 14px;padding-left:13px;border-left:3px solid var(--acc)}
+  h3{font-size:17.5px;margin:28px 0 9px;color:var(--acc)}
+  h4{font-size:15.5px;margin:20px 0 6px;color:var(--gold)}
+  p{margin:9px 0}
+  code{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px;
+    background:var(--panel2);padding:1.5px 5px;border-radius:3px;color:var(--gold)}
+  pre{background:var(--code);border:1px solid var(--line);border-left:3px solid var(--acc);
+    border-radius:5px;padding:13px 15px;overflow-x:auto;font-size:12.6px;line-height:1.62;margin:11px 0}
+  pre code{background:none;padding:0;color:var(--ink);font-size:12.6px}
+  .src{color:var(--sub);font-size:11.5px;font-family:"SF Mono",Menlo,monospace;margin-bottom:-6px}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th,td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left;vertical-align:top}
+  th{color:var(--acc);font-weight:600;background:var(--panel)}
+  td b{color:var(--gold)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:16px 18px;margin:14px 0}
+  .warn{border-left:3px solid var(--gold);background:var(--warnbg)}
+  .ok{border-left:3px solid var(--acc);background:var(--okbg)}
+  .flow{margin:0;padding:0;list-style:none}
+  .flow>li{position:relative;padding:0 0 22px 40px;margin:0}
+  .flow>li:before{content:"";position:absolute;left:13px;top:22px;bottom:-2px;width:1px;background:var(--line)}
+  .flow>li:last-child:before{display:none}
+  .num{position:absolute;left:0;top:2px;width:27px;height:27px;border-radius:50%;
+    background:var(--panel2);border:1px solid var(--acc);color:var(--acc);
+    font-size:12.5px;display:flex;align-items:center;justify-content:center;font-family:monospace}
+  .st{font-weight:600;font-size:16px;margin-bottom:4px}
+  .loc{color:var(--sub);font-family:"SF Mono",Menlo,monospace;font-size:11.6px;
+    background:var(--panel2);padding:1px 6px;border-radius:3px;margin-left:6px}
+  .key{color:var(--acc);font-weight:600}
+  .g{color:var(--gold);font-weight:600}
+  ul.tight{margin:7px 0;padding-left:21px}
+  ul.tight li{margin:4px 0}
+  footer{margin-top:52px;padding-top:18px;border-top:1px solid var(--line);color:var(--sub);font-size:13px}
+  @media print{
+    :root{--bg:#fff;--panel:#f4f5f7;--panel2:#eef0f3;--line:#ccd2da;--ink:#111;--sub:#5a6472;--acc:#0a8f6e;--gold:#8a6d1b;--code:#f6f7f9;--okbg:#eef7f3;--warnbg:#fbf3df}
+    body{font-size:11pt} nav.toc{display:none} .wrap{max-width:none;padding:0}
+    pre{page-break-inside:avoid;border-color:#bbb} .flow>li{page-break-inside:avoid}
+    @page{size:A4;margin:16mm 14mm}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>Agent 链路详解</h1>
+  <div class="meta">
+    代码基线：<b>~/Desktop/study/ai学习/smolagents</b>（1.27.0.dev0，editable 安装）&nbsp;·&nbsp;
+    模型：<b>qwen-plus</b> via 阿里云百炼 OpenAI 兼容端点&nbsp;·&nbsp;
+    你的入口：<b>my_agent.py</b> / <b>my_ui.py</b><br>
+    文中每一个 <span class="loc">文件:行号</span> 都是当场从源码里核对过的，不是凭印象写的。
+  </div>
+</header>
+
+<nav class="toc">
+  <a href="#s1">1 是不是 agent</a>
+  <a href="#s2">2 完整链路 13 站</a>
+  <a href="#s3">3 你今天的四次真实记录</a>
+  <a href="#s4">4 三道闸门</a>
+  <a href="#s5">5 它 vs 我：动作空间</a>
+  <a href="#s6">6 四个动手实验</a>
+  <a href="#s7">7 术语速查</a>
+</nav>
+
+<h2 id="s1">1 它到底是不是一个 agent</h2>
+
+<p>是。但"是 agent"这件事的判据不是它会聊天、也不是它自称 agent，而是代码里这三样东西同时存在：</p>
+
+<div class="card ok">
+  <p><span class="key">判据一：循环。</span>有一个 while 反复把「模型的上一次输出」变成「下一次输入」，而不是单问单答。<br>
+  <span class="loc">agents.py:545</span></p>
+  <p><span class="key">判据二：动作空间。</span>模型输出的不是给人看的文字，而是可执行的结构（工具名 + 参数），由本机真正执行。<br>
+  <span class="loc">agents.py:1361 → tools.py:228</span></p>
+  <p><span class="key">判据三：终止条件。</span>有明确的结束信号（<code>final_answer</code>）和一个兜底上限（<code>max_steps</code>），否则会永远问下去。<br>
+  <span class="loc">agents.py:582-592 / 606</span></p>
+</div>
+
+<p>三条都在，所以它是 agent；缺任何一条，它就退化成一个"带 prompt 模板的接口调用"。市面上很多号称 Agent 的东西确实只有模板没有循环。</p>
+
+<h3>1.1 但它只能做三件事，这就是它拒绝你的原因</h3>
+
+<p>你让它"写个 HTML 页面、按 ai学习 里的代码讲"，它回答"我的运行环境不包含源码、框架代码或文件系统访问能力"。<span class="g">这句话是对的，而且不是客套。</span>把它自己的动作空间打印出来看，只有三个工具：</p>
+
+<div class="src">你之前那次运行的真实输出</div>
+<pre><code>import ok, tools: ['max_drawdown', 'annualized_volatility', 'final_answer']</code></pre>
+
+<p>没有读文件的工具，没有执行代码的工具，没有访问网络的工具。所以：</p>
+<ul class="tight">
+  <li>它<strong>不可能</strong>打开 <code>agents.py</code>——不是"不愿意"，是它的动作列表里没有这个动作。</li>
+  <li>它<strong>不可能</strong>生成 HTML 文件——同理，没有写文件的动作。</li>
+  <li>它能做的是：拿你贴在问题里的数字，调用两个数学工具，再组织成文字。仅此。</li>
+</ul>
+
+<p>而它说"如需可视化流程图，建议使用 Mermaid 或 draw.io 手动绘制"——这是大模型在能力边界外给你的<strong>建议性补白</strong>，属于纯文本生成，不是它的动作。这个区分很重要：<span class="key">agent 的"能"只等于它的工具列表，其余所有"我建议你…"都是话术。</span></p>
+
+<h2 id="s2">2 一次提问的完整旅程（13 站）</h2>
+
+<p>下面按你实际点发送之后的顺序走。每一站给真实代码位置。你 <code>stream_outputs=True</code>，所以走的是生成器分支。</p>
+
+<ol class="flow">
+
+<li><span class="num">1</span>
+  <div class="st">你在网页输入框敲回车 <span class="loc">gradio_ui.py:388</span></div>
+  <p><code>GradioUI</code> 的提交回调里就是一句 <code>for event in self.agent.run(...)</code>。它没有"处理逻辑"，只是把用户文本交出去，然后逐个消费 agent 吐出的事件——这是它能实时滚动的原因。</p>
+</li>
+
+<li><span class="num">2</span>
+  <div class="st">run() 建立任务外壳 <span class="loc">agents.py:436</span></div>
+  <p>把字符串包成 <code>TaskStep</code> 塞进 memory，然后决定用哪个步数上限：</p>
+  <div class="src">agents.py:468</div>
+  <pre><code>max_steps = max_steps or self.max_steps</code></pre>
+  <p>你没在 <code>run()</code> 里传，所以用的是构造时的 <code>max_steps=6</code>（<code>my_agent.py</code>）。<span class="g">框架默认是 20</span>（<code>agents.py:300</code>）——我把它调小是当熔断用，防它反复调工具烧额度。</p>
+</li>
+
+<li><span class="num">3</span>
+  <div class="st">进入主循环 <span class="loc">agents.py:545</span></div>
+  <pre><code>while not returned_final_answer and self.step_number &lt;= max_steps:</code></pre>
+  <p>整条链路的心脏。条件里那两个变量一个由模型决定（拿到 final_answer 才置真），一个由本地计数决定，<strong>模型无法自己延长循环</strong>——它只能在这 6 步里想办法。</p>
+</li>
+
+<li><span class="num">4</span>
+  <div class="st">把历史压成消息 <span class="loc">agents.py:758</span></div>
+  <pre><code>def write_memory_to_messages(self, summary_mode: bool = False) -&gt; list[ChatMessage]:</code></pre>
+  <p>把 memory 里所有 <code>system prompt / TaskStep / 上几步的 llm_output / action / observation</code> 全部摊平成消息列表。大模型没有"会话状态"，服务端不记你上一轮，所以每走一步都要把<strong>整段历史重新发一遍</strong>。</p>
+  <div class="card warn">
+    <p><span class="g">但你看到的那串"一路涨"的数字是个误读陷阱，这里必须讲清。</span>终端日志和网页界面打印的<strong>不是同一个口径</strong>：</p>
+    <ul class="tight">
+      <li>终端 <code>[Step 4: … Input tokens: 5,732]</code> ← <span class="loc">monitoring.py:110-114</span> 里 <code>total_input_token_count += …</code>，是<strong>整个 agent 生命周期的累计和</strong>；那个 <code>Step 4</code> 也是 <code>len(self.step_durations)</code>，<strong>跨问题连续编号</strong>，所以你换一个问题它不会从 1 重新开始。</li>
+      <li>网页 <code>Step 1 | Input tokens: 1,979</code> ← <span class="loc">gradio_ui.py:33</span> 的 <code>step_log.token_usage.input_tokens</code>，是<strong>这一步真实发出去的量</strong>。</li>
+    </ul>
+    <p>把累计值逐次相减就还原出真相：你今天的五步真实 prompt 是</p>
+    <pre><code>1273 → 1402 → 1458 → 1599 → 1979      (累计: 1273 / 2675 / 4133 / 5732 / 7711)</code></pre>
+    <p>所以 prompt 没有暴涨，只是<strong>缓慢上涨</strong>：因为 <code>reset=False</code>（<span class="loc">gradio_ui.py:389</span> 把 <code>self.reset_agent_memory</code> 传给 <code>run()</code>，默认 <code>False</code>），历史确实留着，但你前几轮的问答都只有几十字，累加得慢。最后一问要 1979 是因为你那次的问题最长、且前面三轮问答都进了上下文。</p>
+  </div>
+</li>
+
+<li><span class="num">5</span>
+  <div class="st">系统提示词是当场生成的 <span class="loc">agents.py:1265</span></div>
+  <p><code>ToolCallingAgent.initialize_system_prompt()</code> 生成那份说明。要点是：它把<strong>工具的名字、描述、参数 JSON schema</strong> 一起写进去。也就是说你的 <code>MaxDrawdownTool</code> 类里那三行属性：</p>
+  <div class="src">my_agent.py（你自己写的部分）</div>
+  <pre><code>name = "max_drawdown"
+description = "计算按时间升序的收盘价序列的最大回撤，返回百分比和发生区间。"
+inputs = {"prices": {"type": "array", "description": "按时间升序排列的收盘价列表"}}</code></pre>
+  <p>这段 Python <strong>不是被执行才重要的</strong>——它先被序列化成 JSON 交给模型看。模型对工具的全部认知就来自这几个字符串。你把 description 写得含糊，它就真会用错，这一点和第 9 站的白名单合起来构成"工具定义即接口契约"。</p>
+</li>
+
+<li><span class="num">6</span>
+  <div class="st">一步开始，先把入参存档 <span class="loc">agents.py:1276 / 1289</span></div>
+  <pre><code>memory_messages = self.write_memory_to_messages()
+input_messages = memory_messages.copy()
+memory_step.model_input_messages = input_messages</code></pre>
+  <p>第三行很值钱：它把<strong>这一轮真正发给模型的原文</strong>存进 memory。你在终端日志或 UI 里想看"到底喂给模型什么"，读的就是这个字段，不用去抓包。</p>
+</li>
+
+<li><span class="num">7</span>
+  <div class="st">连同工具清单一起交给模型 <span class="loc">agents.py:1293 / 1261</span></div>
+  <pre><code>output_stream = self.model.generate_stream(
+    input_messages,
+    stop_sequences=["Observation:", "Calling tools:"],
+    tools_to_call_from=self.tools_and_managed_agents,
+)</code></pre>
+  <p><code>tools_and_managed_agents</code> 是"当前允许调用的工具集合"的属性。注意 <code>stop_sequences</code>：这是从早期文本式 agent 继承下来的防御，防止模型自己续写 <code>Observation:</code> ——<strong>它想自己编造工具结果</strong>，这句就是用来掐断的。</p>
+</li>
+
+<li><span class="num">8</span>
+  <div class="st">出网：唯一一次跨机 <span class="loc">models.py:1707 → 1727</span></div>
+  <p><code>OpenAIModel.generate_stream</code> 先组装参数，再打 HTTP：</p>
+  <div class="src">models.py:1715 / 1727</div>
+  <pre><code>completion_kwargs = self._prepare_completion_kwargs(...)
+... self.client.chat.completions.create(**completion_kwargs)</code></pre>
+  <p>目标地址就是我 <code>my_agent.py</code> 里传的 <code>api_base="https://dashscope.aliyuncs.com/compatible-mode/v1"</code>。</p>
+  <div class="card">
+    <p><span class="key">读代码读到的一个细节：</span><code>OpenAIServerModel</code> 不是类。源码里就一行别名：</p>
+    <div class="src">models.py:1796</div>
+    <pre><code>OpenAIServerModel = OpenAIModel</code></pre>
+    <p>类定义在 <code>models.py:1646</code>。名字里那个 "Server" 是历史遗留——它对应的是"远端 OpenAI 兼容服务"，用来和跑在本地的 <code>TransformersModel</code>（<code>models.py:1093</code>）区分。</p>
+  </div>
+</li>
+
+<li><span class="num">9</span>
+  <div class="st">回包被还原成结构化动作 <span class="loc">models.py:1787 / 102 / 95</span></div>
+  <pre><code>tool_calls=response.choices[0].message.tool_calls,</code></pre>
+  <p>百炼返回的 <code>tool_calls</code> 被包进 <code>ChatMessageToolCall</code>（内含 <code>ChatMessageToolCallFunction</code> 的 name / arguments）。到这一步，模型的一句话才第一次变成<strong>可执行意图</strong>：<code>{"tool": "max_drawdown", "arguments": {"prices": [...]}}</code>。</p>
+</li>
+
+<li><span class="num">10</span>
+  <div class="st">闸门一：工具名必须在白名单里 <span class="loc">agents.py:1464-1467</span></div>
+  <pre><code>available_tools = {**self.tools, **self.managed_agents}
+if tool_name not in available_tools:
+    raise AgentToolExecutionError(
+        f"Unknown tool {tool_name}, should be one of: {', '.join(available_tools)}.", self.logger
+    )</code></pre>
+  <p>你今天亲眼看到它生效：模型凭空造了个 <code>web_search</code>，就是在这里被挡下，日志里那句 <code>Unknown tool web_search, should be one of: max_drawdown, annualized_volatility, final_answer.</code> 就是这个 f-string 打出来的。</p>
+</li>
+
+<li><span class="num">11</span>
+  <div class="st">闸门二、三，然后本地执行 <span class="loc">agents.py:1361 → tools.py:1361 → tools.py:228</span></div>
+  <p><code>process_tool_calls</code> 逐个处理调用；执行前先过参数校验：</p>
+  <div class="src">tools.py:1400-1409（validate_tool_arguments 内）</div>
+  <pre><code>raise TypeError(f"Argument {key} has type '{actual_type}' but should be '{tool.inputs[key]['type']}'")
+...
+raise ValueError(f"Argument {key} is required")</code></pre>
+  <p>然后才落到 <code>Tool.forward</code>——也就是你在 <code>my_agent.py</code> 里写的那个求最大回撤的 for 循环。<span class="g">这一步全程在你这台机器上，没有任何网络请求。</span>算错了是我代码的错，模型不负责算术，它只负责决定"该调哪个、传什么参数"。</p>
+  <p>执行结果作为 <code>ToolOutput</code> 写回 memory，变成日志里那行 <code>Observations: 最大回撤 -17.71%…</code>。</p>
+</li>
+
+<li><span class="num">12</span>
+  <div class="st">回灌，或者收工 <span class="loc">回到第 4 站 / agents.py:582-592</span></div>
+  <p>如果模型这次调的是普通工具，Observation 进 memory，<strong>while 再转一圈</strong>（第 4 站的历史里就多了一条，入 token 继续涨）。如果它调的是 <code>final_answer</code>：</p>
+  <pre><code>if isinstance(output, ActionOutput) and output.is_final_answer:
+    final_answer = output.output
+    returned_final_answer = True
+    action_step.is_final_answer = True</code></pre>
+  <p>循环结束。步数用完还没拿到 final_answer 的话走另一条：</p>
+  <div class="src">agents.py:606 附近，state 取值见 agents.py:201</div>
+  <pre><code>if not returned_final_answer and self.step_number == max_steps + 1:  # → state = "max_steps_error"</code></pre>
+  <p>还有一个容易漏的：你从没写过 <code>final_answer</code> 这个工具，但它一直在列表里——框架自己塞的：</p>
+  <div class="src">agents.py:402</div>
+  <pre><code>self.tools.setdefault("final_answer", FinalAnswerTool())</code></pre>
+</li>
+
+<li><span class="num">13</span>
+  <div class="st">渲染回你的屏幕 <span class="loc">gradio_ui.py:82-163</span></div>
+  <p>一个 <code>process ActionStep → gr.ChatMessage</code> 的函数，把每一步拆成气泡：<code>**Step 1**</code>、模型的想法、工具行、最后一条分隔线。</p>
+  <div class="card">
+    <p>你贴给我的那两行就是这里生成的、<strong>纯展示用的字符串</strong>：</p>
+    <ul class="tight">
+      <li><code>Used tool final_answer</code> ← 来自 <code>ToolCall</code> 事件的 name</li>
+      <li><code>Step 1 | Input tokens: 1,979 | Output tokens: 388 | Duration: 9.01s</code> ← 来自 <code>ActionStep.timing</code> 和 token 计数</li>
+    </ul>
+    <p>所以那些数字不是界面猜的，是 <code>agents.py:1289</code> 存档的输入和回包里的 usage 拼出来的。<strong>它同时是你唯一的成本观测口</strong>。</p>
+  </div>
+</li>
+
+</ol>
+
+<h2 id="s3">3 你今天的四次真实记录</h2>
+
+<p>全部来自 <code>/tmp/ui.log</code> 与网页显示。<strong>下表用的是每步真实量</strong>（累计值相减得到），不是终端那串累计数。</p>
+
+<table>
+  <tr><th>你问的</th><th>模型选的动作</th><th>框架反应</th><th>本步耗时 / 入 / 出</th></tr>
+  <tr>
+    <td>今天指数怎么样</td>
+    <td><code>final_answer</code>：反问你索要数据</td>
+    <td>正常终止，1 步</td>
+    <td>1.18s / 1273 / 29</td>
+  </tr>
+  <tr>
+    <td>贴 <code>47.117.110.143/dashboard</code> 要分析分数</td>
+    <td><strong><code>web_search</code>（不存在的工具）</strong></td>
+    <td>第 10 站抛 <code>AgentToolExecutionError</code>，错误原文当 Observation 回灌</td>
+    <td>1.25s / 1402 / 34</td>
+  </tr>
+  <tr>
+    <td>（同一问的第二步）</td>
+    <td><code>final_answer</code>：承认无法访问网页</td>
+    <td>看到报错后自我修正——这就是回灌的价值</td>
+    <td>1.47s / 1458 / 45</td>
+  </tr>
+  <tr>
+    <td>光的波粒二象性</td>
+    <td>不调工具，直接答</td>
+    <td>知识型问题不需要动作空间，1 步出 final_answer</td>
+    <td>3.72s / 1599 / 142</td>
+  </tr>
+  <tr>
+    <td>按 ai学习 的代码详细讲，写个 HTML</td>
+    <td><code>final_answer</code>：声明自己无源码/文件/HTML 能力</td>
+    <td>判断正确。它的动作空间里确实没有文件读写</td>
+    <td><b>9.01s / 1979 / 388</b></td>
+  </tr>
+</table>
+
+<div class="card">
+  <p><span class="key">交叉验证过：</span>最后一问你截的网页图是 <code>1,979 / 388 / 9.01s</code>，和终端累计值 <code>7711 - 5732 = 1979</code>、<code>638 - 250 = 388</code> 严丝合缝。两个口径能对上，说明上面这列还原出的真实量是准的，不是我挑了好看的数字。</p>
+</div>
+
+<h3>3.1 第二条为什么值得单独说</h3>
+
+<p>那是模型在<strong>幻觉一个工具</strong>。它见过太多带搜索的 Agent，于是顺手写了一个 <code>web_search</code>。链路里发生的事情值得拆开看：</p>
+
+<ul class="tight">
+  <li>模型<strong>没有能力</strong>真的去搜索——它只是输出了一段看起来像调用的 JSON。</li>
+  <li>拦截它的是 <code>agents.py:1464</code> 那几行普通代码：一个字典查键。</li>
+  <li>关键在最后：<strong>报错没有被当成崩溃</strong>，而是作为 Observation 塞回上下文，让模型自己修正行为。</li>
+</ul>
+
+<p>结论：<span class="key">Agent 的安全边界不在"模型自觉"，在框架的工具白名单、参数校验、max_steps 熔断这三道闸。</span>你以后评估任何一个 Agent 框架，先别看它的 prompt 写得多漂亮，先找这三处代码在哪、能不能收紧。这比看宣传有用得多。</p>
+
+<h2 id="s4">4 三道闸门的具体位置</h2>
+
+<table>
+  <tr><th>闸门</th><th>代码位置</th><th>挡什么</th><th>你能怎么调</th></tr>
+  <tr>
+    <td>工具白名单</td>
+    <td><code>agents.py:1464-1467</code></td>
+    <td>模型编造的工具名</td>
+    <td>工具集合由构造时的 <code>tools=[...]</code> 决定，最小权限原则就从这里收</td>
+  </tr>
+  <tr>
+    <td>参数校验</td>
+    <td><code>tools.py:1361</code> 起</td>
+    <td>类型不对、必填缺失</td>
+    <td>你 <code>inputs</code> 里写的 type 就是校验依据</td>
+  </tr>
+  <tr>
+    <td>步数熔断</td>
+    <td><code>agents.py:545 / 606</code></td>
+    <td>无限循环烧 token</td>
+    <td><code>max_steps</code>，框架默认 20，我这里设 6</td>
+  </tr>
+</table>
+
+<p>补一条同族机制：<code>agents.py:404</code> 的 <code>_validate_tools_and_managed_agents</code> 会在构造阶段检查工具重名和非法命名；<code>agents.py:309</code> 的 <code>final_answer_checks</code> 允许你在答案出门前挂校验函数——<strong>那是第四道闸门，很多人不知道有</strong>。</p>
+
+<h2 id="s5">5 它 vs 我：差距全在动作空间</h2>
+
+<p>同样是 agent，为什么我能真给你写出这个 HTML 文件、它不行？把两件事放一起看就清楚了。</p>
+
+<table>
+  <tr><th></th><th>你的 my_agent.py</th><th>此刻和你对话的我</th></tr>
+  <tr><td>工具数</td><td><b>3</b>（两个数学 + final_answer）</td><td>几十个（读写文件、执行命令、搜索、开浏览器、起子 agent…）</td></tr>
+  <tr><td>读本地代码</td><td>不能</td><td>能，本次就是这样核对行号的</td></tr>
+  <tr><td>写文件</td><td>不能</td><td>能，这个 .html 就是写出来的</td></tr>
+  <tr><td>步数上限</td><td>6</td><td>同样有上限，只是更高</td></tr>
+  <tr><td>终止方式</td><td>调 <code>final_answer</code></td><td>直接停止输出（没有专门的收尾工具）</td></tr>
+  <tr><td>记忆</td><td>进程内存活，重启即失</td><td>会话内累加，跨会话靠 memory 文件</td></tr>
+</table>
+
+<p>所以"是不是 agent"和"好不好用"是两件事：<span class="g">架构同类，差别只在给了多少动作，以及有没有权限。</span>你那个 3 工具的 Agent 和我的差别，不是智能差别，是接口差别——这也是为什么学 Agent 的主要工作量其实在于<strong>设计动作空间和边界</strong>，而不是调 prompt。</p>
+
+<h2 id="s6">6 四个动手实验（按编号挑）</h2>
+
+<p>每个都是小改动，能直接看到链路某一层的行为。你回编号我就改。</p>
+
+<h3>E1 给它一个读文件的工具</h3>
+<p>让它真的能打开 <code>agents.py</code> 回答自己怎么实现的，正面回答你这次的疑问。在 <code>my_agent.py</code> 加：</p>
+<div class="src">新增一个 Tool 子类，然后塞进 tools=[...]</div>
+<pre><code>class ReadFileTool(Tool):
+    name = "read_file"
+    description = "读取本机文本文件内容，返回指定路径的前若干行。"
+    inputs = {"path": {"type": "string", "description": "文件绝对路径"},
+              "lines": {"type": "integer", "description": "最多返回多少行", "default": 120}}
+    output_type = "string"
+
+    def forward(self, path, lines=120):
+        import os
+        p = os.path.abspath(path)
+        root = os.path.abspath(os.path.expanduser("~/Desktop/study/ai学习"))
+        if not p.startswith(root):          # 白名单：只许读学习目录
+            raise PermissionError("只允许读取 ai学习 目录: " + p)
+        with open(p, encoding="utf-8", errors="replace") as f:
+            return "".join(f.readlines()[: int(lines)])</code></pre>
+<div class="card warn"><p><span class="g">注意上面那句路径检查不是可选的。</span>一旦 agent 有了读文件能力，而它又被云端模型驱动，没有边界就等于把整个 Home 目录暴露给一次网页问答。这条约束必须和工具同时加。</p></div>
+
+<h3>E2 看熔断长什么样</h3>
+<p>把 <code>my_agent.py</code> 里 <code>max_steps=6</code> 改成 <code>max_steps=1</code>，再问一个需要两步的问题。你会看到 <code>state="max_steps_error"</code>（<code>agents.py:606</code>），而且框架不会给你 final_answer——理解"预算"这件事最直观的一次。</p>
+
+<h3>E3 让 token 不再累加</h3>
+<p><code>my_ui.py</code> 里改成：</p>
+<pre><code>GradioUI(agent, file_upload_folder="./data", reset_agent_memory=True).launch(...)</code></pre>
+<p>然后连续问两次，对比网页上那行<strong>单步</strong>数字。开了它，每问第一问都从 ~1270 起且终端 <code>[Step N</code> 每次都从 1 重新数；不开（你现在这样）历史就留着，单步 prompt 缓慢爬升（1273→1402→1458→1599→1979），终端的累计值一路涨到 7711。要不要跨问题带上下文，就是这一行的取舍——注意它和"同一个问题内带上下文"是两回事，后者是 agent 的本性，关不掉。</p>
+
+<h3>E4 故意喂一个错参数</h3>
+<p>把 <code>MaxDrawdownTool</code> 的 <code>inputs</code> 里 <code>"type": "array"</code> 改成 <code>"type": "number"</code>，再问同样的问题。模型还会传数组，于是撞在 <code>tools.py:1402</code> 那句 <code>Argument prices has type 'list' but should be 'number'</code>。<strong>这是理解"接口契约由谁强制"最快的一条路</strong>——不是模型遵守，是执行方校验。</p>
+
+<h2 id="s7">7 术语速查</h2>
+
+<table>
+  <tr><th>词</th><th>在<b>这份代码</b>里指什么</th></tr>
+  <tr><td>ReAct</td><td><code>_step_stream</code> 的注释原话（<code>agents.py:1280</code>）："the agent thinks, acts, and observes"，即 想→做→看 的一圈</td></tr>
+  <tr><td>累计 / 单步<br>两个 token 口径</td><td><strong>今天最容易踩的坑。</strong>终端 <code>monitoring.py:110-114</code> 打 <code>total_*_token_count</code>（生命周期累计，且 <code>Step N</code> 跨问题连号）；网页 <code>gradio_ui.py:33</code> 打 <code>step_log.token_usage</code>（本步真实）。评估成本看累计，调试上下文看单步</td></tr>
+  <tr><td>ToolCallingAgent</td><td><code>agents.py:1215</code>。动作走模型原生的 <code>tool_calls</code> 字段，结构化，稳</td></tr>
+  <tr><td>CodeAgent</td><td><code>agents.py:1638</code> 一带。动作是<b>一段代码</b>，需要一个 Python 解释器执行；能力更强，但对模型要求高，小模型容易吐非法代码</td></tr>
+  <tr><td>Observation</td><td>工具执行结果回灌进 memory 的那条消息，也是 <code>stop_sequences</code> 要防模型自己伪造的词</td></tr>
+  <tr><td>planning_interval</td><td><code>agents.py:550</code>。每隔 N 步强制插一个"重新规划"步，你这次没开（我注释里那个 example 开了 3）</td></tr>
+  <tr><td>prefill</td><td>把整段历史读进模型的那半程计算。本地 CPU 跑 Agent 慢，主要慢在这里而不是生成，这也是我们这轮选云端 API 的原因</td></tr>
+  <tr><td>stream_outputs</td><td><code>agents.py:1293</code> 的分支开关。开了才有 UI 上逐字滚动的效果</td></tr>
+</table>
+
+<footer>
+  生成于 2026-10-28 · 所有行号基于 <code>~/Desktop/study/ai学习/smolagents</code> 当时的 checkout（1.27.0.dev0）。
+  这份仓库是 editable 安装，源码你随时能改，改完立刻生效；行号也会随你自己的修改而漂移。
+</footer>
+
+</div>
+</body>
+</html>

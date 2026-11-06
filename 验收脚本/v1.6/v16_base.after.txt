@@ -1,0 +1,11 @@
+{
+ "0-after-load": "{\"chk\":[true,false,false],\"labs\":[\"V7基线-丙\",\"V7基线-乙\",\"V7基线-甲\"],\"tds\":{\"status-tracker\":3,\"user\":1,\"bot\":1,\"block-info\":1,\"file-upload\":1,\"upload-button\":1,\"textbox\":1,\"submit-button\":1},\"msgN\":0,\"txt\":[],\"head\":\"模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 空闲 ■ 停止 V7基线-丙 第 3 条会话的答复 MultimodalTextbox\"}",
+ "1-click-jia#click": "clicked@178,226",
+ "1-click-jia": "{\"chk\":[false,false,true],\"labs\":[\"V7基线-丙\",\"V7基线-乙\",\"V7基线-甲\"],\"tds\":{\"status-tracker\":3,\"user\":1,\"bot\":1,\"block-info\":1,\"file-upload\":1,\"upload-button\":1,\"textbox\":1,\"submit-button\":1},\"msgN\":0,\"txt\":[],\"head\":\"模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 空闲 ■ 停止 V7基线-甲 第 1 条会话的答复 MultimodalTextbox\"}",
+ "2-click-new#click": "clicked@252,134",
+ "2-click-new": "{\"chk\":[false,false,false],\"labs\":[\"V7基线-丙\",\"V7基线-乙\",\"V7基线-甲\"],\"tds\":{\"status-tracker\":3,\"block-info\":1,\"file-upload\":1,\"upload-button\":1,\"textbox\":1,\"submit-button\":1},\"msgN\":0,\"txt\":[],\"head\":\"模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 空闲 ■ 停止 还没有会话。 左边「＋ 新会话」开一局，或直接提问。 Multimod\"}",
+ "3-click-jia-again#click": "clicked@178,226",
+ "3-click-jia-again": "{\"chk\":[false,false,true],\"labs\":[\"V7基线-丙\",\"V7基线-乙\",\"V7基线-甲\"],\"tds\":{\"status-tracker\":3,\"user\":1,\"bot\":1,\"block-info\":1,\"file-upload\":1,\"upload-button\":1,\"textbox\":1,\"submit-button\":1},\"msgN\":0,\"txt\":[],\"head\":\"模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 空闲 ■ 停止 V7基线-甲 第 1 条会话的答复 MultimodalTextbox\"}",
+ "4-click-yi-control#click": "clicked@268,186",
+ "4-click-yi-control": "{\"chk\":[false,true,false],\"labs\":[\"V7基线-丙\",\"V7基线-乙\",\"V7基线-甲\"],\"tds\":{\"status-tracker\":3,\"user\":1,\"bot\":1,\"block-info\":1,\"file-upload\":1,\"upload-button\":1,\"textbox\":1,\"submit-button\":1},\"msgN\":0,\"txt\":[],\"head\":\"模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 空闲 ■ 停止 V7基线-乙 第 2 条会话的答复 MultimodalTextbox\"}"
+}

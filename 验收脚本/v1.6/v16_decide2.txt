@@ -1,0 +1,502 @@
+  77 OK   :70-72 -> :234-236 [v14 map ents=[] toks=['gradio']] who=my_ui
+      OLD   --spacing-md: 8px; ⏎ } ⏎ /* gradio 把浅色值硬写在 body 自己的规则里（非 @media），只改 var 覆盖不到它，得直接压。 */
+      NEW   --spacing-md: 8px; ⏎ } ⏎ /* gradio 把浅色值硬写在 body 自己的规则里（非 @media），只改 var 覆盖不到它，得直接压。 */
+      alt v15 score=0 -> :74-76 ents=[] |         "action_output", ⏎         "token_usage", ⏎         "is_final_answer",
+ 647 TIE  :310-310 -> :499-499 [v14 map ents=['ensure'] toks=[]] who=my_ui
+      OLD 
+      NEW 
+      alt v15 score=0 -> :314-314 ents=[] | #sessions label {
+ 657 OK   :642-691 -> :672-727 [v15 map ents=['_step_card'] toks=['_step_card', 'step', 'title']] who=NONE
+      OLD     def _step_card(self, step) -> gr.ChatMessage | None: ⏎         """一个 step 一张卡：把上游那 5~6 条无差别折叠卡并成一条。 ⏎  ⏎  
+      NEW     def _step_card(self, step) -> gr.ChatMessage | None: ⏎         """一个 step 一张卡：把上游那 5~6 条无差别折叠卡并成一条。 ⏎  ⏎  
+      alt v14 score=0 -> :892-941 ents=['_stream_response'] |                         break ⏎                     try: ⏎                      
+ 657 OK   :671-675 -> :705-710 [v15 map ents=['_step_card'] toks=['step', 'title']] who=NONE
+      OLD         title = ( ⏎             f"🛠 第 {step.step_number} 步 · {names} · {dot} {verdict}" ⏎             + (f" · 
+      NEW         title = ( ⏎             f"🛠 第 {step.step_number} 步 · {names} · {dot} {verdict}" ⏎             + (f" · 
+      alt v14 score=0 -> :921-925 ents=['_stream_response'] |  ⏎                 if changed: ⏎                     yield list(msgs) ⏎         
+ 657 OK   :686-688 -> :721-724 [v15 map ents=['_step_card'] toks=[]] who=NONE
+      OLD         parts.append( ⏎             f"{foot}\n本题累计（本次提问内）：in {self._run_in:,} / out {self._run_out:,} token · 
+      NEW         parts.append( ⏎             f"{foot}\n本题累计（本次提问内）：in {self._run_in:,} / out {self._run_out:,} token · 
+      alt v14 score=0 -> :936-938 ents=['_stream_response'] |             self.agent.interrupt() ⏎             self._settle_all("cancelled") ⏎
+ 669 OK   :757-765 -> :800-808 [v15 map ents=['_worker'] toks=['finally']] who=NONE
+      OLD         finally: ⏎             # 内层生成器只能在起它的那条线程里关：上游 _run_stream 的 finally 里还有一次 ⏎             # yield（agents
+      NEW         finally: ⏎             # 内层生成器只能在起它的那条线程里关：上游 _run_stream 的 finally 里还有一次 ⏎             # yield（agents
+      alt v14 score=0 -> :1038-1046 ents=['_respond'] |                     sid, ⏎                     vis, ⏎                     vis, ⏎
+ 669 OK   :873-882 -> :928-937 [v15 map ents=['_stream_response'] toks=['agent', 'finally', 'interrupt', 'worker']] who=NONE
+      OLD         finally: ⏎             # v1.1 验过的刹车语义，搬进线程版： ⏎             # 1) interrupt_switch 置真，主循环在下一个步边界抛 AgentE
+      NEW         finally: ⏎             # v1.1 验过的刹车语义，搬进线程版： ⏎             # 1) interrupt_switch 置真，主循环在下一个步边界抛 AgentE
+      alt v14 score=0 -> :1185-1194 ents=['create_app'] |             radio.change(fn=self._select_session, inputs=[radio], outputs=[chatb
+ 679 OK   :678-678 -> :928-928 [v14 map ents=['_stream_response'] toks=['finally']] who=NONE
+      OLD         finally:
+      NEW         finally:
+      alt v15 score=0 -> :713-713 ents=['_step_card'] |         if thought:
+ 681 OK   :685-685 -> :935-935 [v14 map ents=['_stream_response'] toks=['_abandoned', 'set']] who=NONE
+      OLD             self._abandoned.set()
+      NEW             self._abandoned.set()
+      alt v15 score=0 -> :720-720 ents=['_step_card'] |             parts.append(f"**报错** {type(step.error).__name__}: {step.error}")
+ 682 OK   :570-570 -> :805-805 [v14 map ents=['_worker'] toks=['close', 'inner']] who=NONE
+      OLD                 inner.close()
+      NEW                 inner.close()
+      alt v15 score=0 -> :594-594 ents=['_gated_call'] |             return original(*args, **kwargs)
+ 684 OK   :571-572 -> :806-807 [v14 map ents=['_worker'] toks=['RuntimeError']] who=NONE
+      OLD             except RuntimeError: ⏎                 pass
+      NEW             except RuntimeError: ⏎                 pass
+      alt v15 score=0 -> :595-596 ents=['_gated_call'] |         return DENIED_OBSERVATION.get(decision, DENIED_OBSERVATION["denied"]) ⏎ 
+ 686 TIE  :545-547 -> :780-782 [v14 map ents=['_status_html'] toks=[]] who=NONE
+      OLD             for k, v in pills ⏎         ) ⏎         return f'<div id="statusbar" class="st-{state}">{inner}</d
+      NEW             for k, v in pills ⏎         ) ⏎         return f'<div id="statusbar" class="st-{state}">{inner}</d
+      alt v15 score=0 -> :564-566 ents=['gated'] |                 return _self._gated_call(_name, _orig, a, kw) ⏎  ⏎             g
+ 696 ZERO :4-4 -> :4-4 [v14 map ents=[] toks=[]] who=my_ui
+      OLD import inspect
+      NEW import inspect
+      alt v15 score=0 -> :4-4 ents=[] | import inspect
+ 707 OK   :712-712 -> :988-988 [v14 map ents=['_user_message'] toks=['_user_message']] who=NONE
+      OLD     def _user_message(self, message):
+      NEW     def _user_message(self, message):
+      alt v15 score=0 -> :752-752 ents=['_stats'] |             "step_error": bool(cur and cur[-1].error),
+ 708 OK   :575-575 -> :810-810 [v14 map ents=['_stream_response'] toks=['_stream_response']] who=NONE
+      OLD     def _stream_response(self, message, history):  # noqa: ARG002
+      NEW     def _stream_response(self, message, history):  # noqa: ARG002
+      alt v15 score=0 -> :599-599 ents=['_pending_snapshot'] |             return list(self._pending)
+ 709 OK   :550-550 -> :785-785 [v14 map ents=['_worker'] toks=['_worker']] who=NONE
+      OLD     def _worker(self, task: str, files, q: queue.Queue) -> None:
+      NEW     def _worker(self, task: str, files, q: queue.Queue) -> None:
+      alt v15 score=2 -> :569-569 ents=['_install_gate'] |             self.agent.tools[name] = wrapped_tool
+ 711 OK   :367-367 -> :571-571 [v14 map ents=['_gated_call'] toks=['_gated_call']] who=NONE
+      OLD     def _gated_call(self, name: str, original, args: tuple, kwargs: dict) -> str:
+      NEW     def _gated_call(self, name: str, original, args: tuple, kwargs: dict) -> str:
+      alt v15 score=0 -> :375-375 ents=['wait'] |         if not self._done.wait(APPROVAL_TIMEOUT):
+ 712 OK   :502-502 -> :730-730 [v14 map ents=['_stats'] toks=['_stats']] who=NONE
+      OLD     def _stats(self) -> dict:
+      NEW     def _stats(self) -> dict:
+      alt v15 score=0 -> :511-511 ents=['OpsUI'] |     _pending: list[Approval] = []
+ 713 OK   :450-450 -> :672-672 [v14 map ents=['_step_card'] toks=['_step_card']] who=NONE
+      OLD     def _step_card(self, step) -> gr.ChatMessage | None:
+      NEW     def _step_card(self, step) -> gr.ChatMessage | None:
+      alt v15 score=0 -> :459-459 ents=['save'] |                 title = content.strip().replace("\n", " ")[:28] or None
+ 714 OK   :529-529 -> :761-761 [v14 map ents=['_status_html'] toks=['_status_html']] who=NONE
+      OLD     def _status_html(self, state: str) -> str:
+      NEW     def _status_html(self, state: str) -> str:
+      alt v15 score=0 -> :548-548 ents=['_install_gate'] | 
+ 716 OK   :277-277 -> :451-451 [v14 map ents=['save'] toks=['save']] who=NONE
+      OLD     def save(self, sid: int, messages) -> None:
+      NEW     def save(self, sid: int, messages) -> None:
+      alt v15 score=0 -> :281-281 ents=[] | /* 气泡：gradio 把底色硬编成 rgb(250,250,250)（实测），深色底上就是一排白卡。 */
+ 716 OK   :289-289 -> :463-463 [v14 map ents=['save'] toks=['DELETE']] who=NONE
+      OLD                 c.execute("DELETE FROM messages WHERE session_id = ?", (sid,))
+      NEW                 c.execute("DELETE FROM messages WHERE session_id = ?", (sid,))
+      alt v15 score=0 -> :293-293 ents=[] |   background: var(--block-background-fill) !important;
+ 718 OK   :880-880 -> :1192-1192 [v14 map ents=['create_app'] toks=['demo', 'load']] who=NONE
+      OLD             demo.load(fn=self._on_load, outputs=[radio, sid, status, chatbot])
+      NEW             demo.load(fn=self._on_load, outputs=[radio, sid, status, chatbot])
+      alt v15 score=0 -> :935-935 ents=['_stream_response'] |             self._abandoned.set()
+ 719 TIE  :843-843 -> :1155-1155 [v14 map ents=['create_app'] toks=[]] who=NONE
+      OLD                         stop_btn = gr.Button("■ 停止", variant="stop", scale=0, min_width=88)
+      NEW                         stop_btn = gr.Button("■ 停止", variant="stop", scale=0, min_width=88)
+      alt v15 score=0 -> :898-898 ents=['_stream_response'] |                 for ap in self._pending_snapshot():
+ 725 OK   :913-927 -> :988-1002 [v15 map ents=['_user_message'] toks=['Blocks', 'ChatInterface', '_process_message', '_stream_response', '_user_message', 'assistant']] who=NONE
+      OLD     def _user_message(self, message): ⏎         """把输入框的值转成一条 user 气泡。 ⏎  ⏎         必须自己加：上游 ChatInterface 会替我
+      NEW     def _user_message(self, message): ⏎         """把输入框的值转成一条 user 气泡。 ⏎  ⏎         必须自己加：上游 ChatInterface 会替我
+ 727 OK   :1095-1095 -> :1192-1192 [v15 map ents=['create_app'] toks=['demo', 'load', 'sid']] who=NONE
+      OLD             demo.load(fn=self._on_load, outputs=[radio, sid, status, chatbot])
+      NEW             demo.load(fn=self._on_load, outputs=[radio, sid, status, chatbot])
+ 727 OK   :1025-1035 -> :1118-1129 [v15 map ents=['_on_load'] toks=['Radio', 'choices', 'create_app', 'load', 'sid']] who=NONE
+      OLD     def _on_load(self): ⏎         """刷新页面时把库里的会话重新推上屏，并把 sid 指到最近一条。 ⏎  ⏎         gradio 不会重跑 create_app，Radio
+      NEW     def _on_load(self): ⏎         """刷新页面时把库里的会话重新推上屏，并把 sid 指到最近一条。 ⏎  ⏎         gradio 不会重跑 create_app，Radio
+ 729 OK   :373-488 -> :382-497 [v15 map ents=['History'] toks=['History', 'content', 'created_at', 'memory', 'messages', 'meta', 'ord', 'role', 'session_id', 'sessions', 'title', 'updated_at']] who=NONE
+      OLD class History: ⏎     """会话侧栏的存储层：存**显示层**的那串消息，一条会话一行行按 ord 存。 ⏎  ⏎     save() 是「整条会话覆盖」（先 DELETE 再按 ord 重插），不
+      NEW class History: ⏎     """会话侧栏的存储层：存**显示层**的那串消息，一条会话一行行按 ord 存。 ⏎  ⏎     save() 是「整条会话覆盖」（先 DELETE 再按 ord 重插），不
+      alt v14 score=6 -> :577-715 ents=['_gated_call'] |         ap = Approval(name, bound) ⏎         with self._gate_lock: ⏎            
+ 733 OK   :30-30 -> :30-30 [v15 block:DB_PATH ents=['DB_PATH'] toks=['DB_PATH', 'Path', '__file__', 'resolve']] who=NONE
+      OLD DB_PATH = Path(__file__).resolve().parent / ".agent-history.sqlite3"
+      NEW DB_PATH = Path(__file__).resolve().parent / ".agent-history.sqlite3"
+      alt v14 score=0 -> :32-32 ents=[] | # P0-2：只拦「会动东西」的两只手。只读工具（read_file / list_dir / grep_files）不弹审批，
+ 734 OK   :442-463 -> :451-472 [v15 map ents=['save'] toks=['DELETE', 'save']] who=NONE
+      OLD     def save(self, sid: int, messages) -> None: ⏎         rows = [] ⏎         title = None ⏎         for i, m 
+      NEW     def save(self, sid: int, messages) -> None: ⏎         rows = [] ⏎         title = None ⏎         for i, m 
+      alt v14 score=0 -> :664-685 ents=['_args_text'] |                 slim[k] = v[:limit] + f"…（共 {len(v)} 字，截掉 {len(v) - limit} 字）" ⏎
+ 734 OK   :454-454 -> :463-463 [v15 map ents=['save'] toks=['DELETE']] who=NONE
+      OLD                 c.execute("DELETE FROM messages WHERE session_id = ?", (sid,))
+      NEW                 c.execute("DELETE FROM messages WHERE session_id = ?", (sid,))
+      alt v14 score=0 -> :676-676 ents=['_step_card'] |         DOM 里，只有标题可见（v1.1 就栽过一次，正文写了半天屏幕上看不见）。
+ 735 OK   :449-450 -> :458-459 [v15 map ents=['save'] toks=['title', 'user']] who=NONE
+      OLD             if d.get("role") == "user" and title is None: ⏎                 title = content.strip().replace("\
+      NEW             if d.get("role") == "user" and title is None: ⏎                 title = content.strip().replace("\
+      alt v14 score=0 -> :671-672 ents=['_args_text'] |  ⏎     def _step_card(self, step) -> gr.ChatMessage | None:
+ 735 OK   :460-463 -> :469-472 [v15 map ents=['save'] toks=['CASE', 'WHEN', 'title', 'updated_at']] who=NONE
+      OLD             c.execute( ⏎                 "UPDATE sessions SET updated_at = ?, title = CASE WHEN title = '新会话' 
+      NEW             c.execute( ⏎                 "UPDATE sessions SET updated_at = ?, title = CASE WHEN title = '新会话' 
+      alt v14 score=2 -> :682-685 ents=['_step_card'] |                 metadata={"title": "🧭 计划步", "status": "done"}, ⏎             ) ⏎
+ 736 OK   :425-430 -> :434-439 [v15 map ents=['choices'] toks=['DESC', 'choices', 'updated_at']] who=NONE
+      OLD     def choices(self, limit: int = 50): ⏎         with self._tx() as c: ⏎             rows = c.execute( ⏎     
+      NEW     def choices(self, limit: int = 50): ⏎         with self._tx() as c: ⏎             rows = c.execute( ⏎     
+      alt v14 score=0 -> :647-652 ents=['_approval_card'] |             metadata={"title": title, "status": "pending" if state == "pending" 
+ 737 TIE  :401-401 -> :617-617 [v14 map ents=['_settle_all'] toks=[]] who=NONE
+      OLD         """停止 / 换题时把没人管的审批结算掉，否则 worker 线程会一直挂在 wait() 上。"""
+      NEW         """停止 / 换题时把没人管的审批结算掉，否则 worker 线程会一直挂在 wait() 上。"""
+      alt v15 score=0 -> :410-410 ents=['__init__'] |                 CREATE TABLE IF NOT EXISTS memory(
+ 737 OK   :465-473 -> :474-482 [v15 map ents=['save_memory'] toks=['INSERT', 'REPLACE', 'save_memory', 'session_id']] who=NONE
+      OLD     def save_memory(self, sid: int, payload: str) -> int: ⏎         """整条覆盖这条会话的记忆（一条会话一行，主键就是 session_id）。返回存
+      NEW     def save_memory(self, sid: int, payload: str) -> int: ⏎         """整条覆盖这条会话的记忆（一条会话一行，主键就是 session_id）。返回存
+      alt v14 score=0 -> :687-695 ents=['_step_card'] |         names = "、".join(dict.fromkeys(c.name for c in calls)) if calls else "无工
+ 737 OK   :475-478 -> :484-487 [v15 map ents=['load_memory'] toks=['session_id']] who=NONE
+      OLD     def load_memory(self, sid: int): ⏎         with self._tx() as c: ⏎             row = c.execute("SELECT pay
+      NEW     def load_memory(self, sid: int): ⏎         with self._tx() as c: ⏎             row = c.execute("SELECT pay
+      alt v14 score=0 -> :697-700 ents=['_step_card'] |             dot, verdict = "🟢", "成功" ⏎         tk = step.token_usage ⏎         s
+ 739 OK   :446-451 -> :455-460 [v15 map ents=['save'] toks=['asdict', 'content', 'dataclasses', 'meta', 'metadata', 'role', 'title']] who=NONE
+      OLD             d = dataclasses.asdict(m) if dataclasses.is_dataclass(m) else dict(m) ⏎             content = str(
+      NEW             d = dataclasses.asdict(m) if dataclasses.is_dataclass(m) else dict(m) ⏎             content = str(
+      alt v14 score=2 -> :668-673 ents=['_args_text'] |             return json.dumps(slim, ensure_ascii=False, indent=2) ⏎         exce
+ 739 OK   :439-439 -> :448-448 [v15 map ents=['load'] toks=['ChatMessage', 'content', 'meta', 'metadata', 'role']] who=NONE
+      OLD             out.append(gr.ChatMessage(role=role, content=content, metadata=json.loads(meta)))
+      NEW             out.append(gr.ChatMessage(role=role, content=content, metadata=json.loads(meta)))
+      alt v14 score=0 -> :661-661 ents=['_args_text'] |         slim = {}
+ 741 OK   :213-332 -> :217-217 [v15 block:DARK_CSS ents=['DARK_CSS'] toks=['DARK_CSS', 'background', 'body', 'fill', 'gradio', 'rgb', 'root', 'secondary']] who=NONE
+      OLD DARK_CSS = """ ⏎ :root { ⏎   color-scheme: dark; ⏎   --body-background-fill: #0d1117; ⏎   --body-text-color: #
+      NEW DARK_CSS = """
+      alt v14 score=0 -> :382-499 ents=['History'] | class History: ⏎     """会话侧栏的存储层：存**显示层**的那串消息，一条会话一行行按 ord 存。 ⏎  ⏎     save() 是
+ 741 OK   :265-275 -> :269-279 [v15 map ents=[] toks=['approve', 'btn', 'deny']] who=NONE
+      OLD /* P0-2 审批键：平时不可见（visible=False），有待批项时才由后端点亮。 */ ⏎ #statusrow #approve-btn button { ⏎   background: #238636 !i
+      NEW /* P0-2 审批键：平时不可见（visible=False），有待批项时才由后端点亮。 */ ⏎ #statusrow #approve-btn button { ⏎   background: #238636 !i
+      alt v14 score=0 -> :439-449 ents=['choices'] |         return [(r[1], str(r[0])) for r in rows] ⏎  ⏎     def load(self, sid: in
+ 750 OK   :547-547 -> :566-566 [v15 map ents=['_install_gate'] toks=['__signature__', 'gated', 'inspect', 'original', 'signature']] who=NONE
+      OLD             gated.__signature__ = inspect.signature(original)
+      NEW             gated.__signature__ = inspect.signature(original)
+      alt v14 score=0 -> :782-782 ents=['_status_html'] |         return f'<div id="statusbar" class="st-{state}">{inner}</div>'
+ 750 OK   :555-555 -> :574-574 [v15 map ents=['_gated_call'] toks=['args', 'arguments', 'bind_partial', 'inspect', 'kwargs', 'original', 'signature']] who=NONE
+      OLD             bound = dict(inspect.signature(original).bind_partial(*args, **kwargs).arguments)
+      NEW             bound = dict(inspect.signature(original).bind_partial(*args, **kwargs).arguments)
+      alt v14 score=0 -> :790-790 ents=['_worker'] |         不会出现「允许/拒绝」，死锁。换成线程 + 队列后，阻塞的是 worker，界面照刷。
+ 751 OK   :539-539 -> :558-558 [v15 map ents=['_install_gate'] toks=['_opsui_gated']] who=NONE
+      OLD             if base is None or getattr(base, "_opsui_gated", False):
+      NEW             if base is None or getattr(base, "_opsui_gated", False):
+      alt v14 score=0 -> :774-774 ents=['_status_html'] |         if un:
+ 751 OK   :549-549 -> :784-784 [v14 map ents=['OpsUI'] toks=[]] who=NONE
+      OLD     # ---- 驱动：agent 跑在 worker 线程，界面每 0.25 秒取一次队列 -------------------
+      NEW     # ---- 驱动：agent 跑在 worker 线程，界面每 0.25 秒取一次队列 -------------------
+      alt v15 score=2 -> :568-568 ents=['_install_gate'] |             wrapped_tool._opsui_gated = True
+ 752 OK   :502-503 -> :511-512 [v15 map ents=['OpsUI'] toks=['_gate_lock', '_pending']] who=NONE
+      OLD     _pending: list[Approval] = [] ⏎     _gate_lock = threading.Lock()
+      NEW     _pending: list[Approval] = [] ⏎     _gate_lock = threading.Lock()
+      alt v14 score=2 -> :730-731 ents=['_stats'] |     def _stats(self) -> dict: ⏎         steps = self.agent.memory.steps
+ 754 OK   :34-34 -> :34-34 [v15 block:GATED_TOOLS ents=['GATED_TOOLS'] toks=['GATED_TOOLS', 'run_python', 'write_file']] who=NONE
+      OLD GATED_TOOLS = ("write_file", "run_python")
+      NEW GATED_TOOLS = ("write_file", "run_python")
+      alt v14 score=0 -> :36-36 ents=['APPROVAL_TIMEOUT'] | APPROVAL_TIMEOUT = 600.0
+ 756 OK   :742-765 -> :785-808 [v15 map ents=['_worker'] toks=['Queue', '_worker', 'agent', 'forward', 'gradio', 'queue', 'run', 'stream']] who=NONE
+      OLD     def _worker(self, task: str, files, q: queue.Queue) -> None: ⏎         """在别的线程里消费 agent.run(stream=True)。
+      NEW     def _worker(self, task: str, files, q: queue.Queue) -> None: ⏎         """在别的线程里消费 agent.run(stream=True)。
+      alt v14 score=4 -> :1020-1046 ents=['_respond'] |         radio = lambda: gr.update(choices=self.hist.choices())  # noqa: E731 ⏎  
+ 756 OK   :767-882 -> :810-937 [v15 map ents=['_stream_response'] toks=['Queue', '_stream_response', '_worker', 'agent', 'get', 'queue', 'run', 'timeout']] who=NONE
+      OLD     def _stream_response(self, message, history):  # noqa: ARG002 ⏎         task, files = self._process_messag
+      NEW     def _stream_response(self, message, history):  # noqa: ARG002 ⏎         task, files = self._process_messag
+      alt v14 score=2 -> :1048-1194 ents=['_respond'] |                     role="assistant", ⏎                     content=f"⏹ {type(ex
+ 756 OK   :794-794 -> :841-841 [v15 map ents=['_stream_response'] toks=['get', 'timeout']] who=NONE
+      OLD                     kind, payload = q.get(timeout=0.25)
+      NEW                     kind, payload = q.get(timeout=0.25)
+      alt v14 score=0 -> :1093-1093 ents=['_stop'] |         self._settle_all("cancelled")
+ 756 OK   :843-865 -> :898-920 [v15 map ents=['_stream_response'] toks=['get']] who=NONE
+      OLD                 for ap in self._pending_snapshot(): ⏎                     waited = time.time() - ap.created ⏎ 
+      NEW                 for ap in self._pending_snapshot(): ⏎                     waited = time.time() - ap.created ⏎ 
+      alt v14 score=0 -> :1155-1177 ents=['create_app'] |                         stop_btn = gr.Button("■ 停止", variant="stop", scale=0, mi
+ 760 OK   :728-728 -> :1004-1004 [v14 map ents=['_respond'] toks=['_respond']] who=NONE
+      OLD     def _respond(self, message, sid):
+      NEW     def _respond(self, message, sid):
+      alt v15 score=0 -> :768-768 ents=['_status_html'] |             ("本题耗时", f"{s['task_secs']:.1f}s"),
+ 761 OK   :575-575 -> :810-810 [v14 map ents=['_stream_response'] toks=['_stream_response']] who=NONE
+      OLD     def _stream_response(self, message, history):  # noqa: ARG002
+      NEW     def _stream_response(self, message, history):  # noqa: ARG002
+      alt v15 score=0 -> :599-599 ents=['_pending_snapshot'] |             return list(self._pending)
+ 762 OK   :550-550 -> :785-785 [v14 map ents=['_worker'] toks=['_worker']] who=NONE
+      OLD     def _worker(self, task: str, files, q: queue.Queue) -> None:
+      NEW     def _worker(self, task: str, files, q: queue.Queue) -> None:
+      alt v15 score=2 -> :569-569 ents=['_install_gate'] |             self.agent.tools[name] = wrapped_tool
+ 765 OK   :367-367 -> :571-571 [v14 map ents=['_gated_call'] toks=['_gated_call']] who=NONE
+      OLD     def _gated_call(self, name: str, original, args: tuple, kwargs: dict) -> str:
+      NEW     def _gated_call(self, name: str, original, args: tuple, kwargs: dict) -> str:
+      alt v15 score=0 -> :375-375 ents=['wait'] |         if not self._done.wait(APPROVAL_TIMEOUT):
+ 765 OK   :322-322 -> :511-511 [v14 map ents=['OpsUI'] toks=['Approval', '_pending']] who=NONE
+      OLD     _pending: list[Approval] = []
+      NEW     _pending: list[Approval] = []
+      alt v15 score=0 -> :326-326 ents=[] | #statusbar .pill {
+ 766 OK   :206-206 -> :374-374 [v14 map ents=['wait'] toks=['wait']] who=NONE
+      OLD     def wait(self) -> str:
+      NEW     def wait(self) -> str:
+      alt v15 score=0 -> :210-210 ents=['decode_memory'] |                 )
+ 767 OK   :405-405 -> :621-621 [v14 map ents=['_approval_card'] toks=['_approval_card']] who=NONE
+      OLD     def _approval_card(self, ap: Approval, waited: float) -> gr.ChatMessage:
+      NEW     def _approval_card(self, ap: Approval, waited: float) -> gr.ChatMessage:
+      alt v15 score=0 -> :414-414 ents=['__init__'] |                 """
+ 769 OK   :877-877 -> :1189-1189 [v14 map ents=['create_app'] toks=['_decide', 'allowed']] who=NONE
+      OLD             allow_btn.click(fn=lambda: self._decide("allowed"), outputs=[status, allow_btn, deny_btn])
+      NEW             allow_btn.click(fn=lambda: self._decide("allowed"), outputs=[status, allow_btn, deny_btn])
+      alt v15 score=0 -> :932-932 ents=['_stream_response'] |             # 2) 挂在审批上的那条线程必须一并结算，否则「停止」只是把界面停住，
+ 769 OK   :388-388 -> :604-604 [v14 map ents=['_decide'] toks=['_decide', 'decision']] who=NONE
+      OLD     def _decide(self, decision: str):
+      NEW     def _decide(self, decision: str):
+      alt v15 score=0 -> :397-397 ents=['__init__'] |                 CREATE TABLE IF NOT EXISTS sessions(
+ 770 OK   :878-878 -> :1190-1190 [v14 map ents=['create_app'] toks=['_decide', 'denied']] who=NONE
+      OLD             deny_btn.click(fn=lambda: self._decide("denied"), outputs=[status, allow_btn, deny_btn])
+      NEW             deny_btn.click(fn=lambda: self._decide("denied"), outputs=[status, allow_btn, deny_btn])
+      alt v15 score=0 -> :933-933 ents=['_stream_response'] |             #    worker 会永远等在 wait() 里；
+ 771 OK   :874-874 -> :1186-1186 [v14 map ents=['create_app'] toks=['_stop']] who=NONE
+      OLD             stop_btn.click(fn=self._stop, outputs=[status])
+      NEW             stop_btn.click(fn=self._stop, outputs=[status])
+      alt v15 score=0 -> :929-929 ents=['_stream_response'] |             # v1.1 验过的刹车语义，搬进线程版：
+ 771 OK   :784-784 -> :1076-1076 [v14 map ents=['_stop'] toks=['_stop']] who=NONE
+      OLD     def _stop(self):
+      NEW     def _stop(self):
+      alt v15 score=0 -> :831-831 ents=['_stream_response'] |         deltas: list[ChatMessageStreamDelta] = []
+ 771 OK   :400-400 -> :616-616 [v14 map ents=['_settle_all'] toks=['_settle_all']] who=NONE
+      OLD     def _settle_all(self, decision: str) -> None:
+      NEW     def _settle_all(self, decision: str) -> None:
+      alt v15 score=0 -> :409-409 ents=['__init__'] |                 CREATE INDEX IF NOT EXISTS idx_messages_session ON messages(sess
+ 773 OK   :44-44 -> :50-50 [v14 block:DENIED_OBSERVATION ents=['DENIED_OBSERVATION'] toks=['DENIED_OBSERVATION']] who=NONE
+      OLD DENIED_OBSERVATION = {
+      NEW DENIED_OBSERVATION = {
+      alt v15 score=0 -> :48-48 ents=['DECISION_DOT'] | DECISION_DOT = {"pending": "🟡", "allowed": "🟢", "denied": "⚪", "cancelled": "⏹",
+ 776 OK   :450-450 -> :672-672 [v14 map ents=['_step_card'] toks=['_step_card']] who=NONE
+      OLD     def _step_card(self, step) -> gr.ChatMessage | None:
+      NEW     def _step_card(self, step) -> gr.ChatMessage | None:
+      alt v15 score=0 -> :459-459 ents=['save'] |                 title = content.strip().replace("\n", " ")[:28] or None
+ 780 OK   :799-810 -> :846-857 [v15 map ents=['_stream_response'] toks=['content', 'msgs']] who=NONE
+      OLD                         if isinstance(payload, ChatMessageStreamDelta): ⏎                             deltas.a
+      NEW                         if isinstance(payload, ChatMessageStreamDelta): ⏎                             deltas.a
+      alt v14 score=0 -> :1098-1117 ents=['_select_session'] |     def _select_session(self, sid): ⏎         """点旧会话：屏幕换消息，**sid 也一起换**（V5）。 ⏎ 
+ 780 OK   :843-865 -> :898-920 [v15 map ents=['_stream_response'] toks=['content', 'metadata', 'msgs', 'pop']] who=NONE
+      OLD                 for ap in self._pending_snapshot(): ⏎                     waited = time.time() - ap.created ⏎ 
+      NEW                 for ap in self._pending_snapshot(): ⏎                     waited = time.time() - ap.created ⏎ 
+      alt v14 score=0 -> :1155-1177 ents=['create_app'] |                         stop_btn = gr.Button("■ 停止", variant="stop", scale=0, mi
+ 780 OK   :811-829 -> :858-884 [v15 map ents=['_stream_response'] toks=['content', 'metadata', 'msgs', 'pop']] who=NONE
+      OLD                         elif isinstance(payload, ActionStep | PlanningStep | FinalAnswerStep): ⏎              
+      NEW                         elif isinstance(payload, ActionStep | PlanningStep | FinalAnswerStep): ⏎              
+      alt v14 score=2 -> :1119-1141 ents=['_on_load'] |         """刷新页面时把库里的会话重新推上屏，并把 sid 指到最近一条。 ⏎  ⏎         gradio 不会重跑 create_app，R
+ 780 TIE  :786-786 -> :1078-1078 [v14 map ents=['_stop'] toks=[]] who=NONE
+      OLD 
+      NEW 
+      alt v15 score=0 -> :833-833 ents=['_stream_response'] |         cards: dict[str, gr.ChatMessage] = {}   # 审批单 id -> 那张卡（存对象，不存下标）
+ 780 OK   :850-851 -> :905-906 [v15 map ents=['_stream_response'] toks=['msgs']] who=NONE
+      OLD                         cards[ap.id] = self._approval_card(ap, waited) ⏎                         msgs.append(c
+      NEW                         cards[ap.id] = self._approval_card(ap, waited) ⏎                         msgs.append(c
+      alt v14 score=0 -> :1162-1163 ents=['create_app'] |                         placeholder='<div style="text-align:center;color:#6e7681
+ 780 OK   :858-859 -> :913-914 [v15 map ents=['_stream_response'] toks=['content', 'metadata']] who=NONE
+      OLD                     cards[ap.id].content = new.content ⏎                     cards[ap.id].metadata = new.metad
+      NEW                     cards[ap.id].content = new.content ⏎                     cards[ap.id].metadata = new.metad
+      alt v14 score=0 -> :1170-1171 ents=['create_app'] |                     box = gr.MultimodalTextbox( ⏎                         placeh
+ 780 OK   :813-813 -> :860-860 [v15 map ents=['_stream_response'] toks=['msgs', 'pop']] who=NONE
+      OLD                                 msgs.pop(stream_idx)  # 思考已经并进卡片正文，不留两份
+      NEW                                 msgs.pop(stream_idx)  # 思考已经并进卡片正文，不留两份
+      alt v14 score=0 -> :1121-1121 ents=['_on_load'] |         gradio 不会重跑 create_app，Radio 的 choices 还是建应用那一刻的空表——
+ 780 OK   :862-865 -> :917-920 [v15 map ents=['_stream_response'] toks=['decision']] who=NONE
+      OLD                     if ap.decision != "pending": ⏎                         with self._gate_lock:  # 画上收尾状态了才摘，
+      NEW                     if ap.decision != "pending": ⏎                         with self._gate_lock:  # 画上收尾状态了才摘，
+      alt v14 score=0 -> :1174-1177 ents=['create_app'] |                         submit_btn=True, ⏎                         stop_btn=Fals
+ 782 OK   :642-691 -> :672-727 [v15 map ents=['_step_card'] toks=['_step_card', 'metadata', 'step', 'title', 'token']] who=NONE
+      OLD     def _step_card(self, step) -> gr.ChatMessage | None: ⏎         """一个 step 一张卡：把上游那 5~6 条无差别折叠卡并成一条。 ⏎  ⏎  
+      NEW     def _step_card(self, step) -> gr.ChatMessage | None: ⏎         """一个 step 一张卡：把上游那 5~6 条无差别折叠卡并成一条。 ⏎  ⏎  
+      alt v14 score=2 -> :892-941 ents=['_stream_response'] |                         break ⏎                     try: ⏎                      
+ 782 OK   :671-675 -> :705-710 [v15 map ents=['_step_card'] toks=['step', 'title']] who=NONE
+      OLD         title = ( ⏎             f"🛠 第 {step.step_number} 步 · {names} · {dot} {verdict}" ⏎             + (f" · 
+      NEW         title = ( ⏎             f"🛠 第 {step.step_number} 步 · {names} · {dot} {verdict}" ⏎             + (f" · 
+      alt v14 score=0 -> :921-925 ents=['_stream_response'] |  ⏎                 if changed: ⏎                     yield list(msgs) ⏎         
+ 782 OK   :686-688 -> :721-724 [v15 map ents=['_step_card'] toks=['token']] who=NONE
+      OLD         parts.append( ⏎             f"{foot}\n本题累计（本次提问内）：in {self._run_in:,} / out {self._run_out:,} token · 
+      NEW         parts.append( ⏎             f"{foot}\n本题累计（本次提问内）：in {self._run_in:,} / out {self._run_out:,} token · 
+      alt v14 score=0 -> :936-938 ents=['_stream_response'] |             self.agent.interrupt() ⏎             self._settle_all("cancelled") ⏎
+ 784 OK   :37-43 -> :41-41 [v15 block:DECISION_LABEL ents=['DECISION_LABEL'] toks=['DECISION_LABEL']] who=NONE
+      OLD DECISION_LABEL = { ⏎     "pending": "等待审批", ⏎     "allowed": "已允许", ⏎     "denied": "已拒绝", ⏎     "cancelled": 
+      NEW DECISION_LABEL = {
+      alt v14 score=0 -> :43-49 ents=[] |     "allowed": "已允许", ⏎     "denied": "已拒绝", ⏎     "cancelled": "随停止取消", ⏎     "
+ 784 OK   :51-51 -> :55-55 [v15 block:DENIED_VERDICT ents=['DENIED_VERDICT'] toks=['DENIED_VERDICT']] who=NONE
+      OLD DENIED_VERDICT = {"denied": "已拒绝", "cancelled": "已取消", "timeout": "超时未批"}
+      NEW DENIED_VERDICT = {"denied": "已拒绝", "cancelled": "已取消", "timeout": "超时未批"}
+      alt v14 score=0 -> :215-215 ents=[] | # V2：深色壳。左边这些变量名是 gradio 6.30 自己吐在 :root 上的那批（实测抓的，不是猜的），
+ 784 OK   :46-50 -> :50-50 [v15 block:DENIED_OBSERVATION ents=['DENIED_OBSERVATION'] toks=['DENIED_OBSERVATION']] who=NONE
+      OLD DENIED_OBSERVATION = { ⏎     "denied": "用户拒绝执行，未产生任何副作用。请改用只读工具，或直接把结论交出来。", ⏎     "cancelled": "用户按了停止，本次执行已取
+      NEW DENIED_OBSERVATION = {
+      alt v14 score=2 -> :52-214 ents=[] |     "cancelled": "用户按了停止，本次执行已取消，未产生任何副作用。", ⏎     "timeout": f"审批超过 {int(APPROV
+ 784 OK   :661-661 -> :691-691 [v15 map ents=['_step_card'] toks=['DENIED_OBSERVATION', 'DENIED_VERDICT']] who=NONE
+      OLD         withheld = next((DENIED_VERDICT[k] for k, v in DENIED_OBSERVATION.items() if v.strip() in obs), None)
+      NEW         withheld = next((DENIED_VERDICT[k] for k, v in DENIED_OBSERVATION.items() if v.strip() in obs), None)
+      alt v14 score=0 -> :911-911 ents=['_stream_response'] |                     # 任何存过的下标都不作数了（踩过——写回旧下标把刚生成的步骤卡盖成了审批卡）。
+ 786 OK   :873-882 -> :928-937 [v15 map ents=['_stream_response'] toks=['_abandoned', '_settle_all', 'agent', 'cancelled', 'finally', 'interrupt', 'set', 'worker']] who=NONE
+      OLD         finally: ⏎             # v1.1 验过的刹车语义，搬进线程版： ⏎             # 1) interrupt_switch 置真，主循环在下一个步边界抛 AgentE
+      NEW         finally: ⏎             # v1.1 验过的刹车语义，搬进线程版： ⏎             # 1) interrupt_switch 置真，主循环在下一个步边界抛 AgentE
+      alt v14 score=0 -> :1185-1194 ents=['create_app'] |             radio.change(fn=self._select_session, inputs=[radio], outputs=[chatb
+ 786 OK   :770-772 -> :813-815 [v15 map ents=['_stream_response'] toks=['_settle_all', 'cancelled']] who=NONE
+      OLD         self._settle_all("cancelled") ⏎         with self._gate_lock: ⏎             self._pending.clear()
+      NEW         self._settle_all("cancelled") ⏎         with self._gate_lock: ⏎             self._pending.clear()
+      alt v14 score=0 -> :1051-1053 ents=['_respond'] |                     # "complete" 一直在，只是没人真在停止后去看气泡：gradio postprocess 抛 ⏎       
+ 788 OK   :973-973 -> :1053-1053 [v15 map ents=['_respond'] toks=['done']] who=NONE
+      OLD                     metadata={"title": f"⏹ {STATE_LABEL[state]}：{type(exc).__name__}", "status": "done"},
+      NEW                     metadata={"title": f"⏹ {STATE_LABEL[state]}：{type(exc).__name__}", "status": "done"},
+ 796 OK   :442-463 -> :451-472 [v15 map ents=['save'] toks=['DELETE', 'FROM', 'WHERE', 'messages', 'save', 'session_id', 'sid']] who=NONE
+      OLD     def save(self, sid: int, messages) -> None: ⏎         rows = [] ⏎         title = None ⏎         for i, m 
+      NEW     def save(self, sid: int, messages) -> None: ⏎         rows = [] ⏎         title = None ⏎         for i, m 
+      alt v14 score=0 -> :664-685 ents=['_args_text'] |                 slim[k] = v[:limit] + f"…（共 {len(v)} 字，截掉 {len(v) - limit} 字）" ⏎
+ 796 OK   :454-454 -> :463-463 [v15 map ents=['save'] toks=['DELETE', 'FROM', 'WHERE', 'messages', 'session_id', 'sid']] who=NONE
+      OLD                 c.execute("DELETE FROM messages WHERE session_id = ?", (sid,))
+      NEW                 c.execute("DELETE FROM messages WHERE session_id = ?", (sid,))
+      alt v14 score=0 -> :676-676 ents=['_step_card'] |         DOM 里，只有标题可见（v1.1 就栽过一次，正文写了半天屏幕上看不见）。
+ 796 OK   :1081-1085 -> :1178-1182 [v15 map ents=['create_app'] toks=['box', 'inputs', 'outputs', 'sid', 'submit']] who=NONE
+      OLD             box.submit( ⏎                 fn=self._respond, ⏎                 inputs=[box, sid], ⏎            
+      NEW             box.submit( ⏎                 fn=self._respond, ⏎                 inputs=[box, sid], ⏎            
+ 796 OK   :936-936 -> :1013-1013 [v15 map ents=['_respond'] toks=['base', 'hist', 'load', 'sid']] who=NONE
+      OLD         base = self.hist.load(sid)
+      NEW         base = self.hist.load(sid)
+ 796 OK   :948-948 -> :1028-1028 [v15 map ents=['_respond'] toks=['base', 'last', 'msgs', 'user_msg']] who=NONE
+      OLD                 last = base + [user_msg] + list(msgs)
+      NEW                 last = base + [user_msg] + list(msgs)
+ 798 OK   :885-910 -> :940-965 [v15 map ents=['_bind_memory'] toks=['GradioUI', '_bind_memory', '_mem', 'agent', 'gradio_ui', 'memory', 'sid']] who=NONE
+      OLD     def _bind_memory(self, sid: int) -> None: ⏎         """把 agent.memory 换成这条会话自己的那份。 ⏎  ⏎         只需要换引用：age
+      NEW     def _bind_memory(self, sid: int) -> None: ⏎         """把 agent.memory 换成这条会话自己的那份。 ⏎  ⏎         只需要换引用：age
+      alt v14 score=2 -> :1197-1205 ents=[] |     OpsUI(agent, file_upload_folder="./data").launch( ⏎         share=False, ⏎  
+ 798 TIE  :522-523 -> :754-755 [v14 map ents=['_stats'] toks=['memory']] who=NONE
+      OLD             # 自己补一步「给个结论」，把这一步的 error 标成 AgentMaxStepsError，step_number 到 9。 ⏎             # 所以只能从 memory 里认这条
+      NEW             # 自己补一步「给个结论」，把这一步的 error 标成 AgentMaxStepsError，step_number 到 9。 ⏎             # 所以只能从 memory 里认这条
+      alt v15 score=2 -> :541-542 ents=['__init__'] |         self._mem: dict[int, AgentMemory] = {} ⏎         self._mem_sid: int | No
+ 801 OK   :694-694 -> :730-730 [v15 map ents=['_stats'] toks=['_stats']] who=NONE
+      OLD     def _stats(self) -> dict:
+      NEW     def _stats(self) -> dict:
+      alt v14 score=2 -> :944-944 ents=['_bind_memory'] |         框架会把新任务**追加**进 self.memory（agents.py:477 还会顺手把 system_prompt 同步过去），
+ 801 OK   :932-932 -> :1009-1009 [v15 map ents=['_respond'] toks=[]] who=NONE
+      OLD         self._bind_memory(sid)
+      NEW         self._bind_memory(sid)
+ 806 OK   :300-300 -> :489-489 [v14 map ents=['ensure'] toks=['ensure', 'sid']] who=NONE
+      OLD     def ensure(self, sid):
+      NEW     def ensure(self, sid):
+      alt v15 score=0 -> :304-304 ents=[] | #sidebar {
+ 807 OK   :690-690 -> :940-940 [v14 map ents=['_bind_memory'] toks=['_bind_memory', 'sid']] who=NONE
+      OLD     def _bind_memory(self, sid: int) -> None:
+      NEW     def _bind_memory(self, sid: int) -> None:
+      alt v15 score=0 -> :726-726 ents=['_step_card'] |             role="assistant", content="\n\n".join(parts), metadata={"title": tit
+ 815 OK   :267-267 -> :441-441 [v14 map ents=['load'] toks=['load', 'sid']] who=NONE
+      OLD     def load(self, sid: int):
+      NEW     def load(self, sid: int):
+      alt v15 score=0 -> :271-271 ents=[] |   background: #238636 !important; border: 1px solid #2ea043 !important;
+ 818 OK   :737-737 -> :1015-1015 [v14 map ents=['_respond'] toks=['base', 'last']] who=NONE
+      OLD         last: list = base + [user_msg]
+      NEW         last: list = base + [user_msg]
+      alt v15 score=0 -> :780-780 ents=['_status_html'] |             for k, v in pills
+ 818 OK   :747-747 -> :1028-1028 [v14 map ents=['_respond'] toks=['base', 'last']] who=NONE
+      OLD                 last = base + [user_msg] + list(msgs)
+      NEW                 last = base + [user_msg] + list(msgs)
+      alt v15 score=0 -> :790-790 ents=['_worker'] |         不会出现「允许/拒绝」，死锁。换成线程 + 队列后，阻塞的是 worker，界面照刷。
+ 819 OK   :777-777 -> :1058-1058 [v14 map ents=['_respond'] toks=['hist', 'last', 'save', 'sid']] who=NONE
+      OLD             self.hist.save(sid, last)  # 停止时生成器被关掉，这一句保证半截内容也落库
+      NEW             self.hist.save(sid, last)  # 停止时生成器被关掉，这一句保证半截内容也落库
+      alt v15 score=0 -> :824-824 ents=['_stream_response'] |         with self._gate_lock:
+ 820 OK   :873-873 -> :1185-1185 [v14 map ents=['create_app'] toks=['change', 'radio', 'sid']] who=NONE
+      OLD             radio.change(fn=self._select_session, inputs=[radio], outputs=[chatbot, status, sid])
+      NEW             radio.change(fn=self._select_session, inputs=[radio], outputs=[chatbot, status, sid])
+      alt v15 score=0 -> :928-928 ents=['_stream_response'] |         finally:
+ 820 OK   :808-808 -> :1116-1116 [v14 map ents=['_select_session'] toks=['sid']] who=NONE
+      OLD         return self.hist.load(int(sid)), self._status_html("idle"), int(sid)
+      NEW         return self.hist.load(int(sid)), self._status_html("idle"), int(sid)
+      alt v15 score=0 -> :855-855 ents=['_stream_response'] |                             else:
+ 821 OK   :880-880 -> :1192-1192 [v14 map ents=['create_app'] toks=['demo', 'load', 'sid']] who=NONE
+      OLD             demo.load(fn=self._on_load, outputs=[radio, sid, status, chatbot])
+      NEW             demo.load(fn=self._on_load, outputs=[radio, sid, status, chatbot])
+      alt v15 score=0 -> :935-935 ents=['_stream_response'] |             self._abandoned.set()
+ 821 TIE  :820-820 -> :1129-1129 [v14 map ents=['_on_load'] toks=[]] who=NONE
+      OLD         return gr.update(choices=ch), (int(ch[0][1]) if ch else None), self._status_html("idle"), msgs
+      NEW         # V7：高亮跟着它一起给（force）——v1.5 这里是"绑着丙、侧栏一条都不亮"，
+      alt v15 score=0 -> :867-867 ents=['_stream_response'] |                                 if isinstance(payload, ActionStep):
+ 824 OK   :1088-1088 -> :1185-1185 [v15 map ents=['create_app'] toks=['_select_session', 'change', 'chatbot', 'outputs', 'radio', 'sid']] who=NONE
+      OLD             radio.change(fn=self._select_session, inputs=[radio], outputs=[chatbot, status, sid])
+      NEW             radio.change(fn=self._select_session, inputs=[radio], outputs=[chatbot, status, sid])
+ 824 OK   :1014-1023 -> :1098-1116 [v15 map ents=['_select_session'] toks=['State', '_select_session', 'load', 'sid']] who=NONE
+      OLD     def _select_session(self, sid): ⏎         """点旧会话：屏幕换消息，**sid 也一起换**（V5）。 ⏎  ⏎         v1.3 只换消息、不动 sid，于是
+      NEW     def _select_session(self, sid): ⏎         """点旧会话：屏幕换消息，**sid 也一起换**（V5）。 ⏎  ⏎         v1.3 只换消息、不动 sid，于是
+ 824 OK   :1025-1035 -> :1118-1129 [v15 map ents=['_on_load'] toks=['_on_load', 'load', 'sid']] who=NONE
+      OLD     def _on_load(self): ⏎         """刷新页面时把库里的会话重新推上屏，并把 sid 指到最近一条。 ⏎  ⏎         gradio 不会重跑 create_app，Radio
+      NEW     def _on_load(self): ⏎         """刷新页面时把库里的会话重新推上屏，并把 sid 指到最近一条。 ⏎  ⏎         gradio 不会重跑 create_app，Radio
+ 826 OK   :460-463 -> :469-472 [v15 map ents=['save'] toks=['CASE', 'ELSE', 'END', 'THEN', 'WHEN', 'title', 'updated_at']] who=NONE
+      OLD             c.execute( ⏎                 "UPDATE sessions SET updated_at = ?, title = CASE WHEN title = '新会话' 
+      NEW             c.execute( ⏎                 "UPDATE sessions SET updated_at = ?, title = CASE WHEN title = '新会话' 
+      alt v14 score=2 -> :682-685 ents=['_step_card'] |                 metadata={"title": "🧭 计划步", "status": "done"}, ⏎             ) ⏎
+ 842 OK   :88-103 -> :92-107 [v15 map ents=['_decode_error'] toks=['AgentError', 'Exception', '__init__', '__new__', '_error_types', 'cls', 'err', 'log_error', 'logger', 'message', 'type']] who=NONE
+      OLD def _decode_error(d): ⏎     """从 {"type","message"} 还原一个 AgentError。 ⏎  ⏎     不能直接 cls(message, logger)——那个构造子
+      NEW def _decode_error(d): ⏎     """从 {"type","message"} 还原一个 AgentError。 ⏎  ⏎     不能直接 cls(message, logger)——那个构造子
+      alt v14 score=0 -> :252-267 ents=[] |   color: #fff !important; ⏎ } ⏎ /* 停止键在非生成期也一直挂着（实测 idle 时 display:flex），压成"没按下去
+ 842 OK   :78-85 -> :82-89 [v15 map ents=['_error_types'] toks=['AgentError', '__name__', '__subclasses__', '_error_types', 'cls']] who=NONE
+      OLD def _error_types() -> dict: ⏎     """AgentError 及其全部子类，按类名索引（恢复报错步时要知道原类型）。""" ⏎     out, stack = {}, [AgentEr
+      NEW def _error_types() -> dict: ⏎     """AgentError 及其全部子类，按类名索引（恢复报错步时要知道原类型）。""" ⏎     out, stack = {}, [AgentEr
+      alt v14 score=0 -> :242-249 ents=[] | /* 块标题（Chatbot 的 label）gradio 硬编成白底，实测 rgb(255,255,255)。 */ ⏎ [data-testid="bloc
+ 843 OK   :106-118 -> :110-115 [v15 block:_decode_timing ents=['_decode_timing'] toks=['Timing', 'TokenUsage', 'init', 'total_tokens']] who=NONE
+      OLD def _decode_timing(d): ⏎     if not isinstance(d, dict) or d.get("start_time") is None: ⏎         return None 
+      NEW def _decode_timing(d): ⏎     if not isinstance(d, dict) or d.get("start_time") is None: ⏎         return None 
+      alt v14 score=0 -> :270-282 ents=[] | #statusrow #approve-btn button { ⏎   background: #238636 !important; border: 1px
+ 846 OK   :153-209 -> :157-213 [v15 map ents=['decode_memory'] toks=['AttributeError', 'TypeError', 'ValueError', 'continue', 'decode_memory', 'except', 'fmt']] who=NONE
+      OLD def decode_memory(blob) -> list: ⏎     """encode_memory 的逆操作。坏数据一律当"没有记忆"，别让它把提问带崩。""" ⏎     try: ⏎         da
+      NEW def decode_memory(blob) -> list: ⏎     """encode_memory 的逆操作。坏数据一律当"没有记忆"，别让它把提问带崩。""" ⏎     try: ⏎         da
+      alt v14 score=0 -> :317-378 ents=[] | } ⏎ #sessions label:hover { background: #1b222b; color: var(--body-text-color); 
+ 854 OK   :465-473 -> :474-482 [v15 map ents=['save_memory'] toks=['INSERT', 'REPLACE', 'memory', 'session_id']] who=my_ui
+      OLD     def save_memory(self, sid: int, payload: str) -> int: ⏎         """整条覆盖这条会话的记忆（一条会话一行，主键就是 session_id）。返回存
+      NEW     def save_memory(self, sid: int, payload: str) -> int: ⏎         """整条覆盖这条会话的记忆（一条会话一行，主键就是 session_id）。返回存
+      alt v14 score=0 -> :687-695 ents=['_step_card'] |         names = "、".join(dict.fromkeys(c.name for c in calls)) if calls else "无工
+ 860 TIE  :401-401 -> :617-617 [v14 map ents=['_settle_all'] toks=[]] who=NONE
+      OLD         """停止 / 换题时把没人管的审批结算掉，否则 worker 线程会一直挂在 wait() 上。"""
+      NEW         """停止 / 换题时把没人管的审批结算掉，否则 worker 线程会一直挂在 wait() 上。"""
+      alt v15 score=0 -> :410-410 ents=['__init__'] |                 CREATE TABLE IF NOT EXISTS memory(
+ 860 OK   :465-473 -> :474-482 [v15 map ents=['save_memory'] toks=['save_memory']] who=NONE
+      OLD     def save_memory(self, sid: int, payload: str) -> int: ⏎         """整条覆盖这条会话的记忆（一条会话一行，主键就是 session_id）。返回存
+      NEW     def save_memory(self, sid: int, payload: str) -> int: ⏎         """整条覆盖这条会话的记忆（一条会话一行，主键就是 session_id）。返回存
+      alt v14 score=0 -> :687-695 ents=['_step_card'] |         names = "、".join(dict.fromkeys(c.name for c in calls)) if calls else "无工
+ 860 OK   :475-478 -> :484-487 [v15 map ents=['load_memory'] toks=['load_memory']] who=NONE
+      OLD     def load_memory(self, sid: int): ⏎         with self._tx() as c: ⏎             row = c.execute("SELECT pay
+      NEW     def load_memory(self, sid: int): ⏎         with self._tx() as c: ⏎             row = c.execute("SELECT pay
+      alt v14 score=0 -> :697-700 ents=['_step_card'] |             dot, verdict = "🟢", "成功" ⏎         tk = step.token_usage ⏎         s
+ 860 OK   :885-910 -> :940-965 [v15 map ents=['_bind_memory'] toks=['_bind_memory', '_mem', '_respond', 'load_memory', 'monitor', 'run', 'steps', 'system_prompt']] who=NONE
+      OLD     def _bind_memory(self, sid: int) -> None: ⏎         """把 agent.memory 换成这条会话自己的那份。 ⏎  ⏎         只需要换引用：age
+      NEW     def _bind_memory(self, sid: int) -> None: ⏎         """把 agent.memory 换成这条会话自己的那份。 ⏎  ⏎         只需要换引用：age
+      alt v14 score=0 -> :1197-1205 ents=[] |     OpsUI(agent, file_upload_folder="./data").launch( ⏎         share=False, ⏎  
+ 860 OK   :976-986 -> :1056-1066 [v15 map ents=['_respond'] toks=['_mem', '_mem_sid', 'finally', 'hist', 'last', 'mem', 'save', 'sid', 'steps']] who=NONE
+      OLD         finally: ⏎             self._state = state ⏎             self.hist.save(sid, last)  # 停止时生成器被关掉，这一句保证半
+      NEW         finally: ⏎             self._state = state ⏎             self.hist.save(sid, last)  # 停止时生成器被关掉，这一句保证半
+ 875 OK   :507-508 -> :516-517 [v15 map ents=['OpsUI'] toks=['_cancelled_before', '_run_seq']] who=NONE
+      OLD     _run_seq: int = 0 ⏎     _cancelled_before: int = 0
+      NEW     _run_seq: int = 0 ⏎     _cancelled_before: int = 0
+      alt v14 score=2 -> :735-736 ents=['_stats'] |         used = [s.token_usage for s in cur if s.token_usage] ⏎         mon = sel
+ 875 OK   :502-503 -> :511-512 [v15 map ents=['OpsUI'] toks=['_gate_lock', '_pending']] who=NONE
+      OLD     _pending: list[Approval] = [] ⏎     _gate_lock = threading.Lock()
+      NEW     _pending: list[Approval] = [] ⏎     _gate_lock = threading.Lock()
+      alt v14 score=2 -> :730-731 ents=['_stats'] |     def _stats(self) -> dict: ⏎         steps = self.agent.memory.steps
+ 876 OK   :777-778 -> :824-825 [v15 map ents=['_stream_response'] toks=['OpsUI', '_run_seq']] who=NONE
+      OLD         with self._gate_lock: ⏎             OpsUI._run_seq += 1
+      NEW         with self._gate_lock: ⏎             OpsUI._run_seq += 1
+      alt v14 score=0 -> :1058-1066 ents=['_respond'] |             self.hist.save(sid, last)  # 停止时生成器被关掉，这一句保证半截内容也落库 ⏎         yield 
+ 877 OK   :564-567 -> :583-586 [v15 map ents=['_gated_call'] toks=['OpsUI', '_cancelled_before', '_gate_lock', '_pending', '_run_seq', 'cancelled', 'decide']] who=NONE
+      OLD         with self._gate_lock: ⏎             self._pending.append(ap) ⏎             if OpsUI._run_seq <= OpsUI.
+      NEW         with self._gate_lock: ⏎             self._pending.append(ap) ⏎             if OpsUI._run_seq <= OpsUI.
+      alt v14 score=0 -> :799-802 ents=['_worker'] |             q.put(("err", exc)) ⏎         finally: ⏎             # 内层生成器只能在起它的那条
+ 878 OK   :1007-1012 -> :1091-1096 [v15 map ents=['_stop'] toks=['_settle_all', 'cancelled', 'interrupt']] who=NONE
+      OLD         with self._gate_lock: ⏎             OpsUI._cancelled_before = OpsUI._run_seq ⏎         self._settle_al
+      NEW         with self._gate_lock: ⏎             OpsUI._cancelled_before = OpsUI._run_seq ⏎         self._settle_al
+1175 TIE  :31-36 -> :33-42 [v14 map ents=[] toks=[]] who=my_ui
+      OLD # 否则一次检索三连问点三遍，比不加还慢。 ⏎ GATED_TOOLS = ("write_file", "run_python") ⏎ # 超时按拒绝处理：题可以重问，worker 线程挂着不放会永远占住 agent。
+      NEW # 否则一次检索三连问点三遍，比不加还慢。 ⏎ GATED_TOOLS = ("write_file", "run_python") ⏎ # 超时按拒绝处理：题可以重问，worker 线程挂着不放会永远占住 agent。
+      alt v15 score=0 -> :31-36 ents=[] |  ⏎ # P0-2：只拦「会动东西」的两只手。只读工具（read_file / list_dir / grep_files）不弹审批， ⏎ # 否则一次检索三连
+1183 OK   :767-882 -> :810-937 [v15 map ents=['_stream_response'] toks=['_stream_response', '_worker', 'agent', 'run']] who=my_ui
+      OLD     def _stream_response(self, message, history):  # noqa: ARG002 ⏎         task, files = self._process_messag
+      NEW     def _stream_response(self, message, history):  # noqa: ARG002 ⏎         task, files = self._process_messag
+      alt v14 score=2 -> :1048-1194 ents=['_respond'] |                     role="assistant", ⏎                     content=f"⏹ {type(ex
+1188 OK   :948-948 -> :1028-1028 [v15 map ents=['_respond'] toks=['base', 'last', 'msgs', 'user_msg']] who=my_ui
+      OLD                 last = base + [user_msg] + list(msgs)
+      NEW                 last = base + [user_msg] + list(msgs)
+1189 OK   :1088-1088 -> :1185-1185 [v15 map ents=['create_app'] toks=['_select_session', 'change', 'outputs', 'radio', 'sid']] who=my_ui
+      OLD             radio.change(fn=self._select_session, inputs=[radio], outputs=[chatbot, status, sid])
+      NEW             radio.change(fn=self._select_session, inputs=[radio], outputs=[chatbot, status, sid])
+1189 OK   :1025-1025 -> :1118-1118 [v15 map ents=['_on_load'] toks=['_on_load']] who=my_ui
+      OLD     def _on_load(self):
+      NEW     def _on_load(self):
+1189 OK   :1095-1095 -> :1192-1192 [v15 map ents=['create_app'] toks=['_on_load', 'demo', 'load', 'outputs', 'radio', 'sid']] who=my_ui
+      OLD             demo.load(fn=self._on_load, outputs=[radio, sid, status, chatbot])
+      NEW             demo.load(fn=self._on_load, outputs=[radio, sid, status, chatbot])
+1195 OK   :777-778 -> :824-825 [v15 map ents=['_stream_response'] toks=['_gate_lock', '_run_seq']] who=my_ui
+      OLD         with self._gate_lock: ⏎             OpsUI._run_seq += 1
+      NEW         with self._gate_lock: ⏎             OpsUI._run_seq += 1
+      alt v14 score=0 -> :1058-1066 ents=['_respond'] |             self.hist.save(sid, last)  # 停止时生成器被关掉，这一句保证半截内容也落库 ⏎         yield 
+1195 OK   :1007-1012 -> :1091-1096 [v15 map ents=['_stop'] toks=['_cancelled_before', '_gate_lock', '_run_seq', 'agent']] who=my_ui
+      OLD         with self._gate_lock: ⏎             OpsUI._cancelled_before = OpsUI._run_seq ⏎         self._settle_al
+      NEW         with self._gate_lock: ⏎             OpsUI._cancelled_before = OpsUI._run_seq ⏎         self._settle_al
