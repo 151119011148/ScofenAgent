@@ -18,7 +18,7 @@ echo
 echo "== 3/4 公开仓库硬闸：活凭证 / 禁入路径 / 体积 =="
 python3 tools/prepush_check.py --paths
 echo
-echo "== 4/4 push（下一步会要你的 GitHub 用户名 + PAT）=="
+echo "== 4/4 push（走 SSH 别名，不需要交互输凭证）=="
 git push -u origin main
 echo
 echo "推完了。核对：https://github.com/151119011148/ScofenAgent"
