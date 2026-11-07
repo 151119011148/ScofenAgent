@@ -1,7 +1,11 @@
 #!/bin/sh
 # 推送一条龙：消快照漂移 →（有变化就先 commit）→ 过闸 → push。
-# 为什么单独有这个脚本：这台机器的 git 凭证走 osxkeychain，而 keychain 里没有 github.com 的条目，
-# 认证必须由人在这块终端上输（用户名 + Personal Access Token）——我不代填、也不去翻你存过的凭证。
+# 为什么单独有这个脚本：这台机器到 GitHub 没有 HTTPS 凭证（keychain 里没有 github.com 条目、
+# 无 ~/.git-credentials / ~/.netrc / gh hosts.yml），走的是 ~/.ssh/config 里的别名
+# github.com-lightdoc（本仓库 remote 用的就是它；~/.ssh/config 里另有同键的 github.com-emotion）
+# → ~/.ssh/emotion_platform_github_ed25519。用别名而不是裸 github.com，
+# 是因为默认身份顺序会先递 2021 年那把 id_rsa，直接被服务端 Too many authentication failures。
+# 2026-11-07 实测这条链路通；我不代填、也不去翻你存过的任何凭证内容。
 set -e
 cd "$(dirname "$0")/.."
 echo "== 1/4 从工作区重复制（消快照漂移）=="
