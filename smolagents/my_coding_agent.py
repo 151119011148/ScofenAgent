@@ -83,7 +83,7 @@ MODEL_CLIENT_KWARGS = {
 #     token 24260 vs 7315（一发 2 步、一发跑到 6 步），first_diff 落在第 1 次调用。
 # 四次尝试、三种轨迹、两种判分，temperature 一直是 0.0。所以 P1-4 的结论是**负结果**：
 # 锁温该做（它把「采样骰子」这一项从可变因素里划掉了；0.0 确实进了请求体，这一点由
-# run/v20_probe_temperature_offline.py 零网络复验——把 client.create 换成记录用的假函数看载荷，
+# 验收脚本/v2.0/v20_probe_temperature_offline.py 零网络复验——把 client.create 换成记录用的假函数看载荷，
 # 不设=0.0、设 0.7=0.7、坏值在导入阶段就报错退出），
 # 但它换不来可复现——一致性仍然只能靠 repeat 多次抽样量出来（这就是 v20_questions 里
 # repeat 名单从 5 道扩到 7 道的理由）。想复验这段结论，改这个环境变量就能把骰子放回去，

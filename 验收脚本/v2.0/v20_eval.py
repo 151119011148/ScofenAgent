@@ -41,7 +41,7 @@
                                           （token 24260 vs 7315，first_diff 在第 1 次调用）
     四次尝试、三种轨迹、两种判分。所以本文件的「一致性」那一栏**仍然只能靠 repeat 多跑来量**，
     不能因为代码里写了 0.0 就当它是可复现的尺子。活口：`AGENT_TEMPERATURE`（不设=0.0；
-    坏值在导入阶段直接报错，不会静默退回默认——这点由 run/v20_probe_temperature_offline.py
+    坏值在导入阶段直接报错，不会静默退回默认——这点由 v20_probe_temperature_offline.py
     零网络复验，它把 client.create 换成假函数看请求载荷）。
   · **planning_interval 是这份尺子上最贵的一格**。同 4 题两臂对照（run/v20_probe_planning_arms4.json，
     planning=8 vs planning=None）：输入 token 100,963 → 71,258（**-29.4%**），墙钟 29.0s → 23.1s

@@ -135,7 +135,7 @@ ok("B06 公网抓取在 30s 超时内拿到正文", "example.com" in pub and tim
 nap_agent = fake_agent()
 my_mcp.MCP_CALL_TIMEOUT_S = 2.0
 slow = attach({"napserver": {"argv": [sys.executable,
-                                      str(Path(__file__).resolve().parent / "run/v20_slow_server.py")],
+                                      str(Path(__file__).resolve().parent / "v20_slow_server.py")],
                              "tools": {"nap": "睡"}}}, nap_agent)
 ok("B07 假 server 也挂得上（stdio 通道与 server 种类无关）", "nap" in slow.added, str(slow.skipped))
 ok("B07b 挂到假 agent 上，没碰单例那把桥", agent._mcp_bridge is b and "nap" not in agent.tools)
