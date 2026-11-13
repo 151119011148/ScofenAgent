@@ -68,343 +68,770 @@
 <header class="top">
   <h1>Agent 链路详解</h1>
   <div class="meta">
-    代码基线：<b>~/Desktop/study/ai学习/smolagents</b>（1.27.0.dev0，editable 安装）&nbsp;·&nbsp;
-    模型：<b>qwen-plus</b> via 阿里云百炼 OpenAI 兼容端点&nbsp;·&nbsp;
-    你的入口：<b>my_agent.py</b> / <b>my_ui.py</b><br>
-    文中每一个 <span class="loc">文件:行号</span> 都是当场从源码里核对过的，不是凭印象写的。
+    代码基线：<b>~/Desktop/study/ai学习/smolagents</b>（smolagents 1.27.0.dev0，editable 安装；GitHub 上的公开仓库目录已改名 <b>scofenAgent</b>，本地路径与源码未动）<br>
+    你自己的五个文件（当场 <code>wc -l</code>）：<b>my_ui.py 2315</b> · <b>my_coding_agent.py 325</b> · <b>my_agent.py 156</b> · <b>my_mcp.py 186</b> · <b>my_audit.py 128</b><br>
+    模型：<b>tongyi-xiaomi-analysis-flash</b>（尺子那一份基线）／ <b>qwen-plus</b>（界面默认），都走阿里云百炼 OpenAI 兼容端点<br>
+    本版重梳于 <b>2026-11-13</b>。补的是 v2.0 那一整轮——MCP 桥、审计落盘、超时、锁温、尺子、会话删除——旧版对它们零覆盖。
+  </div>
+  <div class="meta" style="margin-top:10px">
+    文中每一个 <span class="loc">文件:行号</span> 都是当场 grep 过源码的。<b>锚点尺子已经换掉了</b>：原来对的是
+    <code>.rollback/v1.8/</code> 那份快照，它被演练脚本重跑时覆盖过（实测 2,065 / 278 / 121 行，和文档里写的
+    1,758 / 256 / 111 不一致），已经不能当尺子。现在这一版全部对着<b>活代码</b>，快照只做历史对照。
   </div>
 </header>
 
 <nav class="toc">
   <a href="#s1">1 是不是 agent</a>
-  <a href="#s2">2 完整链路 13 站</a>
-  <a href="#s3">3 你今天的四次真实记录</a>
-  <a href="#s4">4 三道闸门</a>
-  <a href="#s5">5 它 vs 我：动作空间</a>
-  <a href="#s6">6 四个动手实验</a>
+  <a href="#s2">2 完整链路 21 站</a>
+  <a href="#s3">3 读数：历史与现在</a>
+  <a href="#s4">4 八道闸门</a>
+  <a href="#s5">5 它 vs 我</a>
+  <a href="#s6">6 四个实验的现状</a>
   <a href="#s7">7 术语速查</a>
 </nav>
 
 <h2 id="s1">1 它到底是不是一个 agent</h2>
 
-<p>是。但"是 agent"这件事的判据不是它会聊天、也不是它自称 agent，而是代码里这三样东西同时存在：</p>
+<p>是。判据不是它会聊天、也不是它自称 agent，而是代码里这三样东西同时存在：</p>
 
 <div class="card ok">
   <p><span class="key">判据一：循环。</span>有一个 while 反复把「模型的上一次输出」变成「下一次输入」，而不是单问单答。<br>
   <span class="loc">agents.py:545</span></p>
   <p><span class="key">判据二：动作空间。</span>模型输出的不是给人看的文字，而是可执行的结构（工具名 + 参数），由本机真正执行。<br>
-  <span class="loc">agents.py:1361 → tools.py:228</span></p>
+  <span class="loc">agents.py:1361 → tools.py:246 → tools.py:228</span></p>
   <p><span class="key">判据三：终止条件。</span>有明确的结束信号（<code>final_answer</code>）和一个兜底上限（<code>max_steps</code>），否则会永远问下去。<br>
-  <span class="loc">agents.py:582-592 / 606</span></p>
+  <span class="loc">agents.py:583 / 591 · agents.py:606-607</span></p>
 </div>
 
-<p>三条都在，所以它是 agent；缺任何一条，它就退化成一个"带 prompt 模板的接口调用"。市面上很多号称 Agent 的东西确实只有模板没有循环。</p>
+<p>三条都在，所以它是 agent；缺任何一条，它就退化成一个「带 prompt 模板的接口调用」。市面上很多号称 Agent 的东西确实只有模板没有循环。</p>
 
-<h3>1.1 但它只能做三件事，这就是它拒绝你的原因</h3>
+<div class="card warn">
+  <p><span class="g">但今天要看的是另一个变化：框架的三判据一条没动，动的是循环外面。</span>现在这一份代码在循环的<b>上面和里面</b>各装了阻塞点：</p>
+  <ul class="tight">
+    <li>计划开工前，人批一份计划 ← <span class="loc">my_ui.py:1110 / 1139</span></li>
+    <li>每一次「会动东西」的调用前，人批一张卡 ← <span class="loc">my_ui.py:920 / 951</span></li>
+    <li>同名同参第二次不再执行，挡够三次直接把整题收掉 ← <span class="loc">my_ui.py:993 / 1030 / 1068</span></li>
+  </ul>
+  <p>这三层都不在 smolagents 源码里，是 <code>OpsUI</code> 用「覆盖实例方法」的写法装上去的，一行 <code>src/smolagents/</code> 都没改。
+  所以下面的 21 站分成两半读：<b>第 5–12、18–19 站是框架的循环</b>，<b>第 1–4、7、15–17 站是人装在循环外面的东西</b>。</p>
+</div>
 
-<p>你让它"写个 HTML 页面、按 ai学习 里的代码讲"，它回答"我的运行环境不包含源码、框架代码或文件系统访问能力"。<span class="g">这句话是对的，而且不是客套。</span>把它自己的动作空间打印出来看，只有三个工具：</p>
+<h3>1.1 从「只能做三件事」到「十一只手」</h3>
 
-<div class="src">你之前那次运行的真实输出</div>
-<pre><code>import ok, tools: ['max_drawdown', 'annualized_volatility', 'final_answer']</code></pre>
+<p>旧版这一节写的是「它只能做三件事」——那是对的，但那是 10-28 的代码。现在把动作空间打印出来是这些：</p>
 
-<p>没有读文件的工具，没有执行代码的工具，没有访问网络的工具。所以：</p>
+<div class="src">my_agent.py:90-97（构造那一段，逐字）</div>
+<pre><code>agent = ToolCallingAgent(
+    tools=[MaxDrawdownTool(), AnnualizedVolTool(),
+           read_file, list_dir, grep_files, write_file, run_python],
+    model=model,
+    max_steps=8,
+    planning_interval=PLANNING_INTERVAL,</code></pre>
+
+<table>
+  <tr><th>动作</th><th>来源</th><th>能干什么</th><th>要不要人点头</th></tr>
+  <tr><td><code>max_drawdown</code></td><td>my_agent.py:47</td><td>纯算术</td><td>不批，但过查重</td></tr>
+  <tr><td><code>annualized_volatility</code></td><td>my_agent.py:67</td><td>纯算术</td><td>同上</td></tr>
+  <tr><td><code>read_file</code></td><td>my_coding_agent.py:152</td><td>读 <code>ai学习/</code> 内文件，<b>默认 200 行、硬上限 300 行</b>（<code>lines=200</code> 在 <span class="loc">:152</span>，<code>MAX_LINES=300</code> 在 <span class="loc">:107</span>，取小在 <span class="loc">:165</span>）；超了会在末尾告诉你下一段从第几行起</td><td>不批，过查重</td></tr>
+  <tr><td><code>list_dir</code></td><td>my_coding_agent.py:176</td><td>列目录</td><td>不批，过查重</td></tr>
+  <tr><td><code>grep_files</code></td><td>my_coding_agent.py:195</td><td>搜代码，<b>默认 40 条、硬上限 100 条</b>（<code>max_hits=40</code> 在 <span class="loc">:195</span>，<code>min(int(max_hits), 100)</code> 在 <span class="loc">:205</span>）；单行截 <b>160 字符</b>（<span class="loc">:221</span>）、大于 <b>200 KB</b> 的文件整个跳过（<code>MAX_BYTES</code> <span class="loc">:108</span>／判在 <span class="loc">:211</span>）</td><td>不批，过查重</td></tr>
+  <tr><td><code>write_file</code></td><td>my_coding_agent.py:231</td><td>只能落 <code>.agent-staging/</code></td><td><b>每发必批</b></td></tr>
+  <tr><td><code>run_python</code></td><td>my_coding_agent.py:262</td><td>子进程跑模型写的代码</td><td><b>每发必批</b></td></tr>
+  <tr><td><code>get_current_time</code> / <code>convert_time</code></td><td>my_mcp.py:45-52（time server）</td><td>本地时间与时区换算</td><td><b>每发必批</b>（外部工具一律批）</td></tr>
+  <tr><td><code>fetch</code></td><td>my_mcp.py:54-59（fetch server）</td><td><b>出网</b>抓 URL，正文进上下文</td><td><b>每发必批</b></td></tr>
+  <tr><td><code>final_answer</code></td><td>框架自己塞的 <span class="loc">agents.py:402</span></td><td>交卷</td><td>不批，也不过查重 <span class="loc">my_ui.py:1008-1009</span></td></tr>
+</table>
+
+<p>所以「它的动作空间有多大」这个问题，<b>答案取决于你从哪个入口进</b>——这句话本身就是链路的一部分。
+四个入口，四个数，别混着说：</p>
+
+<table>
+  <tr><th>入口</th><th>几只手</th><th>怎么算出来的</th><th>过审批门的</th></tr>
+  <tr><td><code>python my_agent.py</code>（命令行）</td><td><b>8</b></td>
+      <td>显式声明 <b>7</b>（<span class="loc">my_agent.py:91-92</span>）＋ 框架自己塞的 <code>final_answer</code>
+      （<span class="loc">agents.py:402</span> 的 <code>setdefault</code>）。<b>不 attach MCP</b>——
+      <span class="loc">my_mcp.py:2-7</span> 写明「命令行那条路不该起子进程」</td><td><b>0</b>（审批门是 <code>OpsUI</code> 挂在实例上的）</td></tr>
+  <tr><td>界面（<code>my_ui.py</code>，交付形态 7860）</td><td><b>11</b></td>
+      <td>上面那 8 只 ＋ <code>OpsUI.__init__</code> 里 <span class="loc">my_ui.py:877</span> 那句
+      <code>my_mcp.attach(self.agent)</code> 挂上的 <b>3</b> 只（<code>get_current_time</code>／<code>convert_time</code>／<code>fetch</code>）</td>
+      <td><b>5</b>：<code>GATED_TOOLS</code> 那 2 只 ＋ MCP 那 3 只（名单现拼，<span class="loc">my_ui.py:907-918</span>）</td></tr>
+  <tr><td><code>python my_coding_agent.py</code>（代码检索助手）</td><td><b>6</b></td>
+      <td><code>__main__</code>（<span class="loc">:321-325</span>）调 <code>build_agent()</code>
+      （<span class="loc">my_coding_agent.py:289-318</span>），它只声明 <b>5</b> 只
+      （<span class="loc">:293</span>：read_file／list_dir／grep_files／write_file／run_python，<b>没有那两只行情算术手</b>）＋ <code>final_answer</code>；
+      <code>name="代码检索助手"</code>（<span class="loc">:296</span>）、<b>不传 <code>planning_interval</code></b>（所以这条路<b>没有计划卡</b>）</td>
+      <td><b>0</b>（同样不经界面）</td></tr>
+  <tr><td>离线尺子（<code>验收脚本/v2.0/v20_eval.py</code>）</td><td><b>8</b></td>
+      <td>走的是 <code>from my_agent import agent</code> 那<b>同一个单例</b>，所以与命令行同口径；
+      基线产物 <code>meta.tools</code> 实测就是 8 只</td>
+      <td><b>0</b>，而且 <code>meta.gate</code> 写死 <code>"off（裸 agent，不经界面审批门）"</code>——
+      它量到的「非法调用」是模型<b>想</b>干什么，含界面会拦下来的那些</td></tr>
+</table>
+
+<h3>1.2 能力换了，边界必须跟着换</h3>
+
+<p>不是「加了工具」就完了。这一轮真正花时间的是边界跟着改了三处：</p>
+
 <ul class="tight">
-  <li>它<strong>不可能</strong>打开 <code>agents.py</code>——不是"不愿意"，是它的动作列表里没有这个动作。</li>
-  <li>它<strong>不可能</strong>生成 HTML 文件——同理，没有写文件的动作。</li>
-  <li>它能做的是：拿你贴在问题里的数字，调用两个数学工具，再组织成文字。仅此。</li>
+  <li><span class="key">审批名单不能写死。</span><code>GATED_TOOLS</code> 只有 <code>("write_file", "run_python")</code>
+  （<span class="loc">my_ui.py:42</span>），而 MCP 工具是运行时才知道挂没挂上，所以名单现拼：
+  <span class="loc">my_ui.py:907-918</span>。把运行时结果写回常量，下一次构造就会读到上一轮的名单。</li>
+  <li><span class="key">出网的口子从「结构上不可能」变成「每发都要人批」。</span>旧文档里那句「它没有联网能力」已经不成立：
+  <code>fetch</code> 真能出网。给它兜底的是挂载白名单（<span class="loc">my_mcp.py:45-60</span>）、
+  危险名正则（<span class="loc">my_mcp.py:74-77</span>）和 30 秒外部调用超时（<span class="loc">my_mcp.py:41 / 136</span>）。</li>
+  <li><span class="key">每一次调用都要留痕。</span><span class="loc">my_audit.py:52 / 83 / 105</span> 那三段 JSONL，
+  挂在查重层而不是审批层，理由写在 <span class="loc">my_ui.py:1042-1043</span>：只读那五只手不过门，
+  挂在审批层就等于它们一条不记。</li>
 </ul>
 
-<p>而它说"如需可视化流程图，建议使用 Mermaid 或 draw.io 手动绘制"——这是大模型在能力边界外给你的<strong>建议性补白</strong>，属于纯文本生成，不是它的动作。这个区分很重要：<span class="key">agent 的"能"只等于它的工具列表，其余所有"我建议你…"都是话术。</span></p>
+<div class="card warn">
+  <p><span class="g">还有一条没做完，必须写在这儿而不是藏在最后：</span><code>run_python</code> 现在<b>绕过了</b>
+  <code>guarded()</code>（<span class="loc">my_coding_agent.py:262</span>）。<code>read_file</code> 走
+  <span class="loc">my_coding_agent.py:111-148</span> 那套路径判定，但模型可以让 <code>run_python</code> 里的代码自己
+  <code>open(".env")</code>——审批卡拦得住「它想跑」，拦不住「跑起来之后读到什么」。
+  这是当前真实的 P0，任务清单里的 #8，尚未修。</p>
+</div>
 
-<h2 id="s2">2 一次提问的完整旅程（13 站）</h2>
+<h2 id="s2">2 一次提问的完整旅程（21 站）</h2>
 
-<p>下面按你实际点发送之后的顺序走。每一站给真实代码位置。你 <code>stream_outputs=True</code>，所以走的是生成器分支。</p>
+<p>按你实际点发送之后的顺序走，每一站给真实代码位置。旧版只有 13 站，多出来的 8 站全是这一轮装上的东西。</p>
+
+<h3>2.1 外壳：从回车到 worker 起转（站 1–4）</h3>
 
 <ol class="flow">
 
 <li><span class="num">1</span>
-  <div class="st">你在网页输入框敲回车 <span class="loc">gradio_ui.py:388</span></div>
-  <p><code>GradioUI</code> 的提交回调里就是一句 <code>for event in self.agent.run(...)</code>。它没有"处理逻辑"，只是把用户文本交出去，然后逐个消费 agent 吐出的事件——这是它能实时滚动的原因。</p>
-</li>
-
-<li><span class="num">2</span>
-  <div class="st">run() 建立任务外壳 <span class="loc">agents.py:436</span></div>
-  <p>把字符串包成 <code>TaskStep</code> 塞进 memory，然后决定用哪个步数上限：</p>
-  <div class="src">agents.py:468</div>
-  <pre><code>max_steps = max_steps or self.max_steps</code></pre>
-  <p>你没在 <code>run()</code> 里传，所以用的是构造时的 <code>max_steps=6</code>（<code>my_agent.py</code>）。<span class="g">框架默认是 20</span>（<code>agents.py:300</code>）——我把它调小是当熔断用，防它反复调工具烧额度。</p>
-</li>
-
-<li><span class="num">3</span>
-  <div class="st">进入主循环 <span class="loc">agents.py:545</span></div>
-  <pre><code>while not returned_final_answer and self.step_number &lt;= max_steps:</code></pre>
-  <p>整条链路的心脏。条件里那两个变量一个由模型决定（拿到 final_answer 才置真），一个由本地计数决定，<strong>模型无法自己延长循环</strong>——它只能在这 6 步里想办法。</p>
-</li>
-
-<li><span class="num">4</span>
-  <div class="st">把历史压成消息 <span class="loc">agents.py:758</span></div>
-  <pre><code>def write_memory_to_messages(self, summary_mode: bool = False) -&gt; list[ChatMessage]:</code></pre>
-  <p>把 memory 里所有 <code>system prompt / TaskStep / 上几步的 llm_output / action / observation</code> 全部摊平成消息列表。大模型没有"会话状态"，服务端不记你上一轮，所以每走一步都要把<strong>整段历史重新发一遍</strong>。</p>
+  <div class="st">你敲回车，接住它的是你自己的 UI，不是 GradioUI 的那条 for <span class="loc">my_ui.py:2180 / 1798</span></div>
+  <p><code>create_app()</code>（<span class="loc">my_ui.py:2180</span>）自己搭界面，提交走
+  <code>_respond()</code>（<span class="loc">my_ui.py:1798</span>），它返回的是一个 <b>8 元组</b>——聊天流、状态条、计划面板、
+  待批卡、下拉框一起更新。<span class="loc">my_ui.py:2300</span> 那行 <code>ui = OpsUI(agent, file_upload_folder="./data")</code>
+  是唯一的入口，<code>launch</code> 只绑 <code>127.0.0.1:7860</code>、不开 share（<span class="loc">my_ui.py:2303-2305</span>）。</p>
   <div class="card warn">
-    <p><span class="g">但你看到的那串"一路涨"的数字是个误读陷阱，这里必须讲清。</span>终端日志和网页界面打印的<strong>不是同一个口径</strong>：</p>
-    <ul class="tight">
-      <li>终端 <code>[Step 4: … Input tokens: 5,732]</code> ← <span class="loc">monitoring.py:110-114</span> 里 <code>total_input_token_count += …</code>，是<strong>整个 agent 生命周期的累计和</strong>；那个 <code>Step 4</code> 也是 <code>len(self.step_durations)</code>，<strong>跨问题连续编号</strong>，所以你换一个问题它不会从 1 重新开始。</li>
-      <li>网页 <code>Step 1 | Input tokens: 1,979</code> ← <span class="loc">gradio_ui.py:33</span> 的 <code>step_log.token_usage.input_tokens</code>，是<strong>这一步真实发出去的量</strong>。</li>
-    </ul>
-    <p>把累计值逐次相减就还原出真相：你今天的五步真实 prompt 是</p>
-    <pre><code>1273 → 1402 → 1458 → 1599 → 1979      (累计: 1273 / 2675 / 4133 / 5732 / 7711)</code></pre>
-    <p>所以 prompt 没有暴涨，只是<strong>缓慢上涨</strong>：因为 <code>reset=False</code>（<span class="loc">gradio_ui.py:389</span> 把 <code>self.reset_agent_memory</code> 传给 <code>run()</code>，默认 <code>False</code>），历史确实留着，但你前几轮的问答都只有几十字，累加得慢。最后一问要 1979 是因为你那次的问题最长、且前面三轮问答都进了上下文。</p>
+    <p>旧版第 1 站写的是「<code>GradioUI</code> 的提交回调里就是一句 <code>for event in self.agent.run(...)</code>，它没有处理逻辑」，
+    <span class="g">这句话现在是错的</span>。框架那句 for 还在 <span class="loc">gradio_ui.py:388-389</span>，但
+    <code>OpsUI</code> 继承了它却<b>没有沿用它的事件循环</b>——它自己起了线程和队列（第 4 站），否则审批一阻塞就死锁。
+    「UI 不含任何 agent 逻辑」在 v1 成立；现在这个 UI 是整条链路里最厚的一层（2315 行）。</p>
   </div>
 </li>
 
+<li><span class="num">2</span>
+  <div class="st">本题的历史从 sqlite 里读回来，不是从进程内存 <span class="loc">my_ui.py:1716 / 1743 / 741</span></div>
+  <p><code>_bind_memory()</code>（<span class="loc">my_ui.py:1716</span>）把选中的会话号 <code>sid</code> 绑到这次问答上，
+  <code>_session_steps()</code>（<span class="loc">my_ui.py:1743</span>）把落盘的步骤读回来。落盘那一写在
+  <span class="loc">my_ui.py:1914</span>：<code>self.hist.save_memory(sid, encode_memory(mem.steps))</code>。</p>
+  <ul class="tight">
+    <li>库文件：<span class="loc">my_ui.py:33</span> <code>.agent-history.sqlite3</code>，和代码同目录。</li>
+    <li>编解码：<code>encode_memory()</code> <span class="loc">my_ui.py:171</span> / <code>decode_memory()</code> <span class="loc">my_ui.py:212</span>；
+    写出去的是 <code>MEM_FMT = "v2"</code>（<span class="loc">my_ui.py:102</span>），读的时候同时接受 v1（<span class="loc">my_ui.py:107</span>）。</li>
+    <li>存哪些字段由 <code>MEM_FIELDS</code> 点名（<span class="loc">my_ui.py:108</span>）——<b>不含 <code>model_input_messages</code></b>。
+    这一点要和第 11 站连着看：框架把「真正喂给模型的原文」存在那格里，你两份落盘都没存它。</li>
+  </ul>
+  <p>框架侧的 memory 本身很薄：<code>AgentMemory</code> 就是系统提示词 + 一个 steps 列表
+  （<span class="loc">memory.py:214-232</span>），<code>reset()</code> 只是把列表清空。</p>
+</li>
+
+<li><span class="num">3</span>
+  <div class="st">换题开局：七本账一起清 <span class="loc">my_ui.py:1557-1585</span></div>
+  <p>每次新提问，<code>_stream_response()</code> 先做清算，再挂 worker。这七笔账每一笔都对应一个踩过的坑：</p>
+  <div class="src">my_ui.py:1560-1585（顺序就是执行顺序）</div>
+  <pre><code>self._settle_all("cancelled")          # :1560 上一题遗留的未批项先结算
+OpsUI._ap_cards.clear()                # :1565 卡片登记表（D8：留着就会去改已经不在屏上的对象）
+OpsUI._pending_wait = 0.0              # :1568 V8 没人领走的审批等待
+OpsUI._seen_calls.clear()              # :1571 查重登记表
+OpsUI._dup_blocked = 0                 # :1572
+OpsUI._dup_tripped = False             # :1573
+OpsUI._audit_sid = self._sid           # :1576 审计行的会话号在这里定格
+OpsUI._run_seq += 1                    # :1585 先领号，再起线程（D7）</code></pre>
+  <p><span class="g">:1576 那一行是整个审计链的关键。</span>它是唯一一处「UI 线程已经知道本题 sid、worker 线程还没起」的时刻。
+  审计是在 worker 线程里写的（第 15 站），跨线程拿 <code>self._sid</code> 就会串题。</p>
+</li>
+
+<li><span class="num">4</span>
+  <div class="st">起一条 worker 线程消费生成器，UI 这边每 0.25 秒取一次 <span class="loc">my_ui.py:1532 / 1588 / 1601</span></div>
+  <p>这是这一轮结构上最大的一处改动，理由就一句：<span class="key">审批是阻塞的，而 gradio 是同步往前推生成器的。</span>
+  工具卡在 <code>forward</code> 里等人点按钮，那条生成器就永远 <code>yield</code> 不出审批卡，界面永远不会出现「允许/拒绝」——死锁。
+  注释原话在 <span class="loc">my_ui.py:1535-1537</span>。</p>
+  <div class="src">my_ui.py:1539</div>
+  <pre><code>inner = self.agent.run(task, images=files, stream=True, reset=self.reset_agent_memory)</code></pre>
+  <p><code>reset</code> 用的是 GradioUI 的默认 <code>False</code>（<span class="loc">gradio_ui.py:310 / 317</span>），
+  也就是<b>同一个问题内</b>的历史一定带着。取舍在代码注释里写得很清楚
+  （<span class="loc">my_ui.py:1719 / 1724</span>）：不传 <code>reset=True</code>，因为那会连 monitor 一起清零
+  （<span class="loc">agents.py:478-480</span>），「进程累计」这个口径就废了——跨问题的上下文现在由 sqlite 负责（第 2 站），
+  不用牺牲累计口径去换。</p>
+  <p>worker 抛出的异常不往外冒，塞进队列由 UI 侧原样重放（<span class="loc">my_ui.py:1545-1546</span>）；
+  <code>finally</code> 里那句 <code>inner.close()</code> 要自己接住 <code>RuntimeError</code>
+  （<span class="loc">my_ui.py:1548-1554</span>），因为上游 <code>_run_stream</code> 的 finally 里还有一次 yield。</p>
+</li>
+
+</ol>
+
+<h3>2.2 循环、计划与记忆（站 5–12）</h3>
+
+<ol class="flow">
+
 <li><span class="num">5</span>
-  <div class="st">系统提示词是当场生成的 <span class="loc">agents.py:1265</span></div>
-  <p><code>ToolCallingAgent.initialize_system_prompt()</code> 生成那份说明。要点是：它把<strong>工具的名字、描述、参数 JSON schema</strong> 一起写进去。也就是说你的 <code>MaxDrawdownTool</code> 类里那三行属性：</p>
-  <div class="src">my_agent.py（你自己写的部分）</div>
-  <pre><code>name = "max_drawdown"
-description = "计算按时间升序的收盘价序列的最大回撤，返回百分比和发生区间。"
-inputs = {"prices": {"type": "array", "description": "按时间升序排列的收盘价列表"}}</code></pre>
-  <p>这段 Python <strong>不是被执行才重要的</strong>——它先被序列化成 JSON 交给模型看。模型对工具的全部认知就来自这几个字符串。你把 description 写得含糊，它就真会用错，这一点和第 9 站的白名单合起来构成"工具定义即接口契约"。</p>
+  <div class="st">run() 建立任务外壳，步数上限取构造时的 8 <span class="loc">agents.py:436 / 468</span></div>
+  <p>字符串包成 <code>TaskStep</code> 塞进 memory，然后：</p>
+  <div class="src">agents.py:468</div>
+  <pre><code>max_steps = max_steps or self.max_steps</code></pre>
+  <p>你没在 <code>run()</code> 里传，所以用的是 <code>my_agent.py:94</code> 的 <code>max_steps=8</code>；框架默认是 20
+  （<span class="loc">agents.py:300</span>）。<span class="g">旧版写的「你设 6」已经改了</span>，而且这个数现在不是孤零零的一个熔断值，
+  它和第 6 站绑在一起。</p>
 </li>
 
 <li><span class="num">6</span>
-  <div class="st">一步开始，先把入参存档 <span class="loc">agents.py:1276 / 1289</span></div>
-  <pre><code>memory_messages = self.write_memory_to_messages()
-input_messages = memory_messages.copy()
-memory_step.model_input_messages = input_messages</code></pre>
-  <p>第三行很值钱：它把<strong>这一轮真正发给模型的原文</strong>存进 memory。你在终端日志或 UI 里想看"到底喂给模型什么"，读的就是这个字段，不用去抓包。</p>
+  <div class="st">计划先于行动：每题恰好一份 PlanningStep <span class="loc">agents.py:550-552 → 741</span></div>
+  <p>框架只在 <code>planning_interval</code> 不为 <code>None</code> 时才产出 <code>PlanningStep</code>，判据是：</p>
+  <div class="src">agents.py:550-552</div>
+  <pre><code>if self.planning_interval is not None and (
+    self.step_number == 1 or (self.step_number - 1) % self.planning_interval == 0
+):</code></pre>
+  <p><code>PLANNING_INTERVAL = 8</code>（<span class="loc">my_agent.py:44</span>）和 <code>max_steps = 8</code> 同高，
+  算术写在 <span class="loc">my_agent.py:32-33</span>：下一次重规划落在第 9 步，而
+  <code>while step_number &lt;= max_steps</code> 在第 9 步之前就退出了。<b>所以题内不会重规划，每题只出一份计划</b>——
+  这不是巧合，是为了让「计划可见」这件事的成本恰好等于一次模型调用。</p>
 </li>
 
 <li><span class="num">7</span>
-  <div class="st">连同工具清单一起交给模型 <span class="loc">agents.py:1293 / 1261</span></div>
+  <div class="st">人装的闸：计划批不批，在这里停下 <span class="loc">my_ui.py:1110 / 1139</span></div>
+  <p>装法是覆盖实例上的 <code>_run_stream</code>。这条路是唯一的，因为 <code>run(stream=True)</code>
+  直接 <code>return self._run_stream(task=..., max_steps=..., images=...)</code>（<span class="loc">agents.py:496</span>，
+  方法定义在 <span class="loc">agents.py:540</span>），实例属性优先于类上的方法，所以拦得住，且一行 <code>src/smolagents/</code> 都不改。
+  包装里只多一句 <code>_plan_gate</code>，其余原样转发，连 <code>ChatMessageStreamDelta</code> 也照转——
+  <span class="key">计划正文照样一个字一个字流出来</span>，面板是流完之后那份的常驻视图。</p>
+  <p><code>_plan_gate()</code>（<span class="loc">my_ui.py:1139</span>）和工具审批共用同一套东西：D7 的临界区
+  （入队和「本轮已被停止」一起判，<span class="loc">my_ui.py:1148-1149</span>）、V8 的等待过账
+  （<span class="loc">my_ui.py:1153-1154</span>）、<code>decision</code> 的五个取值、同一对 ✔/✖ 按钮。
+  <b>不同的只有落场</b>：工具被拒本题还在跑，计划被否这一题就没开工——所以这里抛异常出去，
+  <code>PlanDeniedError</code> 在 <span class="loc">my_ui.py:588</span>。取消这一档抛的是和框架同款的
+  <code>AgentError("Agent interrupted.")</code>，好让两条路对得上（框架那句在 <span class="loc">agents.py:546-547</span>）。</p>
+  <div class="card warn">
+    <p><span class="g">【待补】</span>批准／拒绝这个决定<b>不进模型记忆</b>，只进审计和界面。也就是说你拒了一份计划之后，
+    模型那边并不知道「这份计划被否了」——下一问它看到的还是全新开局。这在设计上可以辩解（换题即换事），
+    但文档不该假装它不存在。</p>
+  </div>
+</li>
+
+<li><span class="num">8</span>
+  <div class="st">进入主循环 <span class="loc">agents.py:545-547</span></div>
+  <pre><code>while not returned_final_answer and self.step_number &lt;= max_steps:
+    if self.interrupt_switch:
+        raise AgentError("Agent interrupted.", self.logger)</code></pre>
+  <p>整条链路的心脏。条件里那两个变量一个由模型决定（拿到 final_answer 才置真），一个由本地计数决定，
+  <strong>模型无法自己延长循环</strong>——它只能在这 8 步里想办法。那句 <code>interrupt_switch</code> 现在不只给人用：
+  查重熔断也调它，而且它有个洞，第 15 站专门讲。</p>
+</li>
+
+<li><span class="num">9</span>
+  <div class="st">把历史压成消息：每走一步整段重发 <span class="loc">agents.py:758</span></div>
+  <pre><code>def write_memory_to_messages(self, summary_mode: bool = False) -&gt; list[ChatMessage]:</code></pre>
+  <p>memory 里所有 <code>system prompt / TaskStep / llm_output / action / observation</code> 全部摊平成消息列表。
+  大模型没有「会话状态」，服务端不记你上一轮，所以每一步都要把整段历史重新发一遍。</p>
+  <p><span class="key">这一步的规模由你能塞进上下文的东西决定</span>，而那些上限全是自己写的：</p>
+  <ul class="tight">
+    <li>一次 <code>read_file</code> 最多 <code>MAX_LINES = 300</code> 行（<span class="loc">my_coding_agent.py:107 / 165</span>）。</li>
+    <li><code>grep_files</code> 跳过 <code>MAX_BYTES = 200_000</code> 以上的文件（<span class="loc">my_coding_agent.py:108 / 211</span>）。</li>
+    <li><code>fetch</code> 的正文整段进上下文，默认 5,000 字符——这条写在 <span class="loc">my_mcp.py:55-58</span> 的风险描述里，
+    上限在 MCP server 自己那边，不在你代码里。</li>
+  </ul>
+  <p>尺子那一份全量的实测是 <b>401,273 个输入 token</b>（见 §3.2），这就是「每步重发」四个字的真实价格。</p>
+</li>
+
+<li><span class="num">10</span>
+  <div class="st">系统提示词当场生成：工具定义即接口契约 <span class="loc">agents.py:1265</span></div>
+  <p><code>ToolCallingAgent.initialize_system_prompt()</code> 把工具的<strong>名字、描述、参数 JSON schema</strong>
+  一起写进系统提示词。你在工具类里写的那几个字符串先被序列化给模型看，模型对工具的全部认知就来自它们。</p>
+  <p>这一轮多加了一条守卫：<span class="g">「不改提示词」现在是被测出来的，不是靠自觉。</span>
+  <code>v18_test_dup.py</code> 的 <code>prompt_surface()</code>（<span class="loc">验收脚本/v1.8/v18_test_dup.py:464</span>）
+  把提示词面抽出来和快照逐字比对（同文件 <span class="loc">:492-493</span> 那条 9a 断言）。
+  <b>注意它比的是 <code>.rollback/v1.8/after-p0abc</code> 那份快照</b>——快照已被覆盖，这条守卫目前是在跟一把旧尺子比，
+  属于本轮要处理的事项（见文末）。</p>
+  <p>还有一句容易漏的：<code>my_agent.py:98</code> 那个 <code>description=</code> <b>模型读不到</b>。
+  顶层 <code>ToolCallingAgent</code> 的 description 只在 <code>describe()</code> 里用，那是给「被托管的子 agent」看的；
+  实测 <code>'读代码' in agent.system_prompt</code> → <code>False</code>（注释在 <span class="loc">my_agent.py:99-101</span>）。
+  真正给模型念的能力边界在各工具的 docstring 和 <code>guarded()</code> 的报错里。</p>
+</li>
+
+<li><span class="num">11</span>
+  <div class="st">一步开始，先把入参存档 <span class="loc">agents.py:1276 / 1286 / 1289</span></div>
+  <pre><code>memory_messages = self.write_memory_to_messages()
+input_messages = memory_messages.copy()
+memory_step.model_input_messages = input_messages</code></pre>
+  <p>第三行把<strong>这一轮真正发给模型的原文</strong>存进 memory。想看「到底喂给模型什么」，读的就是这个字段，不用抓包。</p>
+  <div class="card">
+    <p><span class="key">但它只活在进程里。</span>框架自己的「简版」导出就把它剔掉了：</p>
+    <div class="src">memory.py:236-239</div>
+    <pre><code>def get_succinct_steps(self) -&gt; list[dict]:
+    return [{key: value for key, value in step.dict().items() if key != "model_input_messages"} for step in self.steps]</code></pre>
+    <p>你那份 <code>MEM_FIELDS</code>（<span class="loc">my_ui.py:108</span>）同样没点它。所以<b>关掉进程之后，
+    「当时喂给模型的原文」就找不回来了</b>——落盘里有答案、有观察、有 token 数，唯独没有那份完整的请求体。
+    要复盘一次「模型为什么会这么想」，只剩审计 JSONL（站 21）里那 200 字符的参数头。</p>
+  </div>
+</li>
+
+<li><span class="num">12</span>
+  <div class="st">连同工具清单一起交给模型 <span class="loc">agents.py:1293-1295</span></div>
   <pre><code>output_stream = self.model.generate_stream(
     input_messages,
     stop_sequences=["Observation:", "Calling tools:"],
     tools_to_call_from=self.tools_and_managed_agents,
 )</code></pre>
-  <p><code>tools_and_managed_agents</code> 是"当前允许调用的工具集合"的属性。注意 <code>stop_sequences</code>：这是从早期文本式 agent 继承下来的防御，防止模型自己续写 <code>Observation:</code> ——<strong>它想自己编造工具结果</strong>，这句就是用来掐断的。</p>
+  <p><code>tools_and_managed_agents</code> 是「当前允许调用的工具集合」。注意 <code>stop_sequences</code>：
+  这是从早期文本式 agent 继承下来的防御，防止模型自己续写 <code>Observation:</code> ——
+  <strong>它想自己编造工具结果</strong>，这句就是用来掐断的。计划那一发用的是另一组
+  （<span class="loc">agents.py:660</span> <code>stop_sequences=["&lt;end_plan&gt;"]</code>）。</p>
 </li>
 
-<li><span class="num">8</span>
-  <div class="st">出网：唯一一次跨机 <span class="loc">models.py:1707 → 1727</span></div>
-  <p><code>OpenAIModel.generate_stream</code> 先组装参数，再打 HTTP：</p>
-  <div class="src">models.py:1715 / 1727</div>
-  <pre><code>completion_kwargs = self._prepare_completion_kwargs(...)
-... self.client.chat.completions.create(**completion_kwargs)</code></pre>
-  <p>目标地址就是我 <code>my_agent.py</code> 里传的 <code>api_base="https://dashscope.aliyuncs.com/compatible-mode/v1"</code>。</p>
+</ol>
+
+<h3>2.3 出网那一站，和它的三道刹车（站 13）</h3>
+
+<ol class="flow">
+
+<li><span class="num">13</span>
+  <div class="st">HTTPS：全场唯一一次跨机 <span class="loc">models.py:1707 → 1715 → 1727</span></div>
+  <p><code>OpenAIModel.generate_stream</code> 先组装参数（<span class="loc">models.py:1715</span>），
+  再在 <span class="loc">models.py:1727</span> 打 <code>self.client.chat.completions.create</code>。
+  目标地址就是 <code>my_coding_agent.py:44-46</code> 的 <code>BASE_URL</code>
+  （默认 <code>https://dashscope.aliyuncs.com/compatible-mode/v1</code>，可被 <code>AGENT_BASE_URL</code> 覆盖）。</p>
+  <p>回包在 <span class="loc">models.py:1787</span> 把 <code>tool_calls</code> 取出来，包进
+  <code>ChatMessageToolCall</code>（结构在 <span class="loc">models.py:95 / 102</span>）。到这一步，模型的一句话才第一次变成<strong>可执行意图</strong>。</p>
   <div class="card">
-    <p><span class="key">读代码读到的一个细节：</span><code>OpenAIServerModel</code> 不是类。源码里就一行别名：</p>
-    <div class="src">models.py:1796</div>
-    <pre><code>OpenAIServerModel = OpenAIModel</code></pre>
-    <p>类定义在 <code>models.py:1646</code>。名字里那个 "Server" 是历史遗留——它对应的是"远端 OpenAI 兼容服务"，用来和跑在本地的 <code>TransformersModel</code>（<code>models.py:1093</code>）区分。</p>
+    <p>读代码读到的两个细节：<code>OpenAIServerModel</code> 不是类，是一行别名
+    <span class="loc">models.py:1796</span> <code>OpenAIServerModel = OpenAIModel</code>，类定义在
+    <span class="loc">models.py:1646</span>。名字里的 "Server" 是历史遗留，对应「远端 OpenAI 兼容服务」，
+    用来和跑在本地的 <code>TransformersModel</code> 区分——<span class="g">旧版把 <code>models.py:1093</code> 写成
+    TransformersModel 的位置，那个行号其实是它里面的 <code>generate_stream</code></span>。</p>
+  </div>
+
+  <h4>13.1 刹车一：超时——<code>read=60</code> 不是「整题只给 60 秒」</h4>
+  <div class="src">my_coding_agent.py:59-67</div>
+  <pre><code>MODEL_TIMEOUT_S = 60.0
+MODEL_CONNECT_TIMEOUT_S = 5.0
+MODEL_MAX_RETRIES = 2
+MODEL_CLIENT_KWARGS = {
+    "timeout": httpx.Timeout(MODEL_TIMEOUT_S, connect=MODEL_CONNECT_TIMEOUT_S),
+    "max_retries": MODEL_MAX_RETRIES,
+}</code></pre>
+  <p>为什么改前更危险，注释算过账（<span class="loc">my_coding_agent.py:55-56</span>）：默认值三者乘起来，
+  一个「连得上、不回帧」的请求要占住<b>约 30 分钟</b>才失败，界面这半小时一直是「生成中」，删除按钮也被这把锁拒着。</p>
+  <ul class="tight">
+    <li><code>read=60</code> 是「60 秒内没有新帧就算挂」，流式输出每个 chunk 都重置它 → 正常长答复不受影响，
+    砍掉的只有真挂住那一种（<span class="loc">my_coding_agent.py:57-58</span>）。</li>
+    <li><code>connect</code> 必须单独给：写 <code>timeout=60.0</code> 会把 connect 一起放宽到 60，
+    「根本连不上」这种情况反而比改前更慢（<span class="loc">my_coding_agent.py:62-63</span>）。</li>
+    <li>框架自己那层 retryer <b>帮不上这个忙</b>：它的判据只认限流——
+    <span class="loc">models.py:1174-1179</span> 装 <code>retry_predicate=is_rate_limit_error</code>，
+    而该函数只查字符串里有没有 <code>429 / rate limit / too many requests / rate_limit</code>
+    （<span class="loc">models.py:1194-1202</span>），<code>RETRY_MAX_ATTEMPTS = 3</code>（<span class="loc">models.py:39</span>）。</li>
+    <li>外部工具另有对应物：MCP 单次调用 30 秒封顶（<span class="loc">my_mcp.py:41</span>，装在
+    <span class="loc">my_mcp.py:136</span> 的 <code>client_session_timeout_seconds</code>）。实测数字在
+    <span class="loc">my_mcp.py:35-39</span>：走默认值时抓 example.com 要 <b>62.9 秒</b>才回来，
+    显式给 5 秒则第二次在 5.0 秒整抛 <code>McpError</code>；假 server 睡 8 秒，<code>timeout=2</code> 时 2.0 秒就断。</li>
+  </ul>
+
+  <h4>13.2 刹车二：锁温——结论是<b>负的</b></h4>
+  <p><code>MODEL_GENERATION_KWARGS = {"temperature": MODEL_TEMPERATURE}</code>
+  （<span class="loc">my_coding_agent.py:97-98</span>）走的是 <code>OpenAIServerModel</code> 的 <code>**kwargs</code>
+  而不是 <code>client_kwargs</code>：client 那层管连接期的事，采样是每发请求的事（文档行在
+  <span class="loc">models.py:1668</span>）。两条路在 <code>_prepare_completion_kwargs</code> 合流，
+  <b><code>self.kwargs</code> 最后覆盖</b>（<span class="loc">models.py:544-550</span>），
+  所以这里写死的东西，agent 那一层传不进来也改不掉。</p>
+  <div class="card warn">
+    <p><span class="g">锁温该做，但它换不来可复现。</span>这是本轮最重要的一个负结果，别再对外说「temperature=0 所以可复现」。
+    证据在 <span class="loc">my_coding_agent.py:80-90</span>：锁完之后拿同一道 Q9 打两次「跑两遍比逐字节」的对照，
+    两次结论互相矛盾——</p>
+    <ul class="tight">
+      <li><code>验收脚本/v2.0/run/v20_probe_planning_det-t0.json</code>：轨迹／答复／判分三格全同，token 24342 vs 24148。</li>
+      <li><code>run/v20_probe_planning_arms4.json</code> 的 determinism：轨迹<b>不同</b>、判分<b>不同</b>，
+      token 24260 vs 7315（一发 2 步、一发跑到 6 步），first_diff 落在第 1 次调用。</li>
+    </ul>
+    <p>四次尝试、三种轨迹、两种判分，<b>temperature 一直是 0.0</b>。它确实进了请求体——这一点由
+    <code>v20_probe_temperature_offline.py</code> 零网络复验（把 <code>client.create</code> 换成记录用的假函数看载荷：
+    不设=0.0、设 0.7=0.7、坏值在导入阶段就报错退出）。所以这一刀压掉的是「采样骰子」这一项可变因素，
+    随机性仍在（服务端 batching／MoE 路由还会抖），一致性仍然只能靠 repeat 多次抽样量出来——
+    这就是尺子里 repeat 名单从 5 道扩到 7 道的理由。</p>
+  </div>
+
+  <h4>13.3 刹车三：额度与拒绝——「模型自己不想干」和「云端不让你干」是两件事</h4>
+  <p>百炼欠费那一次（<code>Error code: 400 - Access denied … #overdue-payment</code>）逼出了这条分支。
+  UI 侧用 <code>MODEL_REFUSAL_MARKS</code>（<span class="loc">my_ui.py:559</span>）+ <code>model_refusal()</code>
+  （<span class="loc">my_ui.py:571</span>）识别这类异常，归到 <code>model_refused</code> 这一档状态
+  （<span class="loc">my_ui.py:530</span> 的 <code>STATE_LABEL</code>）；开机时还探一次 <code>model_preflight()</code>
+  （<span class="loc">my_agent.py:126</span>，调用点 <span class="loc">my_ui.py:893</span>），
+  免得界面画好了、第一问才发现账户不能用。</p>
+  <p>四个环境变量是这一轮留的活口：<code>AGENT_MODEL_ID</code> 和 <code>AGENT_BASE_URL</code> 换 provider 不用改源码
+  （<span class="loc">my_coding_agent.py:43-47</span>），尺子那一份基线就是靠临时注入
+  <code>AGENT_MODEL_ID=tongyi-xiaomi-analysis-flash</code> 打出来的（<span class="loc">验收脚本/v2.0/v20_eval.py:18</span>）；
+  <code>AGENT_TEMPERATURE</code>（<span class="loc">my_coding_agent.py:91</span>）用来把骰子放回去；
+  <code>AGENT_AUDIT_PATH</code>（<span class="loc">my_audit.py:42</span>）是测试隔离用的，不是给用户配的开关。</p>
+</li>
+
+</ol>
+
+<h3>2.4 闸门：框架的四道，加上人装的几道（站 14–17）</h3>
+
+<ol class="flow">
+
+<li><span class="num">14</span>
+  <div class="st">闸门①：工具名必须在白名单里 <span class="loc">agents.py:1464-1467</span></div>
+  <pre><code>available_tools = {**self.tools, **self.managed_agents}
+if tool_name not in available_tools:
+    raise AgentToolExecutionError(f"Unknown tool {tool_name}, should be one of: {', '.join(available_tools)}.", ...)</code></pre>
+  <p>MCP 挂上来的工具进的就是同一个 <code>agent.tools</code> 字典（<code>attach()</code> 在
+  <span class="loc">my_mcp.py:111</span>），所以这道闸对它们同样生效，不需要额外登记。</p>
+  <p>尺度变化值得记一句：旧版这里举的是「模型凭空造了个 <code>web_search</code>，在这里被挡下」。
+  v2.0 基线里 <code>unknown_tool</code> 是 <b>0 次</b>（<span class="loc">验收脚本/v2.0/run/v20_eval_baseline.summary.out</span>），
+  非法调用全部来自「工具真的报了错」那一侧（10/52）。幻觉工具名这个失败模式在新基线里没再出现。</p>
+</li>
+
+<li><span class="num">15</span>
+  <div class="st">闸门⑥：查重与熔断——同名同参第二次不再执行 <span class="loc">my_ui.py:993 / 1030</span></div>
+  <p>套在<b>每一只</b>工具上（<code>final_answer</code> 除外，<span class="loc">my_ui.py:1008-1009</span>），
+  指纹是「工具名 + 参数按签名归一后 sort_keys 序列化的 JSON」（<span class="loc">my_ui.py:1032-1033</span>）。
+  为什么套全部而不只套审批那两只：实测那批重复调用（<code>list_dir({})</code> 一个样本里发三遍）全在只读侧，
+  只读侧本来不弹审批，套在 <code>GATED_TOOLS</code> 上等于一层没装上（<span class="loc">my_ui.py:1000-1001</span>）。</p>
+  <div class="src">my_ui.py:1034-1041 · 计数与熔断</div>
+  <pre><code>n = OpsUI._seen_calls.get(key, 0) + 1          # 第几次见到同一个 (name, args)
+if n &gt; 1:
+    OpsUI._dup_blocked += 1
+    if OpsUI._dup_blocked &gt; DUP_BLOCK_LIMIT:   # 上限 2，my_ui.py:81
+        OpsUI._dup_tripped = True</code></pre>
+  <p>三段行为：<b>第一次执行</b>（<span class="loc">my_ui.py:1047-1054</span>，异常记完 <code>raised</code> 再原样抛出去，
+  改的是记账不是行为）、<b>第二次起返回「重复调用未执行」</b>（<span class="loc">my_ui.py:1065-1066</span>，
+  文案 <code>DUP_OBSERVATION</code> 在 :86）、<b>挡够三次把整题收掉</b>（<span class="loc">my_ui.py:1055-1064</span>）。</p>
+  <div class="card warn">
+    <p><span class="g">熔断这里有两个洞，都是实测出来的，注释都写在代码里。</span></p>
+    <ul class="tight">
+      <li><b>只调 <code>interrupt()</code> 不够。</b>那句判断写在 while 循环体<b>最上面</b>
+      （<span class="loc">agents.py:546-547</span>），而 <code>step_number += 1</code> 在循环体自己的 finally 里
+      （<span class="loc">agents.py:599-604</span>）。于是熔断落在最后一步（第 8 步）时，回到循环先判 <code>9 &lt;= 8</code> 为假直接退出，
+      那句压根没机会跑——流程改走 <span class="loc">agents.py:606-607</span> 的 <code>_handle_max_steps_reached</code>，
+      <b>多打一次模型</b>，状态条还会写成「步数用满」，把 ⛔ 那一档吞掉。这一下既测了次数也测了价：
+      零成本回放里对照格取走 9 条、产品格 8 条；真实补打的单步是 <b>in 1,560 / out 303 / 7.16 秒</b>
+      （数字与来由在 <span class="loc">my_ui.py:1071-1080</span>）。</li>
+      <li><b>「先 yield 再判」要挑对那一次 yield。</b>一步之内框架吐三类事件（ToolCall、ToolOutput、最后才是 ActionStep），
+      在 ToolOutput 后面抛会把这一步留在半截——实测那一版第 8 步的卡片压根没画出来、memory 里那一步 observations 是空的。
+      所以判据加上 <code>isinstance(ev, ActionStep)</code>（<span class="loc">my_ui.py:1085-1090 / 1099</span>）。</li>
+    </ul>
+    <p>还有一个反直觉的点要讲清：熔断那一句 Observation <b>会进本题记忆</b>（框架的 finally 收在 memory 里，
+    卡片上看得见「为什么这题没了」），<b>但本轮的模型读不到它</b>——<code>stopped</code> 层就在这一步 yield 之后把题收了，
+    不会再有下一次 generate（<span class="loc">my_ui.py:1059-1061</span>）。</p>
   </div>
 </li>
 
-<li><span class="num">9</span>
-  <div class="st">回包被还原成结构化动作 <span class="loc">models.py:1787 / 102 / 95</span></div>
-  <pre><code>tool_calls=response.choices[0].message.tool_calls,</code></pre>
-  <p>百炼返回的 <code>tool_calls</code> 被包进 <code>ChatMessageToolCall</code>（内含 <code>ChatMessageToolCallFunction</code> 的 name / arguments）。到这一步，模型的一句话才第一次变成<strong>可执行意图</strong>：<code>{"tool": "max_drawdown", "arguments": {"prices": [...]}}</code>。</p>
+<li><span class="num">16</span>
+  <div class="st">闸门⑤：审批卡——✔/✖ 阻塞的是 worker 线程 <span class="loc">my_ui.py:920 / 951</span></div>
+  <p>装法是在<b>实例</b>上覆盖 <code>forward</code>：<code>BaseTool.__call__</code> 最后一行就是
+  <code>outputs = self.forward(*args, **kwargs)</code>（<span class="loc">tools.py:246</span>），
+  实例属性优先于类上的方法，所以拦得住。用 <code>copy.copy</code> 换新对象
+  （<span class="loc">my_ui.py:936-949</span>），不去改 <code>my_coding_agent</code> 里那批模块级工具——
+  命令行跑法不经过 UI，不能被这条 UI 拖累。</p>
+  <p><b>安装顺序是锁死的</b>（<span class="loc">my_ui.py:877-881</span>）：桥 → 审批 → 查重 → 计划。
+  查重必须在审批<b>之后</b>装，因为它 <code>copy.copy</code> 到的那只，<code>forward</code> 已经是审批那个闭包，
+  这样判断顺序才是「先查重，没重复才开卡」。反着装就会出现一张卡点「✔ 允许」、结果 observation 是「重复调用未执行」——
+  让人批了一件根本没跑的事（<span class="loc">my_ui.py:996-998</span>）。两层都有幂等标记
+  （<code>_opsui_gated</code> / <code>_opsui_dedup</code>，<span class="loc">:934 / :1012</span>）：
+  套两层就是问两遍、点一次只解外面那层、里面那条线程永远挂着。</p>
+  <div class="src">my_ui.py:960-976 · 一张卡的完整生命周期</div>
+  <pre><code>with self._gate_lock:                          # D7 临界区：入队和「本轮已被停止」一起判
+    self._pending.append(ap)
+    if OpsUI._run_seq &lt;= OpsUI._cancelled_before:
+        ap.decide("cancelled")
+decision = ap.wait()                            # :641 只阻塞 worker，界面照旧每 0.25 秒刷
+my_audit.annotate(decision=decision, wait_s=…)  # :968 连 denied/timeout 都留痕
+with self._gate_lock:                           # V8 等待不并进「步骤耗时」，单独记账
+    if ap.waited &gt;= APPROVAL_WAIT_MIN: OpsUI._pending_wait += ap.waited
+if decision == "allowed":
+    return original(*args, **kwargs)
+return DENIED_OBSERVATION.get(decision, DENIED_OBSERVATION["denied"])   # :65</code></pre>
+  <p>D7 那个临界区为什么不能拆成「先查后入队」，注释里有一次真实事故：分开写就有窗口，停止正好落在中间，
+  <code>_stop</code> 那次 <code>_settle_all</code> 看不到单子（实测 0.2 秒那一下），卡片画出来却没人结算，
+  界面死停在「等待审批」<b>挂了 142.4 秒</b>，直到手动补 ✖（<span class="loc">my_ui.py:955-957</span>）。</p>
+  <p>五个决策取值（<code>DECISION_LABEL</code> <span class="loc">my_ui.py:52</span>、
+  <code>DECISION_DOT</code> <span class="loc">:62</span>、<code>DENIED_VERDICT</code> <span class="loc">:70</span>）：
+  允许／拒绝／取消／超时未批（600 秒，<span class="loc">my_ui.py:47</span>）／中断。除「允许」外都不执行，
+  返回给模型的都是<strong>一句 Observation 而不是崩溃</strong>。</p>
 </li>
 
-<li><span class="num">10</span>
-  <div class="st">闸门一：工具名必须在白名单里 <span class="loc">agents.py:1464-1467</span></div>
-  <pre><code>available_tools = {**self.tools, **self.managed_agents}
-if tool_name not in available_tools:
-    raise AgentToolExecutionError(
-        f"Unknown tool {tool_name}, should be one of: {', '.join(available_tools)}.", self.logger
-    )</code></pre>
-  <p>你今天亲眼看到它生效：模型凭空造了个 <code>web_search</code>，就是在这里被挡下，日志里那句 <code>Unknown tool web_search, should be one of: max_drawdown, annualized_volatility, final_answer.</code> 就是这个 f-string 打出来的。</p>
-</li>
-
-<li><span class="num">11</span>
-  <div class="st">闸门二、三，然后本地执行 <span class="loc">agents.py:1361 → tools.py:1361 → tools.py:228</span></div>
-  <p><code>process_tool_calls</code> 逐个处理调用；执行前先过参数校验：</p>
-  <div class="src">tools.py:1400-1409（validate_tool_arguments 内）</div>
+<li><span class="num">17</span>
+  <div class="st">闸门②⑦⑧：参数校验，加上边界和供应链 <span class="loc">tools.py:1361</span></div>
+  <p>框架这一道在 <code>validate_tool_arguments()</code>（<span class="loc">tools.py:1361</span>）里：</p>
+  <div class="src">tools.py:1402 / 1407</div>
   <pre><code>raise TypeError(f"Argument {key} has type '{actual_type}' but should be '{tool.inputs[key]['type']}'")
-...
 raise ValueError(f"Argument {key} is required")</code></pre>
-  <p>然后才落到 <code>Tool.forward</code>——也就是你在 <code>my_agent.py</code> 里写的那个求最大回撤的 for 循环。<span class="g">这一步全程在你这台机器上，没有任何网络请求。</span>算错了是我代码的错，模型不负责算术，它只负责决定"该调哪个、传什么参数"。</p>
-  <p>执行结果作为 <code>ToolOutput</code> 写回 memory，变成日志里那行 <code>Observations: 最大回撤 -17.71%…</code>。</p>
+  <p>框架之外还有三道自己的，它们不在同一条代码路径上，所以旧版没有它们的位置：</p>
+  <ul class="tight">
+    <li><b>路径。</b><code>guarded()</code>（<span class="loc">my_coding_agent.py:111-148</span>）把任何路径收敛到
+    <code>ROOT = ai学习/</code>（<span class="loc">:34</span>）内，且拒绝 <code>DENY_NAMES</code>
+    （<code>.env / .git / .venv / node_modules / __pycache__ / .agent-staging</code>，<span class="loc">:105</span>）。</li>
+    <li><b>写落点。</b><code>write_file</code> 只能进 <code>STAGING = ROOT/.agent-staging</code>（<span class="loc">:35 / 231</span>）。</li>
+    <li><b>供应链。</b>MCP 只挂白名单点名的工具（<span class="loc">my_mcp.py:45-60</span>），
+    <span class="g">明确不挂的五个连理由一起写下来</span>（<code>REFUSED</code>，<span class="loc">my_mcp.py:63-70</span>：
+    filesystem 会让「没有删除能力」这句变成假话、memory 会和 <code>.agent-history.sqlite3</code> 两套账、
+    git 能改仓库状态、sequentialthinking 只抬 input、everything 是官方测试 server），再加一条危险名正则
+    （<code>DESTRUCTIVE_RX</code>，<span class="loc">my_mcp.py:74-77</span>）：白名单管「谁被点名」，
+    这条管「点名的人也别把删除类工具念进来」。</li>
+  </ul>
+  <div class="card warn"><p>第 1.2 节那条 <code>run_python</code> 绕过 <code>guarded()</code> 的洞，缺的就是这一组的最后一道：
+  路径判定管得住 <code>read_file</code>，管不住子进程里自己 <code>open()</code>。</p></div>
 </li>
 
-<li><span class="num">12</span>
-  <div class="st">回灌，或者收工 <span class="loc">回到第 4 站 / agents.py:582-592</span></div>
-  <p>如果模型这次调的是普通工具，Observation 进 memory，<strong>while 再转一圈</strong>（第 4 站的历史里就多了一条，入 token 继续涨）。如果它调的是 <code>final_answer</code>：</p>
+</ol>
+
+<h3>2.5 落场：Observation、终止、渲染、两份落盘（站 18–21）</h3>
+
+<ol class="flow">
+
+<li><span class="num">18</span>
+  <div class="st">结果回灌：<span class="key">报错不当崩溃处理</span>，这是「自我修正」的全部机制</div>
+  <p>前面那些闸门抛出去的东西，最后都落在同一个 <code>except</code> 上：</p>
+  <div class="src">agents.py:596-597</div>
+  <pre><code>except AgentError as e:
+    # Other AgentError types are caused by the Model, so we should log them and iterate.
+    action_step.error = e</code></pre>
+  <p>紧接着 <code>finally</code>（<span class="loc">agents.py:599-604</span>）把它存进 memory、<code>yield</code> 出去、
+  <code>step_number += 1</code>，然后 while 再转一圈。<strong>只有 <code>AgentGenerationError</code> 会真的往外抛</strong>
+  （<span class="loc">agents.py:593-595</span>）——那是实现错误，不是模型错误。审批被拒、查重命中、参数类型不对，
+  对模型来说都只是「一句不好听的 Observation」，它下一圈自己改。</p>
+  <p>执行本身全程在你这台机器上，没有任何网络请求：<span class="loc">agents.py:1361</span> 的
+  <code>process_tool_calls</code> → <span class="loc">tools.py:228</span> 的 <code>forward</code>。
+  算错了是代码的错，模型只决定「调哪个、传什么参数」。</p>
+</li>
+
+<li><span class="num">19</span>
+  <div class="st">终止：交卷，或者被熔断 <span class="loc">agents.py:583 / 591 · 606-607 · 212</span></div>
   <pre><code>if isinstance(output, ActionOutput) and output.is_final_answer:
-    final_answer = output.output
-    returned_final_answer = True
-    action_step.is_final_answer = True</code></pre>
-  <p>循环结束。步数用完还没拿到 final_answer 的话走另一条：</p>
-  <div class="src">agents.py:606 附近，state 取值见 agents.py:201</div>
-  <pre><code>if not returned_final_answer and self.step_number == max_steps + 1:  # → state = "max_steps_error"</code></pre>
-  <p>还有一个容易漏的：你从没写过 <code>final_answer</code> 这个工具，但它一直在列表里——框架自己塞的：</p>
-  <div class="src">agents.py:402</div>
-  <pre><code>self.tools.setdefault("final_answer", FinalAnswerTool())</code></pre>
+    final_answer = output.output          # :583
+    returned_final_answer = True          # :591</code></pre>
+  <p>步数用完还没交卷走另一条：<span class="loc">agents.py:606-607</span> 判 <code>step_number == max_steps + 1</code>
+  后调 <code>_handle_max_steps_reached</code>（定义 <span class="loc">agents.py:620</span>，那里挂
+  <code>AgentMaxStepsError</code> 在 :630）。结果对象的 <code>state</code> 字段只有两个取值
+  <code>Literal["success", "max_steps_error"]</code>（<span class="loc">agents.py:212</span>，文档在 :201，赋值在 :524）。</p>
+  <p>界面这一侧把这两档翻译得比框架细：<code>maxed</code> 是自己数的（<span class="loc">my_ui.py:1478</span>），
+  <code>state = "maxed" if … else "done"</code> 在 <span class="loc">my_ui.py:1842</span>，中文文案在
+  <code>STATE_LABEL</code>（<span class="loc">my_ui.py:530</span>，「步数用满」在 :541）。
+  <span class="g">旧版 §5 那句「终止方式：调 final_answer」仍然对，但状态口径已经从框架的 2 个字面量扩到界面这边十几种</span>
+  ——完整名单见功能手册，这里只说明它不再是框架那两档。</p>
 </li>
 
-<li><span class="num">13</span>
-  <div class="st">渲染回你的屏幕 <span class="loc">gradio_ui.py:82-163</span></div>
-  <p>一个 <code>process ActionStep → gr.ChatMessage</code> 的函数，把每一步拆成气泡：<code>**Step 1**</code>、模型的想法、工具行、最后一条分隔线。</p>
-  <div class="card">
-    <p>你贴给我的那两行就是这里生成的、<strong>纯展示用的字符串</strong>：</p>
-    <ul class="tight">
-      <li><code>Used tool final_answer</code> ← 来自 <code>ToolCall</code> 事件的 name</li>
-      <li><code>Step 1 | Input tokens: 1,979 | Output tokens: 388 | Duration: 9.01s</code> ← 来自 <code>ActionStep.timing</code> 和 token 计数</li>
-    </ul>
-    <p>所以那些数字不是界面猜的，是 <code>agents.py:1289</code> 存档的输入和回包里的 usage 拼出来的。<strong>它同时是你唯一的成本观测口</strong>。</p>
+<li><span class="num">20</span>
+  <div class="st">渲染回你的屏幕：四个 token 口径，别混 <span class="loc">my_ui.py:1374 / 1493 / 1312</span></div>
+  <p>旧版这一站讲的是 <code>gradio_ui.py</code> 的那个函数，现在界面是自己搭的：步骤卡片 <code>_step_card()</code>
+  （<span class="loc">my_ui.py:1374</span>）、状态条 <code>_status_html()</code>（<span class="loc">:1493</span>）、
+  计划面板 <code>_plan_update()</code>（<span class="loc">:1312</span>）、汇总 <code>_stats()</code>（<span class="loc">:1450</span>）、
+  MCP 那颗胶囊 <code>_mcp_pill()</code>（<span class="loc">:1483</span>）。</p>
+  <table>
+    <tr><th>口径</th><th>在哪看</th><th>代码</th><th>是什么</th></tr>
+    <tr><td>单步</td><td>步骤卡片</td><td><span class="loc">gradio_ui.py:33</span>（框架那段拼接仍被复用）</td><td>这一步真实发出去的量</td></tr>
+    <tr><td>进程累计</td><td>终端日志</td><td><span class="loc">monitoring.py:111-114</span></td><td>整个生命周期的和，<code>Step N</code> 跨问题连号</td></tr>
+    <tr><td>本题累计</td><td>卡片脚注「本题累计」</td><td><span class="loc">my_ui.py:1442-1443</span>（<code>_run_in</code> 声明 :848、清零 :1578）</td><td>本次提问内；括号里还单列审批等待秒数</td></tr>
+    <tr><td>落盘</td><td>sqlite 里那行</td><td><span class="loc">my_ui.py:108</span> <code>MEM_FIELDS</code></td><td>重启之后还能读回来的那部分</td></tr>
+  </table>
+  <p><span class="key">最容易踩的仍然是第一个和第二个：</span>终端那串「一路涨」是累计值，逐次相减才是每步真实量。
+  这个坑在 10-28 那次就踩过，本版把它保留在 §3.1，因为那份样本正好是「两个口径能对上」的交叉验证。</p>
+  <p>还有一处没结的账：审批等待（V8）是<b>过账给下一个到达的 ActionStep</b> 的
+  （记在 <span class="loc">my_ui.py:971-973</span>，领在 <span class="loc">:1642</span>）。停止正好落在待批上时那一步压根没生成
+  ActionStep，这笔等待就没人领，靠换题开局清零（<span class="loc">:1568</span>）——P1-23，账面偶尔对不平就是这个来源。</p>
+</li>
+
+<li><span class="num">21</span>
+  <div class="st">两份落盘：一份给人回看，一份给事后追责</div>
+  <table>
+    <tr><th></th><th>会话历史</th><th>审计</th></tr>
+    <tr><td>存哪</td><td><code>.agent-history.sqlite3</code> <span class="loc">my_ui.py:33</span></td><td><code>AUDIT_PATH</code> JSONL <span class="loc">my_audit.py:42</span></td></tr>
+    <tr><td>谁写</td><td><code>History.save_memory</code> <span class="loc">my_ui.py:741</span>，调用点 <span class="loc">:1914</span></td><td><code>begin / annotate / end</code> <span class="loc">my_audit.py:52 / 70 / 83</span>，追加写 <span class="loc">:105</span></td></tr>
+    <tr><td>挂在哪一层</td><td>UI 线程，问答结束时</td><td><b>查重层</b>，每次调用一条 <span class="loc">my_ui.py:1042-1046</span></td></tr>
+    <tr><td>键</td><td>会话号 <code>sid</code></td><td><code>sid</code> + <code>run</code>（<code>_run_seq</code> <span class="loc">my_ui.py:809</span>）+ <code>step</code> + 工具 + 风险档 + 决策</td></tr>
+    <tr><td>删</td><td><code>History.delete</code> <span class="loc">my_ui.py:756</span>——<b>没有 CASCADE</b>，删会话不动审计</td><td>只追加，UI 侧没有删除入口</td></tr>
+  </table>
+  <p>「审计不跟着会话删」是刻意的：<span class="g">追责的那份账不能由被追责的人销毁。</span>
+  代价是磁盘上会留孤儿行，这一条也记在待补里。</p>
+  <div class="card warn">
+    <p><span class="g">【待补 · 真 P0】</span><code>my_audit.py:44</code> 的 <code>ARGS_HEAD_CHARS = 200</code>
+    把参数<b>原文</b>前 200 字符写进 JSONL（<span class="loc">my_audit.py:78-80</span>）。
+    <code>run_python(code=…)</code> 的参数就是代码全文，里面可能有你贴进去的密钥。
+    <code>_digest()</code> 那 16 位 sha1 是对<b>全量</b>做的哈希，能事后比对，但明文也照样落了盘——
+    审计文件本身要脱敏，这是 P0-2 的正身。</p>
   </div>
 </li>
 
 </ol>
 
-<h2 id="s3">3 你今天的四次真实记录</h2>
+<h2 id="s3">3 读数：历史那份和现在这份</h2>
 
-<p>全部来自 <code>/tmp/ui.log</code> 与网页显示。<strong>下表用的是每步真实量</strong>（累计值相减得到），不是终端那串累计数。</p>
+<h3>3.1 2026-10-28 那四次问答（历史口径，保留作交叉验证）</h3>
+
+<p><strong>下表是当时那一版代码的读数</strong>：3 只工具、<code>max_steps=6</code>、没有 MCP／审批／审计／计划闸。
+不要拿它对照今天的界面。留着它的理由是下面那段「两个口径相减能对上」的自证——那是这份文档里唯一可复核的历史数据。</p>
 
 <table>
   <tr><th>你问的</th><th>模型选的动作</th><th>框架反应</th><th>本步耗时 / 入 / 出</th></tr>
-  <tr>
-    <td>今天指数怎么样</td>
-    <td><code>final_answer</code>：反问你索要数据</td>
-    <td>正常终止，1 步</td>
-    <td>1.18s / 1273 / 29</td>
-  </tr>
-  <tr>
-    <td>贴 <code>47.117.110.143/dashboard</code> 要分析分数</td>
-    <td><strong><code>web_search</code>（不存在的工具）</strong></td>
-    <td>第 10 站抛 <code>AgentToolExecutionError</code>，错误原文当 Observation 回灌</td>
-    <td>1.25s / 1402 / 34</td>
-  </tr>
-  <tr>
-    <td>（同一问的第二步）</td>
-    <td><code>final_answer</code>：承认无法访问网页</td>
-    <td>看到报错后自我修正——这就是回灌的价值</td>
-    <td>1.47s / 1458 / 45</td>
-  </tr>
-  <tr>
-    <td>光的波粒二象性</td>
-    <td>不调工具，直接答</td>
-    <td>知识型问题不需要动作空间，1 步出 final_answer</td>
-    <td>3.72s / 1599 / 142</td>
-  </tr>
-  <tr>
-    <td>按 ai学习 的代码详细讲，写个 HTML</td>
-    <td><code>final_answer</code>：声明自己无源码/文件/HTML 能力</td>
-    <td>判断正确。它的动作空间里确实没有文件读写</td>
-    <td><b>9.01s / 1979 / 388</b></td>
-  </tr>
+  <tr><td>今天指数怎么样</td><td><code>final_answer</code>：反问你索要数据</td><td>正常终止，1 步</td><td>1.18s / 1273 / 29</td></tr>
+  <tr><td>贴 IP/dashboard 要分析分数</td><td><strong><code>web_search</code>（不存在的工具）</strong></td><td>站 14 抛 <code>AgentToolExecutionError</code>，错误原文当 Observation 回灌</td><td>1.25s / 1402 / 34</td></tr>
+  <tr><td>（同一问的第二步）</td><td><code>final_answer</code>：承认无法访问网页</td><td>看到报错后自我修正</td><td>1.47s / 1458 / 45</td></tr>
+  <tr><td>光的波粒二象性</td><td>不调工具，直接答</td><td>1 步出 final_answer</td><td>3.72s / 1599 / 142</td></tr>
+  <tr><td>按 ai学习 的代码讲，写个 HTML</td><td><code>final_answer</code>：声明无源码/文件能力</td><td><b>当时</b>判断正确——那只动作确实不在表里</td><td>9.01s / 1979 / 388</td></tr>
 </table>
 
-<div class="card">
-  <p><span class="key">交叉验证过：</span>最后一问你截的网页图是 <code>1,979 / 388 / 9.01s</code>，和终端累计值 <code>7711 - 5732 = 1979</code>、<code>638 - 250 = 388</code> 严丝合缝。两个口径能对上，说明上面这列还原出的真实量是准的，不是我挑了好看的数字。</p>
+<p>把累计值逐次相减还原出的真实 prompt 序列：<code>1273 → 1402 → 1458 → 1599 → 1979</code>
+（累计 1273 / 2675 / 4133 / 5732 / 7711）。网页截的 <code>1,979 / 388 / 9.01s</code>
+和 <code>7711 − 5732</code>、<code>638 − 250</code> 严丝合缝——两个口径对得上，说明这列还原值是准的。
+最后一问那句「我没有文件能力」<b>在今天已经不成立</b>了，第 1.1 节那五只手就是后来补的。</p>
+
+<h3>3.2 v2.0 尺子：2026-11-06 那份全量留痕</h3>
+
+<p>来源 <code>验收脚本/v2.0/run/v20_eval_baseline.summary.out</code>。20 题／8 类，模型
+<code>tongyi-xiaomi-analysis-flash</code>，闸门关掉（离线评测不等人点按钮），每题 <code>reset=True</code>。</p>
+
+<table>
+  <tr><th>指标</th><th>读数</th><th>读法</th></tr>
+  <tr><td>交答率</td><td><b>14 / 18 = 77.8%</b></td><td>非 gap 题里在 max_steps 内交出答案，不看对不对</td></tr>
+  <tr><td>达标率</td><td><b>13 / 18 = 72.2%</b></td><td>交答 且 期望核对通过</td></tr>
+  <tr><td>例外</td><td>exception 0 / max_steps 4</td><td>没有崩溃，失败全是「步数用满」</td></tr>
+  <tr><td>非法调用率</td><td>(0 + 10) / 52 = <b>19.2%</b></td><td><code>unknown_tool</code> 0 次，全部是工具自己报错</td></tr>
+  <tr><td>步数</td><td>mean 4.3 / max 9 / planning_runs 20</td><td>20 题各出一份计划，和站 6 那个算术一致</td></tr>
+  <tr><td>token</td><td>in 401,273 / out 17,599（in_mean 20,064）</td><td>站 9「每步重发」的真实价格</td></tr>
+  <tr><td>时延</td><td>p50 6.03 / p95 17.42 / mean 7.71 / 总 154.1s</td><td>整题 wall time</td></tr>
+  <tr><td>缺口题</td><td>Q17、Q20，<b>不计入分母</b></td><td><code>cls=gap</code>：基线<b>应当</b>失败（A1 接完 MCP 后应翻绿）</td></tr>
+  <tr><td>一致性</td><td>repeat 每题 3 发；Q9 <code>same_outcome=false</code></td><td>同一题三发、工具序列一样、判分翻了 → 锁温那条负结果的直接来源</td></tr>
+</table>
+
+<div class="card warn">
+  <p><span class="g">两个口径必须分清，否则数字会自相矛盾：</span>repeat 名单已从 5 道扩到 <b>7 道</b>
+  （Q1、Q2、Q9、Q10、Q13、Q15、Q16），全量口径是 <b>34 runs</b>；而上面这份留痕是 <b>30 runs</b> 那一次打的。
+  <b>两者不可相减、不可混引。</b>另外「一致性 4/5」这个说法指的是当时那 5 道 repeat，今天的名单已经不是 5 道。</p>
 </div>
 
-<h3>3.1 第二条为什么值得单独说</h3>
+<p>planning 那一支对照（<code>arms4</code>）的结论：Q12 步数 <b>−62%</b>、整轮 input <b>−29.4%</b>，
+唯一一次达标翻转发生在 <b>Q16</b>。也就是说「先想后做」在这份尺子上主要省的是步数和 token；
+正确率上目前只捞到一道题，而这种单题翻转在 repeat 抖动下还不能算结论。</p>
 
-<p>那是模型在<strong>幻觉一个工具</strong>。它见过太多带搜索的 Agent，于是顺手写了一个 <code>web_search</code>。链路里发生的事情值得拆开看：</p>
+<h3>3.3 【待补】两项</h3>
 
 <ul class="tight">
-  <li>模型<strong>没有能力</strong>真的去搜索——它只是输出了一段看起来像调用的 JSON。</li>
-  <li>拦截它的是 <code>agents.py:1464</code> 那几行普通代码：一个字典查键。</li>
-  <li>关键在最后：<strong>报错没有被当成崩溃</strong>，而是作为 Observation 塞回上下文，让模型自己修正行为。</li>
+  <li><b>活体 UI 的单步读数。</b>§3.2 是闸门锁掉的离线口径；带审批卡、带计划闸、带 MCP 的真实界面上，
+  一题一问的「本步耗时／入／出」还没有一份成表的数据。要补的是同一个问题在 ✔／✖ 两种决策下的对照。</li>
+  <li><b>S2 全量重跑。</b>账户欠费 <b>¥0.05</b> 把所有通用模型挡在门外（八只 1-token 自检全 400
+  <code>#overdue-payment</code>，只有 <code>tongyi-xiaomi-analysis-flash</code> 通，见
+  <span class="loc">验收脚本/v2.0/v20_eval.py:55</span>）。结清之后按 34 runs 重打一份基线。
+  <span class="key">这一项按约定不自动执行：先给你数量和预估花费，你点头我才打。</span></li>
 </ul>
 
-<p>结论：<span class="key">Agent 的安全边界不在"模型自觉"，在框架的工具白名单、参数校验、max_steps 熔断这三道闸。</span>你以后评估任何一个 Agent 框架，先别看它的 prompt 写得多漂亮，先找这三处代码在哪、能不能收紧。这比看宣传有用得多。</p>
+<h2 id="s4">4 八道闸门</h2>
 
-<h2 id="s4">4 三道闸门的具体位置</h2>
-
-<table>
-  <tr><th>闸门</th><th>代码位置</th><th>挡什么</th><th>你能怎么调</th></tr>
-  <tr>
-    <td>工具白名单</td>
-    <td><code>agents.py:1464-1467</code></td>
-    <td>模型编造的工具名</td>
-    <td>工具集合由构造时的 <code>tools=[...]</code> 决定，最小权限原则就从这里收</td>
-  </tr>
-  <tr>
-    <td>参数校验</td>
-    <td><code>tools.py:1361</code> 起</td>
-    <td>类型不对、必填缺失</td>
-    <td>你 <code>inputs</code> 里写的 type 就是校验依据</td>
-  </tr>
-  <tr>
-    <td>步数熔断</td>
-    <td><code>agents.py:545 / 606</code></td>
-    <td>无限循环烧 token</td>
-    <td><code>max_steps</code>，框架默认 20，我这里设 6</td>
-  </tr>
-</table>
-
-<p>补一条同族机制：<code>agents.py:404</code> 的 <code>_validate_tools_and_managed_agents</code> 会在构造阶段检查工具重名和非法命名；<code>agents.py:309</code> 的 <code>final_answer_checks</code> 允许你在答案出门前挂校验函数——<strong>那是第四道闸门，很多人不知道有</strong>。</p>
-
-<h2 id="s5">5 它 vs 我：差距全在动作空间</h2>
-
-<p>同样是 agent，为什么我能真给你写出这个 HTML 文件、它不行？把两件事放一起看就清楚了。</p>
+<p>旧版只有三道（都是框架的）。现在按代码路径列全：①–③ 在 smolagents 的执行路径上，④–⑧ 里除了②那一格，
+其余都在你自己的 <code>my_*.py</code> 里。</p>
 
 <table>
-  <tr><th></th><th>你的 my_agent.py</th><th>此刻和你对话的我</th></tr>
-  <tr><td>工具数</td><td><b>3</b>（两个数学 + final_answer）</td><td>几十个（读写文件、执行命令、搜索、开浏览器、起子 agent…）</td></tr>
-  <tr><td>读本地代码</td><td>不能</td><td>能，本次就是这样核对行号的</td></tr>
-  <tr><td>写文件</td><td>不能</td><td>能，这个 .html 就是写出来的</td></tr>
-  <tr><td>步数上限</td><td>6</td><td>同样有上限，只是更高</td></tr>
-  <tr><td>终止方式</td><td>调 <code>final_answer</code></td><td>直接停止输出（没有专门的收尾工具）</td></tr>
-  <tr><td>记忆</td><td>进程内存活，重启即失</td><td>会话内累加，跨会话靠 memory 文件</td></tr>
+  <tr><th>#</th><th>闸门</th><th>代码位置</th><th>挡什么</th><th>不通过时给模型的是什么</th></tr>
+  <tr><td>①</td><td>工具名白名单</td><td><code>agents.py:1464-1467</code></td><td>模型编造的工具名</td><td>Observation（报错原文）</td></tr>
+  <tr><td>②</td><td>参数校验</td><td><code>tools.py:1361 / 1402 / 1407</code></td><td>类型不对、必填缺失</td><td>Observation</td></tr>
+  <tr><td>③</td><td>步数熔断</td><td><code>agents.py:545</code> + <code>606-607</code></td><td>无限循环烧 token</td><td>没有下一步，<code>state="max_steps_error"</code></td></tr>
+  <tr><td>④</td><td>计划闸（人）</td><td><code>my_ui.py:1110 / 1139</code></td><td>方向不对就开工</td><td><code>PlanDeniedError</code>：整题没跑（<code>my_ui.py:588</code>）</td></tr>
+  <tr><td>⑤</td><td>审批闸（人）</td><td><code>my_ui.py:920 / 951</code></td><td>写文件、跑代码、任何外部工具</td><td><code>DENIED_OBSERVATION</code>（<code>my_ui.py:65</code>）：题还在跑</td></tr>
+  <tr><td>⑥</td><td>查重与熔断</td><td><code>my_ui.py:993 / 1030 / 1068</code></td><td>同名同参反复发、8 步空转</td><td>第 2 次「重复调用未执行」；累计挡下 &gt;2 直接收题</td></tr>
+  <tr><td>⑦</td><td>路径与落点</td><td><code>my_coding_agent.py:111-148 / 105 / 35</code></td><td>越出 <code>ai学习/</code>、读 <code>.env</code>、写到别处</td><td><code>guarded()</code> 的报错原文</td></tr>
+  <tr><td>⑧</td><td>MCP 供应链</td><td><code>my_mcp.py:45-60 / 63-70 / 74-77 / 41</code></td><td>未点名的工具、删除类名字、外部调用挂死</td><td>压根不挂载 ／ 30 秒 <code>McpError</code></td></tr>
 </table>
 
-<p>所以"是不是 agent"和"好不好用"是两件事：<span class="g">架构同类，差别只在给了多少动作，以及有没有权限。</span>你那个 3 工具的 Agent 和我的差别，不是智能差别，是接口差别——这也是为什么学 Agent 的主要工作量其实在于<strong>设计动作空间和边界</strong>，而不是调 prompt。</p>
+<p>还有第九道，<b>本项目没用</b>：<code>final_answer_checks</code>（参数 <span class="loc">agents.py:309</span>、
+存 <span class="loc">:335</span>、跑 <span class="loc">:614</span>）允许在答案出门前挂校验函数。
+构造期还有一道：<code>_validate_tools_and_managed_agents</code>（调用 <span class="loc">agents.py:340</span>、
+定义 <span class="loc">:404</span>）拦工具重名和非法命名。</p>
 
-<h2 id="s6">6 四个动手实验（按编号挑）</h2>
+<div class="card ok">
+  <p><span class="key">评估任何一个 Agent 框架的正确顺序没变，但清单长了：</span>先别看 prompt 写得多漂亮，
+  先找它的白名单在哪（①）、参数由谁校验（②）、预算怎么熔断（③），然后加三条这一轮学到的——
+  <b>每一步要不要人点头（④⑤）、重复调用会不会自己转圈（⑥）、边界是不是和工具同时写的（⑦⑧）</b>。
+  结论仍然是那句：<span class="g">安全边界不在「模型自觉」，在闸门代码里。</span>这八道没有一道靠模型「听话」。</p>
+</div>
 
-<p>每个都是小改动，能直接看到链路某一层的行为。你回编号我就改。</p>
+<h2 id="s5">5 它 vs 我：差距仍在动作空间，但已经不在同一档</h2>
 
-<h3>E1 给它一个读文件的工具</h3>
-<p>让它真的能打开 <code>agents.py</code> 回答自己怎么实现的，正面回答你这次的疑问。在 <code>my_agent.py</code> 加：</p>
-<div class="src">新增一个 Tool 子类，然后塞进 tools=[...]</div>
-<pre><code>class ReadFileTool(Tool):
-    name = "read_file"
-    description = "读取本机文本文件内容，返回指定路径的前若干行。"
-    inputs = {"path": {"type": "string", "description": "文件绝对路径"},
-              "lines": {"type": "integer", "description": "最多返回多少行", "default": 120}}
-    output_type = "string"
+<table>
+  <tr><th></th><th>这一份（my_ui + my_agent）</th><th>此刻和你对话的我</th></tr>
+  <tr><td>动作空间</td><td><b>11 只手</b>（UI 入口）／ 8 只手（命令行入口）</td><td>几十个</td></tr>
+  <tr><td>读本地代码</td><td>能，限 <code>ai学习/</code>、单次 300 行</td><td>能</td></tr>
+  <tr><td>写文件</td><td>能，但只落 <code>.agent-staging/</code>，且每发必批</td><td>能，写前问／写完验</td></tr>
+  <tr><td>出网</td><td>能，<code>fetch</code> 一只，每发必批 + 30 秒超时</td><td>能，多个工具</td></tr>
+  <tr><td>预算</td><td><code>max_steps=8</code>，和 <code>planning_interval</code> 耦合</td><td>同样有上限，只是更高</td></tr>
+  <tr><td>谁点头</td><td><b>三道人工闸</b>：计划、审批、查重熔断（旧版这一格是「无」）</td><td>危险动作问你，其余自己走</td></tr>
+  <tr><td>留痕</td><td>两份：会话 sqlite + 审计 JSONL（追加，不随会话删）</td><td>会话 + memory 文件</td></tr>
+  <tr><td>记忆</td><td><b>跨问题持久</b>（sqlite <span class="loc">my_ui.py:33</span>），但喂给模型的原文不落盘（站 11）</td><td>会话内累加，跨会话靠 memory</td></tr>
+  <tr><td>复现性</td><td>锁了 <code>temperature=0</code>，<b>实测仍不逐字复现</b>（站 13.2）</td><td>同样不承诺复现</td></tr>
+</table>
 
-    def forward(self, path, lines=120):
-        import os
-        p = os.path.abspath(path)
-        root = os.path.abspath(os.path.expanduser("~/Desktop/study/ai学习"))
-        if not p.startswith(root):          # 白名单：只许读学习目录
-            raise PermissionError("只允许读取 ai学习 目录: " + p)
-        with open(p, encoding="utf-8", errors="replace") as f:
-            return "".join(f.readlines()[: int(lines)])</code></pre>
-<div class="card warn"><p><span class="g">注意上面那句路径检查不是可选的。</span>一旦 agent 有了读文件能力，而它又被云端模型驱动，没有边界就等于把整个 Home 目录暴露给一次网页问答。这条约束必须和工具同时加。</p></div>
+<p>所以「是不是 agent」和「好不好用」是两件事这个结论不变，但可以补一句更具体的：<span class="g">把动作空间从 3 扩到 11
+花的时间，主要没花在工具本身，花在配套的四件事——边界（⑦⑧）、人工闸（④⑤⑥）、留痕（站 21）、和一把能量出来的尺子（§3.2）。</span>
+这四件事缺任何一件，扩出去的手都是负债。</p>
 
-<h3>E2 看熔断长什么样</h3>
-<p>把 <code>my_agent.py</code> 里 <code>max_steps=6</code> 改成 <code>max_steps=1</code>，再问一个需要两步的问题。你会看到 <code>state="max_steps_error"</code>（<code>agents.py:606</code>），而且框架不会给你 final_answer——理解"预算"这件事最直观的一次。</p>
+<h2 id="s6">6 四个实验的现状</h2>
 
-<h3>E3 让 token 不再累加</h3>
-<p><code>my_ui.py</code> 里改成：</p>
-<pre><code>GradioUI(agent, file_upload_folder="./data", reset_agent_memory=True).launch(...)</code></pre>
-<p>然后连续问两次，对比网页上那行<strong>单步</strong>数字。开了它，每问第一问都从 ~1270 起且终端 <code>[Step N</code> 每次都从 1 重新数；不开（你现在这样）历史就留着，单步 prompt 缓慢爬升（1273→1402→1458→1599→1979），终端的累计值一路涨到 7711。要不要跨问题带上下文，就是这一行的取舍——注意它和"同一个问题内带上下文"是两回事，后者是 agent 的本性，关不掉。</p>
+<h3>6.1 E1 给它一个读文件的工具 —— 已做，而且比当时写的多</h3>
+<p>旧版这里是一段「建议加这个类」的代码。现在它是 <code>my_coding_agent.py</code> 的五个函数
+（<span class="loc">:152 / 176 / 195 / 231 / 262</span>）。当时那句「路径检查不是可选的」也落成了
+<code>guarded()</code>（<span class="loc">:111-148</span>）+ <code>DENY_NAMES</code>（<span class="loc">:105</span>）。
+<span class="g">留了一个尾巴：第 1.2 节那条 <code>run_python</code> 绕开它的洞。</span></p>
 
-<h3>E4 故意喂一个错参数</h3>
-<p>把 <code>MaxDrawdownTool</code> 的 <code>inputs</code> 里 <code>"type": "array"</code> 改成 <code>"type": "number"</code>，再问同样的问题。模型还会传数组，于是撞在 <code>tools.py:1402</code> 那句 <code>Argument prices has type 'list' but should be 'number'</code>。<strong>这是理解"接口契约由谁强制"最快的一条路</strong>——不是模型遵守，是执行方校验。</p>
+<h3>6.2 E2 看熔断长什么样 —— 数值变了，而且现在多一层耦合</h3>
+<p>当时是「把 6 改成 1」。现在是 <code>max_steps=8</code>（<span class="loc">my_agent.py:94</span>），
+看到的仍然是 <code>state="max_steps_error"</code>（<span class="loc">agents.py:524 / 606-607</span>）。
+但要提醒一句：<strong>它和 <code>PLANNING_INTERVAL</code>（<span class="loc">my_agent.py:44</span>）是绑的</strong>——
+两者的相等关系正是「每题恰好一份计划」的来源（站 6）。只改小 <code>max_steps</code> 会连带改变计划的出题节奏，
+不再是单变量实验；想只看步数熔断，两个一起改。</p>
+
+<h3>6.3 E3 让 token 不再累加 —— 已落地，但取舍换了个形态</h3>
+<p>旧版让你去开 <code>GradioUI(reset_agent_memory=True)</code>。现在这条路已经不是主路：<code>OpsUI</code> 不走框架那条 for，
+自己在 <span class="loc">my_ui.py:1539</span> 调 <code>agent.run(..., reset=self.reset_agent_memory)</code>，默认仍是 <code>False</code>。
+跨问题的上下文改由 sqlite 承担（<span class="loc">:1914 / :1716</span>），
+所以「带不带历史」不再需要用牺牲累计口径来换——这正是注释里那句「不传 reset=True」的理由（<span class="loc">:1724</span>）。</p>
+
+<h3>6.4 E4 故意喂一个错参数 —— 现在不用故意改也会撞</h3>
+<p>旧版要把 <code>"type": "array"</code> 改成 <code>"number"</code> 才看得见 <span class="loc">tools.py:1402</span> 那句报错。
+v2.0 基线里 <b>tool_errors 10 次 / 52 次调用</b>（§3.2）——真实模型自己就会传错，不需要你制造。
+理解「接口契约由执行方强制」这条，现在直接看审计里那 10 行就行：不是模型遵守，是执行方校验。</p>
 
 <h2 id="s7">7 术语速查</h2>
 
 <table>
   <tr><th>词</th><th>在<b>这份代码</b>里指什么</th></tr>
-  <tr><td>ReAct</td><td><code>_step_stream</code> 的注释原话（<code>agents.py:1280</code>）："the agent thinks, acts, and observes"，即 想→做→看 的一圈</td></tr>
-  <tr><td>累计 / 单步<br>两个 token 口径</td><td><strong>今天最容易踩的坑。</strong>终端 <code>monitoring.py:110-114</code> 打 <code>total_*_token_count</code>（生命周期累计，且 <code>Step N</code> 跨问题连号）；网页 <code>gradio_ui.py:33</code> 打 <code>step_log.token_usage</code>（本步真实）。评估成本看累计，调试上下文看单步</td></tr>
-  <tr><td>ToolCallingAgent</td><td><code>agents.py:1215</code>。动作走模型原生的 <code>tool_calls</code> 字段，结构化，稳</td></tr>
-  <tr><td>CodeAgent</td><td><code>agents.py:1638</code> 一带。动作是<b>一段代码</b>，需要一个 Python 解释器执行；能力更强，但对模型要求高，小模型容易吐非法代码</td></tr>
-  <tr><td>Observation</td><td>工具执行结果回灌进 memory 的那条消息，也是 <code>stop_sequences</code> 要防模型自己伪造的词</td></tr>
-  <tr><td>planning_interval</td><td><code>agents.py:550</code>。每隔 N 步强制插一个"重新规划"步，你这次没开（我注释里那个 example 开了 3）</td></tr>
-  <tr><td>prefill</td><td>把整段历史读进模型的那半程计算。本地 CPU 跑 Agent 慢，主要慢在这里而不是生成，这也是我们这轮选云端 API 的原因</td></tr>
-  <tr><td>stream_outputs</td><td><code>agents.py:1293</code> 的分支开关。开了才有 UI 上逐字滚动的效果</td></tr>
+  <tr><td>ReAct</td><td><code>_step_stream</code> 的注释原话（<span class="loc">agents.py:1280</span>）："the agent thinks, acts, and observes"，即 想→做→看 的一圈；循环在 <code>agents.py:545</code></td></tr>
+  <tr><td>四个 token 口径</td><td>单步 <code>gradio_ui.py:33</code> ／ 累计 <code>monitoring.py:111-114</code> ／ 本题 <code>my_ui.py:1442</code> ／ 落盘 <code>my_ui.py:108</code>；见站 20</td></tr>
+  <tr><td>ToolCallingAgent</td><td>类在 <code>agents.py:1215</code>，一步的内部在 <code>agents.py:1276</code>。动作走模型原生的 <code>tool_calls</code> 字段，结构化，稳</td></tr>
+  <tr><td>CodeAgent</td><td>类在 <code>agents.py:1505</code>，<code>_step_stream</code> 在 <code>agents.py:1638</code>。动作是<b>一段代码</b>，要本地解释器执行；本项目没用</td></tr>
+  <tr><td>Observation</td><td>工具执行结果回灌进 memory 的那条消息，也是 <code>stop_sequences</code> 要防模型自己伪造的词（<code>agents.py:1295</code>）</td></tr>
+  <tr><td>planning_interval</td><td><code>agents.py:550-552</code>。每 N 步出一份计划；这里取 8，和 <code>max_steps</code> 同高 → 每题恰好一份（站 6）</td></tr>
+  <tr><td>GATED_TOOLS</td><td><code>("write_file", "run_python")</code>（<code>my_ui.py:42</code>）；MCP 工具靠 <code>_gate_names()</code> 现拼（<code>my_ui.py:907-918</code>）</td></tr>
+  <tr><td>查重熔断</td><td>同名同参第 2 次不执行，累计挡下 &gt;2 次收题（<code>DUP_BLOCK_LIMIT=2</code>，<code>my_ui.py:81</code>）</td></tr>
+  <tr><td>MCP 桥</td><td><code>my_mcp.attach()</code>（<code>:111</code>）按 <code>MCP_SERVERS</code> 白名单起 stdio server 并挂工具；<code>detach()</code> 在 <code>:168</code>；风险档写在每张审批卡上</td></tr>
+  <tr><td>审计 JSONL</td><td>每次工具调用一行，挂在查重层（<code>my_ui.py:1042-1046</code>）；结局四类 <code>ran / raised / dup-blocked / dup-fused</code>（<code>:1051-1065</code>）+ <code>annotate</code> 的决策</td></tr>
+  <tr><td>温度锁</td><td><code>MODEL_GENERATION_KWARGS</code>（<code>my_coding_agent.py:98</code>）；<b>不等于可复现</b>，见站 13.2 的负结果</td></tr>
+  <tr><td>model_refused</td><td>云端不让干那一档（欠费／额度），<code>MODEL_REFUSAL_MARKS</code>（<code>my_ui.py:559</code>）+ <code>model_refusal()</code>（<code>:571</code>）</td></tr>
+  <tr><td>尺子 / 基线</td><td><code>验收脚本/v2.0/</code>，20 题 8 类；全量 34 runs 口径、留痕那份 30 runs（§3.2）</td></tr>
+  <tr><td>锚点尺子</td><td>文档行号对照用的那份快照。<code>.rollback/v1.8/</code> 已被重跑覆盖，本版一律对<b>活代码</b>；新快照待建</td></tr>
 </table>
 
 <footer>
-  生成于 2026-10-28 · 所有行号基于 <code>~/Desktop/study/ai学习/smolagents</code> 当时的 checkout（1.27.0.dev0）。
-  这份仓库是 editable 安装，源码你随时能改，改完立刻生效；行号也会随你自己的修改而漂移。
+  <p><b>本版推翻的六条旧结论</b>（都还在旧文档里流传，遇到就当错的）：</p>
+  <ul class="tight">
+    <li>「UI 不含任何 agent 逻辑，只是消费事件」→ <code>OpsUI</code> 有线程、队列、三层闸和 2315 行。站 1、4。</li>
+    <li>「它没有联网能力」→ <code>fetch</code> 能出网，只是每发必批。§1.2。</li>
+    <li>「记忆只在进程内存活，重启即失」→ sqlite 跨问题持久。站 2、21。</li>
+    <li>「max_steps=6」→ 现在是 8，且和 <code>planning_interval</code> 耦合。站 5、6。</li>
+    <li>「未设 timeout／未设 temperature」→ 两者都显式设了，且锁温的结论是负的。站 13.1–13.2。</li>
+    <li>「没有离线评测集」→ v2.0 尺子已经跑出过一份全量留痕。§3.2。</li>
+  </ul>
+  <p style="margin-top:12px"><b>还欠的账（引用本文时不要假装没有）</b>：
+  ① <code>run_python</code> 绕过 <code>guarded()</code>（真 P0，§1.2／站 17）；
+  ② 审计 <code>args_head</code> 明文落盘（P0-2 正身，站 21）；
+  ③ 计划批准／拒绝不进模型记忆（站 7）；
+  ④ 审批等待偶尔没人领（P1-23，站 20）；
+  ⑤ 活体 UI 单步读数与 S2 全量重跑（§3.3，S2 要先结 ¥0.05，且花钱前先问你）；
+  ⑥ <code>prompt_surface</code> 守卫仍在和已被覆盖的 <code>.rollback/v1.8</code> 快照比（站 10）——新的不可变锚点待建。</p>
+  <p style="margin-top:12px">代码基线 smolagents 1.27.0.dev0（editable）· 五个 <code>my_*.py</code> 共 3,110 行 ·
+  本文重梳于 2026-11-13 · 同目录配套：<code>agent链路图.html</code>（图）、<code>agent功能手册.html</code>（界面与状态）、
+  <code>agent实现原理-一次问话全流程-面试剖析对照.md</code>（面试追问对照）、<code>迭代记录.md</code>（历史，允许保留旧行号）。</p>
 </footer>
 
 </div>

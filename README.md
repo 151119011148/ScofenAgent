@@ -2,7 +2,10 @@
 
 > 目录：`~/Desktop/study/ai学习/`。写于 2026-10-28。
 > 所有结论都指向**这份目录里真实存在的代码**，路径相对 `ai学习/`，格式 `文件:行号`。行号是我当天读到的；上游仓库在更新，按关键字搜比按行号跳更稳。查不到的地方标了【待补】，没有编。
-> **本文第 6 章里 `my_ui.py` 的行号一律按 v1.8 那一版对齐**（**1,758 行**，事实源是整版快照 `ai学习/.rollback/v1.8/my_ui.py`，sha1 `800c348e`）——它是"代码现状"文档。**范围要说死**：只有讲现状的那几处（6.1、6.2、6.3.1、6.3.10 与 §9.1 总表）用这一版；**6.3.2~6.3.9 各节保留它那一版的行号**（v1.1 的号写在 v1.1 那节、v1.7 的号写在 6.3.9），和 `迭代记录.md`／`agent功能手册.html` 同一个规矩，不要拿它们去跳现网代码。**但现网那份 `scofenAgent/my_ui.py` 现在不是 v1.8**：2026-11-04 17:40 复测它是 **1,910 行 / 112,286 B / sha1 `5aa23420`**，多出的 152 行属于**另一个会话**正在做的「侧栏删除会话」，那份还没归档、也不在本轮任何档里（细节见 `迭代记录.md` v1.8 一节 §7 第 6 条）。所以：按本文行号跳代码时**先 `wc -l scofenAgent/my_ui.py`**，读到 1,758 就是同一份；读到 1,910 就说明那一刀已经落地，**行号得重导**，别拿本文的号硬跳。`迭代记录.md` 与 `agent功能手册.html` 的**每一节保留当时那一版**的行号，两边不一致时以本 README 为准去跳代码。
+> **本文第 6 章里五份 `my_*.py` 的行号一律按 v2.0 现场对齐**（2026-11-13 实测 `wc -l`：`my_ui.py` **2,315**／`my_coding_agent.py` **325**／`my_agent.py` **156**／`my_mcp.py` **186**／`my_audit.py` **128**），事实源是**只读尺子** `ai学习/.rollback/v2.0-现场-20261113/`（五份 `cp -p` ＋ `SHA1SUMS.txt`，全部 `chmod a-w`，`cmp` 逐字节等于现场）——它是"代码现状"文档。**范围要说死**：只有讲现状的那几处（6.1、6.2、6.3.1、6.3.11、6.3.12 与 §9.1 总表）用这一版；**6.3.2~6.3.10 各节保留它那一版的行号**（v1.1 的号写在 6.3.2、v1.8 的号写在 6.3.10），和 `迭代记录.md`／`agent功能手册.html` 同一个规矩，不要拿它们去跳现网代码。按本文行号跳代码前**先 `wc -l scofenAgent/my_ui.py`**：读到 2,315 就是同一份，读到别的数说明又动过，行号得重导。
+> **上一版的尺子已经没了，这件事必须写在最前面**：本文 11-04 之前对齐的是 `.rollback/v1.8/my_ui.py`（**1,758 行 / sha1 `800c348e`**）。`验收脚本/v1.8/v18_drill_v18.py:230-233` 第一步是 `shutil.copy2(现场 → .rollback/v1.8/)`，11-04 **20:47 与 22:29** 两次重跑把"当时的现场"当成 v1.8 交付版另存了一遍，而那时现场已掺进另一个会话的侧栏删除工作（1,758 → 1,908 → 1,910 → 2,065）。现在 `.rollback/v1.8/` 三份是 `my_ui` **2,065 / `e29d0102`**、`my_agent` **121 / `a9bbce22`**、`my_coding_agent` **278 / `4a3dcfb5`**；**1,758 / `800c348e` 那一份全语料 0 命中、不可恢复**（11-13 按"行数＝1,758"＋"sha1＝`800c348e`"双条件扫过所有 `.py`），它只活在 `迭代记录.md` v1.8 节 17:40 那份九套 sha1 清单里。守卫已补（`v18_drill_v18.py:222-229`：快照与现场不同就**不覆盖**），**但写路径仍指着 `.rollback`**——看板 **P2-21** 剩下的一半。连带后果：`验收脚本/v1.8/v18_gate_anchors.py` 那套文档闸的尺子已经不是它自称的那一版，**拿它扫现状会大面积误判**；本轮另建只读尺子＋新写 `验收脚本/v2.0/v20_gate_*.py`，不去改历史闸。
+> **两个 `.rollback` 根的分工**：`ai学习/.rollback/vN.N/`＝**整版交付档**，在 clone **之外**，`git clean -fd` 碰不到，是全项目唯一的回滚目标与负控尺子；`smolagents/.rollback/v1.8/after-{d8,p04,p0abc,p1a}/`＝**分刀链**，在 clone **之内**，十几份 v1.8 验收脚本按这个路径引用它。**前者是账，后者是过程——演练只该往后者写。**
+> **仓库目录名与本地目录名不一样**：公开仓库 `github.com/151119011148/ScofenAgent` 里这一层叫 **`scofenAgent/`**，**本地工作目录仍叫 `smolagents/`**（editable 安装与全部 import 都指着它，上游内核包 `src/smolagents/` 一个字节没改，`git status --porcelain` 只有 `??`）。本文所有路径按**本地**写，抄去就能跳；在 GitHub 上找同一个文件时把首段换成 `scofenAgent/`。
 > 图的语法是 Mermaid（Markdown 预览即渲染）；每张图后面都跟了等价的中文说明，只看文字也不丢信息。
 
 ---
@@ -24,7 +27,8 @@ flowchart TB
         LC4J["langchain4j<br/>Java 侧的模型 / RAG / 工具抽象"]
     end
     subgraph L2["② 编排内核层"]
-        SMOL["smolagents<br/>ReAct 循环 + 代码执行器<br/>你已在此跑通 8 项动作空间"]
+        SMOL["smolagents（仓库内 scofenAgent）<br/>ReAct 循环 + 代码执行器<br/>动作空间按入口分：CLI 8 / UI 11"]
+        HANDS["my_coding_agent 五只手 + my_agent 两只指标工具<br/>进程内函数，不经 MCP"]
     end
     subgraph L1["① 工具与协议层"]
         MCP["modelcontextprotocol/servers<br/>工具即独立进程，JSON-RPC 自描述"]
@@ -32,11 +36,11 @@ flowchart TB
     LLM["模型侧<br/>百炼 qwen-plus（OpenAI 兼容端点）<br/>只做决策，不执行任何东西"]
     APP --> SMOL
     SMOL --> LLM
-    SMOL -->|"本地真执行"| MCP
+    SMOL -->|"本地真执行"| HANDS
     LC4J --> LLM
     DIFY --> LLM
     DIFY -.->|"插件 / 工具"| MCP
-    SMOL -.->|"尚未接，可接"| MCP
+    SMOL -->|"my_mcp.attach（v2.0 已接）<br/>time×2 / fetch×1，外部工具每发必批"| MCP
     STOP --> APP
 ```
 
@@ -46,10 +50,10 @@ flowchart TB
 
 | 仓库 | 体量 | 版本 / 来源 | 在链路里的节点 | 本机能不能跑 |
 |---|---|---|---|---|
-| `smolagents/` | 263 MB | `1.27.0.dev0`，git HEAD `96f33fa`(2026-10-06)，**editable 装在 `.venv`** | ② 编排内核 | **能**，已跑通（`my_ui.py` + 桌面 App） |
+| `smolagents/`<br/>（仓库内 `scofenAgent/`） | 297 MB | `1.27.0.dev0`，git HEAD `96f33fa`(2026-10-06)，**editable 装在 `.venv`**；内核 `src/smolagents/` 零改动 | ② 编排内核 | **能**，已跑通（`my_ui.py` + 桌面 App）。**11-13 实测当前没有进程在跑**（`ps` 里 `my_ui.py` 计数 0），所有界面读数来自离线断言与 11-04～11-06 的留痕 |
 | `langchain4j/` | 56 MB | `1.23.0-beta33-SNAPSHOT`，tar 解出、无 `.git` | ③ Java 接入层 | 源码可读；编译需 `jdk17`+`mvn39`（已装在 `~/tools`，见 3.8） |
 | `dify/` | 166 MB | tar 解出、无 `.git`；`api` 60 MB + `web` 83 MB | ④ 平台层 | **未部署**：`docker/.env` 不存在，`SECRET_KEY=` 空 |
-| `servers/` | 5.8 MB | git HEAD `ef9808f`(2026-10-24) | ① 工具/协议层 | **未安装**：无 `node_modules`，且要求 Node ≥ 24（本机 v22.20.0） |
+| `servers/` | 315 MB（其中 `node_modules` **169 MB** ＋ 两只 Python server 各自的 `.venv`） | git HEAD `ef9808f`(2026-10-24) | ① 工具/协议层 | **已装、已接进 agent**：`npm ci` 395 包、`npm run build` 后四个 `src/*/dist/` 都在（11-13 复测）；v2.0 起 `time`／`fetch` 两只经 `my_mcp.py` 挂进工具表，走 `servers/src/<name>/.venv`（mcp **2.3.0**，agent 那个 venv 是 **1.30.0**，两套并存）。本机 node 仍 **v22.20.0**，四只 server 的 `package.json` 要 ≥24，只出 `EBADENGINE` 警告，装与跑都不拦 |
 
 ### 1.3 本机实际拓扑（谁在哪个端口上）
 
@@ -60,8 +64,11 @@ flowchart LR
             PY[".venv/bin/python my_ui.py<br/>127.0.0.1:7860"]
             LOG["ai学习/.agent-ui.log"]
         end
-        GR["OpsUI(GradioUI)<br/>自建 Blocks · my_ui.py:1670<br/>会话库 History · my_ui.py:482<br/>审批门 · my_ui.py:670"]
+        GR["OpsUI(GradioUI)<br/>自建 Blocks create_app · my_ui.py:2180<br/>会话库 History · my_ui.py:649<br/>审批门 _install_gate · my_ui.py:920<br/>查重门 _install_dup_gate · my_ui.py:993"]
         DB[("smolagents/.agent-history.sqlite3<br/>sessions · messages · memory")]
+        AUD["smolagents/.agent-audit.jsonl<br/>一行一次工具调用（含只读手）<br/>my_audit.py:42 · 不随会话删除"]
+        MCPS["两只 MCP server 子进程<br/>time / fetch · my_mcp.py:45-59<br/>30 秒调用超时"]
+        WEB["任意外部 URL<br/>只有 fetch 这一只手到得了"]
         CH["Chrome app 实例<br/>--app=http://127.0.0.1:7860<br/>--user-data-dir=AgentClient"]
         CLOUD["dashscope.aliyuncs.com/compatible-mode/v1<br/>qwen-plus"]
         PY --> GR
@@ -69,18 +76,22 @@ flowchart LR
         PY -->|"tee"| LOG
         CH -->|"HTTP，仅回环"| GR
         PY -->|"HTTPS，带你的 Key"| CLOUD
+        GR -->|"查重层 begin/end · my_ui.py:1044"| AUD
+        GR -->|"__init__ 里 attach · my_ui.py:877"| MCPS
+        MCPS -->|"仅 fetch，✔ 允许之后才出网"| WEB
     end
 ```
 
-要点三条，都不是设计上的浪漫选择，是被系统约束逼出来的：
+要点四条，前三条是被系统约束逼出来的，第四条是 v2.0 之后**必须改口**的一条：
 
-1. **服务只绑 `127.0.0.1`、`share=False`**（`scofenAgent/my_ui.py:1751-1752`，v1.1 前在 `:70-72`）。框架默认是 `share: bool = True`（`smolagents/src/smolagents/gradio_ui.py:422`）——照默认调用会把带着你百炼 Key 的 agent 变成 `gradio.live` 公网链接。
+1. **服务只绑 `127.0.0.1`、`share=False`**（`scofenAgent/my_ui.py:2303-2304`，v1.8 时在 `:1751-1752`，v1.1 前在 `:70-72`）。框架默认是 `share: bool = True`（`smolagents/src/smolagents/gradio_ui.py:422`）——照默认调用会把带着你百炼 Key 的 agent 变成 `gradio.live` 公网链接。
 2. **冷启动必须让 Terminal 动手**：macOS 的 TCC 不允许"由 `.app` 直接拉起的进程"读取 `~/Desktop` 下已存在文件的内容，`.venv/bin/python` 由 `.app` 直接起会 EPERM 起不来（原因记在 `我的Agent.app/Contents/MacOS/launcher:4-7`）。副作用：每次冷启动多一扇日志终端窗口。
 3. **窗口用独立 Chrome profile**（`~/Library/Application Support/AgentClient`），所以你日常 Chrome 的标签页、扩展、登录态完全不参与，也不会被接管。
+4. **出网的口子从一条变成两条**：模型调用（HTTPS，带你的 Key）之外，v2.0 接上的 `fetch` 会经本地 `mcp-server-fetch` 子进程去抓**任意 URL**，正文原样进模型上下文。所以旧文档里那句「它没有联网能力」**已经不成立**——现在的口径是「出网只有一只手，且每发必批」（`my_ui.py:907-918` 把运行时挂上的外部工具全部纳进审批名单）。同一轮还多了一份**不随会话删除**的账 `.agent-audit.jsonl`；它此刻**生产 0 行**（11-13 实测文件不存在），代码与 31 条离线断言在、真账还没开胡。
 
 ### 1.4 建议的阅读顺序
 
-1. 你自己那 3 个 Python 文件（第 6 章）——最短路径看清"一个 agent 由哪几块拼成"。
+1. 你自己那 **5** 个 Python 文件（第 6 章：`my_coding_agent` / `my_agent` / `my_ui` / `my_mcp` / `my_audit`）——最短路径看清"一个 agent 由哪几块拼成"。想按"面试会问什么"倒着读，走 `agent实现原理-一次问话全流程-面试剖析对照.md`（769 行，一次问话从输入框到落库逐段对代码）。
 2. `smolagents` 内核（第 2 章）——唯一一份你已经在跑的代码，值得读到行号级。
 3. `servers`（第 5 章）——把"工具"从函数升级成协议，概念量最小、收益最大。
 4. `langchain4j`（第 3 章）——回你的主栈，看同一套抽象在 Java 里怎么落（`AiServices` 的动态代理值得精读）。
@@ -588,7 +599,17 @@ sequenceDiagram
 
 ### 5.8 本机实际状态
 
-`node_modules` **不存在**（还没 `npm ci`）；本机 node v22.20.0，而 `src/memory/package.json:16` 要求 `"node": ">=24"`。现存 7 个 server **都不需要外部凭据**，外部依赖只是 git / time / fetch 需要 Python + `uvx`。**装不装等你点头**（会占一整棵 `node_modules`）。
+**已装、已接**（2026-10-30 装的，11-13 复测仍在）：`node_modules` **169 MB** / `npm ci` **added 395 packages in 1m**，`npm run build` 后 `everything`／`filesystem`／`memory`／`sequentialthinking` 四个 `src/*/dist/` 都在；4/4 server 起得来并握手（`everything` 要传 `stdio` 参数），功能调用四条全通，留痕在 `验收脚本/servers/`。本机 node 仍 **v22.20.0**，而 `src/memory/package.json:16` 要求 `"node": ">=24"`——只出 `EBADENGINE` 警告，装与跑都不拦。
+
+**v2.0 起真接进 agent 的只有两只**，而且走的是 **Python 那一路**（`servers/src/time/.venv`、`servers/src/fetch/.venv`，各自 mcp **2.3.0**；agent 那个 venv 是 **1.30.0**，两套版本并存、互不影响）：
+
+| server | 挂上的工具 | 为什么是它 | 拒收的 |
+|---|---|---|---|
+| `time` | `get_current_time`、`convert_time` | 纯读、无副作用、不需要凭据 | — |
+| `fetch` | `fetch` | 唯一一只出网的手，server 自带 `robots.txt` 与私有地址拒绝，正文 ≤5,000 字符 | — |
+| `filesystem`／`memory`／`git`／`sequentialthinking`／`everything` | **整只拒收** | 理由逐条写在 `my_mcp.py:63-70` 的 `REFUSED` 字典里（能力与本地五只手重叠／会写盘／会动版本库／只是演示） | 全部 |
+
+另有第二道闸 `DESTRUCTIVE_RX`（`my_mcp.py:74-77`）：工具名里带 `del|remov|unlink|rmdir|truncate|drop|rename|move|write|edit|patch|apply|publish|revert|reset|format` 的一律不挂。**两道闸都是白名单式点名**（`MCP_SERVERS` 只列要的那两只），不是"先全挂再挑"。外部工具**一律过审批门**，包括那两只纯读的——口径是"来源不可信就先批"，不是"有副作用才批"。
 
 ---
 
@@ -596,60 +617,97 @@ sequenceDiagram
 
 这部分不是上游代码，但它是这套语料的**交付层**，踩到的坑信息量最大。
 
-### 6.1 `scofenAgent/my_coding_agent.py`：五只手 + 三圈边界（256 行）
+### 6.1 `scofenAgent/my_coding_agent.py`：五只手 ＋ 三圈边界 ＋ 模型侧三组常量（325 行）
 
-设计原则写在文件头（`:7-11`）：**边界写在代码里，不靠 prompt 求模型自觉**。
+设计原则写在文件头（**`:7-14`**）：**边界写在代码里，不靠 prompt 求模型自觉**。v2.0 这份从 v1.8 的 256 行长到 **325 行 / 19,651 B**，多出的 69 行**全在模型侧那三组常量与它们的账**（`:44-98`），五只手的判定面一行没动。
 
 ```mermaid
 flowchart TD
-    IN["模型给出 path 或 code 参数"] --> G["guarded() :43-80"]
-    G --> C1{"resolve 后仍在 ROOT 内?<br/>ROOT = ai学习，见 :24"}
-    C1 -->|否| REJ1["PermissionError 越界<br/>文案指路 :59-66"]
-    C1 -->|是| C2{"命中 DENY_NAMES? :37<br/>.env .git .venv node_modules __pycache__ .agent-staging"}
-    C2 -->|是| REJ2["PermissionError 拒绝凭证或依赖目录 :68"]
-    C2 -->|否| C3{"操作类型"}
-    C3 -->|读| RD["read_file :84 带行号输出，上限 300 行 / 200 KB"]
-    C3 -->|列| LD["list_dir :108 只能列这个根之内"]
-    C3 -->|搜| GR["grep_files :127 上限 100 命中，跳过 SKIP_DIRS"]
-    C3 -->|写| WF["write_file :163 → 不落原路径<br/>只写 .agent-staging/（:182-184）并回 unified diff :176-181"]
-    C3 -->|跑| RP["run_python :194"]
-    RP --> S1["ast.parse 语法预检 :200-203"]
-    S1 --> S2["正则拦 rm / rmtree / remove / unlink / subprocess / socket / urllib / requests :204-206"]
-    S2 --> S3["临时目录沙箱 + 清空过的 env，模型拿不到 OPENAI_API_KEY :207-211"]
-    S3 --> S4["20 秒超时熔断 + stdout/stderr 截断 :212-218"]
-    C1 -->|不存在| NF["FileNotFoundError：相对路径按 ROOT 解释，不猜别的根 :69-79"]
+    IN["模型给出 path 或 code 参数"] --> G["guarded() :111-148"]
+    G --> C1{"resolve 后仍在 ROOT 内?<br/>ROOT = ai学习 :34，resolve :125"}
+    C1 -->|否| REJ1["PermissionError 越界<br/>文案指路 :126-134"]
+    C1 -->|是| C2{"命中 DENY_NAMES? :105<br/>.env .git .venv node_modules __pycache__ .agent-staging<br/>判定在 :135-136"}
+    C2 -->|是| REJ2["PermissionError 拒绝凭证或依赖目录 :136"]
+    C2 -->|否| C4{"must_exist? :137"}
+    C4 -->|"是且不存在·相对路径"| NF1["FileNotFoundError：只按 ROOT 这一个根解释<br/>不猜别的根、动作空间里没有删除/移动/重命名 :138-146"]
+    C4 -->|"是且不存在·绝对路径"| NF2["FileNotFoundError：绝对路径原样报 :147"]
+    C4 -->|"否（write_file 走这条）"| OK["返回 p :148"]
+    C4 -->|存在| OK
+    OK --> C3{"操作类型"}
+    C3 -->|读| RD["read_file :152-172<br/>默认 200 行、硬上限 MAX_LINES=300 :107（夹在 :165）／200 KB :108"]
+    C3 -->|列| LD["list_dir :176-191 只能列这个根之内"]
+    C3 -->|搜| GR["grep_files :195-227<br/>默认 max_hits=40、硬上限 100 :205，跳过 SKIP_DIRS :106"]
+    C3 -->|写| WF["write_file :231-258 → 不落原路径<br/>只写 .agent-staging/（:250-252）并回 unified diff :244-249"]
+    C3 -->|跑| RP["run_python :262-286 ⚠ 不过 guarded()，见下面 P0-25"]
+    RP --> S1["ast.parse 语法预检 :268-271"]
+    S1 --> S2["正则拦 rm / rmtree / remove / unlink / subprocess / socket / urllib / requests :272<br/>命中即拒 :273-274"]
+    S2 --> S3["临时目录沙箱 :275（dir=STAGING）+ 收窄的 env :278-279"]
+    S3 --> S4["20 秒超时熔断 :281-284 + stdout/stderr 截断 :285"]
 ```
 
-三圈闸门的实质：**路径收敛**（`guarded`）、**写操作只暂存**（`.agent-staging/`，要你自己 `cp` 才生效；`.agent-staging` 同在一进的拒绝名单里，所以 agent 读不回自己刚暂存的副本——这个闭环是**定性过的**，理由写在 `my_coding_agent.py:33-36`）、**执行环境降级**（空 env + 熔断 + 静态禁词）。
+三圈闸门的实质：**路径收敛**（`guarded`，自我声明在 `:121`）、**写操作只暂存**（`.agent-staging/`，`:35` 定义、`:38` 建目录，要你自己 `cp` 才生效；`.agent-staging` 同在 `DENY_NAMES` 里，所以 agent 读不回自己刚暂存的副本——这个闭环是**定性过的**，理由写在 `:100-104`）、**执行环境降级**（收窄 env + 熔断 + 静态禁词）。
 
-**v1.8 在这一层做的是"说什么"，不是"判什么"（P0-a／P0-b／P0-c，工单 #40）。** 起因是 `ai学习/.agent-ui.log` 里 2026-11-03 21:06 那轮（17,344 B / 207 行）：旧越界文案只说「不在白名单根目录之下」，模型下一步写的是「请联系系统管理员调整权限」——本机没有这个开关，那是它自己补出来的路径；旧 `FileNotFoundError` 只给拼接后的结果，模型不知道自己把 `人生/` 接到了哪个根上，于是**同名同参**又把 `list_dir('人生/')` 打了一遍。现在 `guarded()` 抛出的两条文案里写明：这一整套工具只服务 ROOT 这一个根、**动作空间里没有删除/移动/重命名**、相对路径的口径、以及「不要用同一个参数再打一遍」（`:59-66`、`:69-79`）；`list_dir`／`write_file` 的 docstring 各补一句能力穷举（`:109`、`:112`、`:165-166`）。**收敛逻辑、`DENY_NAMES`、`must_exist` 的分支顺序一字未动**（`:53` 那句注释就是这条的自我声明），判定面还是原来那三圈。`build_agent()` 里那段 `description`（`:236-247`）也一并写全了，但要说死：**顶层 `ToolCallingAgent` 的 `description` 模型读不到**——它只在 `describe()` 里用，而 `describe()` 服务于被上级调用的 managed agent（`agents.py:1005`）；实测 `'读代码' in agent.system_prompt` → **False**（`my_agent.py:81` 同一条注释）。真正进模型上下文的是**每个工具的 docstring**，所以起作用的是上面那几处。这一层动了之后 `my_coding_agent.py` **208 → 256 行**（8,889 → **13,367 B**，`diff` **+58 / −6**、9 个 hunk），CLI 侧动作数从题 B 的 8/7 步降到 **2/2** 步（实测见 `验收脚本/v1.8/run/v18_p0abc_live.out`）。
+**模型侧那三组常量（v2.0 新增，都在这个文件里，`my_agent.py` 只引用不另写）。**
 
-一个必须诚实记录的局限：`run_python` 的禁词是**正则黑名单**，属于"挡住无意"而不是"挡住有心"。真正的安全边界是 smolagents 自己承认的那句话——本地执行器非安全沙箱，不可信代码要换 E2B/Docker（`local_python_executor.py:1692-1693`）。目前这套只在"我自己的目录 + 我自己盯着"的前提下成立。
+| 常量 | 行 | 是什么 | 为什么放这一层 |
+|---|---|---|---|
+| `BASE_URL` / `MODEL_ID` | `:44-47` | 默认百炼 compatible-mode ＋ `qwen-plus`，可被 `AGENT_BASE_URL`／`AGENT_MODEL_ID` 顶掉 | 换模型不必改代码；尺子那份 30 跑基线就是靠它换成 `tongyi-xiaomi-analysis-flash` 的 |
+| `MODEL_CLIENT_KWARGS` | `:59-67` | `httpx.Timeout(read=60, connect=5)` ＋ `max_retries=2` | **连接期**的事：等多久算挂、连不上重试几次 |
+| `MODEL_GENERATION_KWARGS` | `:91-98` | `{"temperature": 0.0}`，可被 `AGENT_TEMPERATURE` 顶掉 | **每发请求**的事：采样。走 `**kwargs` 而不是 `client_kwargs`，因为 `_prepare_completion_kwargs` 里 `self.kwargs` **最后覆盖**（`models.py:545-550`） |
 
-### 6.2 `scofenAgent/my_agent.py`：合并成一个 agent，而不是开第二个窗口
+**B1：`read=600` 是 SDK 默认，不是谁选的。** 框架自己那层 retryer 帮不上忙——谓词 `is_rate_limit_error` 只查字符串里有没有 `429 / rate limit / too many requests / rate_limit`（`models.py:1194-1202`），实测 `is_rate_limit_error(APITimeoutError(...))` → **False**，而 `reraise=True`（`models.py:1174-1180`）直接抛，所以**超时不归它重试**：改前一个挂死请求占住 **600×3 ≈ 30 分钟**，现在 **60×3 ≈ 3 分钟**。`connect` 必须**单独**给 5 秒（`:62-63` 那句注释钉的就是这条）：写成 `timeout=60.0` 会把 connect 一起放宽，「根本连不上」反而比改前更慢。`read=60` 的口径是「**60 秒内没有新帧**就算挂」，流式每个 chunk 都重置它。实测 B1-19：**3 个连接、4.27 s**（常量压到 1 秒跑）；B1-20 把改前那 30 分钟按同一口径推了一遍。
 
-`my_agent.py:8` 直接 `from my_coding_agent import ...`，把 5 个自写工具与 2 个业务工具（`MaxDrawdownTool:33`、`AnnualizedVolTool:53`）挂进同一个 `ToolCallingAgent`（`:71-90`），动作空间 8 项（含框架注入的 `final_answer`）。v1.8 起这份文件 **111 行 / 5,410 B**（v1.7 时 82 行 / 2,879 B，+29 行全在 `PLANNING_INTERVAL` 那段账和 `description` 上）。
+**P1-4：锁温这一刀是负结果，必须这么写。** `temperature` 锁到 0.0 之后做了四次尝试、三种轨迹、两种判分（`验收脚本/v2.0/run/v20_probe_planning_det-t0.json` vs `v20_probe_planning_arms4.json`），**轨迹照样分叉**。所以「锁温 ⇒ 可复现」这个推论在这套语料里**被证伪**，一致性只能靠尺子的 `repeat` 抽样量（7 道题各跑 3 次）。**刻意不留 fallback**：`AGENT_TEMPERATURE` 拼错一个字母若静默退回 0.0，就会拿「锁过温」的口径去解释一份根本没锁的读数——宁可让它抛。
 
-- **指标口径写在代码里**，不是行业黑话：最大回撤 = 相对历史峰值的最大跌幅，同时回吐发生区间（`:39-50`）；年化波动率 = 日收益率标准差（样本方差，分母 n-1）× √252（`:59-66`）。
-- 一个踩过的坑：`my_coding_agent.py` 原本在模块级 `agent = build_agent()`，导致 `import` 就顺手建了第二个 agent 并触发模型初始化；现在建 agent 挪进 `if __name__ == "__main__":`（`:252-256`），**import 无副作用**。
-- 成本实测：工具从 2 个变 7 个后，单题累计 input token 从 **2,375 → 19,399**（同口径累计值）。工具变多 ≈ 提示词里的签名变多 ≈ 每步上下文更贵，**这不是免费的功能叠加**。
-- **v1.8 在这里开了框架的"规划"（P0-4 的地基）**：`PLANNING_INTERVAL = 8`（`:30`）交进 `planning_interval=`（`:78`）。框架条件是 `step_number == 1 or (step_number-1) % interval == 0`（`agents.py:550-552`）——**第 1 步必出一份计划**，8 又和 `max_steps = 8`（`:75`）同高，所以**每题恰好一份、题内不重规划**（下一次落在第 9 步，循环够不着）。设成 `None` 就整刀关掉，回到 v1.8 之前。代价在同一道题上量过（`验收脚本/v1.8/run/v18_plan_probe.out`，**单题样本、只当量级看**）：关 **7.1s、in 5,260 / out 262**、2 个 `ActionStep`、`PlanningStep` 0 条；开 **40.1s、in 13,591 / out 1,713**，其中**规划那一次单独** `in 1,188 / out 1,458`、**32.9s**（占满那 40.1s），计划正文 6,195 字符，后面每一步的 input 都被这段计划抬高（单步 `3,957 / 4,138 / 4,308` 对关着的 `2,463 / 2,797`）。屏上那一格怎么显示、批准卡在开工之前怎么拦，见 6.3.10。
+**v1.8 在这一层做的是"说什么"，不是"判什么"（P0-a／P0-b／P0-c，工单 #40）。** 起因是 `ai学习/.agent-ui.log` 里 2026-11-03 21:06 那轮（17,344 B / 207 行）：旧越界文案只说「不在白名单根目录之下」，模型下一步写的是「请联系系统管理员调整权限」——本机没有这个开关，那是它自己补出来的路径；旧 `FileNotFoundError` 只给拼接后的结果，模型不知道自己把 `人生/` 接到了哪个根上，于是**同名同参**又把 `list_dir('人生/')` 打了一遍。现在 `guarded()` 抛出的两条文案里写明：这一整套工具只服务 ROOT 这一个根、**动作空间里没有删除/移动/重命名**、相对路径的口径、以及「不要用同一个参数再打一遍」（**`:126-134`、`:138-146`**）；`list_dir`／`write_file` 的 docstring 各补一句能力穷举（**`:177`、`:232-234`**）。**收敛逻辑、`DENY_NAMES`、`must_exist` 的分支顺序一字未动**（`:121` 那句注释就是这条的自我声明），判定面还是原来那三圈。`build_agent()` 里那段 `description`（**`:305-316`**）也一并写全了，但要说死：**顶层 `ToolCallingAgent` 的 `description` 模型读不到**——它只在 `describe()` 里用，而 `describe()` 服务于被上级调用的 managed agent（`agents.py:1005`）；实测 `'读代码' in agent.system_prompt` → **False**（`my_agent.py:99-102` 同一条注释）。真正进模型上下文的是**每个工具的 docstring**，所以起作用的是上面那几处。这一层动了之后 `my_coding_agent.py` **208 → 256 行**（8,889 → **13,367 B**，`diff` **+58 / −6**、9 个 hunk），CLI 侧动作数从题 B 的 8/7 步降到 **2/2** 步（实测见 `验收脚本/v1.8/run/v18_p0abc_live.out`）。**v2.0 的 325 行是在这 256 行上再加 69 行模型侧常量**，那 9 个 hunk 的判定面至今没被碰过。
 
-### 6.3 `scofenAgent/my_ui.py`：交付外壳里唯一真正的"产品决策"（1,758 行）
+**P0-25（新立，未修）：`run_python` 根本不过 `guarded()`。** 上面那张图里它是唯一一条**不经过三圈闸门**的边——`run_python(code)` 收的是代码不是路径，所以路径白名单、`DENY_NAMES`、`.env` 拒收**一条都用不上**。它自己的闸是 `:272` 那句正则黑名单：
+
+```python
+banned = re.search(r"\brm\b|shutil\.rmtree|os\.remove|os\.unlink|subprocess|socket\.|urllib|requests\.", code)
+```
+
+拦的是**名字**不是**能力**：`open(".env").read()` 一个禁词都不含，而 `:278-279` 那份 env 只收窄了 `PATH`/`HOME`/编码三件，**cwd 是 `STAGING` 下的临时目录、但文件系统可达范围没变**，`smolagents/.env`（960 B，11-06 17:55）就在 ROOT 之内、几步之外。【源码事实，11-13 逐行读过；**未实跑复现**——不想真把 key 打印出来。】三个候选修法：**(a)** 黑名单补 `open`/`io`/`pathlib`/`os.` 一类（治标，绕法无穷）；**(b)** 把执行 cwd 关进一个**只含待跑脚本**的临时目录，并让 `ROOT` 不可达（治本一半）；**(c)** 换 smolagents 自己的 `local_python_executor`（import 白名单 ＋ builtins 闸，`:855-918`／`:1309-1343`）或 E2B/Docker。**推荐 (b)+(a)**：先把可达范围关掉，再补名字层。这一格与 P0-26（审计参数明文）、P0-27（`fetch` 正文注入）一起停在 9.5 的 P0-a，**只立单不动代码**。
+
+**P2-22：`build_agent()` 那段 description 仍是真话，别顺手"修"它。** 它写着「没有删除／移动／重命名／访问网络」（`:305-316`），而 v2.0 之后**界面那条入口确实有 `fetch` 能出网**。但这段话属于 `build_agent()` 那条 **6 只手**的入口——那条路上没有 MCP，所以它**逐字仍然成立**。要改的是**顶层 `my_agent.py:103-108`** 那份（`:106` 还写着「访问网络」在禁止之列，而它描述的对象现在含 `fetch`），而且改了也进不了模型上下文（见上一段）。**口径分入口，别一刀切**——这是四套动作空间那张表存在的意义。
+
+一个必须诚实记录的局限：`run_python` 的禁词是**正则黑名单**，属于"挡住无意"而不是"挡住有心"。真正的安全边界是 smolagents 自己承认的那句话——本地执行器非安全沙箱，不可信代码要换 E2B/Docker（`local_python_executor.py:1692-1693`）。目前这套只在"我自己的目录 + 我自己盯着"的前提下成立，**而 P0-25 说明连这个前提也还有一道缝**。
+
+### 6.2 `scofenAgent/my_agent.py`：合并成一个 agent，而不是开第二个窗口（156 行）
+
+`my_agent.py:9` 直接 `from my_coding_agent import ...`，把 5 个自写工具与 2 个业务工具（`MaxDrawdownTool:47`、`AnnualizedVolTool:67`）挂进同一个 `ToolCallingAgent`（`:90-110`，工具表在 `:91-92`）。**「动作空间几项」这句话必须带入口口径**，因为这份语料里现在有四条入口、四个数：
+
+| 入口 | 怎么起 | 工具表 | 其中每发必批 | 根据 |
+|---|---|---|---|---|
+| **CLI／裸 agent** | `.venv/bin/python my_agent.py` | **8** | 0（不过界面门） | 自己声明 7（`:91-92`）＋ 框架补 `final_answer`（`agents.py:402`） |
+| **界面** | `.venv/bin/python my_ui.py` | **11** | **5** | 8 ＋ MCP 三只（`get_current_time`／`convert_time`／`fetch`）；名单由 `_gate_names()` **现拼**（`my_ui.py:907-918`） |
+| **`build_agent()`** | `python my_coding_agent.py` | **6** | 0 | 只挂自写五只（`:293`）＋ `final_answer`；`name="代码检索助手"`（`:296`）、**没有 `planning_interval`** |
+| **离线尺子** | `验收脚本/v2.0/v20_eval.py` | **8** | 0 | `meta` 里写死 `gate="off（裸 agent，不经界面审批门）"`（`:325`） |
+
+拿 8 去和 11 相减、或拿尺子的达标率去解释界面上的行为，都是**口径错配**——这也是 6.3.12 那张基线表要把模型名、工具表、`gate`、`repeat`、`n_runs` 五格全写死的原因。
+
+- **指标口径写在代码里**，不是行业黑话：最大回撤 = 相对历史峰值的最大跌幅，同时回吐发生区间（`forward :53-64`）；年化波动率 = 日收益率标准差（**样本方差，分母 n-1**，`:78`）× **√252**（`:79`），整个 `forward` 在 `:73-80`。
+- 一个踩过的坑：`my_coding_agent.py` 原本在模块级 `agent = build_agent()`，导致 `import` 就顺手建了第二个 agent 并触发模型初始化；现在建 agent 挪进 `if __name__ == "__main__":`（**`:321-325`**），**import 无副作用**。这条纪律是 v2.0 那五套离线断言能安全 import 现场文件的前提。
+- 成本实测（**v1.8 当时的读数，单题样本**）：工具从 2 个变 7 个后，单题累计 input token 从 **2,375 → 19,399**（同口径累计值）。工具变多 ≈ 提示词里的签名变多 ≈ 每步上下文更贵，**这不是免费的功能叠加**。v2.0 把工具表从 8 扩到 11 之后**没有重测这条曲线**【待补】。
+- **v1.8 在这里开了框架的"规划"（P0-4 的地基）**：`PLANNING_INTERVAL = 8`（**`:44`**）交进 `planning_interval=`（**`:97`**）。框架条件是 `step_number == 1 or (step_number-1) % interval == 0`（`agents.py:550-552`）——**第 1 步必出一份计划**，8 又和 `max_steps = 8`（**`:94`**）同高，所以**每题恰好一份、题内不重规划**（下一次落在第 9 步，循环够不着）。设成 `None` 就整刀关掉，回到 v1.8 之前。代价在同一道题上量过（`验收脚本/v1.8/run/v18_plan_probe.out`，**单题样本、只当量级看**）：关 **7.1s、in 5,260 / out 262**、2 个 `ActionStep`、`PlanningStep` 0 条；开 **40.1s、in 13,591 / out 1,713**，其中**规划那一次单独** `in 1,188 / out 1,458`、**32.9s**（占满那 40.1s），计划正文 6,195 字符，后面每一步的 input 都被这段计划抬高（单步 `3,957 / 4,138 / 4,308` 对关着的 `2,463 / 2,797`）。屏上那一格怎么显示、批准卡在开工之前怎么拦，见 6.3.10（历史）与 6.3.12（现状）。
+- **v2.0 在这里加了两样**：①模型构造（**`:87-88`**）显式带上 `client_kwargs=MODEL_CLIENT_KWARGS` 与 `**MODEL_GENERATION_KWARGS`，也就是 B1 的超时三件套与 P1-4 的锁温**都从 `my_coding_agent.py` 那三组常量来**，这个文件自己不另写一份；②新增 `model_preflight()`（**`:126-135`**）——一发 `max_tokens=1` 的 `chat.completions.create`，读的是 `agent.model.client` 这个**活对象**（要验的就是屏幕上那条路，连 60 秒 read 超时一起验），**异常原样返回不抛**，分类交给界面。**只有 `my_ui.launch()` 调它**（`:893`）：离线套件全都 import 这个模块，谁都不想在构造 `OpsUI` 时往外发请求。前面那段账写在 `:113-125`。
+
+### 6.3 `scofenAgent/my_ui.py`：交付外壳里唯一真正的"产品决策"（2,315 行）
 
 #### 6.3.1 三条硬决策（v1.0 立的，v1.1、v1.2 沿用）
 
 ```mermaid
 flowchart LR
-    L["OpsUI(agent).launch()<br/>my_ui.py:1750"] --> D{"share 参数默认值<br/>gradio_ui.py:422 是 True"}
+    L["OpsUI(agent).launch()<br/>my_ui.py:886-904"] --> PF["先打一发 1 token 预检<br/>my_agent.model_preflight :126-135<br/>实测 0.34s，异常原样返回不抛"]
+    PF --> D{"share 参数默认值<br/>gradio_ui.py:422 是 True"}
     D -->|"照默认走"| PUB["gradio.live 公网隧道<br/>你的百炼 Key 暴露在公网 URL 上"]
-    D -->|"写死 share=False 与 127.0.0.1<br/>my_ui.py:1751-1754"| LOCAL["只有本机能访问"]
-    LOCAL --> X["Ctrl-C 后端口释放但进程挂在非守护线程<br/>→ 显式 os._exit(0)，my_ui.py:1758"]
+    D -->|"写死 share=False 与 127.0.0.1<br/>my_ui.py:2303-2304"| LOCAL["只有本机能访问"]
+    LOCAL --> X["Ctrl-C 后端口释放但进程挂在非守护线程<br/>→ finally 里 my_mcp.detach（:2312）再 os._exit(0)（:2315）"]
 ```
 
-验证口径两条，缺一不可：日志里**没有** `gradio.live`；`lsof -nP -iTCP:7860 -sTCP:LISTEN` 只出现 `127.0.0.1`。
+验证口径两条，缺一不可：日志里**没有** `gradio.live`；`lsof -nP -iTCP:7860 -sTCP:LISTEN` 只出现 `127.0.0.1`。**v2.0 起多一条**：关停之后本进程名下的 MCP stdio 子进程数应为 **0**——`detach` 不只断连接，还把挂上去的工具从 `agent.tools` 里 pop 掉（`my_mcp.py:168-186`），否则工具留在清单里而会话已关，模型下一次会撞在一个死会话上。
 
-第三条是**结构性的**：不改上游一行源码。所有界面增强都写在 `OpsUI(GradioUI)` 子类里，`_stream_response` 自己维护那份内部列表、每次 `yield list(msgs)` 交副本给 gradio（`my_ui.py:1382`；v1.1/v1.2 是 `list(msgs) + [stats]` 在 `:310`，v1.3 把统计并进了步骤卡，见 6.3.5）。收益是上游升级时冲突面只有这一个文件；代价是 gradio 那套折叠语义你得自己摸清（见 6.3.2 的坑、6.3.4 里 v1.2 换壳踩的那几脚，以及 6.3.5 里 D4 那条 `ValidationError`）。
+第三条是**结构性的**：不改上游一行源码。所有界面增强都写在 `OpsUI(GradioUI)` 子类里（`my_ui.py:793`），`_stream_response` 自己维护那份内部列表、每次 `yield list(msgs)` 交副本给 gradio（`my_ui.py:1699`；v1.1/v1.2 是 `list(msgs) + [stats]` 在 `:310`，v1.3 把统计并进了步骤卡，见 6.3.5）。收益是上游升级时冲突面只有这一个文件；代价是 gradio 那套折叠语义你得自己摸清（见 6.3.2 的坑、6.3.4 里 v1.2 换壳踩的那几脚，以及 6.3.5 里 D4 那条 `ValidationError`）。**这条纪律在 v2.0 又兑现了一次**：新增的 `my_mcp.py`（186 行）与 `my_audit.py`（128 行）都是**旁挂**——前者往 `agent.tools` 里注入、后者在查重层记一行，上游 `src/smolagents/` 依旧零改动（`git status --porcelain` 只有 `??`，11-13 复核）。
 
 #### 6.3.2 v1.1 加的两层：成本上墙 + 真刹车
 
@@ -1006,6 +1064,8 @@ flowchart LR
 
 #### 6.3.10 v1.8：一次上线四刀——断开补账（D8）＋ 计划批准（P0-4）＋ 越界指路（P0-a/b/c）＋ 重复熔断（P1-a）
 
+> **本节行号属于 v1.8 那一版（`my_ui.py` 1,758 行），不是现状。** 按本文开头的尺子规矩，6.3.2~6.3.10 各节保留它那一版的号，现状看 6.3.11／6.3.12 与 §9.1。而 v1.8 那份整版快照**已被覆盖、不可恢复**（原因见开头第二条），所以本节的号现在**跳不进任何一份现存文件**——要复核这一刀，读 `smolagents/.rollback/v1.8/after-{d8,p04,p0abc,p1a}/` 那条**分刀链**（它在 clone 之内，没被演练碰到），或 `验收脚本/v1.8/run/drill-backup-20261104-224538/`。
+
 **范围与体量。** 工单 **#38 #39 #40 #41 ＋ #42 只立单**（顺序是 11-02 点死的 D8 → P0-4 → P0-a/b/c → P1-a）。`my_ui.py` **1,253 → 1,758 行**（67,362 → **102,752 B**，对 `.rollback/v1.7` 的 `diff` 净 **`+541 / −36`**、52 个 hunk）；`my_agent.py` **82 → 111 行**（2,879 → 5,410 B）；`my_coding_agent.py` **208 → 256 行**（8,889 → 13,367 B）；三份合计 **+42,399 B**。上游源码零改动，库 schema 零改动（`memory` 表还是那三列，本轮往 payload 里只多写了 `wait` 那一格的**补账**）。**装门顺序本身是语义**：`OpsUI.__init__` 里 `_install_gate()`（`:664`）→ `_install_dup_gate()`（`:666`）→ `_install_plan_gate()`（`:667`）——查重必须在审批**之外**（被挡的那次调用不该先弹审批卡），计划门套在最外面（它守的是 `_run_stream`，不是某个工具）。
 
 **刀一 D8 断开侧（#38）：刷新／关页面这一题不再一行都不落库。** 机制那一条 v1.7 只能标【未验证】，本轮实测坐实：客户端断开时 gradio 关的是 `_respond`（`:1481`）那条生成器，`GeneratorExit` 走的是**另一档**，不是按 ■ 停止那条 `AgentError`（`:1528` 那句注释写死了"GeneratorExit 之后再 yield 是 RuntimeError"）。于是新增一档状态 `interrupted`（`STATE_LABEL :416`），`_respond` 在 `finally` 之前认旗（`:1530` 置位、`:1566` 分支），收尾函数 `_mark_interrupted`（`:909`）干三件事：把还挂在队列上的待批卡结算成终态（「⏹ 待批 · run_python · **随中断取消** · 等了 5.2s」，`:981`）、**把没人点的审批等待补进 `_pending_wait`**（`:929-938`，门槛仍是 `APPROVAL_WAIT_MIN=0.05`，`:43`）、追加一张标记卡「⏹ 已中断 · 审批空等 5.2s」（`:940`、`:961`）。补账那一格挂到**第一个到达的 `ActionStep`** 的 `_opsui_wait` 上，所以它顺着 v1.7 的 V9 通道进库（`encode_memory :193-201`、`decode_memory :259`）。实测（探针 app **7872** ＋ 真 qwen-plus ＋ 每场景一份独立库，`验收脚本/v1.8/run/v18_after_fix.out`）：B1 断开主测库里从 3 条变 **4 条**、payload 350 → **366 B**、里面有 `"wait": 5.172`；**B0 正常允许跑完**没被改坏（`Final answer: 21`、本题 in 4,790 / out 39）；**B4 按 ■** 措辞照旧「随停止取消」且 `mark.enter` **0 次**（断开那一路没被停止路借用）；B2 SIGKILL／B3 SIGINT 仍 `messages 0 / memory 0`——**没有 finally 就没有收尾，这是行为边界，不是回归**。
@@ -1020,6 +1080,165 @@ flowchart LR
 
 **四条边界。** ① **面板在批准之后不会在刷新后重现**：没批准的那些计划根本没进 memory，`_on_load` 无从读起（C3 第二刷等满 8,018 ms 仍是「DOM 里没有 `#planpanel`」）。② **计划正文是英文**（框架的规划 prompt 是英文，本轮不改语言）。③ **「本题 token」少算了规划那一次**：C0 屏上 `in 5,703 / out 39`，真实是 `6,784 / 458`（少 1,081 = **15.9%**、419 = **91.5%**），因为累加只挂在 `isinstance(payload, ActionStep)` 那一支（`:1315-1318`）——要不要把它并进累计是**口径决定**，已立单 **P1-23** 等你点头（耗时同一支 `:1319-1320`，【未验证】）。④ **#42 立单**：同一题两跑首屏不一样——跑① 首屏距点击 **+2.673 s**、落库已完成 → 屏上 bot=3；跑② **+0.132 s**、比 `GeneratorExit` 还早 0.408 s → **屏上 bot=0**（库里照旧 4 条）。四个可判帧里 `Δt>0` 那 2 帧 **100% 少读**、窗口宽度 min **0.418** / 中位 **0.591** / max **0.765** 秒；推荐修法 (a) **有界重试**（`_on_load :1645` 读到 messages=0 **且** sid 还在 `self._mem`（`:658`）时每 ~50 ms 重读、带上限），(b) 提前 save **已证否**，(c) 客户端第二帧不建议；反面证据决定了不能只看 `mem_held`（读全那一帧同样挂着 sid，只看它会空转重试到上限）。**产品代码本轮为 #42 一字未动**（立单时三份 == `.rollback/v1.8/`，token 消耗 0）。
 
+
+#### 6.3.11 v1.9：侧栏删除会话——两下确认 ＋「⋯」菜单（V10）
+
+> **这一刀是另一个会话在 2026-11-04 落地并验收的**（本会话当时在做 v1.8 的四刀）。本节按它留下的脚本与输出回补，数字全部抄自 `验收脚本/v1.9/run/`，**不是本会话当场跑的**。行号对着**现场那一版**（2,315 行），所以它是现状节。
+
+**解决什么。** 侧栏只能「＋ 新会话」和点旧会话，**删不掉**：问错一题、或库里躺着不想留的内容，只能去手改 sqlite。
+
+**体量与事实源。** v1.9 收尾时 `my_ui.py` 是 **2,315 行 / 139,457 B / sha1 `b0566e6c`**（`验收脚本/v1.9/run/v19_live_menu_delete.meta`，11-04 **23:47**），11-13 复测**逐字相同**——它自 v1.9 收尾起**一行没再动**，v2.0 的界面侧接线（MCP 胶囊、审计、拒绝档）在那之前就已经在里面了。改动前现场快照是 `.rollback/v1.9-现场-20261104-2255/my_ui.py`（`e29d0102`，2,065 行）。**其余四份 v1.9 没动。**
+
+| 位置 | 改了什么 |
+|---|---|
+| `my_ui.py:756-769` | `History.delete(sid)`：会话 ＋ 消息 ＋ 记忆**一起清**（三张表全 `ON DELETE CASCADE`），返回**真实行数** |
+| `:771` | `History.exists(sid)`：删过的 id 再插消息会撞外键，`ensure` 要认得出来 |
+| `:777-790` | `History.ensure()`：认出已删 id 就**另开一条干净的** |
+| `:1987-2061` | `_delete_session()`：**两下确认**（第一下武装、第二下真删），`:2049` 同步 `_mem.pop` |
+| `:2063-2151` | `_menu_delete()`：侧栏「⋯ → 删除」那一路，`:2140` 同步 `_mem.pop`；**开场号＋页内第几次**两段号防重复投递 |
+| `:464` | `SIDEBAR_JS`（上方 `:460` 是口径注释）：每行挂一个「⋯」，挂在 `demo.load(js=…)` 上，页面一装好就跑一次 |
+| `:2295` | `demo.load(..., js=SIDEBAR_JS)` |
+
+**用户视角。** 侧栏每行右边一个「⋯」→ 点开是「删除」→ **第一下**状态条出回执「确认删除「××」？这条的消息和模型记忆都会一起清掉，不可恢复。再点一次这一行的「⋯ → 删除」。」→ **第二下**才真删，回执报真实行数「已删除「××」（3 条消息、1 份模型记忆）。屏幕上这条没动。」
+
+**验收。** `v19_test_delete.py` **43 条全绿**（A 组连带清空、B 组外键与 `ensure`、C 组两下确认与武装作废）＋ `v19_test_menu_delete.py` **51 条全绿**（D 组 payload 校验与武装、E 组真删、J 组**撞号重复投递**）＋ `v19_live_menu_delete.py` 真界面 **28/28**（独立实例 **127.0.0.1:7874** ＋ 临时库，headless Chrome `--remote-debugging-port=9344`；另一会话占着 9333，没碰）＝ **94 条离线 ＋ 28 条真界面**。同一份 `meta` 还记着 v1.8 五套离线回归（nochange／interrupt／plan／p0abc／dup）**全绿**。
+
+**三条语义变化，必须显式声明。** ① 侧栏从「只增不删」变成「可删，且**两下**才删」；② 删除**级联到模型记忆**（`memory` 表），删完那条会话模型那一边也不记得了；③ **审计不级联**——`.agent-audit.jsonl` 里那些行**留着**，`v20_test_d3_audit.py` 的 **R26** 把这一条断言死了（「`History` 里没有任何一处提审计」），是**断言出来的**，不是「恰好没删到」。
+
+**两条边界。** ① 「⋯」菜单靠 `demo.load(js=…)` 注入，**刷新后重新注入**；流式期间新长出来的行会不会漏挂，留痕里没专门断言【未验证】。② 删除**不可恢复**，没有回收站、没有二次备份（回执里已明说）。
+
+**回滚，以及一个做不出来的方向。** `cp .rollback/v1.9-现场-20261104-2255/my_ui.py scofenAgent/my_ui.py`（**只回这一份**）。但那份快照与 `.rollback/v1.8/my_ui.py` 现在**逐字节相同**（v1.8 终版已被覆盖），所以「退回 v1.8」这个方向**目前做不出干净的基线**——这正是 **P2-21** 要治的。另有一条**待查**：真库 `.agent-history.sqlite3` 现在 **1 条会话 / 7 行消息 / 1 行记忆**（v1.8 收尾时是 10 / 73 / 10），文件仍 73,728 B、mtime **11-06 17:34**（11-13 复测同值）。【推断，未证实】v1.9 的删除功能上线后在界面上被真用过；**本轮没有任何脚本写过这份真库**（v1.9／v2.0 的在线套件一律用 `run/` 下的独立探针库，`v19_live_delete.py:82` 明确把 `DB_PATH` 指走）。
+
+#### 6.3.12 v2.0：五刀一次上线——MCP 接线／审批门扩容／模型刹车／采样锁死／问责日志 ＋ 20 题离线尺子
+
+> **补记声明**：这一轮的代码在 **11-04～11-07** 之间陆续落地，但当时没有按流程追加 `迭代记录.md`，手册与本文也停在 v1.8。本节是 **11-13** 按现场代码＋已落盘的验收输出回补的，凡不是当场跑出来的一律标【未验证】／【待查】。行号对着**现场那五份**，所以它是现状节。
+
+**触发事件是面试题对照。** `agent实现原理-一次问话全流程-面试剖析对照.md` 逐条把「面试会问的机制」对到本项目代码上，扫出四类「内核有、你没接」＋一类「你连尺子都没有」：MCP（上游 `tools.py:951 ToolCollection.from_mcp` 一直在，`.venv` 里没装 `mcp`，看板 **P1-6** 从 v1.2 挂到 v1.8 都是「未开工」）、模型刹车（一行裸构造 → SDK 默认 `read=600s`）、采样（两个构造点一个采样参数都不传）、问责日志（只有屏幕卡和 `.agent-ui.log` 流水，**没有一份可事后翻的账**）、尺子（从来没有「20 道题跑一遍给个分数」的东西，所有「更好／更快」都是形容词）。
+
+**撞号说明（必须写死，否则两份文档互相打脸）。** 面试题清单里的 **D3＝问责日志**、**P0-2＝温度锁定**，而本板（`agent功能手册.html` §4）的 **D3＝五份代码不在版本控制里**、**P0-2＝工具执行前审批（v1.3 已上线）**。本板沿用**自己的**编号：问责日志另编 **P0-24**，采样锁死按流水号编 **P1-24**（代码注释里仍写 P1-4）。完整映射：A1／A2 → **P1-6**；B1 → **P1-25**；P1-4 → **P1-24**；启动预检＋模型侧拒绝档 → **P1-26**；E1／S1 → **P1-27**；面试题 D3 → **P0-24**；v1.9 那一刀 → **V10**。
+
+**体量（2026-11-13 实测 `wc -l`／`wc -c`／`shasum`）。**
+
+| 文件 | 行数 | 字节 | sha1(前8) | 本轮 |
+|---|---|---|---|---|
+| `scofenAgent/my_ui.py` | 2,315 | 139,457 | `b0566e6c` | 界面侧接线（自 v1.9 收尾未动） |
+| `scofenAgent/my_agent.py` | 156 | 8,058 | `4c0be2ad` | 构造点 ＋ `model_preflight` |
+| `scofenAgent/my_coding_agent.py` | 325 | 19,651 | `6c619acf` | 三组模型常量 |
+| `scofenAgent/my_mcp.py` | 186 | 9,444 | `8a74c18a` | **新增** |
+| `scofenAgent/my_audit.py` | 128 | 6,203 | `647825e8` | **新增** |
+
+**上游内核 `src/smolagents/` 一个字节没动**（`git status --porcelain` 只有 `??`，HEAD `96f33fa`）——所有闸都装在 `my_*.py` 这一层，靠实例属性遮蔽与生成器包装。
+
+**装门顺序本身是语义（四步，`OpsUI.__init__` 里 `:877-881`）。**
+
+```mermaid
+flowchart TD
+    A["① my_mcp.attach(self.agent) · :877<br/>先挂工具，名单才拼得出来"] --> B["② _install_gate() · :920-949<br/>审批门：copy.copy + 覆盖实例 forward"]
+    B --> C["③ _install_dup_gate() · :993-1028<br/>查重门：必须在审批外面"]
+    C --> D["④ _install_plan_gate() · :1110-1137<br/>计划门：包 _run_stream，套在最外"]
+    C -.->|"audit.begin 挂在这一层 · :1044"| E["my_audit：五只只读手也留痕"]
+    B -.->|"只 annotate 决策 · :968"| E
+```
+
+**为什么查重必须在审批外面**：反过来的话，被查重挡掉的那次调用会**先弹一张审批卡**，你点了 ✔ 允许、观察值却是「重复未执行」——屏幕在骗人。**为什么审计挂在查重层而不是审批层**：装在审批层，只读那五只手不进门，它们占的调用就**一条都不记**，而实测重复调用恰恰全在只读侧（`my_audit.py:10-13` 把这条写死了）。这一份审计的用途是「它**发过**什么」，不是「跑成功了什么」，所以被挡掉的那两次也留行（`status=dup-blocked` / `dup-fused`）。
+
+**刀一 A1／A2：MCP 接线与供应链白名单（P1-6）。** 两只 server、三只工具，**点名清单**而不是「先全挂再挑」：
+
+| 位置 | 内容 |
+|---|---|
+| `my_mcp.py:45-59` | `MCP_SERVERS`：`time`（`get_current_time`／`convert_time`）＋ `fetch`（`fetch`），每只写一句「它是干什么的」，走 `servers/src/<name>/.venv` |
+| `:63-70` | `REFUSED`：`filesystem`／`memory`／`git`／`sequentialthinking`／`everything` **整只 server 拒收**，理由写在字典里 |
+| `:74-77` | `DESTRUCTIVE_RX`：工具名里带 `del|remov|unlink|rmdir|truncate|drop|rename|move|write|edit|patch|apply|publish|revert|reset|format` 的一律不挂 |
+| `:41` | `MCP_CALL_TIMEOUT_S = 30.0`，经 `adapter_kwargs` 传进去；`:35-40` 是「为什么必须显式给」的实测账——默认那一路 **62.9 s** 才失败 |
+| `:111-165` | `attach()`：幂等（`:120-121`）、`which` 解析成绝对路径（`:128`）、起不来就记 `skipped` **不抛**（`:129-132`、`:139-141`）、三道拒收分支（`:145-153`：不在点名清单／名字含破坏性动词／与已有工具撞名不覆盖）、来源贴在工具对象上（`:155-156` 的 `_mcp_server`／`_mcp_risk`）、注入（`:157`）、`atexit`（`:162-164`） |
+| `:168-186` | `detach()`：摘工具＋关 client＋**不留本进程名下的子进程**。**摘工具这一步不能省**：连接一断、工具还在 `agent.tools` 里的话，模型下一次照清单发调用，然后撞在一个已经关掉的会话上——比「根本没有这只工具」难查得多 |
+| `my_ui.py:907-918` | `_gate_names()`：`GATED_TOOLS` ＋ 运行时挂上的每一只外部工具，**刻意不写回常量** |
+| `my_ui.py:920-949` | `_install_gate()`：MCP 工具也 `copy.copy` 再覆盖 `forward`；来源在**装门这一刻**从原件抄进闭包，不在调用时回查 `agent.tools`（那一格字典 `detach` 时会 pop，回查就是把审批卡文案挂在别的线程的手上） |
+| `my_ui.py:1483-1491` | `_mcp_pill()`：状态条那一格 MCP 读数，**截到 64 字符**（`skipped` 里装的是异常原文，能到几百字符），全文在 `bridge.describe()` 与审计行里 |
+| `my_ui.py:2309-2312` | `__main__` 的 `finally` 里 `my_mcp.detach()` |
+
+一个 11-04 当场红过的坑：`argv` 头一个是 `node`／`npx` 这类**要靠 PATH 找**的命令，不做 `shutil.which` 那一步会把官方 filesystem server 当成「可执行文件不在」挡掉（`:125-128` 的注释）。**外部工具一律过审批门，包括那两只纯读的**——口径是「来源不可信就先批」，不是「有副作用才批」。
+
+**刀二 B1：模型刹车（P1-25）。** 三组常量与实测账在 **6.1**，这里只记结论：`read` 600 s → **60 s**（`connect` 仍 5 s），挂死请求最坏占用 **30 分钟 → 3 分钟**；20 条离线断言全绿，B1-19 真起慢 server 实测 **3 个连接、4.27 s**。
+
+**刀三 P1-4：采样锁死（P1-24）。** `temperature=0.0` 写死进请求体，`AGENT_TEMPERATURE` 是探针活口。**结论是负结果**：锁温该做（把「采样骰子」这一项从可变因素里划掉了），**但它换不来可复现**——四次尝试、三种轨迹、两种判分，temperature 一直是 0.0（证据与两次互相矛盾的对照见 6.1）。所以一致性只能靠 `repeat` 多次抽样量出来。
+
+**刀四 启动预检 ＋ 模型侧拒绝档（P1-26）。** 预检那一枪在 **6.2**（`my_agent.py:126-135`，0.34 s、1 token、**不是 `models.list`**）。界面这一半是**新增第 11 档状态**：
+
+- `STATE_LABEL` **10 档 → 11 档**（`my_ui.py:530-553`），多的是 `model_refused`「模型侧拒绝」，CSS 第四色 **粉 `#db61a2`**（`:445`）。
+- `MODEL_REFUSAL_MARKS` **八条指纹**（`:559`）＋ `model_refusal(exc)`（`:571-585`）：顺 `__cause__`／`__context__` 往上找，**判文本不判异常类型**——框架把 SDK 错误包成 `AgentGenerationError`，类型上和实现错误同名，认类型就会把「服务商不接单」写成「代码有 bug」。
+- 定档在 `_respond`（`:1861`）。措辞要办两件事：说清「**这不是你按的停止**」，以及**别把它说成「什么都没发生」**——拒绝只挡住**下一次**模型调用，这之前已经批过的工具是真做了的，**不会跟着回滚**（`:1857-1869` 那段注释与文案）。
+- 状态条「模型」那一格带上预检结论后缀（`✓` / `🔒拒` / `⚠`，`launch :893-902`，读数在 `_status_html :1499`）。**没起过服务就没有后缀**，离线套件读到的还是裸模型名。
+
+**刀五 面试题 D3：问责日志（P0-24）。** `my_audit.py` 一份 128 行的只追加 JSONL：
+
+| 位置 | 内容 |
+|---|---|
+| `:42-43` | `AUDIT_PATH` ＝ `smolagents/.agent-audit.jsonl`，`AGENT_AUDIT_PATH` 可指走（**测试隔离**用，不是用户开关） |
+| `:44` | `ARGS_HEAD_CHARS = 200`：参数只留 **sha1 前 16 位 ＋ 前 200 字符明文** |
+| `:52-62` | `begin()`：`decision` / `wait_s` 先落成 `null` 再让审批层覆盖 → **每行的键集合是定死的**，读的人不用猜「这行没有 decision 这格，还是它压根没过审批门」（`status=ran` 且 `decision=null` ＝ 本地只读那五只手） |
+| `:65-75` | `current()` / `annotate()`：线程局部（一次调用一条线程，查重→审批→执行都在同一条上）；**没有活动记录时静默跳过**——`_plan_gate` 也在同一条 worker 线程上，它那张计划单不该盖到上一次工具调用的记录上 |
+| `:83-112` | `end()`：盖收尾字段、落盘、清活动记录；**一行一条 JSON 不截断**（`:101-103`：截在半截字符串上会让读的人**整行 parse 不出来**，审计也就作废了）；**失败只计数不抛**（`:107-112`，「审计写不进去」不该变成「这一题跑不下去了」，但也不悄悄吞掉） |
+| `:115-128` | `stats()`：文件在哪、多少行、写失败过几次、第一条错误原文 |
+
+**参数为什么只留摘要不留全文**：`write_file` 的 `content`、`fetch` 抓回来的正文都可能几百 KB，一次提问几十条调用，审计文件会比会话库大两个量级；真要复现那一次，sha1 对得上 ＋ `args_head` 够定位，全文在 `.agent-staging/` 和会话记忆里各有其主。**代价是 P0-26（未修）**：那 200 字符是**明文**，可能带敏感片段，而这份账**不随会话删除**。
+
+**尺子 E1／S1（P1-27）：20 题 / 8 档 / 规则判分，没有 LLM judge。** `验收脚本/v2.0/v20_questions.py` 的字段约定是公开的（`must`／`must_any`／`forbid`／`nums` 带容差／`must_dyn` 跑时重新 grep 现场／`call`／`calls_max`／`calls_zero`／`gap`／`repeat`），期望值不靠猜：数值题用 `my_agent.py` 那两只真工具直接算，检索题在跑评测时**重新从文件系统量**（源码行号挪了也不会误判成模型错），缺口题（`cls="gap"`）在基线里**应当失败**、A1 接完 fetch/time 后同一条题应当翻绿——**这一档就是 A1 的改前/改后证据，不需要另写脚本**。
+
+八档分布（当场 `grep` 计数）：`search` 5 ／ `calc` 3 ／ `compose` 3 ／ `gap` 2 ／ `no-call` 2 ／ `refuse` 2 ／ `sandbox` 2 ／ `write` 1 ＝ **20**。
+
+**基线读数（口径写死，别拿它跟别的配置相减）。** 模型 `OpenAIModel/tongyi-xiaomi-analysis-flash`（**不是**现网默认的 `qwen-plus`）、`max_steps=8`、`planning_interval=8`、工具表 **8 只**、`gate="off（裸 agent，不经界面审批门）"`、`repeat=3`、`n_runs=30`：
+
+| 指标 | 读数 | 口径 |
+|---|---|---|
+| 交答率 | **77.8%（14/18）** | 非 gap 题里在 `max_steps` 内交出答案的比例，**不看对不对** |
+| 达标率 | **72.2%（13/18）** | 交答 **且** 期望核对通过；分母 18 ＝ 20 题减 2 道 gap |
+| 例外 | `exception 0` / `max_steps 4` | — |
+| 非法调用率 | **19.2%** | （`unknown_tool 0` ＋ `tool_errors 10`）/ `calls 52` |
+| 步数 | `mean_action 4.3` / `max_action 9` / `planning_runs 20` | — |
+| token | `in_total 401,273` / `out_total 17,599` | **30 跑累计**，不是单题 |
+| 时延 | `p50 6.03 s` / `p95 17.42 s` / `mean 7.71 s` / `total 154.1 s` | **整题 wall time** |
+| 一致性 | **4/5** | Q9 三发里第二发判分翻面（这就是锁温那一刀的起因） |
+| gap 题 | 17／20 `met=0` | 基线**应当**失败，不计入达标率 |
+
+**每题 `reset=True`**（`v20_eval.py:132`，口径注释在 `:32`）——**与界面那条路相反**：界面是 `reset_agent_memory=False`、记忆跨题累积（`gradio_ui.py:310`）。两套口径不能混着比。尺子自带**中止守卫**（`:333` 的 `AUTH` 正则、`:348` 命中就停、`:358` 往 `meta` 写 `aborted_by_auth_error`），否则一次欠费会产出 20 行 exception 被误读成「模型能力差」。
+
+**验证与回滚。** 离线 **165 条断言、失败 0**：A1 `v20_test_a1_mcp.py` **42**（C05 摘除后残留子进程 **0**）／A2 `v20_test_a2_gate.py` **25**（D01 命令行那条路工具表仍是 **7** 只）／B1 `v20_test_b1_timeout.py` **20**／D3 `v20_test_d3_audit.py` **31**／拒绝档 `v20_test_model_refusal.py` **47**（测试流量**没进真审计文件**）。加上 E1 那 **30 跑**基线与 P1-4 的零网络复验。回滚：
+
+```bash
+RB=~/Desktop/study/ai学习/.rollback/v2.0-现场-20261113
+cp $RB/my_*.py ~/Desktop/study/ai学习/smolagents/     # 五份一起回，别只回一份
+```
+
+只摘 MCP＝`my_mcp.detach()`；只关温度锁＝`AGENT_TEMPERATURE=0.7`（不动源码、不污染默认路径）；**审计文件不随会话删，也不随回滚删——它是账，回代码不回账**。
+
+**这一轮尺子出了事故，机制与时刻已查清（必须写死）。** `验收脚本/v1.8/v18_drill_v18.py:230-233` 第一步是 `shutil.copy2(现场 → ai学习/.rollback/v1.8/)`，11-04 **20:47 与 22:29** 两次重跑把「当时的现场」当成 v1.8 交付版另存了一遍，而那时现场已掺进另一个会话的侧栏删除工作（1,758 → 1,908 → 1,910 → 2,065）。**v1.8 终版那份 1,758 行 / `800c348e` 回不来**：11-13 把全语料所有 `.py` 按「行数＝1,758」＋「sha1＝`800c348e`」双条件扫过，**0 命中**。守卫已补（`:222-229`：快照与现场不同就**不覆盖**，并打印「要重取整版快照请显式换目录名」；事故时刻写在 `:219-221`），**但写路径本身仍指着 `.rollback`**——这是 **P2-21** 剩下的一半（另两件：整版档落盘即 `chmod a-w`、每套附 sha1 清单且闸先校验清单再扫文档）。本轮的处理是**另建只读尺子** `.rollback/v2.0-现场-20261113/`（五份 ＋ `SHA1SUMS.txt`，全部 `chmod a-w`，`cmp` 逐字节等于现场），并新写 `验收脚本/v2.0/v20_gate_*.py`，**不去改 v1.8 那套历史闸**。
+
+**口径变化（前后对比，全部同口径）。**
+
+| 口径 | v1.8 | v2.0 | 证据 |
+|---|---|---|---|
+| 动作空间（命令行／裸 agent） | 7 声明 ＋ `final_answer` ＝ **8** | **8**（没变） | `my_agent.py:91-92`；基线 `meta.tools` 8 只 |
+| 动作空间（UI 入口） | **8** | **11** | `my_mcp.py:45-59`；A2 的 C04「本地七只手一只没少」 |
+| 过审批门的手 | **2** | **5** | `my_ui.py:907-918` |
+| 状态档 | **10** | **11**（＋`model_refused`） | `my_ui.py:530-553` |
+| 常驻胶囊 | **6** | **7**（＋`MCP`），按需仍是 2 | `my_ui.py:1493-1520` |
+| 模型 read 超时 | **600 s** | **60 s**（connect 仍 5 s） | `my_coding_agent.py:59-67` |
+| 挂死请求最坏占用 | ≈ **30 分钟** | ≈ **3 分钟** | B1-19／B1-20 |
+| `temperature` | 服务端默认（**未传**） | **0.0** | `my_coding_agent.py:97-98` |
+| 出网路径 | **1**（只有模型调用） | **2**（＋`fetch`） | `my_mcp.py:53-59` |
+| 工具调用留痕 | 屏幕卡 ＋ `.agent-ui.log` | ＋**`.agent-audit.jsonl`** | `my_audit.py:83-112` |
+| 评测 | **无** | **20 题 / 8 档 / 规则判分**，达标率 **72.2%** | `run/v20_eval_baseline.summary.out` |
+| 代码存档 | 三份 `my_*.py` | **五份** | `.rollback/v2.0-现场-20261113/` |
+
+**四条【未验证】／【待查】，不许当结论用。**
+
+1. **真模型那一路本轮没跑成，而且是两个不同的阻塞**：**11-04 20:45:57** 是**账户状态门 400**（`run/v20_eval_auth-blocked.json`，`model=OpenAIModel/qwen-plus`、`aborted_by_auth_error=true`，Q9 原话 `400 …#overdue-payment`、`action 0 / planning 0`、整题 **0.46 s**）；**11-06 17:34** 是 **key 无效 401**（`ai学习/.agent-ui.log`，7,076 B，尾部 `openai.AuthenticationError: Error code: 401 - Incorrect API key provided`，题面是「删除人生目录下的 轻量文档文件夹，职业规划下面的东西不要动」）。→ **现网 `.env` 里那条 key 现在是无效的**【待查：轮换了还是写错了】。所以 MCP 三只手在**真 qwen-plus ＋ 交付形态 7860** 上的表现、`fetch` 的待批卡观感，**一次都没采过**。
+2. **审计的生产文件不存在**（11-13 实测 `No such file or directory`）：代码在、31 条离线断言在，**生产 0 行**。**测试流量漏进真账两次，都已挪进 `run/` 留证**：① `v20_audit_first-run.jsonl` **62 行**（11-04 21:37:24→21:39:14，`src` 全 `local`）；② `v20_audit_leak-20261104-2316-regression-sweep.jsonl` **62 行**（11-04 23:12:15→23:16:48，`local` 58 ＋ `mcp:time` 2 ＋ `mcp:fetch` 2）。两份 sha1 不同（`bf133ffd` / `6403a222`），**不是同一批**。根因与修法写在 `v20_test_a1_mcp.py:33-38`：`my_audit.AUDIT_PATH` 在 **import 时**就定死，所以 `AGENT_AUDIT_PATH` 必须在 `import my_ui`／`import my_audit` **之前**设。**覆盖面已核（11-13 本轮复探，逐份 grep 过 import 与构造）**：`v2.0/` 共 **17 份 .py**（原 11 份 ＋ 本轮新加的 **6 份文档闸脚本**），真正构造 `OpsUI(...)` 的只有 **3 份 / 5 处**（`v20_test_a2_gate.py:95`／`:115`、`v20_test_d3_audit.py:116`、`v20_test_model_refusal.py:140`／`:242`），**这 3 份都设了隔离**；`v20_test_a1_mcp.py:37` 也设了（**防御性**：它注释里自称「会构造真 OpsUI」，实际只 `import my_mcp` ＋ `from my_agent import agent`——**注释与代码不符，记一笔**）。**其余 13 份分两类**：**5 份**走裸 agent 或只探内核（`v20_eval.py`／`v20_probe_planning.py`／`v20_probe_ruler.py`／`v20_probe_temperature_offline.py`／`v20_test_b1_timeout.py`；`v20_eval.py:30` 那句 OpsUI 只是注释），**8 份**连 agent 代码都不 import（6 份文档闸 ＋ 题库 `v20_questions.py` ＋ 慢服务 `v20_slow_server.py`）——两类都**不挂审计钩子 → 结构上写不进账**。漏进真账的那 4 行 MCP 流量【推断，未证实】与 a2_gate 构造真 OpsUI ＋ attach 真 MCP 的路径吻合。
+3. **34 跑全量基线没打出来**：`repeat` 名单已从 5 道扩到 **7 道**（加 Q15／Q16），全量跑次 30 → **34**（7×3＋13×1）。**S2 欠费 ¥0.05 挡着**，要花钱的实测先给数量与预估花费、点头才打。→ **别把 34 跑的汇总和这份 30 跑的直接相减当差值。**
+4. **UI 进程当前不在跑**（11-13 `ps` 里 `my_ui.py` 计数 **0**）→ 上面所有界面读数都来自离线断言与 11-04～11-06 的留痕，**不是本轮实拍**。
+
+**本轮新立未修的六条**（都已编号进手册 §4）：**P0-25** `run_python` 绕过 `guarded()`（见 6.1）／**P0-26** 审计明文 200 字符／**P0-27** `fetch` 正文**原样**进模型上下文，无过滤、无「这是外部内容」的包裹声明层（注入面）／**P2-21** 尺子与快照治理／**P2-22** `my_agent.py:106` 那句过期的「没有访问网络能力」／**P1-28** `fetch` 开了但**检索没开**（`WebSearchTool` 仍缺 `duckduckgo_search`，原 P1-8 只关掉一半）。另有三条从上一轮欠到现在：**P1-23**（状态条「本题 token／耗时」不含规划那一次，`_stats` 只收 `ActionStep`，`my_ui.py:1450-1481`）、**D8-2**（刷新后首屏可能读到还没写完的那一次库）、**S2 ＋ key 轮换**。
 
 ### 6.4 `~/Desktop/我的Agent.app` + `~/Desktop/关闭Agent.command`：全链路状态机
 
@@ -1047,9 +1266,21 @@ stateDiagram-v2
 3. Chrome 认为上次没干净退出时会把会话恢复成**普通浏览器窗口**，所以每次启动前删 4 个 Session/Tabs 文件并改写 `Preferences` 的 `exit_type` / `exited_cleanly`（`launcher:28-40`）。
 4. 关终端窗口的坑最深：Terminal 在"窗口里有进程在跑"时会弹「你想要终止这个窗口中正在运行的进程吗？」，点它需要**辅助访问权限**，而 Terminal 拉起的脚本拿不到（实测 `-25211 osascript 不允许辅助访问`）→ 关窗命令永远卡住。可行做法是把关窗动作 `fork + setsid` 挪出该终端会话，让那扇窗口的 shell 安静停在提示符上再 close（`launcher:44-79`）。另外 `count of windows` 会把 tab 已消失的幽灵窗口计入，**不能用它验证关没关掉**；可信判据是 `who` / `ps -t ttysNNN` + System Events 窗口数 + 未决警告数。
 
-### 6.5 两份 HTML
+### 6.5 五份文档：两份 HTML 可视化 ＋ 三份长文
 
-`agent链路图.html`（22 KB：序列图 + 活动图 + "为什么那个窗口拒了你"对照表）与 `agent链路详解.html`（29 KB）是同一诉求的产物：**把链路可视化到能双击就看**。这两份目前是**裸 `.html`**，双击走系统默认浏览器——没有像 6.4 那样给它们套手写 bundle（`Info.plist` + `MacOS/launcher` + `Resources/app.icns`）。套外壳这件事只在 `我的Agent.app` 上真正落地并验过；对 HTML 来说它还是"下一步可做"，不要当成既有事实引用。
+**全部在 2026-11-13 按 v2.0 现场重梳过一遍**（行数是当天 `wc -l` 实测；字节会随写随动，由文档闸当场量，不在这里钉死）：
+
+| 文档 | 行数 | 它回答什么 | 行号口径 |
+|---|---|---|---|
+| `agent链路图.html` | 328 | 双击就看的**图**：分层链路、一次问话的序列图、活动图、"为什么那个窗口拒了你"对照表 | 现状（v2.0 五份） |
+| `agent链路详解.html` | 839 | 图的**逐段讲解**：11 只手的动作空间表（四套入口口径）、每只手的上限与审批口径、三层门的装配顺序 | 现状 |
+| `agent功能手册.html` | 1,865 | **看板**：53 行工单（`data-st` / `data-p` 双分布）、十个筛选器、§6 逐版记录、§7 本轮新立 | §1~§2 现状；§6 各版保留当时的号 |
+| `agent实现原理-一次问话全流程-面试剖析对照.md` | 769 | 一次问话从输入框到落库**逐段对代码**，每段挂一条"面试会怎么追问" | 现状 |
+| `迭代记录.md` | 1,410 | **事实源**：v1.0~v2.0 每一轮的改动清单、当场跑过的真实输出、回滚方法、口径变化、已知遗留 | 每节保留它那一版的号 |
+
+**三份长文与本文的分工**：`迭代记录.md` 是账（数字与留痕的出处），本文是**代码导读**（按文件与机制组织，行号可跳），手册是**工单看板**（按优先级组织，决定下一刀做什么），面试剖析对照是**按问话时序**横切一遍。四份的行号规矩一致：**讲现状的用 v2.0 现场那五份，讲历史的保留当时那一版**，两边不一致时以本文开头的尺子声明为准。
+
+**两份 HTML 目前是裸 `.html`**，双击走系统默认浏览器——没有像 6.4 那样给它们套手写 bundle（`Info.plist` + `MacOS/launcher` + `Resources/app.icns`）。套外壳这件事只在 `我的Agent.app` 上真正落地并验过；对 HTML 来说它还是"下一步可做"，不要当成既有事实引用。三份 HTML 都**离线自包含**（样式与脚本内联，不加载任何外部资源），所以断网双击也能看。
 
 一条当时踩到的环境坑留在这里当线索，**但它没有在 HTML 外壳这条路上复验过**：路径含中文时 `--app=file://…` 疑似被 Chrome 静默忽略、退化成普通新标签页且不报错，需先做百分号编码；验证要看窗口标题（App 窗口标题就是文档 `<title>`，不带 `- Google Chrome` 后缀）。【待补】真给 HTML 套 App 时重新验一遍。
 
@@ -1064,20 +1295,20 @@ stateDiagram-v2
 sequenceDiagram
     autonumber
     participant U as 你（App 窗口输入）
-    participant UI as GradioUI（gradio_ui.py:279）
+    participant UI as OpsUI（my_ui.py:793，继承 GradioUI）
     participant AG as ToolCallingAgent 循环
     participant MD as qwen-plus（云端，只做决策）
     participant TF as 工具层（本地）
     U->>UI: 提问
     UI->>AG: agent.run(task, stream=True)
-    AG->>AG: 组装提示：system 含 8 个工具签名 + TaskStep
+    AG->>AG: 组装提示：system 含 8 个工具签名 + TaskStep（这是 CLI/裸 agent 那条入口）
     AG->>MD: generate
     MD-->>AG: tool_call list_dir
     AG->>TF: 本地执行，云端不碰你的机器
     TF-->>AG: Observation
     AG->>MD: 回灌后再决策
     MD-->>AG: tool_call grep_files
-    AG->>TF: 正则扫描，跳过 SKIP_DIRS，上限 100 命中
+    AG->>TF: 正则扫描，跳过 SKIP_DIRS，默认 40 条、硬上限 100
     TF-->>AG: smolagents/src/smolagents/agents.py:402
     AG->>MD: 回灌
     MD-->>AG: tool_call read_file 指定 start_line 与 lines
@@ -1087,9 +1318,14 @@ sequenceDiagram
     AG-->>UI: 流式吐答案
     UI-->>U: 你看到答案（5 步，累计 input 19,399 token）
     Note over AG,TF: 若这步模型改成调 write_file，落点是 .agent-staging 且只回 diff
+    Note over UI,AG: 走界面那条入口时这里多两道：开工前先批一份计划（_plan_gate），<br/>write_file / run_python / MCP 三只每发必批（_gate_names）；动作空间也从 8 变 11
 ```
 
-**节点归属一句话**：smolagents 站在"② 编排内核"，它调用的工具层就是 MCP 那种"① 工具层"的**进程内版本**。如果把这 5 个自写工具改写成 MCP server，② 与 ① 之间就变成跨进程协议——代码量增加一点点，可复用性从"这个应用"变成"任何宿主"。这是这套语料下一步最自然的连线。
+**节点归属一句话**：smolagents 站在"② 编排内核"，它自己那 7 只手是 MCP 那种"① 工具层"的**进程内版本**。
+
+**v2.0 之后这条连线已经接上了一半，要说清是哪一半**：② 与 ① 之间现在**真有跨进程协议**了——`my_mcp.attach()` 起两个 stdio 子进程（`time`／`fetch`），经 `ToolCollection.from_mcp`（上游 `tools.py:951`）把它们的工具装进同一个 `agent.tools`，模型看到的清单里本地手与外部手**长得一样**，区别只在审批卡上那一行来源（`_mcp_server`／`_mcp_risk`）。**但自写那五只手仍然是进程内函数**，没改写成 MCP server。所以"同一份工具，smolagents 和 Qoder 都能调"这件事**还没成立**，它仍是 §9.5 的 P0。
+
+这一半接线换来的**代价**也要记：出网路径从 1 条变 2 条（`fetch`），注入面多了一个（正文原样进上下文，**P0-27 未修**），审批门从 2 只手扩到 5 只（连纯读的外部工具也要批），状态条多一颗常驻胶囊。**能力换了，边界必须跟着换**——这是 v2.0 真正花时间的地方，不是"加了三个工具"。
 
 ---
 
@@ -1187,9 +1423,12 @@ sequenceDiagram
       | 点「■ 停止」 | 随停止取消 | ⚪ 已取消     |
       | 挂满 600 秒  | 超时未批   | ⚪ 超时未批   |
 
-  场景: 只读工具不问
+  场景: 只读工具不问——但只限本地那五只手（v2.0 起口径收窄）
     当 模型调用 read_file / list_dir / grep_files
     那么 不出审批卡，直接执行（一次检索三连问三遍比不加还慢）
+    当 模型调用 get_current_time / convert_time（外部 MCP，纯读无副作用）
+    那么 **仍然出审批卡**——口径是「来源不可信就先批」，不是「有副作用才批」
+    并且 这两只的调用照样进审计：审计挂在**查重层**而不是审批层，所以五只只读手也留痕
 
   场景: 命令行不过闸
     当 我在终端直接跑 python my_coding_agent.py 调同一只手
@@ -1353,7 +1592,218 @@ sequenceDiagram
     并且 **判定面一字未动**：路径收敛、`DENY_NAMES`、`must_exist` 分支顺序全等（离线 48 条含 17 条路径表全等＋「绝对不存在文案逐字未变」）——这一刀只改"说什么"
 ```
 
-上面这些的实测记录在 `迭代记录.md`：v1.3 那节是允许 / 拒绝 / 停止三条路各在线跑过一遍，副作用用 `/tmp` 落盘文件反查，**600 秒超时只有离线断言，线上没等过那么久**；v1.4 那节是连问累加、新会话隔离、点旧会话接着聊、审批与累加同屏四条在线路（探测口 7861 与交付形态 7860 各跑过），外加 53 条离线断言和「重启后答不记得」这条边界的实测；v1.5 那节就是**把那条边界关掉**的那一刀——记住 73、跨两次真重启（`in 2,574` 与 `3,091` 两次都是重启后答对）、新会话仍隔离、审批与落库同屏四条在线路跑在**交付形态 7860** 上（真 `关闭Agent.command` 收工再开），D7 用 0.2s 抢在待批之前按停止复测，外加 65 条离线断言与双向回滚演练（v1.4 方向 15 条 / v1.5 方向 13 条，恢复后逐字节一致）；v1.6 那一刀把 v1.5 留下的两条边界都收了——V7 在**种子库＋零模型调用**的探测口上把 bug **原地复现再复跑**（打开页面 `chk` 从 `[false,false,false]` 变 `[true,false,false]`、"点那条亮着的"从空点变真切换，见 6.3.8 那张 before/after 表），V8 在交付形态 7860 上实测 `22.1s · 审批 21.0s` 与 `本题审批 21.0s`，外加 **92 条离线断言**（v1.5 那 65 条原样全绿 ＋ V7 10 条 ＋ V8 17 条）与双向回滚演练（v1.5 方向 25 条 / v1.6 方向 31 条，两份共享的 14 条清单两个方向都必须绿，恢复后与 `.rollback/v1.6/` 逐字节一致）。v1.7 那一刀只收一张单（V9）：把 v1.6 那句「重启后读不出来」变成读得出——记忆格式升 `v2`（`ActionStep` 多一个可选键 `wait`）＋ 兼容读 `("v1","v2")` ＋ 状态条改读**屏幕上这一条**；实测跑在**真重启**上（探测口 kill→重起→一次页面加载拿回 `23.0s / 20.7s`；交付形态走 `关闭Agent.command` 重开拿回 `23.4s / 20.7s`），真实库旧 7 行 payload 的 sha1 **逐行不变**（7/49/7 → 8/54/8，只追加），外加 **115 条离线断言**（v1.6 那 92 条原样全绿 ＋ V9 新 22 条）与双向回滚演练（v1.6 方向 92 条 / v1.7 方向 115 条，`cmp` 两个方向都逐字节一致）——但**这一轮回滚不是无损的**：v1.6 读 v1.7 写的 v2 账会读空，那条不对称写在上面第三个场景里。v1.8 一次上四刀（#38 D8 断开侧／#39 P0-4 计划批准／#40 P0-a/b/c 越界指路／#41 P1-a 重复熔断，另立 #42 D8-2）：离线**五套 238 条全 PASS**（`v18_test_interrupt 21`／`v18_test_plan 43`／`v18_test_p0abc 48`／`v18_test_nochange 51`／`v18_test_dup 75`）＋整版双向演练 **51 条 / 失败 0**（现场被覆盖窗口 36.7 秒）；在线跑在**探针口 7872 ＋ 每场景一份独立库**（`v18_live_*` 11 份）和 CLI 直跑上——**这一轮没有跑交付形态 7860**（那台还在跑 v1.7，本轮只 `stat` 过它），所以 v1.6／v1.7 都有的那「四条关停判据」这一轮**没有**；#41 的真模型那一路因为账户欠费**没跑成**，用零成本回放替的。全文见 `迭代记录.md` v1.8 一节。
+```gherkin
+# 语言: 中文。功能: 侧栏删除会话（v1.9 / V10）
+功能: 删得掉，但要两下，而且删干净
+
+  场景: 第一下只武装，不删
+    当 我在侧栏某一行点「⋯ → 删除」
+    那么 状态条出回执「确认删除「××」？这条的消息和模型记忆都会一起清掉，不可恢复。再点一次这一行的「⋯ → 删除」。」
+    并且 库里那条会话、它的消息、它的记忆**一行都没少**
+
+  场景: 第二下才真删，且级联到模型记忆
+    当 我在同一行再点一次「⋯ → 删除」
+    那么 回执报**真实行数**「已删除「××」（3 条消息、1 份模型记忆）。屏幕上这条没动。」
+    并且 sessions / messages / memory 三张表里这条 sid 的行一起清（ON DELETE CASCADE）
+    并且 模型那一边也不记得了——这是**语义变化，显式声明**，不是副作用漏网
+
+  场景: 删过的 id 再提问不会撞外键
+    假如 某条 sid 已经被删
+    当 界面上仍拿着这个 sid 提问
+    那么 History.ensure() 认得出来（exists），**另开一条干净的**，而不是插消息撞外键
+
+  场景: 重复投递不算第二次确认
+    当 同一次「删除」被投递两遍（撞号）
+    那么 开场号＋页内第几次两段号把它挡下，不会把「第一下武装」误当成「第二下真删」
+
+  场景: 审计不跟着会话走
+    当 我删掉一条会话
+    那么 .agent-audit.jsonl 里属于它的那些行**留着**
+    并且 这一条是**断言出来的**（v20_test_d3_audit.py R26：History 里没有任何一处提审计），不是「恰好没删到」
+
+  场景: 已知边界两条
+    那么 「⋯」菜单靠 demo.load(js=…) 注入、刷新后重新注入；流式期间新长出来的行会不会漏挂【未验证】
+    并且 删除**不可恢复**：没有回收站、没有二次备份（回执里已明说）
+```
+
+```gherkin
+# 语言: 中文。功能: 外部工具与供应链白名单（v2.0 / A1 A2，本板 P1-6）
+功能: 只挂点名的那两只，而且每发都要人批
+
+  场景: 状态条如实报挂了谁
+    当 界面起起来
+    那么 状态条多一颗常驻胶囊 MCP，正常时读作「time×2、fetch×1」
+    当 某只 server 起不来
+    那么 这一格**如实讲为什么**（截到 64 字符），全文在 bridge.describe() 与审计行里
+    并且 界面照常起得来——attach 里起不来只记 skipped，**不抛**
+
+  场景 outline: 三道拒收分支
+    当 桥拿到一只工具而它 <情形>
+    那么 不挂进 agent.tools，并记进 denied
+    例子:
+      | 情形                       |
+      | 不在点名清单里              |
+      | 名字含破坏性动词（DESTRUCTIVE_RX） |
+      | 与已有工具撞名              |
+
+  场景: 整只 server 拒收
+    当 有人想把 filesystem / memory / git / sequentialthinking / everything 挂上来
+    那么 REFUSED 字典里逐条写着理由，整只拒收
+    并且 白名单是**点名式**的（MCP_SERVERS 只列 time 与 fetch），不是「先全挂再挑」
+
+  场景: 摘干净，不留孤儿
+    当 进程退出或调 my_mcp.detach()
+    那么 工具从 agent.tools 里 pop 掉、client 断开、**本进程名下的子进程数为 0**
+    并且 摘工具这一步不能省：连接断了工具还在清单里，模型下一次会撞在一个已关掉的会话上
+
+  场景: 命令行那条路不起子进程
+    当 我在终端跑 python my_agent.py
+    那么 工具表仍是 **7** 只声明（＋final_answer ＝ 8），**不 attach MCP**
+    并且 动作空间是 8 而不是 11——报数必须说清是哪个入口
+
+  场景: 出网只有一只手，且正文有界
+    当 模型调用 fetch
+    那么 出黄色待批卡，参数全文在围栏里，✔ 允许才出网
+    并且 server 自带 robots.txt 与私有地址拒绝，正文 ≤5,000 字符进上下文，调用 30 秒超时
+    并且 已知缺口 P0-27【未修】：正文**原样**进模型上下文，无过滤、无「这是外部内容」的包裹声明层
+```
+
+```gherkin
+# 语言: 中文。功能: 模型刹车、采样与启动预检（v2.0 / B1 P1-4 P1-26）
+功能: 挂住的请求别占半小时，服务商拒单别写成「你按了停止」
+
+  场景: 起界面之前先打一枪 1 token
+    当 OpsUI.launch() 被调
+    那么 拿 agent.model.client 这个**活对象**发一发 max_tokens=1 的 ping（实测 0.34 秒）
+    并且 通了状态条「模型」那一格带 ✓，被拒带 🔒拒 与服务商原话，其它异常带 ⚠
+    并且 它**不是 models.list**：同一时刻列模型仍返回 183 只，能列 ≠ 能调
+    并且 离线套件 import 这个模块时**不发这一枪**（只有 launch 调它）
+
+  场景: 连得上但不回帧
+    假如 对端 accept 了连接却一个帧都不吐
+    当 模型调用发出去
+    那么 read=60 秒就判挂（connect 仍单独 5 秒），最多 3 个连接 ≈ 3 分钟
+    并且 改前是 read=600 × 3 ≈ **30 分钟**，界面全程「生成中」
+    并且 框架那层 retryer 帮不上忙：is_rate_limit_error(APITimeoutError) 实测 **False**
+
+  场景: 正常的长答复不受影响
+    当 模型在流式输出、每个 chunk 间隔都小于 60 秒
+    那么 read 超时被每个 chunk 重置，整题跑多久都不掐
+    并且 口径是「60 秒内没有新帧就算挂」，**不是**「整题只给 60 秒」
+
+  场景: 采样锁死，但不承诺可复现
+    当 任何一次模型调用发出去
+    那么 请求体里 temperature=0.0（零网络复验：把 client.create 换成记录用的假函数看载荷）
+    并且 AGENT_TEMPERATURE=0.7 能把骰子放回去，坏值**在导入阶段就报错退出**、绝不静默 fallback
+    并且 **已知负结果**：同一份 0.0 下 Q9 打出过两种轨迹、两种判分（四次尝试、三种轨迹）
+    所以 一致性只能靠 repeat 多次抽样量，不能靠「锁了温」这句话
+
+  场景 outline: 服务商拒单要单独一档
+    当 模型调用被 <原因> 拒掉
+    那么 状态是「模型侧拒绝」（粉 #db61a2，model_refused），**不是**「已停止」
+    并且 气泡里带服务商原话，并说清「这之前已经批准执行过的工具不会回滚」
+    例子:
+      | 原因                     |
+      | 账户欠费 400 #overdue-payment |
+      | key 无效 401              |
+      | 限流 429                  |
+      | 区域未开 403              |
+
+  场景: 判文本不判异常类型
+    当 框架把 SDK 错误包成 AgentGenerationError
+    那么 model_refusal() 顺 __cause__ / __context__ 往上找八条指纹，**按文本判**
+    并且 认类型就会把「服务商不接单」写成「代码有 bug」——两者在异常层同名
+```
+
+```gherkin
+# 语言: 中文。功能: 问责日志（v2.0 / 面试题 D3，本板 P0-24）
+功能: 事后翻得到「它发过什么」，不只是「跑成功了什么」
+
+  场景: 一行一次调用，含只读手
+    当 模型发出任何一次工具调用
+    那么 .agent-audit.jsonl 追加一行 JSON，带 ts / iso / dur_s / args_sha1[:16] / args_head / status
+    并且 被查重挡掉的那两次也留行（status=dup-blocked / dup-fused）
+    并且 本地五只只读手 status=ran 且 decision=null——键集合是**定死的**，不用猜「没过门」还是「没这格」
+
+  场景: 审批决策补进同一行
+    当 一次调用过了审批门
+    那么 审批层只 annotate（decision / wait_s / 来源），不另开一行
+    并且 计划审批那张单**不会**盖到上一次工具调用的记录上（没有活动记录时静默跳过）
+
+  场景: 写不进去也不拦路
+    当 审计落盘抛 OSError
+    那么 只累 failures 计数、把第一手错打到 stderr，**这一题照常跑完**
+    并且 不整行截断：截在半截字符串上的 JSONL 会让读的人整行 parse 不出来
+
+  场景: 账不随会话删，也不随回滚删
+    当 我删掉一条会话、或把代码回滚到上一版
+    那么 审计文件里那些行**留着**——它是账，回代码不回账
+
+  场景: 测试流量不许混进真账
+    当 离线套件构造真 OpsUI
+    那么 AGENT_AUDIT_PATH 必须在 **import my_ui / my_audit 之前**设（AUDIT_PATH 在 import 时就定死）
+    并且 已经踩过两次：62 行 ＋ 62 行测试流量落进真账，都已挪进 run/ 留证（sha1 bf133ffd / 6403a222，不是同一批）
+
+  场景: 已知缺口 P0-26【未修】
+    那么 args_head 那 200 字符是**明文**，可能带敏感片段，需要脱敏
+    并且 生产文件此刻**不存在**（11-13 实测）：代码在、31 条断言在、真账 0 行
+```
+
+```gherkin
+# 语言: 中文。功能: 尺子（v2.0 / E1 S1，本板 P1-27）
+功能: 「更好／更快」必须是数字，而且口径写死
+
+  场景: 20 题 8 档，规则判分
+    当 我跑 v20_eval.py
+    那么 20 道题按 8 档汇总（search 5 / calc 3 / compose 3 / gap 2 / no-call 2 / refuse 2 / sandbox 2 / write 1）
+    并且 **没有 LLM judge**：must / must_any / nums（带容差）/ call / forbid / calls_zero 逐条判
+    并且 检索题的期望在跑评测时**重新从文件系统量**，源码行号挪了不会误判成模型错
+
+  场景: 缺口题在基线里应当失败
+    当 一道 cls=gap 的题在基线里 met=0
+    那么 它**单列**、不拉低达标率（分母 18 ＝ 20 减 2）
+    并且 A1 接完 fetch/time 之后同一条题应当翻绿——这一档就是改前/改后证据，不用另写脚本
+
+  场景: 每题清零，与界面那条路相反
+    当 尺子跑下一题
+    那么 agent.run(..., reset=True)，memory 与 monitor 都清零
+    并且 界面那条路是 reset_agent_memory=False、记忆跨题累积——**两套口径不能混着比**
+
+  场景: 欠费要中止，不是产出 20 行 exception
+    当 某一题的异常文本命中 AUTH 正则（Access denied / api key / 401 / 403 / 429 / overdue …）
+    那么 整轮中止，meta 里写 aborted_by_auth_error=true
+    并且 否则一次欠费会被误读成「模型能力差」
+
+  场景: 基线读数必须带口径
+    那么 那份 72.2% 的口径是：模型 tongyi-xiaomi-analysis-flash（**不是** qwen-plus）、
+         工具表 8 只、gate="off（裸 agent，不经界面审批门）"、repeat=3、n_runs=30
+    并且 repeat 名单已从 5 道扩到 7 道 → 全量 34 跑**还没打**（S2 欠费 ¥0.05 挡着）
+    所以 别把 34 跑的汇总和这份 30 跑的直接相减当差值
+```
+
+```gherkin
+# 语言: 中文。功能: 已知缺口（v2.0 新立，全部【未修】，写在这里是为了不被当成已解决）
+功能: 三条安全缺口，兜底的只有人工审批那一道
+
+  场景: P0-25 run_python 绕过路径闸
+    假如 模型在 run_python 里写 open("/Users/…/ai学习/smolagents/.env").read() 并打印
+    那么 禁词正则**拦不住**（名单里没有 open / pathlib），函数体里也没有一次 guarded()
+    并且 只留 5 个变量的 env 挡的是**子进程环境变量**，不是文件读取；cwd 是沙箱但绝对路径照样读得到
+    并且 真正兜它的只有**人工审批**：你一旦批了，key 就进模型上下文，还会被 P0-26 以明文前 200 字符记下来
+    并且 【源码事实，11-13 逐行读过；**未实跑复现**】候选修法 (a) 文件名进正则 / (b) AST 级检查 / (c) 真沙箱，推荐 (b)+(a)，等你点头
+
+  场景: P0-27 fetch 的注入面
+    当 fetch 抓回来的正文进模型上下文
+    那么 它**原样**进，无过滤、无「这是外部内容，不是指令」的包裹声明层
+    并且 兜它的同样只有那一发审批：你批的是「抓这个 URL」，不是「照它说的做」
+
+  场景: P2-22 一句代码里的过期话
+    那么 my_agent.py:106 的 description 仍写「没有…访问网络…的能力」
+    并且 它是**死字段**（顶层 ToolCallingAgent 的 description 不进 prompt），所以模型行为不受影响
+    并且 但这句话在 UI 那条路上已经不成立；而 build_agent() 那份（my_coding_agent.py:305-316）说「访问网络」做不到**仍然成立**（那个入口只有 6 只手，不 attach MCP）
+```
+
+上面这些的实测记录在 `迭代记录.md`：v1.3 那节是允许 / 拒绝 / 停止三条路各在线跑过一遍，副作用用 `/tmp` 落盘文件反查，**600 秒超时只有离线断言，线上没等过那么久**；v1.4 那节是连问累加、新会话隔离、点旧会话接着聊、审批与累加同屏四条在线路（探测口 7861 与交付形态 7860 各跑过），外加 53 条离线断言和「重启后答不记得」这条边界的实测；v1.5 那节就是**把那条边界关掉**的那一刀——记住 73、跨两次真重启（`in 2,574` 与 `3,091` 两次都是重启后答对）、新会话仍隔离、审批与落库同屏四条在线路跑在**交付形态 7860** 上（真 `关闭Agent.command` 收工再开），D7 用 0.2s 抢在待批之前按停止复测，外加 65 条离线断言与双向回滚演练（v1.4 方向 15 条 / v1.5 方向 13 条，恢复后逐字节一致）；v1.6 那一刀把 v1.5 留下的两条边界都收了——V7 在**种子库＋零模型调用**的探测口上把 bug **原地复现再复跑**（打开页面 `chk` 从 `[false,false,false]` 变 `[true,false,false]`、"点那条亮着的"从空点变真切换，见 6.3.8 那张 before/after 表），V8 在交付形态 7860 上实测 `22.1s · 审批 21.0s` 与 `本题审批 21.0s`，外加 **92 条离线断言**（v1.5 那 65 条原样全绿 ＋ V7 10 条 ＋ V8 17 条）与双向回滚演练（v1.5 方向 25 条 / v1.6 方向 31 条，两份共享的 14 条清单两个方向都必须绿，恢复后与 `.rollback/v1.6/` 逐字节一致）。v1.7 那一刀只收一张单（V9）：把 v1.6 那句「重启后读不出来」变成读得出——记忆格式升 `v2`（`ActionStep` 多一个可选键 `wait`）＋ 兼容读 `("v1","v2")` ＋ 状态条改读**屏幕上这一条**；实测跑在**真重启**上（探测口 kill→重起→一次页面加载拿回 `23.0s / 20.7s`；交付形态走 `关闭Agent.command` 重开拿回 `23.4s / 20.7s`），真实库旧 7 行 payload 的 sha1 **逐行不变**（7/49/7 → 8/54/8，只追加），外加 **115 条离线断言**（v1.6 那 92 条原样全绿 ＋ V9 新 22 条）与双向回滚演练（v1.6 方向 92 条 / v1.7 方向 115 条，`cmp` 两个方向都逐字节一致）——但**这一轮回滚不是无损的**：v1.6 读 v1.7 写的 v2 账会读空，那条不对称写在上面第三个场景里。v1.8 一次上四刀（#38 D8 断开侧／#39 P0-4 计划批准／#40 P0-a/b/c 越界指路／#41 P1-a 重复熔断，另立 #42 D8-2）：离线**五套 238 条全 PASS**（`v18_test_interrupt 21`／`v18_test_plan 43`／`v18_test_p0abc 48`／`v18_test_nochange 51`／`v18_test_dup 75`）＋整版双向演练 **51 条 / 失败 0**（现场被覆盖窗口 36.7 秒）；在线跑在**探针口 7872 ＋ 每场景一份独立库**（`v18_live_*` 11 份）和 CLI 直跑上——**这一轮没有跑交付形态 7860**（那台还在跑 v1.7，本轮只 `stat` 过它），所以 v1.6／v1.7 都有的那「四条关停判据」这一轮**没有**；#41 的真模型那一路因为账户欠费**没跑成**，用零成本回放替的。全文见 `迭代记录.md` v1.8 一节。**v1.9（另一场现场，11-04 落地）只收一张单 V10**：侧栏「⋯ → 删除」两下确认，离线 **43＋51＝94 条全绿** ＋ 真界面 **28/28**（独立实例 127.0.0.1:7874 ＋ 临时库，CDP 9344，没碰另一场占着的 9333）；**语义变化显式声明**：删除级联到模型记忆（`memory` 表），但**审计不级联**——后者是断言出来的（R26），不是恰好没删到。**v2.0（11-04～11-06）按面试题一次上五刀**（A1/A2 外部工具与供应链白名单、B1 显式超时、P1-4 锁温、P1-26 启动预检＋第 11 档状态、面试题 D3 问责日志），离线 **165 条全绿**（42／25／20／31／47），尺子 **20 题 8 档、规则判分、没有 LLM judge**，基线 **30 跑**打在 `tongyi-xiaomi-analysis-flash` 上（交答 14/18＝77.8%、达标 13/18＝72.2%）；**这一轮同样没跑交付形态 7860，而且 v2.0 代码上界面一次都没起过**（11-13 `ps` 计数 0），所以问责日志在生产里 **0 行**、34 跑全量基线**没打**（欠费 ¥0.05 挡着）、锁温那一刀是**负结果**。全文见 `迭代记录.md` v1.9／v2.0 两节，逐项缺口见 6.3.11／6.3.12 与 9.4 第 22~27 条。
 
 ---
 
@@ -1381,49 +1831,62 @@ sequenceDiagram
 | 16 | `servers/src/filesystem/path-validation.ts:11-105` | 路径白名单的核心实现 |
 | 17 | `servers/src/memory/index.ts:780`、`:1134` | tools / resources 注册的标准写法 |
 | 18 | `servers/src/everything/index.ts:22-41` | stdio / SSE / Streamable HTTP 三传输切换 |
-| 19 | `scofenAgent/my_coding_agent.py:43-80`、`:194-218` | 你自己的 `guarded()`（越界收敛 ＋ 两条给模型读的报错）与 `run_python` 沙箱三闸（ast 语法闸 `:200-203`、禁用调用 `:204-206`、临时目录＋清空 env＋20 秒熔断 `:207-218`） |
+| 19 | `scofenAgent/my_coding_agent.py:111-148`、`:262-286` | 你自己的 `guarded()`（越界收敛 ＋ 两条给模型读的报错）与 `run_python` 沙箱三闸（ast 语法闸 `:268-271`、禁用调用 `:272-274`、临时目录＋只留 5 个变量的 env＋20 秒熔断 `:275-286`）。**⚠ `run_python` 整个函数体里没有一次 `guarded()`：P0-25，未修**——禁词名单里没有 `open`／`pathlib`，env 挡的是子进程环境变量不是文件读取 |
 | 20 | `~/Desktop/我的Agent.app/Contents/MacOS/launcher:104-127` | TCC 绕行 + Chrome app 窗口的完整写法 |
 | 21 | `smolagents/src/smolagents/agents.py:545-547`、`:470`、`:754` | **中断三件套**：`interrupt()` 置 `interrupt_switch` → 只在 `while` 顶部（步边界）生效 → 下次 `run()` 开头自动清零，所以停完不用重启 |
 | 22 | `smolagents/src/smolagents/agents.py:599-602` | `finally` 里还有一次 `yield`：从外面关这个生成器必然触发 `RuntimeError("generator ignored GeneratorExit")`，谁包它谁负责吃掉 |
 | 23 | `smolagents/src/smolagents/gradio_ui.py:310` | `reset_agent_memory: bool = False`——同进程内记忆与 monitor **跨题累积**，这是"本题累计"和"进程累计"必须分成两档的根因 |
 | 24 | `smolagents/src/smolagents/monitoring.py:108` | 控制台 `[Step N]` 的 N 是 `len(self.step_durations)`，即**进程内**；与 `agents.py:543` 每题置 1 的**本题内**步号是两把尺子 |
-| 25 | `scofenAgent/my_ui.py:1085-1158` | 步骤卡把数字写进 `metadata.title` 而不是正文：gradio 折叠组收起时**正文不在 DOM 里**（v1.1 独立统计卡在 `:31-36`，v1.3 起并进这张卡） |
+| 25 | `scofenAgent/my_ui.py:1374-1447`（标题拼装 `:1425-1447`） | 步骤卡把数字写进 `metadata.title` 而不是正文：gradio 折叠组收起时**正文不在 DOM 里**（v1.1 独立统计卡在 `:31-36`，v1.3 起并进这张卡，v1.8 时它在 `:1085-1158`） |
 | 26 | `smolagents/.venv/…/gradio/chat_interface.py:265` | `ChatInterface._setup_events()` 在 `__init__` 里就跑完——**构造之后无法重接布局**，这是 v1.2 放弃 `ChatInterface` 改自建 `Blocks` 的直接原因 |
 | 27 | `chat_interface.py:145`、`:371-372` | 两条实测纠正：① `save_history=True` 存的是**浏览器 localStorage**，它**能**活过服务端重启（真正的缺口是服务端没有可查的账）；② `stop_btn` 那个按钮由 `ChatInterface` 摘下来自己管，换成裸 `Blocks` 后**点了没反应** |
 | 28 | `smolagents/src/smolagents/agents.py:606-608`、`:625-637` | 步数用满后**不抛异常**：`while` 循环**外**再走一次 `provide_final_answer`（`_handle_max_steps_reached`），造出的 `ActionStep` 带 `step_number=9`、`error=AgentMaxStepsError`。所以状态胶囊要认「步数用满」而不是「完成」，而 `interrupt_switch` 管不到这一步（实测撞上过：+36.74 s、+9,096 input token） |
-| 29 | `scofenAgent/my_ui.py:30` | `DB_PATH` 按 `Path(__file__).resolve()` 定位而非 cwd：启动器 `cd smolagents` 与否都落在同一个 `.agent-history.sqlite3` |
-| 30 | `smolagents/src/smolagents/tools.py:231-249` | `BaseTool.__call__` 收尾是 `self.forward(*args, **kwargs)`（`:246`）——**实例属性优先于类上的 staticmethod**，所以审批门能盖在实例上而不动上游、不动模块级 `@tool` 对象（v1.3 `_install_gate`，`my_ui.py:670-693`） |
-| 31 | `smolagents/src/smolagents/agents.py:1361-1437` | `process_tool_calls`：一步里多个工具调用走 `ThreadPoolExecutor`（`:1428-1434`）。阻塞式审批因此可能一次收到多条待批，而 UI 的按钮只结算最早那条（`my_ui.py:896`，`_decide` 里 `un[0].decide(...)`）——**并行审批是已知缺口，不是漏写** |
+| 29 | `scofenAgent/my_ui.py:33` | `DB_PATH` 按 `Path(__file__).resolve()` 定位而非 cwd：启动器 `cd smolagents` 与否都落在同一个 `.agent-history.sqlite3`。**同一条纪律在 `my_audit.py:42-43` 又用了一次**（`AUDIT_PATH` 也按 `__file__` 定位），所以审计不会因为 cwd 不同而写到别处 |
+| 30 | `smolagents/src/smolagents/tools.py:231-249` | `BaseTool.__call__` 收尾是 `self.forward(*args, **kwargs)`（`:246`）——**实例属性优先于类上的 staticmethod**，所以审批门能盖在实例上而不动上游、不动模块级 `@tool` 对象（v1.3 `_install_gate`，v2.0 现场 `my_ui.py:920-949`；MCP 工具也走同一条 `copy.copy`，`:927` 那段注释） |
+| 31 | `smolagents/src/smolagents/agents.py:1361-1437` | `process_tool_calls`：一步里多个工具调用走 `ThreadPoolExecutor`（`:1428-1434`）。阻塞式审批因此可能一次收到多条待批，而 UI 的按钮只结算最早那条（`my_ui.py:1172-1176`，`_decide` 里 `un[0].decide(...)`）——**并行审批是已知缺口，不是漏写** |
 | 32 | `.venv/…/gradio/components/chatbot.py:55` | `status: NotRequired[Literal["pending", "done"]]`。写别的值不是报错而是**整条 chatbot 输出被丢**（`ValidationError` → `ComponentProcessingError`）：D4 就是这么藏了三个版本的 |
-| 33 | `scofenAgent/my_ui.py:1218-1241`、`:1243-1396` | 线程 + 队列的驱动骨架：`_worker` 消费 `agent.run(stream=True)`，`_stream_response` 每 `0.25s` 取一次队列。**空转轮也要扫待批队列**，否则审批卡画不出来（agent 正卡在闸上，不会有下一个事件） |
-| 34 | `scofenAgent/my_ui.py:57-62` | `DENIED_OBSERVATION` / `DENIED_VERDICT` 两个字典**必须同步**：前者是交回模型的措辞，后者是步骤卡反查命中的色点口径，改一个就会出现「审批卡说取消、步骤卡说拒绝」 |
-| 35 | `smolagents/src/smolagents/agents.py:477`、`:478-480` | `run()` 开头：`:477` 无条件把 `system_prompt` 同步进**当前那份** `self.memory`，`:478-480` 才是 `if reset: memory.reset(); monitor.reset()`。v1.4 的会话级记忆隔离**只换引用、绝不说 `reset=True`**，依据就是这两行——一 reset 连 `monitor` 一起清零，「进程累计」口径当场作废（`my_ui.py:1399-1424`） |
-| 36 | `smolagents/src/smolagents/memory.py:214-232` | `AgentMemory` 只有 `system_prompt` + `steps` 两个字段和一个 `reset()`，**没有任何 (de)serializer**——框架不给口子，所以 v1.5 的 V6 是自己写字段（`my_ui.py:163-201` 编、`:204-263` 解），而不是给 `AgentMemory` 加序列化器：上游升级时冲突面仍然只有 `my_ui.py` 一个文件 |
+| 33 | `scofenAgent/my_ui.py:1532-1555`、`:1557-1713` | 线程 + 队列的驱动骨架：`_worker` 消费 `agent.run(stream=True)`，`_stream_response` 每 `0.25s` 取一次队列。**空转轮也要扫待批队列**，否则审批卡画不出来（agent 正卡在闸上，不会有下一个事件）。`_worker` 的 `finally` 里 `inner.close()` 与吃掉 `RuntimeError` 那两句在 `:1550` 附近 |
+| 34 | `scofenAgent/my_ui.py:65`、`:70` | `DENIED_OBSERVATION` / `DENIED_VERDICT` 两个字典**必须同步**：前者是交回模型的措辞，后者是步骤卡反查命中的色点口径，改一个就会出现「审批卡说取消、步骤卡说拒绝」。v2.0 起审计那一行也带 `decision`（`:968`），三处口径同源 |
+| 35 | `smolagents/src/smolagents/agents.py:477`、`:478-480` | `run()` 开头：`:477` 无条件把 `system_prompt` 同步进**当前那份** `self.memory`，`:478-480` 才是 `if reset: memory.reset(); monitor.reset()`。v1.4 的会话级记忆隔离**只换引用、绝不说 `reset=True`**，依据就是这两行——一 reset 连 `monitor` 一起清零，「进程累计」口径当场作废（`my_ui.py:1716-1741`）。**离线尺子刻意反过来**：`v20_eval.py:132` 每题 `reset=True`，两套口径不能混着比 |
+| 36 | `smolagents/src/smolagents/memory.py:214-232` | `AgentMemory` 只有 `system_prompt` + `steps` 两个字段和一个 `reset()`，**没有任何 (de)serializer**——框架不给口子，所以 v1.5 的 V6 是自己写字段（`my_ui.py:171-209` 编、`:212-271` 解），而不是给 `AgentMemory` 加序列化器：上游升级时冲突面仍然只有 `my_ui.py` 一个文件 |
 | 37 | `smolagents/src/smolagents/gradio_ui.py:310` + `:389` | `reset_agent_memory: bool = False` 的默认值声明在 `:310`，实际传参在 `:389`（`run(task, images=…, stream=True, reset=self.reset_agent_memory)`）。"记忆跨题累积"这件事是这两个位置共同决定的，v1.4 的 `base = hist.load(sid)` 与之是**两套独立的累加**（显示层 vs 模型层） |
-| 38 | `scofenAgent/my_ui.py:1493`、`:1508` | D5 的全部修法就这两行：起点是库里那一串（`base`），每帧 `last = base + [user_msg] + list(msgs)`。`History.save()` 的覆盖语义**没改**——它只有在喂完整列表时才等价于追加，v1.3 之前喂的就是不完整的那串 |
-| 39 | `scofenAgent/my_ui.py:1614`、`:1729`、`:1645`、`:1745` | V5 的接线：`_select_session` 交出第三个值 `int(sid)`、`radio.change` 的 `outputs` 多带 `sid`、`_on_load` 同样交出 `sid` 并挂 `demo.load`。少任一处都会退化成"屏上像接上了、其实另开一条会话" |
-| 40 | `scofenAgent/my_ui.py:569-572` | `updated_at` 必须每次 `save()` 都刷（D6）。侧栏 `ORDER BY updated_at DESC` 决定了 `_on_load` 把 `sid` 指到哪条，也就是"下一条提问落进哪条会话"——以前挂在 `WHERE title='新会话'` 上，会话有了标题就再也不刷新 |
-| 41 | `smolagents/src/smolagents/agents.py:767-769` | **V6 的全部根据**：模型读到的那一串＝`memory.system_prompt.to_messages()` ＋ 逐条 `step.to_messages()`。所以持久化要存的是 **steps 的字段**而不是屏上的卡片文字；编码在 `my_ui.py:163-201`，回灌在 `:1419-1421` |
-| 42 | `smolagents/src/smolagents/agents.py:609-611`、`:625-637` | `memory.steps` 的**封闭集合**只有 `TaskStep` / `ActionStep` / `PlanningStep`：`FinalAnswerStep` 只 yield 不 append，步数用满时补进去的是带 `AgentMaxStepsError` 的 ActionStep。字段白名单 `MEM_FIELDS`（`my_ui.py:100-115`）就是照这个集合列的 |
+| 38 | `scofenAgent/my_ui.py:1812`、`:1827` | D5 的全部修法就这两行：起点是库里那一串（`base`），每帧 `last = base + [user_msg] + list(msgs)`。`History.save()` 的覆盖语义**没改**——它只有在喂完整列表时才等价于追加，v1.3 之前喂的就是不完整的那串 |
+| 39 | `scofenAgent/my_ui.py:1985`、`:2275`、`:2153-2177`、`:2295` | V5 的接线：`_select_session` 交出第三个值 `int(sid)`、`radio.change` 的 `outputs` 多带 `sid`（v2.0 起还多带 `plan`，四元组）、`_on_load` 同样交出 `sid` 并挂 `demo.load`。少任一处都会退化成"屏上像接上了、其实另开一条会话"。v1.9 的 `SIDEBAR_JS` 也挂在同一个 `demo.load` 上（`js=` 那一格） |
+| 40 | `scofenAgent/my_ui.py:732-738` | `updated_at` 必须每次 `save()` 都刷（D6）。侧栏 `ORDER BY updated_at DESC`（`:704`）决定了 `_on_load` 把 `sid` 指到哪条，也就是"下一条提问落进哪条会话"——以前挂在 `WHERE title='新会话'` 上，会话有了标题就再也不刷新 |
+| 41 | `smolagents/src/smolagents/agents.py:767-769` | **V6 的全部根据**：模型读到的那一串＝`memory.system_prompt.to_messages()` ＋ 逐条 `step.to_messages()`。所以持久化要存的是 **steps 的字段**而不是屏上的卡片文字；编码在 `my_ui.py:171-209`，回灌在 `:1736-1738` |
+| 42 | `smolagents/src/smolagents/agents.py:609-611`、`:625-637` | `memory.steps` 的**封闭集合**只有 `TaskStep` / `ActionStep` / `PlanningStep`：`FinalAnswerStep` 只 yield 不 append，步数用满时补进去的是带 `AgentMaxStepsError` 的 ActionStep。字段白名单 `MEM_FIELDS`（`my_ui.py:108-127`）就是照这个集合列的 |
 | 43 | `smolagents/src/smolagents/utils.py:146-153` | `make_json_serializable` 会把**长得像 JSON 的字符串解析成 dict**。记忆编码里只有 `action_output` 过它，其余文本原样存，否则观察值 `{"ok": true, "n": 73}` 回放回来就变字了 |
-| 44 | `smolagents/src/smolagents/agents.py:470` | **D7 的根因**：每次 `run()` 开头把 `interrupt_switch` 清回 `False`。所以「■ 停止」落在待批卡出现之前，中断的是**空闲的** agent（空放），后到的待批没人结算。修法不在上游这一行，在 `my_ui.py:703-706` 那个临界区 |
-| 45 | `scofenAgent/my_ui.py:616-617`、`:1267-1268`、`:1607-1612` | 取消号三件套：**类级** `_run_seq` / `_cancelled_before`（闸装在进程唯一的那个 agent 上，号必须和 `_pending`、`_gate_lock` 同侧）、起 worker 之前先领本轮号、`_stop` 先领取消号。入队与判停必须**在同一个 `with` 里**，分开写窗口就还开着 |
-| 46 | `scofenAgent/my_ui.py:1578-1579` | 记忆落库的两个条件：`mem is not None` 且 `self._mem_sid == sid`。后一条是**会话归属**判据——中途换了会话还照存，就把别人的记忆盖到这条上了 |
-| 47 | `scofenAgent/my_ui.py:1445-1463` + `:1633-1634` | **V7 的全部根据是一条实测的 gradio 6.30 语义**：服务端 `gr.update(value=...)` **会被当成一次 `.change` 送回后端**（设 `None` 也送回 `None`），但 `.input` / `.select` 都不触发；只有用户真点选才三件齐发。所以 `choices` 每帧刷、`value` 只在绑定真换那一次给（`:1460-1462`），送回的那次由 `_select_session` 的回声守卫三个输出全交空更新（守卫必须挡在 `int()` 之前，否则 `None` 崩）。不这么写就是每秒两次空转事件 ＋ 和流式那条抢同一个 chatbot 输出 |
-| 48 | `scofenAgent/my_ui.py:471`、`:710-712`、`:1324-1328`、`:43` | **V8：一次等待跨两条线程**。记在 `decide()` 那一刻（不是 worker 醒来那刻，否则审批卡第一次画收尾态带不上这个数、超时路径也记不准）→ 类级 `_pending_wait` 过账（门槛 `APPROVAL_WAIT_MIN=0.05` 在此，与审批卡标题同一口径）→ UI 线程在 `ActionStep` 到达时**一次取干**、写 step 的私有属性 `_opsui_wait`。**它不在 `MEM_FIELDS`（`:100-115`）里**（那张表的口径是"下一轮**模型**读到的字段"），所以总时长口径不变。v1.6 时这一格只活在进程里、重启读不出——**v1.7 的 V9 收掉了这条边界**，它现在随记忆进库（见 49 行），而显示层一行没改 |
-| 49 | `scofenAgent/my_ui.py:94` + `:99` + `:193-199` + `:256-260` | **V9 的全部根据是两条读空**：只把 `MEM_FMT` 升 `v2` 而不做兼容读 → 真实库那 **7 条 v1 payload 在 strict v2 下全体读空**（V6 当场作废）；反过来 v1.6 原样的代码读 v1.7 写的 v2 账**同样读空**（基线 E1b）——所以兼容读写成 `MEM_FMT_READ = ("v1", "v2")`，`wait` 是**可选**键（真等过才写，`round(…, 3)`；v1 没这键就读作 0、**不是把整条会话判成没记忆**），认不出的 `v0`／将来的 `v3` 仍旧整块拒读。**代价**：兼容读只朝一个方向，回滚 v1.6 会让 v1.7 期间新建的会话变成"没记忆"；库里 v1 的行**不会被回写升级**（旧 7 行 sha1 逐行不变就是这条的断言），所以同一个库里两种格式长期并存、`MEM_FMT_READ` 得一直带着 |
-| 50 | `scofenAgent/my_ui.py:1426-1442` → `:1643` / `:1661-1667` | **光进库没有出口**：状态条那串「本题」的数以前从 `self.agent.memory` 读，而那份记忆只在 `_respond` 开头换——基线实测「点一条旧会话之后步数仍是 `0/8`」（`_bind_memory` 根本不在点击那条路上）。V9 加 `_session_steps(sid)`：**进程里有这一份就读它的 steps，没有就按 V6 那条路 decode 库里那一串**，然后只接到 `_select_session` 和 `_on_load` 两个入口上。**刻意不做**的是在这里顺手 `_bind_memory`：那条路会把 worker 线程正在读的记忆换掉，V5 的语义也不该由一次点击改动（代价见 6.3.9 边界 ③） |
-| 51 | `scofenAgent/my_ui.py:909` ＋ `:929-938` ＋ `:1566` | **D8：断开那条路也要有收尾**。刷新/关页面时 `_respond` 收到 `GeneratorExit`（`:1528` 那句注释说明了为什么这里绝不能再 `yield`），状态转 `interrupted`（`:1530`），`finally`（`:1564-1566`）先 `_mark_interrupted` 再落库。`:929-938` 是**补账**：把没人点的审批等待挂在最后一个还没有归属的 `ActionStep` 的私有键 `_opsui_wait` 上（实测 6.2566s 那格本来就把 5.231s 的等待算在内，所以这是「归属」不是「做大」），门槛同一律 `APPROVAL_WAIT_MIN=0.05`（`:43`）；卡片标题 `⏹ 已中断`（`:406` 表、`:416` 档、`:940` 文案、`:961` 把那段空等写进标题）。**证据**：B1 库里 3→4 条、payload 350→366 B、`"wait": 5.172`；B4 那格 `mark.enter 0`（没挂就真没挂，不硬造）；B2/B3 断开时 `messages 0 / memory 0` 的旧行为是这一刀的起点（`迭代记录.md` v1.8 第二节） |
-| 52 | `scofenAgent/my_ui.py:830-857`（`_install_plan_gate`）／`:859-883`（`_plan_gate`）＋ `:1696` | **P0-4：计划卡在「已经有了、agent 还没动手」那一刻等人批准**。地基在上游 `agents.py:550-552`（`planning_interval` 不为 `None` 才产出 `PlanningStep`）与 `:556-562`（那一步 yield 完才继续），所以门是**覆盖实例上的 `_run_stream`**（`:830`），**先 `yield ev`（`:852`）再判**（`:854`）——卡片画得出来、观察值进得了记忆。计划那份单子和普通工具同一条队列：`Approval(PLAN_APPROVAL_NAME, …, kind="plan")`（`:866`），结算分支 `:990`，被拒走 `PlanDeniedError`（`:428`）→ 状态 `plan_denied`（`:1536`／`:1545`）。面板是 `gr.Markdown(elem_id="planpanel", visible=False)`（`:1696`，样式 `:395`），内容只从 `_plan_shown`（`:1314` 写、`:1023`/`:1051` 读）来。**代价实测**（同一道 12 日行情题、同一个 qwen-plus，`验收脚本/v1.8/run/v18_plan_probe.out`，单题样本）：关 7.1s / in 5,260 / out 262 → 开 40.1s / in 13,591 / out 1,713，其中规划那一次单独 in 1,188 / out 1,458、32.9s、正文 6,195 字符；`interval=8` 与 `max_steps=8` 同高，所以**每题恰好一份计划、题内不重规划** |
-| 53 | `scofenAgent/my_ui.py:732`／`:788` ＋ `:819`／`:826` | **P1-a 的两层必须分开看**：挡在工具层（`_install_dup_gate :732` → `_dup_call :765`，key 由 `_bind_args :718` 按 `forward` 签名归一 ＋ `json.dumps(..., sort_keys=True)` `:766`；计数 `_dup_blocked :635` 每题累计、`_stream_response` 开局清零 `:1258`；幂等标记 `_opsui_dedup :751`），收在流层（`_install_dup_stop :788`，由 `:763` 顺手装）。**收为什么不能只按 `interrupt()`**：`agents.py:606-608` 在步数用满时会走 `_handle_max_steps_reached` **再打一次模型**（21:06 那份日志的实测差价 in 1,560 / out 303、7.16 秒，累计口径相减、单样本），所以要在 `ActionStep` **已经交出之后**（`:819` 判）换掉流（`:826`）——早一步在 `ToolOutput` 后抛，回放当场拍红：第 8 步的卡压根没画出来。状态档 `dup_fused`（`:1545`）与单独措辞（`:1552`，不写成「你按了停止」），回给模型的警告是 `DUP_FUSE_OBSERVATION`（`:82`），上限 `DUP_BLOCK_LIMIT = 2`（`:73`）。**行为证据＝零成本回放**（`验收脚本/v1.8/v18_dup_replay.py`，假模型＋真 `OpsUI`）：dup-on 模型 8 次／真进 forward 5 次／挡 3 次落 `[3,4,8]`／`dup_fused`／库 messages 10，dup-off 对照 9／8／0／`maxed`／11；断言 17 条全绿（33.6 s） |
-| 54 | `scofenAgent/my_coding_agent.py:59-66`、`:69-79` | **P0-a/b/c：只改「说什么」，判一个字都没动**。这两条错误文案是给模型读的（observation 原样进下一轮上下文）：越界那条（`:59-66`）把「这一整套工具只服务这一个根」「动作空间里没有删除/移动/重命名」写死，相对路径不存在那条（`:69-79`）把口径摊开——你给的是相对路径、我只把它接到 `ROOT` 底下再找、不猜别的根，并明确禁止同名同参重打。**起因是 2026-11-03 21:06 那份 `.agent-ui.log`**：旧文案只说「不在白名单根目录之下」，模型下一步写的是「请联系系统管理员调整权限」（本机没这个开关）；旧 `FileNotFoundError` 只给拼接结果，于是它同名同参把 `list_dir('人生/')` 又打了一遍。收敛逻辑、`DENY_NAMES`（`:37`）、`must_exist` 的分支顺序一字未动。**效果**（题 B、零成本对照）：动作数 8/7 → **2/2**、重复 1/3 → **0/0**，`system_prompt` 4,796 → 4,942 字符（＋146）。注意 `build_agent` 里那段 `description`（`:236-247`）**在本机不给模型读**——`describe()` 只服务于被上级调用的 managed agent（`agents.py:1005`），探针 `'读代码' in agent.system_prompt` → `False`，真正起作用的是每个工具的 docstring 和这两条报错 |
+| 44 | `smolagents/src/smolagents/agents.py:470` | **D7 的根因**：每次 `run()` 开头把 `interrupt_switch` 清回 `False`。所以「■ 停止」落在待批卡出现之前，中断的是**空闲的** agent（空放），后到的待批没人结算。修法不在上游这一行，在 `my_ui.py:955-963` 那个临界区（入队与判停在同一个 `with self._gate_lock` 里，注释把两种拿锁顺序都写死了） |
+| 45 | `scofenAgent/my_ui.py:809-810`、`:1584-1585`、`:1944-1945` | 取消号三件套：**类级** `_run_seq` / `_cancelled_before`（闸装在进程唯一的那个 agent 上，号必须和 `_pending`、`_gate_lock` 同侧）、起 worker 之前先领本轮号、`_stop` 先领取消号。入队与判停必须**在同一个 `with` 里**，分开写窗口就还开着 |
+| 46 | `scofenAgent/my_ui.py:1913-1914` | 记忆落库的两个条件：`mem is not None` 且 `self._mem_sid == sid`。后一条是**会话归属**判据——中途换了会话还照存，就把别人的记忆盖到这条上了 |
+| 47 | `scofenAgent/my_ui.py:1762-1780` + `:1951-1985` | **V7 的全部根据是一条实测的 gradio 6.30 语义**：服务端 `gr.update(value=...)` **会被当成一次 `.change` 送回后端**（设 `None` 也送回 `None`），但 `.input` / `.select` 都不触发；只有用户真点选才三件齐发。所以 `choices` 每帧刷、`value` 只在绑定真换那一次给（`:1777-1779`），送回的那次由 `_select_session` 的回声守卫三个输出全交空更新（守卫必须挡在 `int()` 之前，否则 `None` 崩）。不这么写就是每秒两次空转事件 ＋ 和流式那条抢同一个 chatbot 输出 |
+| 48 | `scofenAgent/my_ui.py:638`、`:971-973`、`:1641-1645`、`:51` | **V8：一次等待跨两条线程**。记在 `decide()` 那一刻（`:638`，不是 worker 醒来那刻，否则审批卡第一次画收尾态带不上这个数、超时路径也记不准）→ 类级 `_pending_wait`（`:814`）过账（门槛 `APPROVAL_WAIT_MIN=0.05` 在 `:51`，与审批卡标题同一口径）→ UI 线程在 `ActionStep` 到达时**一次取干**、写 step 的私有属性 `_opsui_wait`。**它不在 `MEM_FIELDS`（`:108-127`）里**（那张表的口径是"下一轮**模型**读到的字段"），所以总时长口径不变。v1.6 时这一格只活在进程里、重启读不出——**v1.7 的 V9 收掉了这条边界**，它现在随记忆进库（见 49 行），而显示层一行没改 |
+| 49 | `scofenAgent/my_ui.py:102` + `:107` + `:201-208` + `:265-267` | **V9 的全部根据是两条读空**：只把 `MEM_FMT` 升 `v2` 而不做兼容读 → 真实库那 **7 条 v1 payload 在 strict v2 下全体读空**（V6 当场作废）；反过来 v1.6 原样的代码读 v1.7 写的 v2 账**同样读空**（基线 E1b）——所以兼容读写成 `MEM_FMT_READ = ("v1", "v2")`，`wait` 是**可选**键（真等过才写，`round(…, 3)`；v1 没这键就读作 0、**不是把整条会话判成没记忆**），认不出的 `v0`／将来的 `v3` 仍旧整块拒读（`:218`）。**代价**：兼容读只朝一个方向，回滚 v1.6 会让 v1.7 期间新建的会话变成"没记忆"；库里 v1 的行**不会被回写升级**（旧 7 行 sha1 逐行不变就是这条的断言），所以同一个库里两种格式长期并存、`MEM_FMT_READ` 得一直带着 |
+| 50 | `scofenAgent/my_ui.py:1743-1759` → `:1983-1985` / `:2176` | **光进库没有出口**：状态条那串「本题」的数以前从 `self.agent.memory` 读，而那份记忆只在 `_respond` 开头换——基线实测「点一条旧会话之后步数仍是 `0/8`」（`_bind_memory` 根本不在点击那条路上）。V9 加 `_session_steps(sid)`：**进程里有这一份就读它的 steps，没有就按 V6 那条路 decode 库里那一串**，然后只接到 `_select_session` 和 `_on_load` 两个入口上。**刻意不做**的是在这里顺手 `_bind_memory`：那条路会把 worker 线程正在读的记忆换掉，V5 的语义也不该由一次点击改动（代价见 6.3.9 边界 ③） |
+| 51 | `scofenAgent/my_ui.py:1189-1244` ＋ `:1209-1218` ＋ `:1849` | **D8：断开那条路也要有收尾**。刷新/关页面时 `_respond` 收到 `GeneratorExit`（`:1843` 那句注释说明了为什么这里绝不能再 `yield`），状态转 `interrupted`（`:1849`），`finally`（`:1905-1907`）先 `_mark_interrupted` 再落库。`:1209-1218` 是**补账**：把没人点的审批等待挂在最后一个还没有归属的 `ActionStep` 的私有键 `_opsui_wait` 上（实测 6.2566s 那格本来就把 5.231s 的等待算在内，所以这是「归属」不是「做大」），门槛同一律 `APPROVAL_WAIT_MIN=0.05`（`:51`）；卡片标题 `⏹ 已中断`（`STATE_LABEL :530-553`、`DECISION_DOT :62`）。**证据**：B1 库里 3→4 条、payload 350→366 B、`"wait": 5.172`；B4 那格 `mark.enter 0`（没挂就真没挂，不硬造）；B2/B3 断开时 `messages 0 / memory 0` 的旧行为是这一刀的起点（`迭代记录.md` v1.8 第二节） |
+| 52 | `scofenAgent/my_ui.py:1110-1137`（`_install_plan_gate`）／`:1139-1163`（`_plan_gate`）＋ `:2220` | **P0-4：计划卡在「已经有了、agent 还没动手」那一刻等人批准**。地基在上游 `agents.py:550-552`（`planning_interval` 不为 `None` 才产出 `PlanningStep`）与 `:556-562`（那一步 yield 完才继续），所以门是**覆盖实例上的 `_run_stream`**，**先 `yield ev` 再判**——卡片画得出来、观察值进得了记忆。计划那份单子和普通工具同一条队列：`Approval(PLAN_APPROVAL_NAME, …, kind="plan")`（`:1146`），结算分支 `:1270`，被拒走 `PlanDeniedError`（`:588`，抛在 `:1161`）→ 状态 `plan_denied`（`:1855`／`:1880`）。面板是 `gr.Markdown(elem_id="planpanel", visible=False)`（`:2220`，样式 `:449`），内容只从 `_plan_shown`（`:1631` 置 pending、`:1670` 写正文、`:1312`/`:1340` 读）来。**代价实测**（同一道 12 日行情题、同一个 qwen-plus，`验收脚本/v1.8/run/v18_plan_probe.out`，单题样本）：关 7.1s / in 5,260 / out 262 → 开 40.1s / in 13,591 / out 1,713，其中规划那一次单独 in 1,188 / out 1,458、32.9s、正文 6,195 字符；`interval=8` 与 `max_steps=8` 同高，所以**每题恰好一份计划、题内不重规划** |
+| 53 | `scofenAgent/my_ui.py:993-1028`／`:1068-1107` ＋ `:1099`／`:1100` | **P1-a 的两层必须分开看**：挡在工具层（`_install_dup_gate :993` → `_dup_call :1030`，key 由 `_bind_args :979` 按 `forward` 签名归一 ＋ `json.dumps(..., sort_keys=True)` `:1033`；计数 `_dup_blocked :828` 每题累计、`_stream_response` 开局清零 `:1572-1573`；幂等标记 `_opsui_dedup :1026`），收在流层（`_install_dup_stop :1068`）。**收为什么不能只按 `interrupt()`**：`agents.py:606-608` 在步数用满时会走 `_handle_max_steps_reached` **再打一次模型**（21:06 那份日志的实测差价 in 1,560 / out 303、7.16 秒，累计口径相减、单样本），所以要在 `ActionStep` **已经交出之后**（`:1099` 判）换掉流（`:1100` 抛）——早一步在 `ToolOutput` 后抛，回放当场拍红：第 8 步的卡压根没画出来。状态档 `dup_fused`（`:1880`）与单独措辞（`:1887`，不写成「你按了停止」），回给模型的警告是 `DUP_FUSE_OBSERVATION`（`:90`），上限 `DUP_BLOCK_LIMIT = 2`（`:81`）。**行为证据＝零成本回放**（`验收脚本/v1.8/v18_dup_replay.py`，假模型＋真 `OpsUI`）：dup-on 模型 8 次／真进 forward 5 次／挡 3 次落 `[3,4,8]`／`dup_fused`／库 messages 10，dup-off 对照 9／8／0／`maxed`／11；断言 17 条全绿（33.6 s）。**v2.0 起这一层还兼着审计的入口**（`:1044`） |
+| 54 | `scofenAgent/my_coding_agent.py:126-134`、`:138-146` | **P0-a/b/c：只改「说什么」，判一个字都没动**。这两条错误文案是给模型读的（observation 原样进下一轮上下文）：越界那条（`:126-134`）把「这一整套工具只服务这一个根」「动作空间里没有删除/移动/重命名」写死，相对路径不存在那条（`:138-146`）把口径摊开——你给的是相对路径、我只把它接到 `ROOT` 底下再找、不猜别的根，并明确禁止同名同参重打。**起因是 2026-11-03 21:06 那份 `.agent-ui.log`**：旧文案只说「不在白名单根目录之下」，模型下一步写的是「请联系系统管理员调整权限」（本机没这个开关）；旧 `FileNotFoundError` 只给拼接结果，于是它同名同参把 `list_dir('人生/')` 又打了一遍。收敛逻辑、`DENY_NAMES`（`:105`）、`must_exist` 的分支顺序一字未动（`:121` 是这条的自我声明）。**效果**（题 B、零成本对照）：动作数 8/7 → **2/2**、重复 1/3 → **0/0**，`system_prompt` 4,796 → 4,942 字符（＋146）。注意 `build_agent` 里那段 `description`（`:305-316`）**在本机不给模型读**——`describe()` 只服务于被上级调用的 managed agent（`agents.py:1005`），探针 `'读代码' in agent.system_prompt` → `False`，真正起作用的是每个工具的 docstring 和这两条报错 |
+
+| 55 | `scofenAgent/my_mcp.py:45-60`、`:63-70`、`:74-77` | **A2 供应链白名单是三道而不是一道**：`MCP_SERVERS` 逐只 server ＋ 逐个工具**点名**（值就是风险档，写进审批卡与审计行）；`REFUSED` 把 `filesystem`／`memory`／`git`／`sequentialthinking`／`everything` **整只拒收**、理由写在字典里；`DESTRUCTIVE_RX` 再按工具名拦一遍破坏性动词。**点名式**意味着「新出一只 server 默认进不来」，不是「先全挂再挑」 |
+| 56 | `scofenAgent/my_mcp.py:111-165`（`attach`）／`:168-186`（`detach`） | **起不来不抛、摘除要摘干净**。`attach` 幂等（`:120-121`，agent 是进程里那一个单例而 `OpsUI` 在测试里反复实例化）；`argv` 头一个是 `node`/`npx` 这类要靠 PATH 找的命令，所以必须 `shutil.which`（`:128`，11-04 就红在这）；握手失败只记 `skipped`（`:139-141`），界面照常起。`detach` **先断连接再 pop 工具**：工具留在清单里而会话已关，模型下一次会撞在一个死会话上——比「根本没有这只工具」难查得多。`atexit` 在 `:162-164`，`my_ui.py:2312` 的 `finally` 里再调一次 |
+| 57 | `scofenAgent/my_ui.py:877-881` ＋ `:907-918` | **四步装配顺序本身是语义**：`my_mcp.attach` → `_install_gate` → `_install_dup_gate` → `_install_plan_gate`。查重必须在审批**外面**（否则被挡的那次会先弹审批卡，你点了 ✔ 观察值却是「重复未执行」）；计划门套最外（它守 `_run_stream`，不是某个工具）。`_gate_names()` **现拼**名单而**不写回 `GATED_TOOLS` 常量**（`:914`）：MCP 是运行时才知道挂没挂上，写回去下一次构造就读到上一轮的名单 |
+| 58 | `scofenAgent/my_audit.py:42-44`、`:52-62`、`:83-112` | **问责日志的三条设计决定**：① `AUDIT_PATH` 在 **import 时**定死 → `AGENT_AUDIT_PATH` 必须在 `import my_ui`/`my_audit` **之前**设，否则测试流量落进真账（已踩两次，各 62 行）；② `begin()` 把 `decision`/`wait_s` 先落成 `null` → **每行键集合定死**，读的人不用猜「没过门」还是「没这格」；③ **不整行截断**（`:101-103`）——截在半截字符串上的 JSONL 会让人整行 parse 不出来，审计作废；长度靠 `args_head` 那一格自己封顶 200 字符。**失败只计数不抛**（`:107-112`） |
+| 59 | `scofenAgent/my_ui.py:1044-1045` ＋ `:968` | **审计为什么挂在查重层而不是审批层**：装审批层的话，只读那五只手不进门、它们占的调用一条都不记，而实测重复调用恰恰全在只读侧。装查重层则「模型每一次真发出去的调用」都留行，**包括被挡掉的那两次**（`status=dup-blocked`/`dup-fused`）。审批层只 `annotate` 决策，且写在 `wait()` 之后——denied/cancelled/timeout 也要留痕，「有人拒绝过」恰恰是这份审计最该记住的一行 |
+| 60 | `scofenAgent/my_coding_agent.py:59-67` ＋ `my_agent.py:87-88` | **B1：`read=600` 是 SDK 默认，不是谁选的**。框架那层 retryer 的谓词 `is_rate_limit_error(APITimeoutError)` 实测 **False**（`models.py:1174-1180`，`reraise=True` 直接抛），所以超时**不归它重试**，600×3 ≈ 30 分钟全占住。`connect` 必须**单独**给 5 秒：写成 `timeout=60.0` 会把 connect 一起放宽，「根本连不上」反而比改前更慢。`read=60` 的口径是「60 秒内没有新帧就算挂」，流式每个 chunk 都重置它 |
+| 61 | `scofenAgent/my_coding_agent.py:91-98` | **P1-4：锁温走 `**kwargs` 而不是 `client_kwargs`**（采样是每发请求的事，连接期那一层管不着），在 `_prepare_completion_kwargs` 里 `self.kwargs` **最后覆盖**（`models.py:545-550`），agent 那层传不进来也改不掉。**刻意不留 fallback**：拼错一个字母若静默退回 0.0，就会拿「锁过温」的口径解释一份没锁的读数。**结论是负结果**：四次尝试、三种轨迹、两种判分，temperature 一直 0.0（`run/v20_probe_planning_det-t0.json` vs `run/v20_probe_planning_arms4.json`），所以一致性只能靠 `repeat` 抽样量 |
+| 62 | `scofenAgent/my_agent.py:126-135` ＋ `my_ui.py:893-902` | **启动预检是一发 1 token 的 `chat.completions.create`，不是 `models.list`**：同一时刻列模型仍返回 **183 只**，**能列 ≠ 能调**。读的是 `agent.model.client` 这个**活对象**（要验的就是屏幕上那条路，连 B1 那个 60 秒 read 超时一起验），实测 **0.34 秒**；异常**原样返回不抛**，分类交给界面（`✓`/`🔒拒`/`⚠` 三档后缀）。**只有 `launch()` 调它**：离线套件全都 import 这个模块，谁都不想在构造 `OpsUI` 时往外发请求 |
+| 63 | `scofenAgent/my_ui.py:530-553`、`:559`、`:571-585`、`:1861` | **第 11 档状态 `model_refused`（粉 `#db61a2`，CSS `:445`）**。`model_refusal(exc)` 顺 `__cause__`/`__context__` 往上找**八条指纹**，**判文本不判异常类型**——框架把 SDK 错误包成 `AgentGenerationError`，类型上和实现错误同名。措辞要办两件事：说清「不是你按的 ■」，以及**别说成「什么都没发生」**（拒绝只挡下一次模型调用，之前批过的工具是真做了的，不回滚） |
+| 64 | `scofenAgent/my_ui.py:756-769`、`:771`、`:777-790`、`:1987-2061`、`:2063-2151`、`:464` | **V10 删除会话：两下确认 ＋ 级联 ＋ 防重复投递**。`History.delete` 三张表一起清并返回**真实行数**；`exists`/`ensure` 认出已删 id 就另开一条干净的（否则插消息撞外键）；`_delete_session` 与 `_menu_delete` 各自同步 `_mem.pop`（`:2049`／`:2140`），菜单那一路用**开场号＋页内第几次**两段号防重复投递。「⋯」由 `SIDEBAR_JS` 挂在 `demo.load(js=…)`（`:2295`）上注入，**刷新后重新注入** |
+| 65 | `验收脚本/v2.0/v20_questions.py` ＋ `v20_eval.py:132`、`:325`、`:333`、`:348` | **尺子的口径全写在明处**：20 题 8 档、字段约定公开（`must`/`must_any`/`nums` 带容差/`must_dyn` 跑时重量/`call`/`forbid`/`calls_zero`/`gap`/`repeat`），**没有 LLM judge**；每题 `reset=True`（`:132`，与界面相反）；`meta` 里写死 `gate="off（裸 agent，不经界面审批门）"`（`:325`）；`AUTH` 正则中止守卫（`:333`/`:348`）——否则一次欠费会产出 20 行 exception 被误读成「模型能力差」 |
+| 66 | `.rollback/v2.0-现场-20261113/`（五份 ＋ `SHA1SUMS.txt`，全 `chmod a-w`）＋ `验收脚本/v1.8/v18_drill_v18.py:222-233` | **P2-21：尺子会被演练脚本自己覆盖**。`:230-233` 那句 `shutil.copy2(现场 → .rollback/v1.8/)` 在 11-04 20:47／22:29 两次重跑里把掺了别的会话改动的现场当成 v1.8 交付版另存，**1,758 行 / `800c348e` 全语料 0 命中、不可恢复**。守卫已补（`:222-229` 快照与现场不同就不覆盖），**写路径仍指着 `.rollback`** 这一半没做。两个根的分工：`ai学习/.rollback/vN.N/` 是**账**（clone 之外，`git clean -fd` 碰不到），`smolagents/.rollback/v1.8/after-*/` 是**过程**（clone 之内）——**演练只该往后者写** |
 
 ### 9.2 术语中英对照（读上游文档时不会被绕晕）
 
 | 中文 | 英文 | 在这套语料里的对应物 |
 |---|---|---|
 | 编排内核 | agent runtime / loop | smolagents `MultiStepAgent`；langchain4j `AiServices` |
-| 动作空间 | action space | 实测 `len(agent.tools) == 8`：你自己声明 **7** 项，`final_answer` 由 `agents.py:402` 自动补第 8 项。两套口径到处都用，**写文档时必须说明是哪一个**（本 README 的"7 只手"指你自己写/挂的那 7 项，"8 项动作空间"指模型实际能调的注册表） |
+| 动作空间 | action space | **v2.0 起有四套口径，报数必须说清是哪个入口**：命令行/裸 agent **8**（7 声明 ＋ `agents.py:402` 自动补的 `final_answer`）／界面 **11**（＋MCP 三只）／`build_agent()` **6**（5 声明 ＋ `final_answer`，不 attach MCP、无 planning）／离线尺子 **8**（`gate="off"`）。本 README 的"五只手"指 `my_coding_agent` 那五个自写工具，"7 只手"指再加两只指标工具，"8 项"指模型实际能调的注册表。详见 6.2 那张四行表 |
 | 熔断 | max_steps guardrail | `agents.py:545` + `:625` |
 | 沙箱 | execution sandbox | `LocalPythonExecutor` / E2B / dify `sandbox` / `agent_backend`+Landlock |
 | 工具规范 | tool specification / schema | `ToolSpecification` / smolagents `Tool.inputs` / MCP `inputSchema` |
@@ -1434,14 +1897,18 @@ sequenceDiagram
 | 可观测 | tracing / observability | dify `core/ops`、OpenTelemetry |
 
 ### 9.3 复现命令清单（都是本机验证过的）
-> **这一节的口径（v1.8 起改了）**：命令里出现的路径**就是现在能直接抄去跑的路径**——八轮历史里那些 `/tmp/v1*_…` 早已收编进 `ai学习/验收脚本/<版本号>/`（`gate/` 放文档闸，`servers/` 放 MCP 冒烟），**文件名一个没改**；第 9)~12) 条本轮已从 `/tmp/…` 改写成仓库内路径（`v1.5`/`v1.7` 的脚本在 2026-10-30 那场收编里就进了仓库，见 9.4 第 12 条的那三个 `find` 读数）。入口、复跑分组与「哪几条现在跑不得」写在 `验收脚本/README.md`。历史各轮正文里（6.3.5~6.3.9）留下的 `/tmp/…` 字样是**那一轮当时实跑的路径**，不改——它们属于留痕描述，不属于复现命令。
+> **这一节的口径（v1.8 起改了，v2.0 续）**：命令里出现的路径**就是现在能直接抄去跑的路径**——八轮历史里那些 `/tmp/v1*_…` 早已收编进 `ai学习/验收脚本/<版本号>/`（`gate/` 放文档闸，`servers/` 放 MCP 冒烟），**文件名一个没改**；第 9)~12) 条本轮已从 `/tmp/…` 改写成仓库内路径（`v1.5`/`v1.7` 的脚本在 2026-10-30 那场收编里就进了仓库，见 9.4 第 12 条的那三个 `find` 读数）。入口、复跑分组与「哪几条现在跑不得」写在 `验收脚本/README.md`。历史各轮正文里（6.3.5~6.3.9）留下的 `/tmp/…` 字样是**那一轮当时实跑的路径**，不改——它们属于留痕描述，不属于复现命令。
+> **v2.0 补三条**：①第 **13)~17)** 条是 v1.9／v2.0 新增，路径同样已在仓库内；②v2.0 那五套离线断言 import 的是**现场那五份活文件**（`my_ui.py` 2,315／`my_coding_agent.py` 325／`my_agent.py` 156／`my_mcp.py` 186／`my_audit.py` 128 行），复跑前先 `wc -l` 认现场——读到别的行数就是量了另一份的账（本文开头那条尺子声明）；③**尺子类要花钱**（`v20_eval.py`／`v20_probe_*.py` 真发模型请求），只有 `--dry` 与 `--preflight` 是零成本／1 token，全量 34 跑的预估先算给你、点头才打。
 
 ```bash
-# 1) 直接命令行跑合并后的 agent（8 项动作空间）
+# 1) 直接命令行跑合并后的 agent（**CLI 这条入口 8 项动作空间**：自己声明 7 ＋ 框架补 final_answer；
+#    走界面那条是 11 项、其中 5 项每发必批，四套入口口径见 6.2 那张表）
 cd ~/Desktop/study/ai学习/smolagents && .venv/bin/python my_agent.py
 
 # 2) 起 UI（务必 share=False）
 .venv/bin/python my_ui.py            # 然后浏览器打开 http://127.0.0.1:7860
+#    起起来时会先打一发 **1 token 的预检**（my_agent.model_preflight，实测 0.34 s），状态条后缀 ✓／🔒拒／⚠ 三档；
+#    同时 my_mcp.attach 起两个 stdio 子进程（time／fetch），状态条多一颗 MCP 胶囊。关停走 finally 里的 detach。
 
 # 3) 桌面方式：双击 ~/Desktop/我的Agent.app；关停：双击 ~/Desktop/关闭Agent.command
 
@@ -1455,8 +1922,12 @@ tail -40 ~/Desktop/study/ai学习/.agent-ui.log                 # 不应出现 g
 #    jdk17 来自 ~/.zshrc:111，mvn39 来自 ~/.zshrc:113
 cd ~/Desktop/study/ai学习/langchain4j && jdk17 && ~/tools/apache-maven-3.9.16/bin/mvn -pl langchain4j-core -am -o compile
 
-# 6) MCP servers（要装才跑，装之前想清楚）
-cd ~/Desktop/study/ai学习/servers && npm ci && npm run build   # 已装：395 包 / node_modules 169 MB；四个 server 各自 package.json 要 node>=24，本机 22.20.0 只出 EBADENGINE 警告，装与跑都不拦
+# 6) MCP servers —— **已装、而且已接进 agent**（v2.0 起不再是「装之前想清楚」）
+cd ~/Desktop/study/ai学习/servers && npm ci && npm run build   # 已跑过：395 包 / node_modules 169 MB；四个 server 各自 package.json 要 node>=24，本机 22.20.0 只出 EBADENGINE 警告，装与跑都不拦
+#    真正被 agent 用的是两只 **Python** server，各自一份 .venv（mcp 2.3.0，与 agent venv 里的 1.30.0 是两个口径）：
+ls -l servers/src/time/.venv/bin/mcp-server-time servers/src/fetch/.venv/bin/mcp-server-fetch
+#    白名单是点名式的：MCP_SERVERS 只列 time（get_current_time／convert_time）与 fetch（fetch）；
+#    filesystem／memory／git／sequentialthinking／everything 在 REFUSED 里整只拒收，理由写在字典里（my_mcp.py:63-70）。
 
 # 7) dify（未部署；前置三件：cp .env、填 SECRET_KEY、确认 Docker VM 在跑）
 cd ~/Desktop/study/ai学习/dify/docker && cp .env.example .env && docker info
@@ -1495,6 +1966,58 @@ smolagents/.venv/bin/python 验收脚本/v1.8/v18_drill_v18.py       # 整版双
 smolagents/.venv/bin/python 验收脚本/v1.8/v18_dup_replay.py      # 零成本回放 A/B 两格 17 条（假模型＋真 OpsUI／agent／工具，token 是假数）
 #    这五套＋两份演练都是**离线**的：不起 7860、不打模型，各自的临时库在脚本里建
 #    在线那一路的留痕不在这里复跑，看 验收脚本/v1.8/run/v18_live_cdp_*.out 与 v18_probe_*.stdout
+
+# 13) 复跑 v1.9 两套离线断言（cwd=ai学习，94 条应当全绿）
+smolagents/.venv/bin/python 验收脚本/v1.9/v19_test_delete.py       # 43 条：连带清空／外键与 ensure／两下确认与武装作废
+smolagents/.venv/bin/python 验收脚本/v1.9/v19_test_menu_delete.py  # 51 条：payload 校验与武装／真删／撞号重复投递
+#    ⚠️ 上面第二份 **import my_ui 且没设 AGENT_AUDIT_PATH** —— 直接复跑会往真问责日志里写测试行
+#       （11-04 就这么漏过两批各 62 行，已挪进 验收脚本/v2.0/run/v20_audit_first-run.jsonl 与
+#        v20_audit_leak-20261104-2316-regression-sweep.jsonl 留证）。复跑前先隔离：
+export AGENT_AUDIT_PATH="$(mktemp -t v19-audit).jsonl"
+#    在线那一路要另起实例与端口，别碰 7860：
+smolagents/.venv/bin/python 验收脚本/v1.9/v19_live_menu_delete.py  # 独立实例 127.0.0.1:7874 ＋ 临时库，真界面 28/28（CDP 9344）
+
+# 14) 复跑 v2.0 五套离线断言（cwd=ai学习，165 条应当全绿；各自建临时库，不起 7860、不打模型）
+smolagents/.venv/bin/python 验收脚本/v2.0/v20_test_a1_mcp.py        # 42 条：A1 挂两只／摘干净（收尾子进程 0 个）
+smolagents/.venv/bin/python 验收脚本/v2.0/v20_test_a2_gate.py       # 25 条：A2 三道拒收＋审批门＋命令行那条路工具表仍是 7 只
+smolagents/.venv/bin/python 验收脚本/v2.0/v20_test_b1_timeout.py    # 20 条：B1 超时/重试三件套（不 import my_ui，故不写审计）
+smolagents/.venv/bin/python 验收脚本/v2.0/v20_test_d3_audit.py      # 31 条：面试题 D3 问责日志（含 R26「审计不跟着会话删」）
+smolagents/.venv/bin/python 验收脚本/v2.0/v20_test_model_refusal.py # 47 条：第 11 档 model_refused 的八条指纹与措辞
+#    这五份里除 b1_timeout 外都自己 setdefault 了 AGENT_AUDIT_PATH，测试流量不进真账。
+
+# 15) v2.0 尺子（**要花钱的那一类，先算预估再打**）
+smolagents/.venv/bin/python 验收脚本/v2.0/v20_eval.py --dry                    # 零模型调用：只列 20 题与判定口径
+smolagents/.venv/bin/python 验收脚本/v2.0/v20_eval.py --ids Q1,Q2 --tag smoke   # 只跑点名的题
+smolagents/.venv/bin/python 验收脚本/v2.0/v20_eval.py --repeat 3 --against 验收脚本/v2.0/run/v20_eval_baseline.json
+#    全量口径：20 题、7 道打 repeat → **34 跑**（7×3＋13×1）。存档那份基线是 **30 跑**
+#    （2026-11-06 18:39:13、模型 tongyi-xiaomi-analysis-flash、gate=off），**两份不能直接相减当差值**。
+smolagents/.venv/bin/python 验收脚本/v2.0/v20_probe_ruler.py --preflight        # 只打 1-token 自检，不发工具那发
+#    账户欠费 ¥0.05 时 AUTH 正则会**当场中止**（v20_eval.py:333/:348），不会产出 20 行 exception 被误读成「模型能力差」。
+
+# 16) 文档闸（六份文档共用一把尺子＝.rollback/v2.0-现场-20261113/ 那五份只读快照）
+#     判据层开跑先逐份校 sha1，对不上直接 exit 2 不扫（P2-21 的守卫落在闸这一层）。
+smolagents/.venv/bin/python 验收脚本/v2.0/v20_gate_scan.py     # 行号点扫：1,035 个号，越界 0／指向空行 0
+smolagents/.venv/bin/python 验收脚本/v2.0/v20_gate_scan3.py    # 区间终点扫：353 个区间，终点越界 0
+smolagents/.venv/bin/python 验收脚本/v2.0/v20_gate_static.py   # 手册看板：53 行／双分布／闭合／死锚点／重复 id／pill 逐行／工单号唯一／十个筛选器
+python3 验收脚本/v2.0/v20_mmd.py                               # Mermaid 闸：README 26 块 == 26 个 svg、语法错误 0
+python3 验收脚本/v2.0/v20_mmd.py --neg                         # 负控：合成 2 块里坏的那块必须被抓（exit 0＝闸是活的）
+#     浏览器宽度闸要一台自己的 headless Chrome（端口 9344、独立 profile）。
+#     **别碰 9457**：本轮实测那上面是另一个会话的三台 Chrome（Scofen Modeler Studio @ localhost:5199）。
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --disable-gpu --no-sandbox \
+  --remote-debugging-port=9344 --user-data-dir=验收脚本/v2.0/run/chrome-gate20 about:blank &
+node 验收脚本/v2.0/v20_manual_check.js 1440 1440   # 三档都要跑：1440／1180／1165
+node 验收脚本/v2.0/v20_manual_check.js 1180 1180   # 判 overflowX、十个筛选器的 #cnt 与可见行数、死锚点、title 版本号
+node 验收脚本/v2.0/v20_manual_check.js 1165 1165
+smolagents/.venv/bin/python 验收脚本/v2.0/v20_gate_neg.py       # 三闸负控：锚点 4 类坏＋浏览器 3 处＋静态 7 处，漏抓必须 0
+#     跑完把自己那台关掉（只关自己的 PID，别 pkill Chrome）：kill "$(cat 验收脚本/v2.0/run/chrome-gate20.pid)"
+#     **覆盖缺口，说死**：手册 §4 看板那 53 行的锚点是混年代的（停在立单当时那一版），本轮**不扫**；
+#     §6 各版记录同理。扫的是手册 §1～§2、README 现状节、迭代记录 v2.0/v1.9 两节＋三份链路/原理文档全文。
+#     闸的读数只写进 run/*.out，不回写被扫的正文，所以行号总数不会自己涨（判据层的跳过名单刻意是空的）。
+
+# 17) 两条只读自检（不改任何东西）
+smolagents/.venv/bin/python -c "import sys; sys.path.insert(0,'smolagents'); import my_audit; print(my_audit.stats())"
+#    生产那份 .agent-audit.jsonl 目前 **不存在**（界面还没在 v2.0 代码上真跑过一题）——这是缺口，不是「审计没装」。
+sqlite3 smolagents/.agent-history.sqlite3 "SELECT (SELECT count(*) FROM sessions), (SELECT count(*) FROM messages), (SELECT count(*) FROM memory);"
 ```
 
 ### 9.4 待补清单（我确实没验的，别当结论用）
@@ -1522,8 +2045,19 @@ smolagents/.venv/bin/python 验收脚本/v1.8/v18_dup_replay.py      # 零成本
 20. 【待补】**8 步用满时第 8 步的卡在屏上出现两遍**：`agents.py:606-608` 在 `_handle_max_steps_reached` 之后又 yield 了一次同一个 `action_step`。零成本回放里当场拍到（`run/v18_p1a_replay.out` 末尾「顺带发现」那两行：对照格 dup-off 那一跑第 8 步的卡实得两次「`🛠 第 8 步 · list_dir · 🟢 成功 · 0.0s · in 3,957/out 42`」）。本刀不受影响（dup-on 走不到那一句），**要不要单开一张卡【未定】**；同一份留痕里另一格是「那次补打的模型只认正文」（`agents.py:627-637` 取 `final_answer.content`，`tool_calls` 不执行）。
 21. 【待补】**v1.8 四刀都没跑交付形态 7860**（`~/Desktop/我的Agent.app` 双击那份）。在线证据全部来自探针 app 端口 **7872** ＋ 真 qwen-plus ＋ headless Chrome，每场景独立库（`run/v18_live_*.sqlite3` 十一份）。上一轮（v1.7）是走过交付形态的（真 `关闭Agent.command` 收工再开，拿回 `23.4s / 20.7s`），所以这轮的口径是**「探针上过、交付形态未过」**，不是「修好了但没人复核」。另外**整版回滚演练退回 v1.7 那份代码上没重跑 v1.7 自己的 115 条离线套件**【未复跑】——真要长期退回就在退回态上补跑一遍再宣布。
 
-### 9.5 这套语料的三条下一步（只列，不动代码）
+22. 【待补·v1.9】**「⋯」菜单在流式期间新长出来的行会不会漏挂**【未验证】：菜单靠 `demo.load(js=SIDEBAR_JS)`（`my_ui.py:2295`／`:464`）注入，刷新后重新注入这一条有断言，"正在流式时新长出的那一行"没有。另一条是**删除不可恢复**：没有回收站、没有二次备份（回执里已明说），所以这一格不是"待验"而是"已知代价"。详见 6.3.11。
+23. 【待补·v2.0】**真模型那一路两个不同的阻塞，别混成一个**：**11-04 20:45:57** 是账户状态门 **400**（`run/v20_eval_auth-blocked.json`，`model=qwen-plus`、`aborted_by_auth_error=true`）；**11-06 17:34** 是现网 `.env` 那把 key **401 invalid**（同一天 18:39 换 `tongyi-xiaomi-analysis-flash` 才打出 30 跑基线）。**key 要不要换是你的决定**，我没动 `.env`。详见 6.3.12 第 1 条。
+24. 【待补·v2.0】**问责日志在生产里 0 行**：`smolagents/.agent-audit.jsonl` **文件不存在**（11-13 当场 `ls`）。机制有 31 条离线断言，但"屏幕上真发生过一题、审计里真落下几行"这件事**没有读数**——因为 v2.0 代码上还没起过界面（`ps` 里 `my_ui.py` 计数 0）。另外测试流量漏进真账**两批各 62 行**已挪走留证，`v19_test_menu_delete.py` 至今没设 `AGENT_AUDIT_PATH`（复跑前按 9.3 第 13) 条先隔离）。
+25. 【待补·v2.0】**34 跑全量基线没打出来**：`repeat` 名单已从 5 道扩到 7 道（加 Q15／Q16），全量跑次 30 → **34**。存档基线是 30 跑那份，**口径不同不能相减**。要花钱的实测先给数量与预估花费、你点头才打（S2）。
+26. 【待补·v2.0】**温度锁定是负结果，不是"锁上了就稳了"**：四次尝试、三种轨迹、两种判分，`temperature` 一直 0.0（`run/v20_probe_planning_det-t0.json` vs `v20_probe_planning_arms4.json`）。所以"锁温 ⇒ 可复现"这个推论**在这套语料里被证伪**，一致性只能靠 `repeat` 抽样量。详见 6.1 与 6.3.12 刀三。
+27. 【待补·v2.0】**三只新立的 P0 都没修**：P0-25 `run_python` 绕过 `guarded()`（**源码事实，逐行读过；未实跑复现**——不想真把 key 打印出来）、P0-26 审计参数明文（`args_head` 200 字符）、P0-27 `fetch` 正文原样进上下文的注入面。三只都只立单不动代码，等你点。详见 6.1（P0-25 那段附三个候选修法）与 6.3.12 末尾。
 
-- **P0**：把 `my_coding_agent.py` 的 5 个工具改写成 1 个 MCP server（`src/` 加一个目录，照 `filesystem/server.ts` 的 `createServer()` 骨架），验证"协议复用"这件事——同一份工具，smolagents 和 Qoder 都能调。
-- **P1**：把 `my_agent.py` 换成 `CodeAgent`，对比同一个五步任务在"JSON 工具调用"与"写代码"两种动作空间下的步数与 token。
-- **P2**：读 `dify/api/core/workflow/nodes/agent_v2`，看平台是怎么把"agent 节点"塞进确定性 DAG 的——这正好回答"自动循环 vs 可控流程"这个你反复问的取舍。
+### 9.5 这套语料的下一步（只列，不动代码）
+
+**先修边界，再谈复用。** v2.0 把能力扩了一圈（外部工具、出网、问责日志），边界跟着欠了三只 P0；在它们没修之前谈"同一份工具谁都能调"是把一个可读出 `.env` 的洞复用给更多宿主。
+
+- **P0-a（安全，三只，都只立单没动代码）**：**P0-25** `run_python` 不过 `guarded()`，AST 黑名单（`my_coding_agent.py:272`）拦的是**名字**不是**能力**——`open().read()` 不在名单里，而 `env` 只清了 `PATH`/`HOME`，`.env` 仍在 cwd 可达范围内（推荐修法 (b) 把执行 cwd 关进临时目录 ＋ (a) 补 `open`/`io`/`pathlib` 一类）；**P0-26** 审计 `args_head` 是**明文**前 200 字符，`write_file` 的 content 头一段会落进只追加文件；**P0-27** `fetch` 抓回的正文**原样进上下文**，注入面从"用户输入"扩到"任意网页"。
+- **P0-b（协议复用，已接上一半）**：v2.0 已经用 `my_mcp.attach()` 把**外部**两只 server 跨进程接进来了，但**自写那五只手仍是进程内函数**。剩下的一半是把它们改写成 1 个 MCP server（`servers/src/` 加一个目录，照 `filesystem/server.ts` 的 `createServer()` 骨架），那时"同一份工具，smolagents 和 Qoder 都能调"才成立。**顺序上排在 P0-a 后面**：先补边界，再扩宿主。
+- **P1**：把 `my_agent.py` 换成 `CodeAgent`，对比同一个五步任务在"JSON 工具调用"与"写代码"两种动作空间下的步数与 token。**注意这会让 P0-25 那一格变严重**：`CodeAgent` 的动作空间本身就是执行代码，`local_python_executor.py:855-918`／`1309-1343` 那三闸（未注册函数／builtins／import 白名单）得先逐条读明白再换。
+- **P2**：读 `dify/api/core/workflow/nodes/agent_v2`，看平台是怎么把"agent 节点"塞进确定性 DAG 的——这正好回答"自动循环 vs 可控流程"这个你反复问的取舍。**前置**：dify 还没部署（9.3 第 7) 条那三件）。
+- **P2-21（尺子治理，另一半没做）**：演练脚本的写路径仍指着 `.rollback`，守卫只补了"快照与现场不同就不覆盖"那一半（`v18_drill_v18.py:222-229`）。要做的是**写路径改指 `run/`** ＋ 所有交付档 `chmod a-w` ＋ 文档闸开扫前先校 sha1 清单——v1.8 那把 1,758 行的尺子已经不可恢复，这一格是防止下一把也丢。

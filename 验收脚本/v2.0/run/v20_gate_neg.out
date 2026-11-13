@@ -1,0 +1,55 @@
+---- A. 锚点负控（合成文档 /Users/gaoying/Desktop/study/ai学习/验收脚本/v2.0/run/v20_neg_doc.md）----
+  ok   注入 文档行3 (3, 2400) → 越界 抓到 [(3, 2400)]
+  ok   注入 文档行4 (4, 950) → 空行 抓到 [(4, 950)]
+  ok   注入 文档行5 (5, 'my_coding_agent.py:111-151') → 越过函数末尾 抓到 [(5, 'my_coding_agent.py:111-151'), (6, 'my_audit.py:52-112')]
+  ok   注入 文档行6 (6, 'my_audit.py:52-112') → 区间并多函数 抓到 [(5, 'my_coding_agent.py:111-151'), (6, 'my_audit.py:52-112')]
+  正例（文档行7、行8）误报 = 无
+---- B. 浏览器闸负控（坏副本 /Users/gaoying/Desktop/study/ai学习/验收脚本/v2.0/run/v20_neg_manual.html；注入：title 回退 v1.9 ＋ D1 那行 done→todo ＋ 死锚点 s1）----
+  ok   判红里有「title 带本轮版本号」（title 回退成 v1.9 没被抓）
+  ok   判红里有「data-st 分布」（done→todo 那行没被分布抓到）
+  ok   判红里有「cnt=」（done→todo 那行没被逐个筛选器的 #cnt 抓到）
+  ok   判红里有「死锚点」（改掉 id 造的死锚点没被抓）
+  闸门退出码 = 1（负控要求非 0）
+  判红 5 条原文：FAIL title 带本轮版本号 = false（期望 true） ｜ FAIL data-st 分布 = {"todo":21,"doing":0,"done":30,"na":2}（期望 {"todo":20,"doing":0,"done":31,"na":2}） ｜ FAIL todo  | cnt=「显示 21 / 53 条」 | 可见行=21 | 期望 20 ｜ FAIL done  | cnt=「显示 30 / 53 条」 | 可见行=30 | 期望 31 ｜ FAIL 死锚点 = ["s1"]（期望 []）
+---- C. 静态闸负控（坏副本 /Users/gaoying/Desktop/study/ai学习/验收脚本/v2.0/run/v20_neg_static.html；注入 7 处：外部资源／重复 id／pill 与 data-st 不符／缺筛选器 na／删一行看板／工单号重号／死锚点）----
+  ok   判红里有「外部资源」（注入：外部资源）
+  ok   判红里有「重复 id」（注入：重复 id）
+  ok   判红里有「pill 与 data-st 不符」（注入：pill 与 data-st 不符）
+  ok   判红里有「筛选器缺」（注入：缺筛选器 na）
+  ok   判红里有「看板行数」（注入：删一行看板）
+  ok   判红里有「工单号重号」（注入：工单号重号）
+  ok   判红里有「死锚点」（注入：死锚点）
+  闸门退出码 = 1（负控要求非 0）
+  判红 9 条原文：FAIL 外部资源 1 条（这份手册要离线能打开） ｜ FAIL 死锚点 1 个 ｜ FAIL 重复 id 1 个：['cnt'] ｜ FAIL 看板行数 52 ≠ 53 ｜ FAIL data-st 分布不符：{'todo': 19, 'doing': 0, 'done': 31, 'na': 2} ≠ {'todo': 20, 'doing': 0, 'done': 31, 'na': 2} ｜ FAIL data-p 分布不符：{'D': 9, 'P0': 10, 'P1': 15, 'P2': 8, 'V': 10} ≠ {'D': 9, 'P0': 10, 'P1': 15, 'P2': 9, 'V': 10} ｜ FAIL pill 与 data-st 不符 1 条：['data-st=done 但 pill=todo'] ｜ FAIL 工单号重号 1 个：['D1'] ｜ FAIL 筛选器缺 ['na']
+---- 负控结论：锚点漏抓 0 ／ 浏览器闸漏抓 0 ／ 静态闸漏抓 0（留痕 run/v20_gate_neg.out）----
+v2.0/run/v20-manual-neg.png 274201 B
+---- 浏览器闸判红 5 条 ----
+  title 带本轮版本号 期望 true 实得 false
+  data-st 分布 期望 {"todo":20,"doing":0,"done":31,"na":2} 实得 {"todo":21,"doing":0,"done":30,"na":2}
+  筛选器 todo 可见行 21（期望 20）／#cnt「显示 21 / 53 条」（期望「显示 20 / 53 条」）
+  筛选器 done 可见行 30（期望 31）／#cnt「显示 30 / 53 条」（期望「显示 31 / 53 条」）
+  死锚点 期望 [] 实得 ["s1"]
+
+---- 静态闸输出全文 ----
+未闭合: []
+配对错误: 0
+外部资源: 1 ['https://example.com/neg.js']
+死锚点: ['s1']
+id: 9 个，重复 ['cnt']
+看板行数: 52（期望 53）
+data-st 分布: {'todo': 19, 'doing': 0, 'done': 31, 'na': 2}（期望 {'todo': 20, 'doing': 0, 'done': 31, 'na': 2}）
+data-p  分布: {'D': 9, 'P0': 10, 'P1': 15, 'P2': 8, 'V': 10}（期望 {'D': 9, 'P0': 10, 'P1': 15, 'P2': 9, 'V': 10}）
+分布合计: st 52 / p 52（都应等于看板行数 52）
+逐行解析: 52 行；pill 与 data-st 不符 1 条；工单号 52 个，重号 ['D1']，无号行 []
+筛选器: 实得 ['all', 'bug', 'p0', 'p1', 'p2', 'v', 'todo', 'doing', 'done']；缺 ['na']；id=cnt True
+---- 静态闸结论 ----
+FAIL 外部资源 1 条（这份手册要离线能打开）
+FAIL 死锚点 1 个
+FAIL 重复 id 1 个：['cnt']
+FAIL 看板行数 52 ≠ 53
+FAIL data-st 分布不符：{'todo': 19, 'doing': 0, 'done': 31, 'na': 2} ≠ {'todo': 20, 'doing': 0, 'done': 31, 'na': 2}
+FAIL data-p 分布不符：{'D': 9, 'P0': 10, 'P1': 15, 'P2': 8, 'V': 10} ≠ {'D': 9, 'P0': 10, 'P1': 15, 'P2': 9, 'V': 10}
+FAIL pill 与 data-st 不符 1 条：['data-st=done 但 pill=todo']
+FAIL 工单号重号 1 个：['D1']
+FAIL 筛选器缺 ['na']
+红 9 条
