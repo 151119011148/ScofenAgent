@@ -1,7 +1,7 @@
 # 本项目代码 · 实现原理 · 一次问话全流程 · 6.2 面试剖析对照
 
 > 目录：`~/Desktop/study/ai学习/`。写于 2026-11-04。
-> 事实源**只有磁盘代码**：所有结论格式 `文件:行号`，行号是当天用 `grep -n` 逐条校准过的当前行号，不采信任何二手叙述。三个主角是 `smolagents/my_ui.py`（**1,758 行**）、`smolagents/my_coding_agent.py`（256 行）、`smolagents/my_agent.py`（111 行），内核是 `smolagents/src/smolagents/`（`agents.py` 1,813 / `models.py` 2,102 / `tools.py` 1,422 / `local_python_executor.py` 1,768）。
+> 事实源**只有磁盘代码**：所有结论格式 `文件:行号`，行号是当天用 `grep -n` 逐条校准过的当前行号，不采信任何二手叙述。三个主角是 `scofenAgent/my_ui.py`（**1,758 行**）、`scofenAgent/my_coding_agent.py`（256 行）、`scofenAgent/my_agent.py`（111 行），内核是 `smolagents/src/smolagents/`（`agents.py` 1,813 / `models.py` 2,102 / `tools.py` 1,422 / `local_python_executor.py` 1,768）。
 > 对照的第 3 章原文是 `~/Desktop/study/人生/职业规划/ai学习/6.2-LLM技术栈-面试剖析.md`（325 行）。
 > **一条勘误先说在前面**：`README.md:5` 自称「行号一律按当前版本对齐（v1.7，1,253 行）」，磁盘现状是 1,758 行，README 里所有 `my_ui.py:` 锚点（`:1135` OpsUI、`:382` History、`:546` 审批门、`:1198-1201` launch、`:1245`）**全部过期**，正确落点分别是 `my_ui.py:600`、`:482`、`:695`、`:1749-1755`。本文不用 README 的行号。
 

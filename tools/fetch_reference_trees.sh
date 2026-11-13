@@ -1,15 +1,21 @@
 #!/bin/sh
-# 三份「语料」不进仓库，但仓库里的文档有 42 处按路径引它们 —— 这个脚本按当场核过的版本取回来。
+# 三份「语料」的**来源**在这个脚本里：pin 坐标、怎么取、怎么核。
+# 2026-11-13 口径变了一次：他要求三份也进仓库，所以 dify/ langchain4j/ servers/ 现在是
+# **仓库里的源码副本**（tools/sync_from_workspace.py 从工作区复制，依赖产物不进）。
+# 这个脚本因此从「取回」变成「复现／对账」：换一台机器没有工作区时，用它按同一枚 pin
+# 重新取一份，和仓库里那份 diff —— 版本坐标是当场核过的，不是照着版本号猜的。
 #
-# 为什么不提交它们（2026-11-07 实测）：
-#   · 体积：dify 166M ＋ langchain4j 56M ＋ servers 315M = 537M，是本仓库（3.6M）的 149 倍；
-#   · 归属：三份都是别人的源码树，不是 ScofenAgent 的产物。dify/langchain4j 连 .git 都没有
-#     （是 tarball/拷贝下来的阅读副本，`git -C dify` 直接 fatal: not a git repository）；
-#     servers 是 modelcontextprotocol/servers 的 clone，HEAD ef9808f71090d0db3eda99e2af2ba78f1086f4fb，
-#     本地只有 1 处漂移（`src/time/uv.lock`，跑 uv 时自己重写的，不是人改的）；
+# 当时量过的事实（保留，因为它们决定了仓库里那份的可信度）：
+#   · 体积：dify 166M ＋ langchain4j 56M ＋ servers 315M = 537M；其中 **226M 是装出来的**
+#     （node_modules 17 个、dist 154 个、__pycache__ 156 个、.venv 2 个、target 3 个），
+#     纯源码是 dify 134M／langchain4j 42M／servers 4M（11-13 逐文件走一遍加总的字节数）。
+#   · 归属：三份都是别人的源码树。dify/langchain4j 连 .git 都没有（是 tarball/拷贝下来的阅读副本，
+#     `git -C dify` 直接 fatal: not a git repository）；servers 是 modelcontextprotocol/servers 的
+#     clone，HEAD ef9808f71090d0db3eda99e2af2ba78f1086f4fb，本地只有 1 处漂移
+#     （`src/time/uv.lock`，跑 uv 时自己重写的，不是人改的）。三份各带 LICENSE（Apache-2.0／
+#     Apache-2.0／MIT），随源码一起进仓库。
 #   · 引用计数：README.md／迭代记录.md／面试剖析对照.md／agent功能手册.html 里
-#     `dify/` 11 处、`langchain4j/` 11 处、`servers/` 20 处 —— 所以「不提交」不等于「不用能跳」，
-#     取回这一步得是可复现的，不能靠我这台机器上恰好有。
+#     `dify/` 11 处、`langchain4j/` 11 处、`servers/` 20 处。
 #
 # 为什么走 codeload tarball 而不是 git clone（同一分钟内的对照实测）：
 #   · `git fetch` 走 github.com 这次直接 `fatal: unable to access ... SSL connection timeout`；
@@ -23,11 +29,9 @@
 #
 # 用法：
 #   cd ~/Desktop/study/ScofenAgent
-#   ./tools/fetch_reference_trees.sh all          # 三份都取（链路会抖，分开取更稳）
-#   ./tools/fetch_reference_trees.sh servers      # 只取一份
+#   ./tools/fetch_reference_trees.sh servers      # 只取一份（取到 dify/ langchain4j/ servers/）
 #   ./tools/fetch_reference_trees.sh --print all  # 只打印将要执行的命令，不下任何东西
-# 取回来落在仓库根的 dify/ langchain4j/ servers/ 三个目录名上，正好对上文档里的路径；
-# .gitignore 已经把这三个名字整目录忽略，`git status` 不会因为它们变脏。
+# 已存在的目录会跳过不覆盖（要对账就先把它挪开，别直接删仓库里那份）。
 #
 # 注意：这是**源码**树，不含 node_modules/dist/.venv。文档是按源码行号引的，够用；
 # 真要跑这三份里的东西（比如起一个 MCP server），依赖得自己装 —— 那不属于「取回语料」这一步。

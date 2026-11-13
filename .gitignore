@@ -1,47 +1,57 @@
 # 这个仓库是 public，下面每一行都是一道「别把手上的东西顺手带进来」的闸。
 # 真正拦人的是 tools/prepush_check.py（它会读工作区 .env 的真值做字节比对），
 # 这份 .gitignore 的作用是让手滑的 `git add -A` 连暂存都进不去。
+#
+# 2026-11-13 他改了口径：三份第三方树的**源码**（dify／langchain4j／servers）和
+# `验收脚本/**/run/` 里的**证据**也进仓库，所以旧版里 `run/`、`*.out`、`*.log`、`*.png`、
+# `*.sqlite3`、`/dify/ /langchain4j/ /servers/` 那几条拿掉了。
+# 拿掉的只有「产物」那一类；「凭证」和「浏览器登录态」一条没放。
+# 顺带确认过这些规则不会误伤源码：全深度 0 个 `.pem/.key/.p12/.pfx`、0 个名叫
+# `target`/`History`/`Cookies`/`Login Data` 的源文件（11-13 实测）。
 
-# 凭证与运行时状态
+# 凭证：真 `.env` 只在工作区那一格；上游的 `.env.example` 模板照收
 .env
-.env.*
-*.sqlite3
-*.db
+.env.local
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+
+# 浏览器登录态：演练用的 Chrome 用户目录整目录，外加那几个**没有后缀**的裸文件名（防拷贝逃逸）
+chrome-*/
+Login Data
+Login Data For Account
+Cookies
+History
+Web Data
+Account Web Data
+
+# 依赖与构建产物：装出来的东西不进，源码进（这三份树里 226M 属于这一类）
+.venv/
+venv/
+__pycache__/
+*.egg-info/
+node_modules/
+site-packages/
+target/
+dist-info/
+
+# 运行时状态与编辑器
 .agent-staging/
 .agent-history.sqlite3
 .agent-audit.jsonl
 .agent-ui.log
 .agent-ui.pid
 .rollback/
-
-# 依赖与上游源码：装 smolagents 用 uv/pip，不是把它 1.2M 的 src/ 和 290M 的 .venv 提交进来
-.venv/
-venv/
-__pycache__/
-*.egg-info/
-smolagents/src/
-smolagents/tests/
-smolagents/docs/
-node_modules/
-
-# 证据产物：run/ 目录、跑出来的 out/log、截图、浏览器演练用户目录
-run/
-*.out
-*.log
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.wasm
-*.pma
-mermaid.min.js
-
-# 第三方克隆（体积 537M，且不是本仓库的产物）
-/dify/
-/langchain4j/
-/servers/
-
-# 编辑器与系统
 .idea/
 .DS_Store
-*.app
+
+# 文档闸用的 3.4M 第三方渲染库，闸跑的时候现取
+mermaid.min.js
+
+# scofenAgent/ 那一格：仓库里只放五只 my_*.py 原件，上游 src/tests/docs 不 fork 进来
+scofenAgent/src/
+scofenAgent/tests/
+scofenAgent/docs/
