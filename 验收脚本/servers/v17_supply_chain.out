@@ -1,0 +1,13 @@
+真包 363 个
+钩子分布 {'prepare': 30}
+会随安装执行的（pre/install/postinstall）0 条
+gypfile 0 个
+prepare 30 个，前 8：
+   ('globals', 'prepare', 'npm run build')
+   ('eventsource', 'prepare', 'npm run build')
+   ('ts-api-utils', 'prepare', 'husky')
+   ('istanbul-reports', 'prepare', 'webpack --config lib/html-spa/webpack.config.js --mode produ')
+   ('lru-cache', 'prepare', 'tshy && bash scripts/build.sh')
+   ('ip-address', 'prepare', 'git config core.hooksPath hooks || true')
+   ('balanced-match', 'prepare', 'tshy')
+   ('acorn', 'prepare', 'cd ..; npm run build:main')

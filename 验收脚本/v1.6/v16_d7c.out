@@ -1,0 +1,8 @@
+{
+ "1-new#click": "clicked@186,134",
+ "2-ask#type": "clicked-submit",
+ "3-stop#click": "clicked@599,43",
+ "3-sample": "{\"awaitSeen\":0,\"runSeen\":0,\"endedAfterMs\":2012,\"st\":\"模型 qwen-plus 步数 1/8 本题 token in 2,349 / out 22 本题耗时 1.1s 进程 token in 2,349 / out 22 状态 已停止\"}",
+ "4-read": "{\"chk\":[true,false,false,false,false,false,false],\"labs\":[\"用 run_python 打印 4*5 的结果，最后只回\",\"用 run_python 打印 4*5 的结果，最后只回\",\"用 run_python 打印 4*5 的结果，最后只回\",\"用 run_python 打印 4*5 的结果，最后只回\",\"用 run_python 打印 3*7 的结果，最后只回\",\"请把数字 73 记住，然后调用 final_answer\",\"我刚才让你记住的数字是多少？如果你没有这段历史，只回「不\"],\"userN\":1,\"botN\":3,\"last\":\"⏹ 已停止：AgentError\",\"cardTitles\":[],\"heads\":[\"\",\"\",\"\"],\"state\":\"已停止\",\"pillRun\":\"本题耗时 1.1s\",\"pillWait\":null,\"pillPending\":null}",
+ "4-bots": "[\"🛠 第 1 步 · run_python · ⚪ 已取消 · 1.1s · in 2,349/out 22\",\"⏹ 待批 · run_python · 随停止取消\",\"⏹ 已停止：AgentError\"]"
+}

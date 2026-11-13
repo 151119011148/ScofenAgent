@@ -1,0 +1,37 @@
+[audit] 这一行没写进去（read_file）：[Errno 2] No such file or directory: '/var/folders/j2/r0bmf8nx1c939yt40kkrwhxw0000gn/T/v20-d3-g31krhts/没有这个目录/audit.jsonl'
+起点：工具 11 只 · 过门的 ['convert_time', 'fetch', 'get_current_time', 'run_python', 'write_file'] · 审计 0 行 → /var/folders/j2/r0bmf8nx1c939yt40kkrwhxw0000gn/T/v20-d3-g31krhts/audit.jsonl
+
+R01 本地只读工具也落一行（它可不过审批门）                        PASS {"tool": "read_file", "src": "local", "status": "ran", "decision": null}
+R02 不过门的工具 decision 是 null，不是空串                PASS None
+R03 来源这一格分得清本地／外部：本地是 local                    PASS local
+R04 参数只进摘要：sha1 16 位＋head，正文不进审计               PASS 352d6a94192008b0
+R05 一次调用恰好一行                                   PASS 1 行
+R06 审计行带着会话 id 与本轮号（worker 线程读的是类级那一格）         PASS {"sid": "77", "run": 1}
+R07 step 取的是框架那个实时属性（agent.step_number，agents.py:543） PASS set 5 → row 5
+R08 外部工具那一行写着 mcp:<server> 和风险档                PASS {"src": "mcp:time", "risk": "\u8bfb\uff0c\u65e0\u526f\u4f5c\u7528"}
+R09 批过的行带着 decision=allowed 与等待秒数              PASS allowed / 0.0
+R10 真时间确实回来了                                   PASS {   "timezone": "Asia/Shanghai",   "date
+R11 拒了的行照样在，decision=denied                    PASS {"tool": "fetch", "src": "mcp:fetch", "status": "ran", "decision": "denied"}
+R12 拒绝那一路没有真的出网（回来的就是那句「没有副作用」）                PASS 用户拒绝执行，未产生任何副作用。请改用只读工具，或直接把结论交出来。
+R13 同名同参第二次：有行、status=dup-blocked、没执行所以 decision 还是 null PASS {"status": "dup-blocked", "n": 2, "blocked": 1, "decision": null}
+R13b 第三次重复还在警告（blocked=2 没超过上限 2）              PASS {"status": "dup-blocked", "n": 3, "blocked": 2}
+R14 第四次＝第三次重复超上限：status=dup-fused，带上挡了几次和上限    PASS {"status": "dup-fused", "n": 4, "blocked": 3, "limit": 2}
+R15 越界那一路：异常记成 raised＋异常类名，然后原样抛出去             PASS {"status": "raised", "exc": "PermissionError"}
+R16 记完审计还照旧抛（改的是记账不是行为）                        PASS PermissionError
+R17 每一行都是合法 JSON（没有整行截断）                       PASS 9 行
+R18 每行的必备键都在（缺哪格读的人一眼看得出）                      PASS []
+R19 每行都带 iso 本地时间与 dur_s（审计能排时间线）              PASS 2026-11-04T23:21:01+08:00
+R20 只追加：已有那些行一个字节没被改过                          PASS 
+R21 又追加了一行                                     PASS 9 → 10
+R22 审计写失败时工具照旧返回结果（审计不拦路）                      PASS 文件 smolagents/my_agent.py     1| imp
+R23 失败不静默：计数在涨、第一手的错留得下来                       PASS 1 次 · FileNotFoundError: [Errno 2] No such file or dir
+R24 删会话真的删掉了库里的三张表                             PASS {'session': 1, 'messages': 1, 'memory': 1}
+R25 删会话之后审计文件一个字节没变（审计不跟着会话走）                  PASS 3225B · 会话前 10 行 / 现在 10 行
+R26 History 里没有任何一处提审计（不是「恰好没删到」，是压根不认识）       PASS 
+R27 产品里审计和会话库同目录、不同文件（备份/回滚时才分得清）              PASS .agent-audit.jsonl vs .agent-history.sqlite3
+R28 他那份真的 .agent-audit.jsonl 没被这条脚本碰过          PASS /Users/gaoying/Desktop/study/ai学习/smolagents/.agent-audit.jsonl 不存在；本脚本写在 /var/folders/j2/r0bmf8nx1c939yt40kkrwhxw0000gn/T/v20-d3-g31krhts/audit.jsonl
+R29 AGENT_AUDIT_PATH 指到哪儿就写到哪儿（回归跑的测试流量不进问责日志） PASS f8nx1c939yt40kkrwhxw0000gn/T/v20-d3-g31krhts/env-audit.jsonl | 
+R30 不设变量时，落点就是产品目录里那份 .agent-audit.jsonl       PASS /Users/gaoying/Desktop/study/ai学习/smolagents/.agent-audit.jsonl
+
+全绿  31 条断言，失败 0
+审计文件 /var/folders/j2/r0bmf8nx1c939yt40kkrwhxw0000gn/T/v20-d3-g31krhts/audit.jsonl · 10 行 · 写失败 1 次

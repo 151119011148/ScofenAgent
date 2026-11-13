@@ -1,0 +1,57 @@
+t=  0.000  boot.epoch             t0=1793713982.5682292 pid=94797 timeout=600.0 gradio=6.30.0
+[v18_ui] port=7872 db=/Users/gaoying/Desktop/study/ai学习/验收脚本/v1.8/run/v18_live_B0.sqlite3 log=/Users/gaoying/Desktop/study/ai学习/验收脚本/v1.8/run/v18_probe_B0.server.log
+* Running on local URL:  http://127.0.0.1:7872
+* To create a public link, set `share=True` in `launch()`.
+t=  1.382  on_load                sid=None steps=0 kinds=- screen_stepno=None screen_in=None screen_out=None screen_wait=0.0 mem_held=[] db_memory=- wall=1.379
+t=  9.659  respond.enter          sid=None
+t=  9.659  poller.start           timeout=600.0
+t=  9.670  stream.enter           sid=1
+t=  9.670  settle_all.enter       decision=cancelled ids=-
+t=  9.670  settle_all.exit        decision=cancelled
+╭──────────────────────────── New run - smolagents ────────────────────────────╮
+│                                                                              │
+│ 用 run_python 打印 3*7 的结果，最后只回那个数字，不要重复调用工具            │
+│                                                                              │
+╰─ OpenAIModel - qwen-plus ────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+t= 10.663  poll.pending           n=0 state=- unanswered=0
+{"tool": "run_python", "arguments": "{"code": "print(3 * 7)"}"}                 ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'run_python' with arguments: {'code': 'print(3 * 7)'}          │
+╰──────────────────────────────────────────────────────────────────────────────╯
+t= 10.750  ap.wait.enter          id=7a3562 tool=run_python timeout=600.0
+t= 11.668  poll.pending           n=1 state=7a3562:pending unanswered=1
+t= 12.673  poll.pending           n=1 state=7a3562:pending unanswered=1
+t= 13.677  poll.pending           n=1 state=7a3562:pending unanswered=1
+t= 14.682  poll.pending           n=1 state=7a3562:pending unanswered=1
+t= 15.683  poll.pending           n=1 state=7a3562:pending unanswered=1
+t= 15.690  ap.decide              id=7a3562 tool=run_python want=allowed before=pending after=allowed waited=4.94
+t= 15.690  ap.wait.exit           id=7a3562 tool=run_python decision=allowed waited=4.94
+Observations: exit=0
+21
+[Step 1: Duration 6.06 seconds| Input tokens: 2,355 | Output tokens: 22]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{"tool": "final_answer", "arguments": "{"answer": "21"}"}                       ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'final_answer' with arguments: {'answer': '21'}                │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Observations: 21
+Final answer: 21
+[Step 2: Duration 0.78 seconds| Input tokens: 4,790 | Output tokens: 39]
+t= 16.533  settle_all.enter       decision=cancelled ids=-
+t= 16.534  settle_all.exit        decision=cancelled
+t= 16.534  stream.finally         frames=16
+t= 16.534  stream.normal-end      frames=16
+t= 16.535  save.enter             sid=1 msgs=5 before=sessions=sid=1 messages=0 memory=0
+t= 16.537  save.exit              sid=1 after=sessions=sid=1 messages=5 memory=0
+t= 16.538  save_memory.enter      sid=1 chars=966
+t= 16.540  save_memory.exit       sid=1 changed_rows=966 after=sessions=sid=1 messages=5 memory=1
+t= 16.548  respond.finally        frames=17 pending=0 unanswered=0
+t= 16.689  poll.pending           n=0 state=- unanswered=0
+t= 17.694  poll.pending           n=0 state=- unanswered=0
+t= 18.699  poll.pending           n=0 state=- unanswered=0
+t= 19.703  poll.pending           n=0 state=- unanswered=0
+t= 20.708  poll.pending           n=0 state=- unanswered=0
+t= 21.713  poll.pending           n=0 state=- unanswered=0
+t= 22.718  poll.pending           n=0 state=- unanswered=0
+t= 23.722  poll.pending           n=0 state=- unanswered=0
+t= 24.726  poll.pending           n=0 state=- unanswered=0
+t= 25.731  poll.pending           n=0 state=- unanswered=0

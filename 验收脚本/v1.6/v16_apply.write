@@ -1,0 +1,372 @@
+L63    my_ui.py:1038    -> my_ui.py:1135
+L63    my_ui.py:373     -> my_ui.py:382
+L63    my_ui.py:527     -> my_ui.py:546
+      旧 ‖GR["OpsUI(GradioUI)<br/>自建 Blocks · my_ui.py:1038<br/>会话库 History · my_ui.py:373<br/>审批门 · my_ui.py:527"]
+      新 ‖GR["OpsUI(GradioUI)<br/>自建 Blocks · my_ui.py:1135<br/>会话库 History · my_ui.py:382<br/>审批门 · my_ui.py:546"]
+L77    my_ui.py:1101-1104 -> my_ui.py:1198-1201
+      旧 ‖1. **服务只绑 `127.0.0.1`、`share=False`**（`smolagents/my_ui.py:1101-1104`，v1.1 前在 `:70-72`）。框架默认是 `share: bool = True`（`smolagents/src/smolagents/gradio_u
+      新 ‖1. **服务只绑 `127.0.0.1`、`share=False`**（`smolagents/my_ui.py:1198-1201`，v1.1 前在 `:70-72`）。框架默认是 `share: bool = True`（`smolagents/src/smolagents/gradio_u
+L639   my_ui.py:1100    -> my_ui.py:1197
+      旧 ‖L["OpsUI(agent).launch()<br/>my_ui.py:1100"] --> D{"share 参数默认值<br/>gradio_ui.py:422 是 True"}
+      新 ‖L["OpsUI(agent).launch()<br/>my_ui.py:1197"] --> D{"share 参数默认值<br/>gradio_ui.py:422 是 True"}
+L641   my_ui.py:1101-1104 -> my_ui.py:1198-1201
+      旧 ‖D -->|"写死 share=False 与 127.0.0.1<br/>my_ui.py:1101-1104"| LOCAL["只有本机能访问"]
+      新 ‖D -->|"写死 share=False 与 127.0.0.1<br/>my_ui.py:1198-1201"| LOCAL["只有本机能访问"]
+L642   my_ui.py:1108    -> my_ui.py:1205
+      旧 ‖LOCAL --> X["Ctrl-C 后端口释放但进程挂在非守护线程<br/>→ 显式 os._exit(0)，my_ui.py:1108"]
+      新 ‖LOCAL --> X["Ctrl-C 后端口释放但进程挂在非守护线程<br/>→ 显式 os._exit(0)，my_ui.py:1205"]
+L647   my_ui.py:868     -> my_ui.py:923
+      旧 ‖第三条是**结构性的**：不改上游一行源码。所有界面增强都写在 `OpsUI(GradioUI)` 子类里，`_stream_response` 自己维护那份内部列表、每次 `yield list(msgs)` 交副本给 gradio（`my_ui.py:868`；v1.1/v1.2 是 `list
+      新 ‖第三条是**结构性的**：不改上游一行源码。所有界面增强都写在 `OpsUI(GradioUI)` 子类里，`_stream_response` 自己维护那份内部列表、每次 `yield list(msgs)` 交副本给 gradio（`my_ui.py:923`；v1.1/v1.2 是 `list
+L657   :642-691         -> :672-727
+L657   :671-675         -> :705-710
+L657   :686-688         -> :721-724
+      旧 ‖**v1.3 起这条独立卡不再单发**：一个 step 只出一张卡，上面那串数字并进了步骤卡的标题（`_step_card`，`:642-691`；标题拼装 `:671-675`，末行 `:686-688`），三档口径一字未改。下面这张表和"为什么写在 title 里"那条实测结论仍然照旧成立。
+      新 ‖**v1.3 起这条独立卡不再单发**：一个 step 只出一张卡，上面那串数字并进了步骤卡的标题（`_step_card`，`:672-727`；标题拼装 `:705-710`，末行 `:721-724`），三档口径一字未改。下面这张表和"为什么写在 title 里"那条实测结论仍然照旧成立。
+L669   :757-765         -> :800-808
+L669   :873-882         -> :928-937
+      旧 ‖**刹车。** 停止按钮本来就在（gradio 6.30 的 `stop_btn` 默认 `True`），缺的是"点了真停"。下图是 v1.1 立的链路——`_stream_response` 那层 `finally` 在 v1.2 换壳时**一字未改**搬了过来，但触发它的人变了（v1.2 的按钮
+      新 ‖**刹车。** 停止按钮本来就在（gradio 6.30 的 `stop_btn` 默认 `True`），缺的是"点了真停"。下图是 v1.1 立的链路——`_stream_response` 那层 `finally` 在 v1.2 换壳时**一字未改**搬了过来，但触发它的人变了（v1.2 的按钮
+L675   my_ui.py:767-882 -> my_ui.py:810-937
+      旧 ‖participant O as OpsUI._stream_response<br/>my_ui.py:767-882
+      新 ‖participant O as OpsUI._stream_response<br/>my_ui.py:810-937
+L676   my_ui.py:742-765 -> my_ui.py:785-808
+      旧 ‖participant W as _worker 线程<br/>my_ui.py:742-765
+      新 ‖participant W as _worker 线程<br/>my_ui.py:785-808
+L679   :678             -> :928
+      旧 ‖G->>O: 关掉这层生成器（finally 在 :678）
+      新 ‖G->>O: 关掉这层生成器（finally 在 :928）
+L681   :685             -> :935
+      旧 ‖O->>W: _abandoned.set()（:685）→ 那个 for 循环下一轮 break
+      新 ‖O->>W: _abandoned.set()（:935）→ 那个 for 循环下一轮 break
+L682   :570             -> :805
+      旧 ‖O->>W: 生成器被弃 → 它的 finally 在起它的线程里 inner.close()（:570）
+      新 ‖O->>W: 生成器被弃 → 它的 finally 在起它的线程里 inner.close()（:805）
+L684   :571-572         -> :806-807
+      旧 ‖A-->>W: 该 RuntimeError 由 W 自己吃掉（:571-572），否则 stderr 每次 Stop 喷一条 GeneratorExit
+      新 ‖A-->>W: 该 RuntimeError 由 W 自己吃掉（:806-807），否则 stderr 每次 Stop 喷一条 GeneratorExit
+L706   my_ui.py:929-986 -> my_ui.py:1004-1066
+      旧 ‖B["MultimodalTextbox<br/>submit_btn=True · stop_btn=False"] -->|"box.submit"| R["_respond(message, sid)<br/>my_ui.py:929-986"]
+      新 ‖B["MultimodalTextbox<br/>submit_btn=True · stop_btn=False"] -->|"box.submit"| R["_respond(message, sid)<br/>my_ui.py:1004-1066"]
+L707   :712             -> :988
+      旧 ‖R --> U["_user_message<br/>:712 自建用户气泡"]
+      新 ‖R --> U["_user_message<br/>:988 自建用户气泡"]
+L708   :575             -> :810
+      旧 ‖R --> S["_stream_response<br/>:575 v1.1 的刹车语义原样保留<br/>v1.3 起它只是取队列的壳"]
+      新 ‖R --> S["_stream_response<br/>:810 v1.1 的刹车语义原样保留<br/>v1.3 起它只是取队列的壳"]
+L709   :550             -> :785
+      旧 ‖S --> W["threading.Thread → _worker :550<br/>agent.run(stream=True)"]
+      新 ‖S --> W["threading.Thread → _worker :785<br/>agent.run(stream=True)"]
+L711   :367             -> :571
+      旧 ‖W --> GT["工具实例上的审批门<br/>_gated_call :367（见 6.3.5）"]
+      新 ‖W --> GT["工具实例上的审批门<br/>_gated_call :571（见 6.3.5）"]
+L712   :502             -> :730
+      旧 ‖S --> ST["_stats :502 一份数字"]
+      新 ‖S --> ST["_stats :730 一份数字"]
+L713   :450             -> :672
+      旧 ‖ST --> C1["_step_card :450 一步一张卡<br/>卡末行就是原来的统计卡"]
+      新 ‖ST --> C1["_step_card :672 一步一张卡<br/>卡末行就是原来的统计卡"]
+L714   :529             -> :761
+      旧 ‖ST --> C2["_status_html :529 顶部胶囊<br/>有待批时多一颗「待批」"]
+      新 ‖ST --> C2["_status_html :761 顶部胶囊<br/>有待批时多一颗「待批」"]
+L716   :277             -> :451
+L716   :289             -> :463
+      旧 ‖R -->|"finally"| H["History.save 整条覆盖写<br/>:277，DELETE 在 :289"]
+      新 ‖R -->|"finally"| H["History.save 整条覆盖写<br/>:451，DELETE 在 :463"]
+L718   :880             -> :1192
+      旧 ‖L["demo.load :880"] --> DB2["History.choices / load"] --> OUT
+      新 ‖L["demo.load :1192"] --> DB2["History.choices / load"] --> OUT
+L719   :843             -> :1155
+      旧 ‖SB["■ 停止 :843"] -->|"interrupt + 结算待批"| AG
+      新 ‖SB["■ 停止 :1155"] -->|"interrupt + 结算待批"| AG
+L724   my_ui.py:1038-1096 -> my_ui.py:1135-1193
+      旧 ‖1. **为什么不能继续用 `gr.ChatInterface`**：它的 `_setup_events()` 在 `__init__` 里就跑完了（`chat_interface.py:265`），构造完之后**没有口子**往消息流旁边插侧栏、也没有口子把状态条提到输入框上方。所以 `create
+      新 ‖1. **为什么不能继续用 `gr.ChatInterface`**：它的 `_setup_events()` 在 `__init__` 里就跑完了（`chat_interface.py:265`），构造完之后**没有口子**往消息流旁边插侧栏、也没有口子把状态条提到输入框上方。所以 `create
+L725   :913-927         -> :988-1002
+      旧 ‖2. **用户气泡没人拼了**：`GradioUI._stream_response` 交出来的一直只有 assistant 那一串，以前是 `ChatInterface` 替你补上用户那句；换成自建 Blocks 后屏幕第一行会凭空消失、库里也没有。**必须自己拼**（`_user_message
+      新 ‖2. **用户气泡没人拼了**：`GradioUI._stream_response` 交出来的一直只有 assistant 那一串，以前是 `ChatInterface` 替你补上用户那句；换成自建 Blocks 后屏幕第一行会凭空消失、库里也没有。**必须自己拼**（`_user_message
+L726   :1058            -> :1155
+L726   :992-1012        -> :1076-1096
+      旧 ‖3. **gradio 自带的 stop 键在 Blocks 下是死的**：`MultimodalTextbox(stop_btn=True)` 那个按钮的取消链路只有 `ChatInterface` 会接（`chat_interface.py:371-372` 把按钮摘下来自己管）。实测在 `步数
+      新 ‖3. **gradio 自带的 stop 键在 Blocks 下是死的**：`MultimodalTextbox(stop_btn=True)` 那个按钮的取消链路只有 `ChatInterface` 会接（`chat_interface.py:371-372` 把按钮摘下来自己管）。实测在 `步数
+L727   :1095            -> :1192
+L727   :1025-1035       -> :1118-1132
+      旧 ‖4. **刷新页面不重跑 `create_app`**：Radio 的 `choices` 还停在建应用那一刻的空表，实测重载后侧栏是空的——这恰好是 V3 要消灭的那个缺陷。解法是挂 `demo.load`（`:1095`，回调 `:1025-1035`）把库里的会话重新推一遍，并自动展开最新一条
+      新 ‖4. **刷新页面不重跑 `create_app`**：Radio 的 `choices` 还停在建应用那一刻的空表，实测重载后侧栏是空的——这恰好是 V3 要消灭的那个缺陷。解法是挂 `demo.load`（`:1192`，回调 `:1118-1132`）把库里的会话重新推一遍，并自动展开最新一条
+L729   :373-488         -> :382-497
+      旧 ‖`History`（`:373-488`）管**三张表**：`sessions(id, title, created_at, updated_at)` 与 `messages(id, session_id, ord, role, content, meta, …)` 是显示层，v1.5 追加的 `m
+      新 ‖`History`（`:382-497`）管**三张表**：`sessions(id, title, created_at, updated_at)` 与 `messages(id, session_id, ord, role, content, meta, …)` 是显示层，v1.5 追加的 `m
+L734   :442-463         -> :451-472
+L734   :454             -> :463
+      旧 ‖| `save()` 是**整条覆盖写**（先删后插全量） | `:442-463`，`DELETE` 在 `:454` | 半截停止的那次也落库；重复保存不会产生双份消息。所以调用方必须喂**完整列表**——v1.4 的 D5 修的就是这个前提（见 6.3.6）|
+      新 ‖| `save()` 是**整条覆盖写**（先删后插全量） | `:451-472`，`DELETE` 在 `:463` | 半截停止的那次也落库；重复保存不会产生双份消息。所以调用方必须喂**完整列表**——v1.4 的 D5 修的就是这个前提（见 6.3.6）|
+L735   :449-450         -> :458-459
+L735   :460-463         -> :469-472
+      旧 ‖| 标题取首条 user 消息前 **28** 字，且只在仍是「新会话」时写；`updated_at` 每次存都刷 | `:449-450` 取值，`:460-463` 那条 `CASE WHEN title = '新会话'` | 侧栏一行放得下；重存不会把标题改掉；v1.4 修掉「有了标题就再也不
+      新 ‖| 标题取首条 user 消息前 **28** 字，且只在仍是「新会话」时写；`updated_at` 每次存都刷 | `:458-459` 取值，`:469-472` 那条 `CASE WHEN title = '新会话'` | 侧栏一行放得下；重存不会把标题改掉；v1.4 修掉「有了标题就再也不
+L736   :425-430         -> :434-439
+      旧 ‖| `choices()` 按 `updated_at DESC` 取，上限 **50** 条 | `:425-430` | 不搜索、不分组、不分页——这是 v1.2 的已知边界 |
+      新 ‖| `choices()` 按 `updated_at DESC` 取，上限 **50** 条 | `:434-439` | 不搜索、不分组、不分页——这是 v1.2 的已知边界 |
+L737   :401             -> :410
+L737   :465-473         -> :474-482
+L737   :475-478         -> :484-487
+      旧 ‖| `save_memory()` 是 `INSERT OR REPLACE`，**一条会话一行**（主键就是 `session_id`），返回存了多少字符 | DDL `:401`，方法 `:465-473`，读回 `:475-478` | 和 `save()` 同样是覆盖式，所以调用方给的必须是
+      新 ‖| `save_memory()` 是 `INSERT OR REPLACE`，**一条会话一行**（主键就是 `session_id`），返回存了多少字符 | DDL `:410`，方法 `:474-482`，读回 `:484-487` | 和 `save()` 同样是覆盖式，所以调用方给的必须是
+L739   :446-451         -> :455-460
+L739   :439             -> :448
+      旧 ‖`meta` 列存的是 `gr.ChatMessage.metadata` 的 JSON（`role`/`content` 各自一列，`:446-451` 先用 `dataclasses.asdict` 把 dataclass 拍平成字典再拆），`load()` 拿它重建 `gr.ChatMessa
+      新 ‖`meta` 列存的是 `gr.ChatMessage.metadata` 的 JSON（`role`/`content` 各自一列，`:455-460` 先用 `dataclasses.asdict` 把 dataclass 拍平成字典再拆），`load()` 拿它重建 `gr.ChatMessa
+L741   :213-332         -> :217-336
+L741   :265-275         -> :269-279
+      旧 ‖深色壳（`DARK_CSS`，`:213-332`）分两类活：一类是 `:root` 变量同名覆盖（`--body-background-fill` 等，gradio 6.30 自己吐在根上的那批），另一类是**定点压制 gradio 硬编成白色的六个位置**——块标题 `rgb(255,255,2
+      新 ‖深色壳（`DARK_CSS`，`:217-336`）分两类活：一类是 `:root` 变量同名覆盖（`--body-background-fill` 等，gradio 6.30 自己吐在根上的那批），另一类是**定点压制 gradio 硬编成白色的六个位置**——块标题 `rgb(255,255,2
+L748   :527-550         -> :546-569
+L748   :541             -> :560
+L748   :548-550         -> :567-569
+      旧 ‖**门套在哪：`BaseTool.__call__` 的最后一行。** `tools.py:231-249` 的 `__call__` 收尾是 `return self.forward(*args, **kwargs)`，而 Python 查属性时**实例字典优先于类上的 `staticmethod
+      新 ‖**门套在哪：`BaseTool.__call__` 的最后一行。** `tools.py:231-249` 的 `__call__` 收尾是 `return self.forward(*args, **kwargs)`，而 Python 查属性时**实例字典优先于类上的 `staticmethod
+L750   :547             -> :566
+L750   :555             -> :574
+      旧 ‖- `gated.__signature__ = inspect.signature(original)`（`:547`）。不保签名的话，`*a, **kw` 会把参数吞成一个元组，审批卡就写不出「要往哪写、写什么」。有了它，`bind_partial(*args, **kwargs).argume
+      新 ‖- `gated.__signature__ = inspect.signature(original)`（`:566`）。不保签名的话，`*a, **kw` 会把参数吞成一个元组，审批卡就写不出「要往哪写、写什么」。有了它，`bind_partial(*args, **kwargs).argume
+L751   :539             -> :558
+L751   :549             -> :568
+      旧 ‖- 幂等标记 `_opsui_gated`（`:539`、`:549`）。多个 `OpsUI` 实例（离线测试里反复建）不能把门套成两层：两层就是问两遍，点一次「允许」只解开外面那层，里面那条线程永远挂在 `wait()` 上。
+      新 ‖- 幂等标记 `_opsui_gated`（`:558`、`:568`）。多个 `OpsUI` 实例（离线测试里反复建）不能把门套成两层：两层就是问两遍，点一次「允许」只解开外面那层，里面那条线程永远挂在 `wait()` 上。
+L752   :502-503         -> :511-512
+      旧 ‖- `_pending` 和 `_gate_lock` 挂在**类**上（`:502-503`），不是实例上。因为门守的是**进程里那一个 agent** 的工具，第一个实例装好门之后别人不再重装；队列若放实例上，就会出现「A 装的门把单子递给 A，屏上看单的是 B」——按钮永远不亮。
+      新 ‖- `_pending` 和 `_gate_lock` 挂在**类**上（`:511-512`），不是实例上。因为门守的是**进程里那一个 agent** 的工具，第一个实例装好门之后别人不再重装；队列若放实例上，就会出现「A 装的门把单子递给 A，屏上看单的是 B」——按钮永远不亮。
+L756   :742-765         -> :785-808
+L756   :767-882         -> :810-937
+L756   :794             -> :841
+L756   :843-865         -> :898-920
+      旧 ‖**为什么非得换线程。** 审批是**阻塞**的，而 gradio 是**同步往前推**那条流式生成器的：工具卡在 `forward` 里等点按钮 → 生成器 yield 不出审批卡 → 界面上根本没有「允许」可点 → 死锁。所以 v1.3 把 `agent.run(stream=True)` 挪进
+      新 ‖**为什么非得换线程。** 审批是**阻塞**的，而 gradio 是**同步往前推**那条流式生成器的：工具卡在 `forward` 里等点按钮 → 生成器 yield 不出审批卡 → 界面上根本没有「允许」可点 → 死锁。所以 v1.3 把 `agent.run(stream=True)` 挪进
+L760   :728             -> :1004
+      旧 ‖T["提问 box.submit"] --> RS["_respond :728<br/>7 元组输出"]
+      新 ‖T["提问 box.submit"] --> RS["_respond :1004<br/>7 元组输出"]
+L761   :575             -> :810
+      旧 ‖RS --> SR["_stream_response :575<br/>UI 线程 · q.get 0.25s"]
+      新 ‖RS --> SR["_stream_response :810<br/>UI 线程 · q.get 0.25s"]
+L762   :550             -> :785
+      旧 ‖SR -->|"起线程"| WK["_worker :550<br/>agent.run stream=True"]
+      新 ‖SR -->|"起线程"| WK["_worker :785<br/>agent.run stream=True"]
+L765   :367             -> :571
+L765   :322             -> :511
+      旧 ‖CALL -->|"self.forward 已被实例属性盖住"| GATE["_gated_call :367<br/>Approval 入类级 _pending :322"]
+      新 ‖CALL -->|"self.forward 已被实例属性盖住"| GATE["_gated_call :571<br/>Approval 入类级 _pending :511"]
+L766   :206             -> :374
+      旧 ‖GATE --> WAIT["ap.wait 600s :206<br/>只阻塞 worker 这一条线程"]
+      新 ‖GATE --> WAIT["ap.wait 600s :374<br/>只阻塞 worker 这一条线程"]
+L767   :405             -> :621
+      旧 ‖SR -->|"每轮扫 _pending_snapshot"| CARD["_approval_card :405<br/>🟡 待批 · 参数原样贴出"]
+      新 ‖SR -->|"每轮扫 _pending_snapshot"| CARD["_approval_card :621<br/>🟡 待批 · 参数原样贴出"]
+L769   :877             -> :1189
+L769   :388             -> :604
+      旧 ‖BTN -->|"✔ 允许 :877"| OK["_decide allowed :388<br/>decision + Event.set"]
+      新 ‖BTN -->|"✔ 允许 :1189"| OK["_decide allowed :604<br/>decision + Event.set"]
+L770   :878             -> :1190
+      旧 ‖BTN -->|"✖ 拒绝 :878"| NO["_decide denied"]
+      新 ‖BTN -->|"✖ 拒绝 :1190"| NO["_decide denied"]
+L771   :874             -> :1186
+L771   :784             -> :1076
+L771   :400             -> :616
+      旧 ‖BTN -->|"■ 停止 :874"| STOP["_stop :784 → _settle_all cancelled :400"]
+      新 ‖BTN -->|"■ 停止 :1186"| STOP["_stop :1076 → _settle_all cancelled :616"]
+L773   :44              -> :50
+      旧 ‖NO --> OBS["观察值 DENIED_OBSERVATION :44<br/>写明未产生任何副作用"]
+      新 ‖NO --> OBS["观察值 DENIED_OBSERVATION :50<br/>写明未产生任何副作用"]
+L776   :450             -> :672
+      旧 ‖EXEC --> STEP["_step_card :450<br/>🟢 成功 · 秒 · token"]
+      新 ‖EXEC --> STEP["_step_card :672<br/>🟢 成功 · 秒 · token"]
+L780   :799-810         -> :846-857
+L780   :843-865         -> :898-920
+L780   :811-829         -> :858-884
+L780   :786             -> :833
+L780   :850-851         -> :905-906
+L780   :858-859         -> :913-914
+L780   :813             -> :860
+L780   :862-865         -> :917-920
+      旧 ‖**一条流上现在有三种卡，身份存对象不存下标。** 流式思考气泡（`:799-810`）、审批卡（`:843-865`）、步骤卡（`:811-829`）都往同一个 `msgs` 列表里写。审批卡按 `ap.id` 存**卡片对象**（`:786`、`:850-851`），更新时**原地改** `co
+      新 ‖**一条流上现在有三种卡，身份存对象不存下标。** 流式思考气泡（`:846-857`）、审批卡（`:898-920`）、步骤卡（`:858-884`）都往同一个 `msgs` 列表里写。审批卡按 `ap.id` 存**卡片对象**（`:833`、`:905-906`），更新时**原地改** `co
+L782   :642-691         -> :672-727
+L782   :671-675         -> :705-710
+L782   :686-688         -> :721-724
+      旧 ‖**V4：一个 step 一张卡。** `_step_card`（`:642-691`）把上游那 5~6 条无差别折叠卡并成一条，标题带工具名、结果色点、秒数和 token（`:671-675`），正文依次是模型思考、调用参数、结果、报错，末行是本题累计（`:686-688`）。数字仍然必须写进 `
+      新 ‖**V4：一个 step 一张卡。** `_step_card`（`:672-727`）把上游那 5~6 条无差别折叠卡并成一条，标题带工具名、结果色点、秒数和 token（`:705-710`），正文依次是模型思考、调用参数、结果、报错，末行是本题累计（`:721-724`）。数字仍然必须写进 `
+L784   :37-43           -> :41-47
+L784   :51              -> :55
+L784   :46-50           -> :50-54
+L784   :661             -> :691
+      旧 ‖**三种"没执行"分开标，三处措辞要对得上。** 拒绝 / 停止取消 / 超时无人批，在审批卡上是 `DECISION_LABEL`（`:37-43`）的「已拒绝 / 随停止取消 / 超时未批」，在步骤卡上是 `DENIED_VERDICT`（`:51`）的「已拒绝 / 已取消 / 超时未批」，交回
+      新 ‖**三种"没执行"分开标，三处措辞要对得上。** 拒绝 / 停止取消 / 超时无人批，在审批卡上是 `DECISION_LABEL`（`:41-47`）的「已拒绝 / 随停止取消 / 超时未批」，在步骤卡上是 `DENIED_VERDICT`（`:55`）的「已拒绝 / 已取消 / 超时未批」，交回
+L786   :873-882         -> :928-937
+L786   :770-772         -> :813-815
+      旧 ‖**停止要多结算一处。** `_stream_response` 的 `finally`（`:873-882`）现在是三件事：`_abandoned.set()`（让 worker 的 `for` 下一轮 break）、`agent.interrupt()`、`_settle_all("cancel
+      新 ‖**停止要多结算一处。** `_stream_response` 的 `finally`（`:928-937`）现在是三件事：`_abandoned.set()`（让 worker 的 `for` 下一轮 break）、`agent.interrupt()`、`_settle_all("cancel
+L788   :973             -> :1053
+      旧 ‖**D4：`metadata.status` 只有两个字面值。** gradio 6.30 的 `chatbot.py:55` 把它定成 `Literal["pending","done"]`。v1.1 起那条停止气泡一直写的是 `"complete"`，没人发现——因为**没人真在停止后去数气泡*
+      新 ‖**D4：`metadata.status` 只有两个字面值。** gradio 6.30 的 `chatbot.py:55` 把它定成 `Literal["pending","done"]`。v1.1 起那条停止气泡一直写的是 `"complete"`，没人发现——因为**没人真在停止后去数气泡*
+L796   :442-463         -> :451-472
+L796   :454             -> :463
+L796   :1081-1085       -> :1178-1182
+L796   :936             -> :1013
+L796   :948             -> :1028
+      旧 ‖**D5 是三处叠在一起才成立的**，单独看任何一处都像"没毛病"：① `_respond` 每一轮从 `last = [user_msg] + msgs` 起，而 chatbot 的输出是**整体替换**；② `History.save()` 是 `DELETE FROM messages WHE
+      新 ‖**D5 是三处叠在一起才成立的**，单独看任何一处都像"没毛病"：① `_respond` 每一轮从 `last = [user_msg] + msgs` 起，而 chatbot 的输出是**整体替换**；② `History.save()` 是 `DELETE FROM messages WHE
+L798   :885-910         -> :940-965
+L798   :522-523         -> :541-542
+      旧 ‖**V5 的核心动作只有"换引用"这一件事。** `_bind_memory(sid)`（`:885-910`）把 `agent.memory` 指向 `_mem[sid]`（`:522-523` 那两个字段），依据是框架的两行事实：`GradioUI` 默认 `reset_agent_memory
+      新 ‖**V5 的核心动作只有"换引用"这一件事。** `_bind_memory(sid)`（`:940-965`）把 `agent.memory` 指向 `_mem[sid]`（`:541-542` 那两个字段），依据是框架的两行事实：`GradioUI` 默认 `reset_agent_memory
+L801   :694             -> :730
+L801   :932             -> :1009
+      旧 ‖- **不在跑到一半换**：worker 线程正在读 `self.memory.steps`，中途换引用等于把一条会话的历史灌进另一条的当前步，`_stats()`（`:694`）那条"最后一个 `TaskStep` 之后"的本题边界也会跟着错位。所以只在 `_respond` 开头调（`:932`
+      新 ‖- **不在跑到一半换**：worker 线程正在读 `self.memory.steps`，中途换引用等于把一条会话的历史灌进另一条的当前步，`_stats()`（`:730`）那条"最后一个 `TaskStep` 之后"的本题边界也会跟着错位。所以只在 `_respond` 开头调（`:1009
+L806   :300             -> :489
+      旧 ‖Q["提问 message + sid"] --> EN["hist.ensure(sid) :300"]
+      新 ‖Q["提问 message + sid"] --> EN["hist.ensure(sid) :489"]
+L807   :690             -> :940
+      旧 ‖EN --> BM["_bind_memory(sid) :690"]
+      新 ‖EN --> BM["_bind_memory(sid) :940"]
+L815   :267             -> :441
+      旧 ‖SWAP --> BASE["base = hist.load(sid) :267"]
+      新 ‖SWAP --> BASE["base = hist.load(sid) :441"]
+L818   :737             -> :1015
+L818   :747             -> :1028
+      旧 ‖RUN --> FR["每一帧 last = base + 本题 + 本轮流<br/>:737 与 :747"]
+      新 ‖RUN --> FR["每一帧 last = base + 本题 + 本轮流<br/>:1015 与 :1028"]
+L819   :777             -> :1058
+      旧 ‖FR --> SV["finally：hist.save(sid, last) :777<br/>整条覆盖，所以喂进去的必须是完整列表"]
+      新 ‖FR --> SV["finally：hist.save(sid, last) :1058<br/>整条覆盖，所以喂进去的必须是完整列表"]
+L820   :873             -> :1185
+L820   :808             -> :1116
+      旧 ‖SEL["侧栏 radio.change :873"] -->|"交出第三个值 int(sid) :808"| BM
+      新 ‖SEL["侧栏 radio.change :1185"] -->|"交出第三个值 int(sid) :1116"| BM
+L821   :880             -> :1192
+L821   :820             -> :1132
+      旧 ‖LD["demo.load :880"] -->|"最近一条的消息 + 它的 sid :820"| BM
+      新 ‖LD["demo.load :1192"] -->|"最近一条的消息 + 它的 sid :1132"| BM
+L824   :1088            -> :1185
+L824   :1014-1023       -> :1098-1116
+L824   :1025-1035       -> :1118-1132
+      旧 ‖**`sid` 必须是一条**能同时喂给 chatbot 和 State 的输出，这是 V5 接线的地方。** 三处一起改：`radio.change` 的 `outputs` 多带 `sid`（`:1088`）、`_select_session` 交出 `int(sid)`（`:1014-1023
+      新 ‖**`sid` 必须是一条**能同时喂给 chatbot 和 State 的输出，这是 V5 接线的地方。** 三处一起改：`radio.change` 的 `outputs` 多带 `sid`（`:1185`）、`_select_session` 交出 `int(sid)`（`:1098-1116
+L826   :460-463         -> :469-472
+      旧 ‖**D6 是修 V5 时顺带撞出来的。** `History.save()` 那条 UPDATE 从 v1.2 起挂着 `WHERE id = ? AND title = '新会话'`，于是会话**一旦有了标题就再也不刷 `updated_at`**，而侧栏排序用的正是 `ORDER BY upda
+      新 ‖**D6 是修 V5 时顺带撞出来的。** `History.save()` 那条 UPDATE 从 v1.2 起挂着 `WHERE id = ? AND title = '新会话'`，于是会话**一旦有了标题就再也不刷 `updated_at`**，而侧栏排序用的正是 `ORDER BY upda
+L836   my_ui.py:60-75   -> my_ui.py:64-79
+      旧 ‖**V6 的判据只有一句话：模型读的是 `memory.steps`，不是屏上那串卡片。** `agents.py:767-769` 的 `write_memory_to_messages()` ＝ `memory.system_prompt.to_messages()` ＋ 逐条 `step.to
+      新 ‖**V6 的判据只有一句话：模型读的是 `memory.steps`，不是屏上那串卡片。** `agents.py:767-769` 的 `write_memory_to_messages()` ＝ `memory.system_prompt.to_messages()` ＋ 逐条 `step.to
+L842   :88-103          -> :92-107
+L842   :78-85           -> :82-89
+      旧 ‖- **错误对象是"造"出来的，不是"构造"的**：`AgentError.__init__(message, logger)` 里 logger 必需、而且会**当场** `log_error`。所以 `cls.__new__(cls)` + `Exception.__init__(err, me
+      新 ‖- **错误对象是"造"出来的，不是"构造"的**：`AgentError.__init__(message, logger)` 里 logger 必需、而且会**当场** `log_error`。所以 `cls.__new__(cls)` + `Exception.__init__(err, me
+L843   :106-118         -> :110-120
+      旧 ‖- **两个 dataclass 是派生字段**：`Timing.duration` 是 property、`TokenUsage.total_tokens` 是 `init=False`，`dict()` 出来的键比构造参数多，只能挑着交（`:106-118`）。
+      新 ‖- **两个 dataclass 是派生字段**：`Timing.duration` 是 property、`TokenUsage.total_tokens` 是 `init=False`，`dict()` 出来的键比构造参数多，只能挑着交（`:110-120`）。
+L846   :153-209         -> :157-213
+      旧 ‖坏数据的降级路径是**分层的**（`decode_memory`，`:153-209`）：整块坏 JSON / `fmt` 不符 / 顶层不是 dict → 返回 `[]`，当作这条会话没记忆，正常开新会话；单条坏 → `except (TypeError, ValueError, Attribut
+      新 ‖坏数据的降级路径是**分层的**（`decode_memory`，`:157-213`）：整块坏 JSON / `fmt` 不符 / 顶层不是 dict → 返回 `[]`，当作这条会话没记忆，正常开新会话；单条坏 → `except (TypeError, ValueError, Attribut
+L851   my_ui.py:119-150 -> my_ui.py:123-154
+      旧 ‖A1["agent.run 往 memory.steps 上追加<br/>agents.py:477"] --> A2["encode_memory(mem.steps)<br/>my_ui.py:119-150"]
+      新 ‖A1["agent.run 往 memory.steps 上追加<br/>agents.py:477"] --> A2["encode_memory(mem.steps)<br/>my_ui.py:123-154"]
+L852   my_ui.py:984-985 -> my_ui.py:1064-1065
+      旧 ‖A2 --> A3["_respond 的 finally：两个条件<br/>mem is not None 且 _mem_sid == sid<br/>my_ui.py:984-985"]
+      新 ‖A2 --> A3["_respond 的 finally：两个条件<br/>mem is not None 且 _mem_sid == sid<br/>my_ui.py:1064-1065"]
+L854   my_ui.py:401     -> my_ui.py:410
+L854   :465-473         -> :474-482
+      旧 ‖A3 --> T[("memory 表：一行一个 session_id<br/>INSERT OR REPLACE · my_ui.py:401 与 :465-473")]
+      新 ‖A3 --> T[("memory 表：一行一个 session_id<br/>INSERT OR REPLACE · my_ui.py:410 与 :474-482")]
+L855   my_ui.py:905-907 -> my_ui.py:960-962
+      旧 ‖T --> B1["重启后 _bind_memory 未命中<br/>decode_memory(load_memory(sid))<br/>my_ui.py:905-907"]
+      新 ‖T --> B1["重启后 _bind_memory 未命中<br/>decode_memory(load_memory(sid))<br/>my_ui.py:960-962"]
+L860   :401             -> :410
+L860   :465-473         -> :474-482
+L860   :475-478         -> :484-487
+L860   :885-910         -> :940-965
+L860   :976-986         -> :1056-1066
+      旧 ‖**接进去只有三处，两处刻意保持小。** `History` 加一张 additive 的表（DDL `:401`，方法 `save_memory` `:465-473` / `load_memory` `:475-478`）；`_bind_memory`（`:885-910`）在进程内 `_mem
+      新 ‖**接进去只有三处，两处刻意保持小。** `History` 加一张 additive 的表（DDL `:410`，方法 `save_memory` `:474-482` / `load_memory` `:484-487`）；`_bind_memory`（`:940-965`）在进程内 `_mem
+L875   :507-508         -> :516-517
+L875   :502-503         -> :511-512
+      旧 ‖1. **类级**计数器 `_run_seq` / `_cancelled_before`（`:507-508`）。闸装在**进程唯一**的那个 agent 上，所以计数器必须和 `_pending`、`_gate_lock` 同侧（也是类级，`:502-503`）；放实例上就出现"A 领的号管不住
+      新 ‖1. **类级**计数器 `_run_seq` / `_cancelled_before`（`:516-517`）。闸装在**进程唯一**的那个 agent 上，所以计数器必须和 `_pending`、`_gate_lock` 同侧（也是类级，`:511-512`）；放实例上就出现"A 领的号管不住
+L876   :777-778         -> :824-825
+      旧 ‖2. **开跑先领号**：`_stream_response` 在计数器归零之后、**起 worker 线程之前**`OpsUI._run_seq += 1`（`:777-778`）。号没领上就开工，闸读到的还是上一轮的号。
+      新 ‖2. **开跑先领号**：`_stream_response` 在计数器归零之后、**起 worker 线程之前**`OpsUI._run_seq += 1`（`:824-825`）。号没领上就开工，闸读到的还是上一轮的号。
+L877   :564-567         -> :583-586
+      旧 ‖3. **入队与判停在同一个临界区**（`_gated_call`，`:564-567`）：`with self._gate_lock: self._pending.append(ap); if OpsUI._run_seq <= OpsUI._cancelled_before: ap.decide
+      新 ‖3. **入队与判停在同一个临界区**（`_gated_call`，`:583-586`）：`with self._gate_lock: self._pending.append(ap); if OpsUI._run_seq <= OpsUI._cancelled_before: ap.decide
+L878   :1007-1012       -> :1091-1096
+      旧 ‖4. `_stop`（`:1007-1012`）先领取消号，再 `_settle_all("cancelled")`，最后 `interrupt()`。
+      新 ‖4. `_stop`（`:1091-1096`）先领取消号，再 `_settle_all("cancelled")`，最后 `interrupt()`。
+L1175  my_ui.py:642-691 -> my_ui.py:672-727
+      旧 ‖| 25 | `smolagents/my_ui.py:642-691` | 步骤卡把数字写进 `metadata.title` 而不是正文：gradio 折叠组收起时**正文不在 DOM 里**（v1.1 独立统计卡在 `:31-36`，v1.3 起并进这张卡） |
+      新 ‖| 25 | `smolagents/my_ui.py:672-727` | 步骤卡把数字写进 `metadata.title` 而不是正文：gradio 折叠组收起时**正文不在 DOM 里**（v1.1 独立统计卡在 `:31-36`，v1.3 起并进这张卡） |
+L1180  my_ui.py:527-550 -> my_ui.py:546-569
+      旧 ‖| 30 | `smolagents/src/smolagents/tools.py:231-249` | `BaseTool.__call__` 收尾是 `self.forward(*args, **kwargs)`（`:246`）——**实例属性优先于类上的 staticmethod**，所以审
+      新 ‖| 30 | `smolagents/src/smolagents/tools.py:231-249` | `BaseTool.__call__` 收尾是 `self.forward(*args, **kwargs)`（`:246`）——**实例属性优先于类上的 staticmethod**，所以审
+L1181  my_ui.py:584     -> my_ui.py:608
+      旧 ‖| 31 | `smolagents/src/smolagents/agents.py:1361-1437` | `process_tool_calls`：一步里多个工具调用走 `ThreadPoolExecutor`（`:1428-1434`）。阻塞式审批因此可能一次收到多条待批，而 UI 的按钮
+      新 ‖| 31 | `smolagents/src/smolagents/agents.py:1361-1437` | `process_tool_calls`：一步里多个工具调用走 `ThreadPoolExecutor`（`:1428-1434`）。阻塞式审批因此可能一次收到多条待批，而 UI 的按钮
+L1183  my_ui.py:742-765 -> my_ui.py:785-808
+L1183  :767-882         -> :810-937
+      旧 ‖| 33 | `smolagents/my_ui.py:742-765`、`:767-882` | 线程 + 队列的驱动骨架：`_worker` 消费 `agent.run(stream=True)`，`_stream_response` 每 `0.25s` 取一次队列。**空转轮也要扫待批队列**
+      新 ‖| 33 | `smolagents/my_ui.py:785-808`、`:810-937` | 线程 + 队列的驱动骨架：`_worker` 消费 `agent.run(stream=True)`，`_stream_response` 每 `0.25s` 取一次队列。**空转轮也要扫待批队列**
+L1184  my_ui.py:46-51   -> my_ui.py:50-55
+      旧 ‖| 34 | `smolagents/my_ui.py:46-51` | `DENIED_OBSERVATION` / `DENIED_VERDICT` 两个字典**必须同步**：前者是交回模型的措辞，后者是步骤卡反查命中的色点口径，改一个就会出现「审批卡说取消、步骤卡说拒绝」 |
+      新 ‖| 34 | `smolagents/my_ui.py:50-55` | `DENIED_OBSERVATION` / `DENIED_VERDICT` 两个字典**必须同步**：前者是交回模型的措辞，后者是步骤卡反查命中的色点口径，改一个就会出现「审批卡说取消、步骤卡说拒绝」 |
+L1185  my_ui.py:885-910 -> my_ui.py:940-965
+      旧 ‖| 35 | `smolagents/src/smolagents/agents.py:477`、`:478-480` | `run()` 开头：`:477` 无条件把 `system_prompt` 同步进**当前那份** `self.memory`，`:478-480` 才是 `if reset
+      新 ‖| 35 | `smolagents/src/smolagents/agents.py:477`、`:478-480` | `run()` 开头：`:477` 无条件把 `system_prompt` 同步进**当前那份** `self.memory`，`:478-480` 才是 `if reset
+L1186  my_ui.py:119-209 -> my_ui.py:123-213
+      旧 ‖| 36 | `smolagents/src/smolagents/memory.py:214-232` | `AgentMemory` 只有 `system_prompt` + `steps` 两个字段和一个 `reset()`，**没有任何 (de)serializer**——框架不给口子，所以
+      新 ‖| 36 | `smolagents/src/smolagents/memory.py:214-232` | `AgentMemory` 只有 `system_prompt` + `steps` 两个字段和一个 `reset()`，**没有任何 (de)serializer**——框架不给口子，所以
+L1188  my_ui.py:936     -> my_ui.py:1013
+L1188  :948             -> :1028
+      旧 ‖| 38 | `smolagents/my_ui.py:936`、`:948` | D5 的全部修法就这两行：起点是库里那一串（`base`），每帧 `last = base + [user_msg] + list(msgs)`。`History.save()` 的覆盖语义**没改**——它只有在喂
+      新 ‖| 38 | `smolagents/my_ui.py:1013`、`:1028` | D5 的全部修法就这两行：起点是库里那一串（`base`），每帧 `last = base + [user_msg] + list(msgs)`。`History.save()` 的覆盖语义**没改**——它只有
+L1189  my_ui.py:1014    -> my_ui.py:1098
+L1189  :1088            -> :1185
+L1189  :1025            -> :1118
+L1189  :1095            -> :1192
+      旧 ‖| 39 | `smolagents/my_ui.py:1014`、`:1088`、`:1025`、`:1095` | V5 的接线：`_select_session` 交出第三个值 `int(sid)`、`radio.change` 的 `outputs` 多带 `sid`、`_on_load` 
+      新 ‖| 39 | `smolagents/my_ui.py:1098`、`:1185`、`:1118`、`:1192` | V5 的接线：`_select_session` 交出第三个值 `int(sid)`、`radio.change` 的 `outputs` 多带 `sid`、`_on_load` 
+L1190  my_ui.py:460-463 -> my_ui.py:469-472
+      旧 ‖| 40 | `smolagents/my_ui.py:460-463` | `updated_at` 必须每次 `save()` 都刷（D6）。侧栏 `ORDER BY updated_at DESC` 决定了 `_on_load` 把 `sid` 指到哪条，也就是"下一条提问落进哪条会话"——以
+      新 ‖| 40 | `smolagents/my_ui.py:469-472` | `updated_at` 必须每次 `save()` 都刷（D6）。侧栏 `ORDER BY updated_at DESC` 决定了 `_on_load` 把 `sid` 指到哪条，也就是"下一条提问落进哪条会话"——以
+L1191  my_ui.py:119-150 -> my_ui.py:123-154
+L1191  :905-907         -> :960-962
+      旧 ‖| 41 | `smolagents/src/smolagents/agents.py:767-769` | **V6 的全部根据**：模型读到的那一串＝`memory.system_prompt.to_messages()` ＋ 逐条 `step.to_messages()`。所以持久化要存的是 
+      新 ‖| 41 | `smolagents/src/smolagents/agents.py:767-769` | **V6 的全部根据**：模型读到的那一串＝`memory.system_prompt.to_messages()` ＋ 逐条 `step.to_messages()`。所以持久化要存的是 
+L1192  my_ui.py:60-75   -> my_ui.py:64-79
+      旧 ‖| 42 | `smolagents/src/smolagents/agents.py:609-611`、`:625-637` | `memory.steps` 的**封闭集合**只有 `TaskStep` / `ActionStep` / `PlanningStep`：`FinalAnswerSt
+      新 ‖| 42 | `smolagents/src/smolagents/agents.py:609-611`、`:625-637` | `memory.steps` 的**封闭集合**只有 `TaskStep` / `ActionStep` / `PlanningStep`：`FinalAnswerSt
+L1194  my_ui.py:564-567 -> my_ui.py:583-586
+      旧 ‖| 44 | `smolagents/src/smolagents/agents.py:470` | **D7 的根因**：每次 `run()` 开头把 `interrupt_switch` 清回 `False`。所以「■ 停止」落在待批卡出现之前，中断的是**空闲的** agent（空放），后到的
+      新 ‖| 44 | `smolagents/src/smolagents/agents.py:470` | **D7 的根因**：每次 `run()` 开头把 `interrupt_switch` 清回 `False`。所以「■ 停止」落在待批卡出现之前，中断的是**空闲的** agent（空放），后到的
+L1195  my_ui.py:507-508 -> my_ui.py:516-517
+L1195  :777-778         -> :824-825
+L1195  :1007-1012       -> :1091-1096
+      旧 ‖| 45 | `smolagents/my_ui.py:507-508`、`:777-778`、`:1007-1012` | 取消号三件套：**类级** `_run_seq` / `_cancelled_before`（闸装在进程唯一的那个 agent 上，号必须和 `_pending`、`_gat
+      新 ‖| 45 | `smolagents/my_ui.py:516-517`、`:824-825`、`:1091-1096` | 取消号三件套：**类级** `_run_seq` / `_cancelled_before`（闸装在进程唯一的那个 agent 上，号必须和 `_pending`、`_gat
+L1196  my_ui.py:984-985 -> my_ui.py:1064-1065
+      旧 ‖| 46 | `smolagents/my_ui.py:984-985` | 记忆落库的两个条件：`mem is not None` 且 `self._mem_sid == sid`。后一条是**会话归属**判据——中途换了会话还照存，就把别人的记忆盖到这条上了 |
+      新 ‖| 46 | `smolagents/my_ui.py:1064-1065` | 记忆落库的两个条件：`mem is not None` 且 `self._mem_sid == sid`。后一条是**会话归属**判据——中途换了会话还照存，就把别人的记忆盖到这条上了 |
+
+改动行数 97 / 改的引用 161 条
+  keep   78 :70-72           -            历史引用，不动
+  keep  648 :310             -            ZERO：撞不上实体，多半不是 my_ui 的行号
+  keep  687 :545-547         -            ZERO：撞不上实体，多半不是 my_ui 的行号
+  keep  697 my_ui.py:15      :15-15       TIE 人工核过
+  keep  697 my_ui.py:15      my_ui.py:15  行号未变
+  keep  697 my_ui.py:10      -            ZERO：撞不上实体，多半不是 my_ui 的行号
+  keep  697 :4               -            历史引用，不动
+  keep  713 :502             :730-730     TIE 人工核过
+  keep  720 :843             :1155-1155   TIE 人工核过
+  keep  734 :30              :30          行号未变
+  keep  755 :34              :34          行号未变
+  keep  770 :877             :1189-1189   TIE 人工核过
+  keep 1176 :31-36           -            历史引用，不动
+  keep 1180 my_ui.py:30      my_ui.py:30  行号未变
+已写回 README.md（1271 行）

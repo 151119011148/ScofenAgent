@@ -1,0 +1,4 @@
+{
+ "X-read": "{\"chk\":[true,false,false],\"labs\":[\"新会话\",\"v1旧记忆-乙\",\"v1旧记忆-甲\"],\"userN\":0,\"botN\":0,\"last\":null,\"cardTitles\":[],\"heads\":[],\"state\":\"空闲\",\"pillRun\":\"本题耗时 27.2s\",\"pillWait\":\"本题审批 26.0s\",\"pillPending\":\"待批 run_python\"}",
+ "X-read2": "{\"chk\":[true,false,false],\"labs\":[\"新会话\",\"v1旧记忆-乙\",\"v1旧记忆-甲\"],\"userN\":0,\"botN\":0,\"last\":null,\"cardTitles\":[],\"heads\":[],\"state\":\"空闲\",\"pillRun\":\"本题耗时 27.2s\",\"pillWait\":\"本题审批 26.0s\",\"pillPending\":\"待批 run_python\"}"
+}

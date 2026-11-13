@@ -1,0 +1,215 @@
+Traceback (most recent call last):
+  File "/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/lib/python3.13/site-packages/gradio/blocks.py", line 2356, in postprocess_data
+    prediction_value = await anyio.to_thread.run_sync(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        block.postprocess, prediction_value, limiter=self.limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/lib/python3.13/site-packages/anyio/to_thread.py", line 65, in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        func, args, abandon_on_cancel=abandon_on_cancel, limiter=limiter
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 2706, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/lib/python3.13/site-packages/anyio/_backends/_asyncio.py", line 1100, in run
+    result = context.run(func, *args)
+  File "/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/lib/python3.13/site-packages/gradio/components/chatbot.py", line 708, in postprocess
+    processed_message = self._postprocess(message)
+  File "/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/lib/python3.13/site-packages/gradio/components/chatbot.py", line 632, in _postprocess
+    Message(
+    ~~~~~~~^
+        role=role,
+        ^^^^^^^^^^
+    ...<2 lines>...
+        options=options,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/lib/python3.13/site-packages/pydantic/main.py", line 280, in __init__
+    validated_self = self.__pydantic_validator__.validate_python(data, self_instance=self)
+pydantic_core._pydantic_core.ValidationError: 1 validation error for Message
+metadata.status
+  Input should be 'pending' or 'done' [type=literal_error, input_value='complete', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.14/v/literal_error
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/lib/python3.13/site-packages/gradio/queueing.py", line 848, in process_events
+    response = await route_utils.call_process_api(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/lib/python3.13/site-packages/gradio/route_utils.py", line 417, in call_process_api
+    output = await app.get_blocks().process_api(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<12 lines>...
+    )
+    ^
+  File "/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/lib/python3.13/site-packages/gradio/blocks.py", line 2712, in process_api
+    data = await self.postprocess_data(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        block_fn, result["prediction"], state
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/lib/python3.13/site-packages/gradio/blocks.py", line 2362, in postprocess_data
+    raise ComponentProcessingError(
+    ...<8 lines>...
+    ) from err
+gradio.exceptions.ComponentProcessingError: Could not postprocess output component at index 3 (a `chatbot` component) of the event handler (named "_on_load") with output components: [radio, state, html, chatbot].
+
+Expected a `list[MessageDict | Message | ChatMessage | NormalizedMessageDict] | None`, but the value returned from the event handler was: [ChatMessage(content="必须调用 run_python 工具，代码就写：open('/tmp/v13-live-stop.txt','w').write('ran')。只做这一次工具调用。", role='user', metadata={}, options=[]), ChatMessage(content='**工具** `run_python`\n\n**参数**\n``... (of type `list`).
+
+Original error: ValidationError: 1 validation error for Message
+metadata.status
+  Input should be 'pending' or 'done' [type=literal_error, input_value='complete', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.14/v/literal_error
+╭──────────────────────────── New run - smolagents ────────────────────────────╮
+│                                                                              │
+│ 必须调用 run_python                                                          │
+│ 工具，代码就写：open('/tmp/v13-live-allow.txt','w').write('ran');            │
+│ print('V13ALLOW')。不要自己心算，直接照我给的代码调工具，然后把工具返回原样  │
+│ 贴出来。                                                                     │
+│                                                                              │
+╰─ OpenAIModel - qwen-plus ────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{"tool": "run_python", "arguments": "{"code":                                   
+"open('/tmp/v13-live-allow.txt','w').write('ran'); print('V13ALLOW')"}"}        ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'run_python' with arguments: {'code':                          │
+│ "open('/tmp/v13-live-allow.txt','w').write('ran'); print('V13ALLOW')"}       │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Observations: exit=0
+V13ALLOW
+[Step 1: Duration 2.36 seconds| Input tokens: 2,392 | Output tokens: 39]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{"tool": "final_answer", "arguments": "{"answer": "V13ALLOW"}"}                 ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'final_answer' with arguments: {'answer': 'V13ALLOW'}          │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Observations: V13ALLOW
+Final answer: V13ALLOW
+[Step 2: Duration 0.97 seconds| Input tokens: 4,885 | Output tokens: 58]
+╭──────────────────────────── New run - smolagents ────────────────────────────╮
+│                                                                              │
+│ 必须调用 run_python                                                          │
+│ 工具，代码就写：open('/tmp/v13-live-deny.txt','w').write('ran')。只做这一次  │
+│ 工具调用，然后告诉我工具返回了什么。                                         │
+│                                                                              │
+╰─ OpenAIModel - qwen-plus ────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{"tool": "run_python", "arguments": "{"code":                                   
+"open('/tmp/v13-live-deny.txt','w').write('ran')"}"}                            ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'run_python' with arguments: {'code':                          │
+│ "open('/tmp/v13-live-deny.txt','w').write('ran')"}                           │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Observations: 
+用户拒绝执行，未产生任何副作用。请改用只读工具，或直接把结论交出来。
+[Step 3: Duration 1.40 seconds| Input tokens: 7,501 | Output tokens: 90]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{"tool": "final_answer", "arguments": "{"answer":                               
+"\u7528\u6237\u62d2\u7edd\u6267\u884c\uff0c\u672a\u4ea7\u751f\u4efb\u4f55\u526f\
+u4f5c\u7528\u3002"}"}                                                           ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'final_answer' with arguments: {'answer':                      │
+│ '用户拒绝执行，未产生任何副作用。'}                                          │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Observations: 用户拒绝执行，未产生任何副作用。
+Final answer: 用户拒绝执行，未产生任何副作用。
+[Step 4: Duration 1.03 seconds| Input tokens: 10,225 | Output tokens: 114]
+╭──────────────────────────── New run - smolagents ────────────────────────────╮
+│                                                                              │
+│ 必须调用 run_python                                                          │
+│ 工具，代码就写：open('/tmp/v13-live-allow.txt','w').write('ran');            │
+│ print('V13ALLOW')。不要自己心算，直接照我给的代码调工具，然后把工具返回原样  │
+│ 贴出来。                                                                     │
+│                                                                              │
+╰─ OpenAIModel - qwen-plus ────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{"tool": "run_python", "arguments": "{"code":                                   
+"open('/tmp/v13-live-allow.txt','w').write('ran'); print('V13ALLOW')"}"}        ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'run_python' with arguments: {'code':                          │
+│ "open('/tmp/v13-live-allow.txt','w').write('ran'); print('V13ALLOW')"}       │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Observations: exit=0
+V13ALLOW
+[Step 5: Duration 2.19 seconds| Input tokens: 13,099 | Output tokens: 153]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{"tool": "final_answer", "arguments": "{"answer": "exit=0\nV13ALLOW"}"}         ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'final_answer' with arguments: {'answer': 'exit=0\nV13ALLOW'}  │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Observations: exit=0
+V13ALLOW
+Final answer: exit=0
+V13ALLOW
+[Step 6: Duration 1.08 seconds| Input tokens: 16,074 | Output tokens: 176]
+╭──────────────────────────── New run - smolagents ────────────────────────────╮
+│                                                                              │
+│ 必须调用 run_python                                                          │
+│ 工具，代码就写：open('/tmp/v13-live-deny.txt','w').write('ran')。只做这一次  │
+│ 工具调用，然后告诉我工具返回了什么。                                         │
+│                                                                              │
+╰─ OpenAIModel - qwen-plus ────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{"tool": "run_python", "arguments": "{"code":                                   
+"open('/tmp/v13-live-deny.txt','w').write('ran')"}"}                            ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'run_python' with arguments: {'code':                          │
+│ "open('/tmp/v13-live-deny.txt','w').write('ran')"}                           │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Observations: 
+用户拒绝执行，未产生任何副作用。请改用只读工具，或直接把结论交出来。
+[Step 7: Duration 1.34 seconds| Input tokens: 19,181 | Output tokens: 208]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{"tool": "final_answer", "arguments": "{"answer":                               
+"\u7528\u6237\u62d2\u7edd\u6267\u884c\uff0c\u672a\u4ea7\u751f\u4efb\u4f55\u526f\
+u4f5c\u7528\u3002"}"}                                                           ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'final_answer' with arguments: {'answer':                      │
+│ '用户拒绝执行，未产生任何副作用。'}                                          │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Observations: 用户拒绝执行，未产生任何副作用。
+Final answer: 用户拒绝执行，未产生任何副作用。
+[Step 8: Duration 0.97 seconds| Input tokens: 22,395 | Output tokens: 232]
+╭──────────────────────────── New run - smolagents ────────────────────────────╮
+│                                                                              │
+│ 必须调用 run_python                                                          │
+│ 工具，代码就写：open('/tmp/v13-live-stop.txt','w').write('ran')。只做这一次  │
+│ 工具调用。                                                                   │
+│                                                                              │
+╰─ OpenAIModel - qwen-plus ────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{"tool": "run_python", "arguments": "{"code":                                   
+"open('/tmp/v13-live-stop.txt','w').write('ran')"}"}                            ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'run_python' with arguments: {'code':                          │
+│ "open('/tmp/v13-live-stop.txt','w').write('ran')"}                           │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Observations: 用户按了停止，本次执行已取消，未产生任何副作用。
+[Step 9: Duration 1.42 seconds| Input tokens: 25,738 | Output tokens: 263]
+Agent interrupted.
+╭──────────────────────────── New run - smolagents ────────────────────────────╮
+│                                                                              │
+│ 1+1 等于几？直接回答，不要调用工具。                                         │
+│                                                                              │
+╰─ OpenAIModel - qwen-plus ────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{"tool": "final_answer", "arguments": "{"answer": "2"}"}                        ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'final_answer' with arguments: {'answer': '2'}                 │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Observations: 2
+Final answer: 2
+[Step 10: Duration 1.01 seconds| Input tokens: 29,202 | Output tokens: 279]
+╭──────────────────────────── New run - smolagents ────────────────────────────╮
+│                                                                              │
+│ 2+2 等于几？直接回答，不要调用工具。                                         │
+│                                                                              │
+╰─ OpenAIModel - qwen-plus ────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{"tool": "final_answer", "arguments": "{"answer": "4"}"}                        ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'final_answer' with arguments: {'answer': '4'}                 │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Observations: 4
+Final answer: 4
+[Step 11: Duration 1.11 seconds| Input tokens: 32,758 | Output tokens: 295]

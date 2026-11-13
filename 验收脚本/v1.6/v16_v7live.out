@@ -1,0 +1,16 @@
+{
+ "1-new#click": "clicked@252,134",
+ "1-read": "{\"chk\":[false,false,false],\"labs\":[\"V7基线-丙\",\"V7基线-乙\",\"V7基线-甲\"],\"userN\":0,\"botN\":0,\"last\":null,\"cardTitles\":[],\"state\":\"空闲\",\"pillRun\":\"本题耗时 0.0s\",\"pillWait\":null,\"pillPending\":null}",
+ "2-ask1#type": "sent",
+ "2-answer1#waitedMs": 2,
+ "2-answer1#pred": "YES:模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 空闲",
+ "2-read": "{\"chk\":[false,false,false],\"labs\":[\"V7基线-丙\",\"V7基线-乙\",\"V7基线-甲\"],\"userN\":0,\"botN\":0,\"last\":null,\"cardTitles\":[],\"state\":\"空闲\",\"pillRun\":\"本题耗时 0.0s\",\"pillWait\":null,\"pillPending\":null}",
+ "3-new-again#click": "clicked@252,134",
+ "3-read": "{\"chk\":[false,false,false],\"labs\":[\"V7基线-丙\",\"V7基线-乙\",\"V7基线-甲\"],\"userN\":0,\"botN\":0,\"last\":null,\"cardTitles\":[],\"state\":\"空闲\",\"pillRun\":\"本题耗时 0.0s\",\"pillWait\":null,\"pillPending\":null}",
+ "4-click-old#click": "NO-ELEMENT",
+ "4-read": "{\"chk\":[false,false,false],\"labs\":[\"V7基线-丙\",\"V7基线-乙\",\"V7基线-甲\"],\"userN\":0,\"botN\":0,\"last\":null,\"cardTitles\":[],\"state\":\"空闲\",\"pillRun\":\"本题耗时 0.0s\",\"pillWait\":null,\"pillPending\":null}",
+ "5-ask2#type": "sent",
+ "5-answer2#waitedMs": 4,
+ "5-answer2#pred": "YES:模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 空闲",
+ "5-read": "{\"chk\":[false,false,false],\"labs\":[\"V7基线-丙\",\"V7基线-乙\",\"V7基线-甲\"],\"userN\":0,\"botN\":0,\"last\":null,\"cardTitles\":[],\"state\":\"空闲\",\"pillRun\":\"本题耗时 0.0s\",\"pillWait\":null,\"pillPending\":null}"
+}

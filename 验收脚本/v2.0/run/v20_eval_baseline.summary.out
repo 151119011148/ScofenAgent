@@ -1,0 +1,243 @@
+{
+ "n_questions": 20,
+ "交答率": {
+  "ok": 14,
+  "of": 18,
+  "pct": 77.8,
+  "note": "非 gap 题里，在 max_steps 内交出答案的比例（不看对不对）"
+ },
+ "达标率": {
+  "met": 13,
+  "of": 18,
+  "pct": 72.2,
+  "note": "交答 且 期望核对通过"
+ },
+ "例外": {
+  "exception": 0,
+  "max_steps": 4
+ },
+ "非法调用率": {
+  "unknown_tool": 0,
+  "tool_errors": 10,
+  "calls": 52,
+  "pct": 19.2,
+  "note": "（调了不存在的工具 + 工具报错）/ 工具调用总次数"
+ },
+ "步数": {
+  "mean_action": 4.3,
+  "max_action": 9,
+  "planning_runs": 20
+ },
+ "token": {
+  "in_total": 401273,
+  "out_total": 17599,
+  "in_mean": 20064.0,
+  "out_mean": 880.0
+ },
+ "时延": {
+  "p50": 6.03,
+  "p95": 17.42,
+  "mean": 7.71,
+  "total_s": 154.1,
+  "unit": "秒/题（整题 wall time）"
+ },
+ "缺口题": {
+  "n": 2,
+  "ids": [
+   17,
+   20
+  ],
+  "基线是否如实失败": {
+   "17": false,
+   "20": false
+  },
+  "note": "cls=gap 的题基线**应当**失败（A1 接完 MCP 后应翻绿），不计入达标率"
+ },
+ "一致性": {
+  "repeat": 3,
+  "per_question": {
+   "1": {
+    "n": 3,
+    "same_outcome": true,
+    "statuses": [
+     "ok",
+     "ok",
+     "ok"
+    ],
+    "met": [
+     true,
+     true,
+     true
+    ]
+   },
+   "2": {
+    "n": 3,
+    "same_outcome": true,
+    "statuses": [
+     "ok",
+     "ok",
+     "ok"
+    ],
+    "met": [
+     true,
+     true,
+     true
+    ]
+   },
+   "9": {
+    "n": 3,
+    "same_outcome": false,
+    "statuses": [
+     "ok",
+     "ok",
+     "ok"
+    ],
+    "met": [
+     true,
+     false,
+     true
+    ]
+   },
+   "10": {
+    "n": 3,
+    "same_outcome": true,
+    "statuses": [
+     "ok",
+     "ok",
+     "ok"
+    ],
+    "met": [
+     true,
+     true,
+     true
+    ]
+   },
+   "13": {
+    "n": 3,
+    "same_outcome": true,
+    "statuses": [
+     "ok",
+     "ok",
+     "ok"
+    ],
+    "met": [
+     true,
+     true,
+     true
+    ]
+   }
+  },
+  "稳定率": "4/5",
+  "note": "同一题跑 repeat 次，status 与达标都算同一个值才叫稳定"
+ },
+ "分档": {
+  "calc": {
+   "n": 3,
+   "ids": [
+    1,
+    2,
+    3
+   ],
+   "ok": 3,
+   "met": 3,
+   "in_tok": 31650,
+   "out_tok": 1973,
+   "lat_s": 16.2,
+   "calls": 7
+  },
+  "compose": {
+   "n": 3,
+   "ids": [
+    12,
+    13,
+    14
+   ],
+   "ok": 2,
+   "met": 2,
+   "in_tok": 82868,
+   "out_tok": 3126,
+   "lat_s": 27.9,
+   "calls": 8
+  },
+  "gap": {
+   "n": 2,
+   "ids": [
+    17,
+    20
+   ],
+   "ok": 2,
+   "met": 0,
+   "in_tok": 24143,
+   "out_tok": 1513,
+   "lat_s": 13.9,
+   "calls": 5
+  },
+  "no-call": {
+   "n": 2,
+   "ids": [
+    18,
+    19
+   ],
+   "ok": 2,
+   "met": 2,
+   "in_tok": 8420,
+   "out_tok": 859,
+   "lat_s": 6.4,
+   "calls": 2
+  },
+  "refuse": {
+   "n": 2,
+   "ids": [
+    15,
+    16
+   ],
+   "ok": 1,
+   "met": 0,
+   "in_tok": 83170,
+   "out_tok": 3986,
+   "lat_s": 31.6,
+   "calls": 8
+  },
+  "sandbox": {
+   "n": 2,
+   "ids": [
+    9,
+    10
+   ],
+   "ok": 2,
+   "met": 2,
+   "in_tok": 30593,
+   "out_tok": 1174,
+   "lat_s": 10.7,
+   "calls": 5
+  },
+  "search": {
+   "n": 5,
+   "ids": [
+    4,
+    5,
+    6,
+    7,
+    8
+   ],
+   "ok": 3,
+   "met": 3,
+   "in_tok": 109289,
+   "out_tok": 3811,
+   "lat_s": 35.9,
+   "calls": 12
+  },
+  "write": {
+   "n": 1,
+   "ids": [
+    11
+   ],
+   "ok": 1,
+   "met": 1,
+   "in_tok": 31140,
+   "out_tok": 1157,
+   "lat_s": 11.4,
+   "calls": 5
+  }
+ }
+}

@@ -1,0 +1,15 @@
+t=  0.000  boot.epoch             t0=1793714234.272981 pid=95583 timeout=600.0 gradio=6.30.0
+t=  3.038  on_load                sid=None steps=0 kinds=- screen_stepno=None screen_in=None screen_out=None screen_wait=0.0 mem_held=[] db_memory=- wall=3.031
+t= 11.225  respond.enter          sid=None
+t= 11.229  poller.start           timeout=600.0
+t= 11.243  stream.enter           sid=1
+t= 11.243  settle_all.enter       decision=cancelled ids=-
+t= 11.243  settle_all.exit        decision=cancelled
+t= 12.234  poll.pending           n=0 state=- unanswered=0
+t= 12.553  ap.wait.enter          id=933782 tool=run_python timeout=600.0
+t= 13.244  poll.pending           n=1 state=933782:pending unanswered=1
+t= 14.248  poll.pending           n=1 state=933782:pending unanswered=1
+t= 15.252  poll.pending           n=1 state=933782:pending unanswered=1
+t= 16.255  poll.pending           n=1 state=933782:pending unanswered=1
+t= 17.261  poll.pending           n=1 state=933782:pending unanswered=1
+t= 18.263  poll.pending           n=1 state=933782:pending unanswered=1

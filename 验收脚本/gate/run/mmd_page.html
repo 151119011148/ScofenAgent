@@ -1,0 +1,11 @@
+<!doctype html><meta charset="utf-8"><body>
+<script src="/Users/gaoying/Desktop/study/ai学习/验收脚本/gate/run/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:false, securityLevel:"loose"});</script>
+<div class="d0">flowchart LR
+  A[开工] --> B[收工]
+</div>
+<div class="d1">flowchart LR
+  A[开工] --> (这一行故意缺右括号且节点写法非法
+</div>
+<script>mermaid.run({querySelector: ".mermaid, [class^=d]"}).catch(e=>{document.body.setAttribute("data-runerr", String(e).slice(0,200));});</script>
+</body>

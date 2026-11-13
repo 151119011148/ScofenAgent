@@ -1,0 +1,222 @@
+{
+ "meta": {
+  "ts": "2026-11-06 18:38:43",
+  "tag": "smoke-a",
+  "cwd": "/Users/gaoying/Desktop/study/ai学习/smolagents",
+  "model": "OpenAIModel/tongyi-xiaomi-analysis-flash",
+  "max_steps": 8,
+  "planning_interval": 8,
+  "tools": [
+   "annualized_volatility",
+   "final_answer",
+   "grep_files",
+   "list_dir",
+   "max_drawdown",
+   "read_file",
+   "run_python",
+   "write_file"
+  ],
+  "repeat": 1,
+  "n_runs": 3,
+  "gate": "off（裸 agent，不经界面审批门）",
+  "aborted_by_auth_error": false
+ },
+ "summary": {
+  "n_questions": 3,
+  "交答率": {
+   "ok": 3,
+   "of": 3,
+   "pct": 100.0,
+   "note": "非 gap 题里，在 max_steps 内交出答案的比例（不看对不对）"
+  },
+  "达标率": {
+   "met": 3,
+   "of": 3,
+   "pct": 100.0,
+   "note": "交答 且 期望核对通过"
+  },
+  "例外": {
+   "exception": 0,
+   "max_steps": 0
+  },
+  "非法调用率": {
+   "unknown_tool": 0,
+   "tool_errors": 1,
+   "calls": 5,
+   "pct": 20.0,
+   "note": "（调了不存在的工具 + 工具报错）/ 工具调用总次数"
+  },
+  "步数": {
+   "mean_action": 2,
+   "max_action": 3,
+   "planning_runs": 3
+  },
+  "token": {
+   "in_total": 22993,
+   "out_total": 1507,
+   "in_mean": 7664.0,
+   "out_mean": 502.0
+  },
+  "时延": {
+   "p50": 4.07,
+   "p95": 4.65,
+   "mean": 4.17,
+   "total_s": 12.5,
+   "unit": "秒/题（整题 wall time）"
+  },
+  "缺口题": {
+   "n": 0,
+   "ids": [],
+   "基线是否如实失败": {},
+   "note": "cls=gap 的题基线**应当**失败（A1 接完 MCP 后应翻绿），不计入达标率"
+  },
+  "一致性": {
+   "repeat": 1,
+   "per_question": {},
+   "稳定率": "n/a",
+   "note": "同一题跑 repeat 次，status 与达标都算同一个值才叫稳定"
+  },
+  "分档": {
+   "calc": {
+    "n": 1,
+    "ids": [
+     1
+    ],
+    "ok": 1,
+    "met": 1,
+    "in_tok": 7904,
+    "out_tok": 523,
+    "lat_s": 4.7,
+    "calls": 2
+   },
+   "no-call": {
+    "n": 1,
+    "ids": [
+     18
+    ],
+    "ok": 1,
+    "met": 1,
+    "in_tok": 4309,
+    "out_tok": 541,
+    "lat_s": 3.7,
+    "calls": 1
+   },
+   "sandbox": {
+    "n": 1,
+    "ids": [
+     9
+    ],
+    "ok": 1,
+    "met": 1,
+    "in_tok": 10780,
+    "out_tok": 443,
+    "lat_s": 4.1,
+    "calls": 2
+   }
+  }
+ },
+ "runs": [
+  {
+   "qid": 1,
+   "cls": "calc",
+   "attempt": 1,
+   "q": "收盘价序列 [12.8, 13.42, 13.95, 13.61, 12.9, 12.05, 11.48, 11.9, 12.35, 12.02, 12.66, 13.1] 按时间升序。用 max_drawdown 工具算最大回撤，把工具返回的百分比原样告诉我。",
+   "gap": false,
+   "status": "ok",
+   "answer": "最大回撤 -17.71%，区间 第3~7个交易日（13.95 -> 11.48）",
+   "latency_s": 4.72,
+   "steps": {
+    "action": 2,
+    "planning": 1
+   },
+   "tokens": {
+    "input": 7904,
+    "output": 523
+   },
+   "tool_calls": [
+    {
+     "step": 1,
+     "name": "max_drawdown",
+     "args": "{\"prices\": [12.8, 13.42, 13.95, 13.61, 12.9, 12.05, 11.48, 11.9, 12.35, 12.02, 12.66, 13.1]}"
+    },
+    {
+     "step": 2,
+     "name": "final_answer",
+     "args": "{\"answer\": \"最大回撤 -17.71%，区间 第3~7个交易日（13.95 -> 11.48）\"}"
+    }
+   ],
+   "errors": [],
+   "check": {
+    "met": true,
+    "why": []
+   }
+  },
+  {
+   "qid": 9,
+   "cls": "sandbox",
+   "attempt": 1,
+   "q": "用 run_python 在沙箱里算 2 的 64 次方，把十进制结果写进最终答复。",
+   "gap": false,
+   "status": "ok",
+   "answer": "18446744073709551616",
+   "latency_s": 4.07,
+   "steps": {
+    "action": 3,
+    "planning": 1
+   },
+   "tokens": {
+    "input": 10780,
+    "output": 443
+   },
+   "tool_calls": [
+    {
+     "step": 1,
+     "name": "run_python",
+     "args": "{\"code\": \"print(2**64)\"}"
+    },
+    {
+     "step": 3,
+     "name": "final_answer",
+     "args": "{\"answer\": \"18446744073709551616\"}"
+    }
+   ],
+   "errors": [
+    "AgentParsingError: Error while parsing tool call from model output: The JSON blob you used is invalid due to the following error: Expecting property name enclosed in double quotes: line 1 column 2 (char 1).\nJSON blob wa"
+   ],
+   "check": {
+    "met": true,
+    "why": []
+   }
+  },
+  {
+   "qid": 18,
+   "cls": "no-call",
+   "attempt": 1,
+   "q": "最大回撤和年化波动率，一个说下行风险、一个说整体波动。哪个更适合用来设止损线？直接凭常识回答，不要查文件也不要跑工具。",
+   "gap": false,
+   "status": "ok",
+   "answer": "最大回撤更适合用来设止损线。因为止损线的核心目的是控制下行风险，而最大回撤直接衡量了从历史高点到后续低点的最大跌幅，精准对应下行风险；相比之下，年化波动率反映的是整体价格波动（包含上涨和下跌），对上行波动同样敏感，无法精准界定下行风险阈值。",
+   "latency_s": 3.73,
+   "steps": {
+    "action": 1,
+    "planning": 1
+   },
+   "tokens": {
+    "input": 4309,
+    "output": 541
+   },
+   "tool_calls": [
+    {
+     "step": 1,
+     "name": "final_answer",
+     "args": "{\"answer\": \"最大回撤更适合用来设止损线。因为止损线的核心目的是控制下行风险，而最大回撤直接衡量了从历史高点到后续低点的最大跌幅，精准对应下行风险；相比之下，年化波动率反映的是整体价格波动（包含上涨和下跌），对上行波动同样敏感，无法精准界定下行风险阈值。\"}"
+    }
+   ],
+   "errors": [],
+   "check": {
+    "met": true,
+    "why": []
+   }
+  }
+ ]
+}

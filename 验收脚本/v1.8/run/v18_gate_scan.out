@@ -1,0 +1,41 @@
+尺子（全部来自 /Users/gaoying/Desktop/study/ai学习/.rollback/v1.8，即本轮锚点事实源）：
+  my_agent.py          111 行，末行 非空
+  my_coding_agent.py   256 行，末行 非空
+  my_ui.py             1758 行，末行 非空
+注意：现场 smolagents/my_ui.py 现在是 1,910 行（另一个会话的「侧栏删除会话」未归档），不作尺子——README 文首第 5 行的口径。
+=== README：范围 [(55, 90), (599, 653), (1007, 1023), (1096, 1359), (1362, 1525)] → 行号 138 个，越界 0，指向空行 0，归外部跳过 141，端口/URL 不算 75，历史号放过 7，归属歧义但可解释 4
+=== 手册：范围 [(96, 710)] → 行号 206 个，越界 0，指向空行 0，归外部跳过 206，端口/URL 不算 98，历史号放过 8，归属歧义但可解释 3
+=== 迭代记录：范围 [(1, 233)] → 行号 79 个，越界 0，指向空行 0，归外部跳过 3，端口/URL 不算 24，历史号放过 1，归属歧义但可解释 0
+---- 分尺子的行号数（事实源 .rollback/v1.8/）----
+  my_agent.py          31 个
+  my_coding_agent.py   51 个
+  my_ui.py             341 个
+  跳过（上游/外部文件，本轮无尺子） 350 个
+  端口/URL 冒号                      197 个
+---- 归属歧义但可解释逐条 ----
+  README 行1013  归到 my_agent.py 却指不到，另一把尺子说通 :830（原文 :830-857）
+  README 行1013  归到 my_agent.py 却指不到，另一把尺子说通 :857（原文 :830-857）
+  README 行1013  归到 my_agent.py 却指不到，另一把尺子说通 :859（原文 :859-883）
+  README 行1013  归到 my_agent.py 却指不到，另一把尺子说通 :883（原文 :859-883）
+  手册 行382   归到 my_agent.py 却指不到，另一把尺子说通 :236（原文 :236）
+  手册 行382   归到 my_agent.py 却指不到，另一把尺子说通 :244（原文 :244）
+  手册 行642   归到 my_agent.py 却指不到，另一把尺子说通 :244（原文 :244）
+---- 历史号（`.rollback/v…` 点名的别版快照，或 bare 号左 40 字符标着 v1.0~v1.7），不参与判 ----
+  README 行77    my_ui.py :70（原文 :70-72）| 1. **服务只绑 `127.0.0.1`、`share=False`**（`smolagents/my_ui.py:1751-1752`，v1.1 前在 `:
+  README 行77    my_ui.py :72（原文 :70-72）| 1. **服务只绑 `127.0.0.1`、`share=False`**（`smolagents/my_ui.py:1751-1752`，v1.1 前在 `:
+  README 行652   my_ui.py :310（原文 :310）| 第三条是**结构性的**：不改上游一行源码。所有界面增强都写在 `OpsUI(GradioUI)` 子类里，`_stream_response` 自己维护那份内
+  README 行1390  my_ui.py :31（原文 :31-36）| | 25 | `smolagents/my_ui.py:1085-1158` | 步骤卡把数字写进 `metadata.title` 而不是正文：gradio 
+  README 行1390  my_ui.py :36（原文 :31-36）| | 25 | `smolagents/my_ui.py:1085-1158` | 步骤卡把数字写进 `metadata.title` 而不是正文：gradio 
+  README 行1401  my_ui.py :204（原文 :204-263）| | 36 | `smolagents/src/smolagents/memory.py:214-232` | `AgentMemory` 只有 `system_
+  README 行1401  my_ui.py :263（原文 :204-263）| | 36 | `smolagents/src/smolagents/memory.py:214-232` | `AgentMemory` 只有 `system_
+  手册 行133   my_ui.py :83（原文 my_ui.py:83）| <tr><td><code>ai学习/.rollback/</code></td><td>19 份 / 9 套</td><td><code>my_ui.py</
+  手册 行133   my_ui.py :189（原文 :189-193）| <tr><td><code>ai学习/.rollback/</code></td><td>19 份 / 9 套</td><td><code>my_ui.py</
+  手册 行133   my_ui.py :193（原文 :189-193）| <tr><td><code>ai学习/.rollback/</code></td><td>19 份 / 9 套</td><td><code>my_ui.py</
+  手册 行358   my_ui.py :405（原文 :405-428）| <td><b>已做</b>（v1.3）：<b>先看参数再执行</b>。<code>GATED_TOOLS = ("write_file","run_python
+  手册 行358   my_ui.py :428（原文 :405-428）| <td><b>已做</b>（v1.3）：<b>先看参数再执行</b>。<code>GATED_TOOLS = ("write_file","run_python
+  手册 行491   my_ui.py :53（原文  :53-172）| <td><code>DARK_CSS</code>（<code>my_ui.py:267-404</code>，v1.2 时是 :53-172）：变量覆盖 + 
+  手册 行491   my_ui.py :172（原文  :53-172）| <td><code>DARK_CSS</code>（<code>my_ui.py:267-404</code>，v1.2 时是 :53-172）：变量覆盖 + 
+  手册 行683   my_ui.py :83（原文 my_ui.py:83）| <p><b>这一轮回滚是「近乎无损」，和 v1.7 那条不一样</b>：<code>MEM_FMT</code> <b>仍是 <code>"v2"</code>
+  迭代记录 行206   my_ui.py :83（原文 my_ui.py:83）| **这一轮回滚是「近乎无损」，和 v1.7 那条不一样**：`MEM_FMT` **仍是 `"v2"`（`my_ui.py:94`，本轮没升版本）**，而 v1
+---- 第一道扫结论 ----
+越界 0 条 ／ 指向空行 0 条

@@ -1,0 +1,5 @@
+负控：/Users/gaoying/Desktop/study/ai学习/验收脚本/v1.8/run/mmd18_neg.md → 块数 2 ／ 产出 svg 2 ／ 语法错误 1 ／ 带错误标记的 svg 12 ／ Chrome exit 0
+  run 异常：[object Object]
+    1 flowchart        flowchart LR
+    2 flowchart        flowchart LR
+---- Mermaid 闸结论：负控按预期判红 ----

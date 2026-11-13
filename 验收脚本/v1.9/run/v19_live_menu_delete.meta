@@ -1,0 +1,7 @@
+跑法：smolagents/.venv/bin/python 验收脚本/v1.9/v19_live_menu_delete.py（独立实例 127.0.0.1:7874、临时库；真库 smolagents/.agent-history.sqlite3 不参与）
+离线：smolagents/.venv/bin/python 验收脚本/v1.9/v19_test_menu_delete.py → run/v19_test_menu_delete.out
+时间：2026-11-04 23:47:35
+被测 smolagents/my_ui.py：2315 行 / 139457 字节 / sha1 b0566e6cbc1e
+改动前的现场快照：.rollback/v1.9-现场-20261104-2255/my_ui.py（sha1 e29d010269f2）
+结果：离线 51/51 ＋ 真界面 28/28；另一会话的 v19_test_delete.py 43/43、v1.8 五套离线回归（nochange/interrupt/plan/p0abc/dup）全绿
+浏览器：我自己的 headless Chrome（--remote-debugging-port=9344，profile /tmp/chrome-more）；另一会话占着 9333，没碰

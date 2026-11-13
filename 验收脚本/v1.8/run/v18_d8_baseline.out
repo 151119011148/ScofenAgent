@@ -1,0 +1,74 @@
+# D8 基线对表（生成于 2026-11-02 10:23:26，脚本 v18_baseline_table.py，只读现成产物）
+# 场景：B0 对照允许跑完 ｜ B1 挂在待批上刷新页面 ｜ B2 挂在待批上 SIGKILL ｜ B3 挂在待批上 SIGINT
+
+## B0
+  note            场景 B0：对照：正常点允许，跑到答完（证明日志里那几行在正常路上会出现）
+  boot t0         （无 boot.epoch 这一行）
+  respond.GX      无（这一路生成器没收到 GeneratorExit）
+  respond.finally t= 17.282  respond.finally        frames=16 pending=0 unanswered=0
+  stream.finally  t= 17.267  stream.finally         frames=15
+  settle_all      无
+  ap.decide       无（这一路没人结算，直到超时或进程没）
+  save.enter      t= 17.269  save.enter             sid=1 msgs=5 before=read-failed:ProgrammingError
+  save_memory     t= 17.273  save_memory.enter      sid=1 chars=965
+  库里            {'sessions': 1, 'messages': 5, 'memory': 1} | messages 按会话 [(1, 5)]
+  屏上·扳机前     模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 等待审批
+  屏上·答完后      YES:bot=4 | 模型 qwen-plus 步数 2/8 本题 token in 4,792 / out 39 本题耗时 7.1s 本题审批 4.9s 进程 token in 4,792 / out 39 状态 完成
+  落库内容        messages 5 条 / memory 1 条
+     - user        41 B  用 run_python 打印 3*7 的结果，最后只回那个数字，不要重复调用工具
+     - assistant   79 B  **工具** `run_python`\n\n**参数**\n```json\n{\n  "code": "print(3 * 7
+     - assistant  178 B  **调用** `run_python`\n```json\n{\n  "code": "print(3 * 7)"\n}\n```
+     - assistant  155 B  **调用** `final_answer`\n```json\n{\n  "answer": "21"\n}\n```\n\n**结果
+     - assistant   21 B  **Final answer:**\n21\n
+     o memory   965 B  {"fmt": "v2", "steps": [{"_t": "TaskStep", "task": "用 run_python 打印 3*7 的结果，最后只回那个数字，不要重复调用工具"}, {"_t": "ActionStep", "step_number": 1, "timing": {"start_time": 1793584616.548463, "end_time": 1793584622.619175, "duration
+
+## B1
+  note            场景 B1：主测：挂在待批上时刷新页面（D8 的扳机），之后没人点
+  boot t0         t=  0.000  boot.epoch             t0=1793585840.7103639 pid=46319 timeout=600.0 gradio=6.30.0
+  respond.GX      t= 17.582  respond.GeneratorExit  frames=10
+  respond.finally t= 17.582  respond.finally        frames=10 pending=1 unanswered=1
+  stream.finally  t= 17.583  stream.finally         frames=10
+  settle_all      t= 17.583  settle_all.enter       decision=cancelled ids=0beb43
+  ap.decide       t= 17.583  ap.decide              id=0beb43 tool=run_python want=cancelled before=pending after=cancelled waited=5.231
+  save.enter      t= 17.585  save.enter             sid=1 msgs=3 before=read-failed:ProgrammingError
+  save_memory     t= 17.588  save_memory.enter      sid=1 chars=350
+  库里            {'sessions': 1, 'messages': 3, 'memory': 1} | messages 按会话 [(1, 3)]
+  屏上·扳机前     模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 等待审批
+  屏上·reload 后  模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 空闲
+  断开延迟        0.267 s（reload 点击 1793585858.025 → 生成器收到 GeneratorExit，两份时钟对表）
+  落库内容        messages 3 条 / memory 1 条
+     - user        41 B  用 run_python 打印 3*7 的结果，最后只回那个数字，不要重复调用工具
+     - assistant   67 B  {"tool": "run_python", "arguments": "{\"code\": \"print(3 * 
+     - assistant  149 B  **工具** `run_python`\n\n**参数**\n```json\n{\n  "code": "print(3 * 7
+     o memory   350 B  {"fmt": "v2", "steps": [{"_t": "TaskStep", "task": "用 run_python 打印 3*7 的结果，最后只回那个数字，不要重复调用工具"}, {"_t": "ActionStep", "step_number": 1, "timing": {"start_time": 1793585852.037677, "end_time": 1793585858.294265, "duration
+
+## B2
+  note            场景 B2：挂在待批上时 SIGKILL（强关 App 那一路，不给任何收尾机会）
+  boot t0         t=  0.000  boot.epoch             t0=1793586138.0328991 pid=47403 timeout=600.0 gradio=6.30.0
+  respond.GX      无（这一路生成器没收到 GeneratorExit）
+  respond.finally 无
+  stream.finally  无
+  settle_all      t= 10.342  settle_all.enter       decision=cancelled ids=-
+  ap.decide       无（这一路没人结算，直到超时或进程没）
+  save.enter      无（一次库都没落）
+  save_memory     无
+  库里            {'sessions': 1, 'messages': 0, 'memory': 0} | messages 按会话 []
+  屏上·扳机前     模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 等待审批
+  屏上·扳机后      模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 等待审批（这一路没有 reload：杀进程前后是同一屏，这条是死屏上最后一帧）
+  落库内容        messages 0 条 / memory 0 条
+
+## B3
+  note            场景 B3：挂在待批上时 SIGINT（终端 Ctrl-C 那一路）
+  boot t0         t=  0.000  boot.epoch             t0=1793586171.009781 pid=47622 timeout=600.0 gradio=6.30.0
+  respond.GX      无（这一路生成器没收到 GeneratorExit）
+  respond.finally 无
+  stream.finally  无
+  settle_all      t= 11.492  settle_all.enter       decision=cancelled ids=-
+  ap.decide       无（这一路没人结算，直到超时或进程没）
+  save.enter      无（一次库都没落）
+  save_memory     无
+  库里            {'sessions': 1, 'messages': 0, 'memory': 0} | messages 按会话 []
+  屏上·扳机前     模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 等待审批
+  屏上·扳机后      模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 等待审批（这一路没有 reload：杀进程前后是同一屏，这条是死屏上最后一帧）
+  落库内容        messages 0 条 / memory 0 条
+

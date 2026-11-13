@@ -1,0 +1,53 @@
+卡 pending   waited=0.0         PASS 
+卡 pending   waited=0.04        PASS 
+卡 pending   waited=5.231       PASS 
+卡 pending   waited=600.0       PASS 
+卡 allowed   waited=0.0         PASS 
+卡 allowed   waited=0.04        PASS 
+卡 allowed   waited=5.231       PASS 
+卡 allowed   waited=600.0       PASS 
+卡 denied    waited=0.0         PASS 
+卡 denied    waited=0.04        PASS 
+卡 denied    waited=5.231       PASS 
+卡 denied    waited=600.0       PASS 
+卡 cancelled waited=0.0         PASS 
+卡 cancelled waited=0.04        PASS 
+卡 cancelled waited=5.231       PASS 
+卡 cancelled waited=600.0       PASS 
+卡 timeout   waited=0.0         PASS 
+卡 timeout   waited=0.04        PASS 
+卡 timeout   waited=5.231       PASS 
+卡 timeout   waited=600.0       PASS 
+带 shown 与旧版不同                  PASS '**⏹ 随中断取消**——这个工具没有执行，没有任何副作用。'
+带 shown 时 dot 仍是 ⏹             PASS ⏹ 待批 · run_python · 随中断取消 · 等了 5.2s
+LABEL[pending] 未变              PASS 等待审批
+DOT[pending]   未变              PASS 🟡
+LABEL[allowed] 未变              PASS 已允许
+DOT[allowed]   未变              PASS 🟢
+LABEL[denied] 未变               PASS 已拒绝
+DOT[denied]   未变               PASS ⚪
+LABEL[cancelled] 未变            PASS 随停止取消
+DOT[cancelled]   未变            PASS ⏹
+LABEL[timeout] 未变              PASS 超时未批
+DOT[timeout]   未变              PASS ⏳
+DENIED_OBSERVATION 一字未动（模型可见串） PASS 
+DENIED_VERDICT 一字未动            PASS 
+STATE_LABEL 只多 interrupted+plan_denied+dup_fused+model_refused PASS {'plan_denied', 'model_refused', 'dup_fused', 'interrupted'}
+plan_denied 不与 stopped 同字（P0-4 的分开要求） PASS 计划未批准 / 已停止
+MEM_FIELDS / MEM_FMT 未动        PASS 
+步骤卡 obs='' wait=None           PASS 
+步骤卡 obs='' wait=5.231          PASS 
+步骤卡 obs='' wait=None           PASS 
+步骤卡 obs='' wait=5.231          PASS 
+步骤卡 obs='用户按了停止，本次执行已取消' wait=None PASS 
+步骤卡 obs='用户按了停止，本次执行已取消' wait=5.231 PASS 
+步骤卡 obs='用户拒绝执行，未产生任何副作' wait=None PASS 
+步骤卡 obs='用户拒绝执行，未产生任何副作' wait=5.231 PASS 
+步骤卡 obs='审批超过 600 秒无人处理' wait=None PASS 
+步骤卡 obs='审批超过 600 秒无人处理' wait=5.231 PASS 
+步骤卡 obs='21' wait=None         PASS 
+步骤卡 obs='21' wait=5.231        PASS 
+stats wait=None                PASS 
+stats wait=5.231               PASS 
+
+全绿  (0 条失败)

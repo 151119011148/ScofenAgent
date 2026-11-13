@@ -1,0 +1,45 @@
+A1 会话行删除                           PASS 
+A2 消息连带清空                          PASS 
+A3 记忆连带清空                          PASS 
+A4 别的会话完好                          PASS 
+A5 返回的行数如实                         PASS {'session': 1, 'messages': 3, 'memory': 1}
+A6 侧栏不再列出甲                         PASS 
+A7 重复删除不抛                          PASS 
+A8 删除不存在的 id                       PASS 
+B1 已删 id 插消息确实撞外键                  PASS FOREIGN KEY constraint failed
+B2 ensure 认出已删 id 并另开一条            PASS 
+B3 exists 的判断                      PASS 
+B4 新行照常可存                          PASS 
+B5 另开的那条是干净的新会话                    PASS 
+C0 未选中也是六格                         PASS 6
+C1 未选中不删任何东西                       PASS 
+C2 未选中的回执                          PASS 
+C3 未选中不碰屏幕三格                       PASS 
+C4 生成中不删                           PASS 
+C5 生成中的回执                          PASS an></div><div id="flash">生成中不能删除：先按 ■ 停止，等状态变成「已停止」再删。</div>
+C6 生成中的状态格仍是生成中                    PASS 
+C7 生成中不碰屏幕三格                       PASS 
+C8 第一下没删                           PASS 
+C9 武装记的是这一条                        PASS 
+C10 按钮换成确认文案                       PASS '⚠ 确认删除？'
+C11 回执带着会话标题                       PASS </i></span></div><div id="flash">确认删除「甲问」？这条的消息和模型记忆都会一起清掉，不可恢复。</div>
+C12 武装这一帧不碰屏幕                      PASS 
+C13 第二下删干净                         PASS 
+C14 槽位：sid 归 None、屏幕清空             PASS 
+C15 侧栏刷新且不再含甲                      PASS 
+C16 进程里那份记忆一起摘                     PASS 
+C17 按钮文案复位                         PASS '🗑 删除'
+C18 回执报的是这条的数量                     PASS /b><i>空闲</i></span></div><div id="flash">已删除「甲问」（2 条消息、1 份模型记忆）。</div>
+C19 高亮与绑定一起清                       PASS 
+C20 乙没被牵连                          PASS 
+C21 删完再点一下：未选中，不删乙                 PASS 
+C22 武装在甲                           PASS 
+C23 换会话即作废                         PASS 
+C24 对乙的第一下只是重新武装                   PASS 
+C25 第二下删的是乙、甲完好                    PASS 
+C26 新会话作废武装、甲还在                    PASS 
+C27 提问开局作废武装                       PASS 
+C28 这一问之后删甲仍需两下                    PASS 
+C29 第二下才真删                         PASS 
+
+全绿  43 条断言，失败 0

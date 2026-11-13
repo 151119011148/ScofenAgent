@@ -1,0 +1,135 @@
+场景 C4：计划待批一直没人点，等到审批超时（探针侧 V18_TIMEOUT 改短，产品里仍 600）
+app 就绪 6.1s（/config 200 40512B）
+起点 epoch 1793717568.488 ｜ 杀掉时刻 未杀
+未杀（这一路是刷新页面或正常跑完，进程归收尾的 SIGTERM 处理）
+探针配置（boot.epoch）：
+  t=  0.000  boot.epoch             t0=1793717567.3199098 pid=11256 timeout=20.0 gradio=6.30.0 planning=8
+浏览器侧：
+{
+ "__navigate0": 1793717568846,
+ "C0-peek#at": 1793717574892,
+ "C0-peek": 0,
+ "C1-panel-before-ask#at": 1793717574893,
+ "C1-panel-before-ask": "panel=NO:DOM 里没有 #planpanel 这个元素（visible=False 时 gradio 不建它）",
+ "C2-new#at": 1793717574894,
+ "C2-new#click": "clicked@186,134",
+ "C3-ask#at": 1793717577414,
+ "C3-ask#type": "clicked-submit",
+ "C4-await-plan#at": 1793717577433,
+ "C4-await-plan#waitedMs": 9026,
+ "C4-await-plan#pred": "YES:模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 计划 状态 等待审批",
+ "C5-panel-pending#at": 1793717586459,
+ "C5-panel-pending#waitedMs": 2,
+ "C5-panel-pending#pred": "YES:panel=VISIBLE 字符=1614 等待审批=Y 已允许=N 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=N 开头=[🧭 本轮计划 · 🟡 等待审批：agent 停在计划上等]",
+ "C5b-mark-pending#at": 1793717586461,
+ "C5b-mark-pending": "bot=2 计划审批卡标题=Y 未批准卡标题=N 已中断卡标题=N 工具那路审批卡标题=N",
+ "C5c-status-pending#at": 1793717586463,
+ "C5c-status-pending": "模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 计划 状态 等待审批",
+ "C6-hold#at": 1793717586464,
+ "C6b-still-pending#at": 1793717592465,
+ "C6b-still-pending": "YES:模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 计划 状态 等待审批",
+ "C7-panel#at": 1793717592466,
+ "C7-panel": "panel=YES:panel=VISIBLE 字符=1614 等待审批=Y 已允许=N 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=N 开头=[🧭 本轮计划 · 🟡 等待审批：agent 停在计划上等]",
+ "C8-status#at": 1793717592469,
+ "C8-status": "模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 计划 状态 等待审批",
+ "C9-mark#at": 1793717592470,
+ "C9-mark": "bot=2 计划审批卡标题=Y 未批准卡标题=N 已中断卡标题=N 工具那路审批卡标题=N",
+ "C10-await-settled#at": 1793717592471,
+ "C10-await-settled#waitedMs": 14036,
+ "C10-await-settled#pred": "YES:bot=3 | 模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 计划未批准",
+ "C11-panel-final#at": 1793717606507,
+ "C11-panel-final": "panel=YES:panel=VISIBLE 字符=1575 等待审批=N 已允许=N 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=Y 开头=[🧭 本轮计划 · ⏳ 超时未批——这一题没有开工，一个工具]",
+ "C12-mark-final#at": 1793717606508,
+ "C12-mark-final": "bot=3 计划审批卡标题=Y 未批准卡标题=Y 已中断卡标题=N 工具那路审批卡标题=N",
+ "C13-status-final#at": 1793717606510,
+ "C13-status-final": "模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 计划未批准"
+}
+
+服务端（v18_ui.py 的包装）：
+t=  0.000  boot.epoch             t0=1793717567.3199098 pid=11256 timeout=20.0 gradio=6.30.0 planning=8
+t=  2.066  plan.update            visible=False chars=0 reading=- sid=None
+t=  2.067  on_load                sid=None steps=0 kinds=- screen_stepno=None screen_in=None screen_out=None screen_wait=0.0 mem_held=[] db_memory=- wall=2.063
+t= 10.123  respond.enter          sid=None
+t= 10.125  poller.start           timeout=20.0
+t= 10.136  stream.enter           sid=1
+t= 10.136  settle_all.enter       decision=cancelled ids=-
+t= 10.137  settle_all.exit        decision=cancelled
+t= 11.130  poll.pending           n=0 state=- unanswered=0
+t= 12.134  poll.pending           n=0 state=- unanswered=0
+t= 13.139  poll.pending           n=0 state=- unanswered=0
+t= 14.143  poll.pending           n=0 state=- unanswered=0
+t= 15.148  poll.pending           n=0 state=- unanswered=0
+t= 16.152  poll.pending           n=0 state=- unanswered=0
+t= 17.158  poll.pending           n=0 state=- unanswered=0
+t= 18.162  poll.pending           n=0 state=- unanswered=0
+t= 18.630  plan.gate.enter        chars=1580 pending=0 sid=1
+t= 18.631  ap.wait.enter          id=910638 tool=计划 timeout=20.0
+t= 18.642  plan.update            visible=True chars=1669 reading=等待审批 sid=1
+t= 19.166  poll.pending           n=1 state=910638:pending unanswered=1
+t= 20.172  poll.pending           n=1 state=910638:pending unanswered=1
+t= 21.177  poll.pending           n=1 state=910638:pending unanswered=1
+t= 22.182  poll.pending           n=1 state=910638:pending unanswered=1
+t= 23.186  poll.pending           n=1 state=910638:pending unanswered=1
+t= 24.191  poll.pending           n=1 state=910638:pending unanswered=1
+t= 25.195  poll.pending           n=1 state=910638:pending unanswered=1
+t= 26.201  poll.pending           n=1 state=910638:pending unanswered=1
+t= 27.206  poll.pending           n=1 state=910638:pending unanswered=1
+t= 28.210  poll.pending           n=1 state=910638:pending unanswered=1
+t= 29.216  poll.pending           n=1 state=910638:pending unanswered=1
+t= 30.220  poll.pending           n=1 state=910638:pending unanswered=1
+t= 31.225  poll.pending           n=1 state=910638:pending unanswered=1
+t= 32.230  poll.pending           n=1 state=910638:pending unanswered=1
+t= 33.235  poll.pending           n=1 state=910638:pending unanswered=1
+t= 34.241  poll.pending           n=1 state=910638:pending unanswered=1
+t= 35.245  poll.pending           n=1 state=910638:pending unanswered=1
+t= 36.249  poll.pending           n=1 state=910638:pending unanswered=1
+t= 37.256  poll.pending           n=1 state=910638:pending unanswered=1
+t= 38.261  poll.pending           n=1 state=910638:pending unanswered=1
+t= 38.636  ap.wait.exit           id=910638 tool=计划 decision=timeout waited=20.0
+t= 38.637  plan.gate.denied       label=910638:timeout/20.000s msg=超时未批：这一题没有开工，一个工具都没跑。
+t= 38.638  plan.update            visible=True chars=1623 reading=超时未批 sid=1
+t= 38.648  settle_all.enter       decision=cancelled ids=-
+t= 38.648  settle_all.exit        decision=cancelled
+t= 38.651  stream.exception       exc=PlanDeniedError frames=99
+t= 38.651  stream.finally         frames=99
+t= 38.652  save.enter             sid=1 msgs=4 before=sessions=sid=1 messages=0 memory=0
+t= 38.658  save.exit              sid=1 after=sessions=sid=1 messages=4 memory=0
+t= 38.658  save_memory.enter      sid=1 chars=97
+t= 38.661  save_memory.exit       sid=1 changed_rows=97 after=sessions=sid=1 messages=4 memory=1
+t= 38.679  respond.finally        frames=100 pending=0 unanswered=0
+t= 39.266  poll.pending           n=0 state=- unanswered=0
+t= 40.271  poll.pending           n=0 state=- unanswered=0
+t= 41.273  poll.pending           n=0 state=- unanswered=0
+t= 42.278  poll.pending           n=0 state=- unanswered=0
+t= 43.283  poll.pending           n=0 state=- unanswered=0
+t= 44.288  poll.pending           n=0 state=- unanswered=0
+t= 45.293  poll.pending           n=0 state=- unanswered=0
+t= 46.298  poll.pending           n=0 state=- unanswered=0
+
+跑完之后： 库里： {'sessions': 1, 'messages': 4, 'memory': 1} | messages 按会话 [(1, 4)]
+库里的记忆步型：
+  sid=1 {'TaskStep': 1} 顺序=T token按步型in/out=TaskStep:0/0 合计=in 0/out 0
+库里的正文命中的句子：
+  一个工具都没跑=2 没有进模型的记忆=1 批准这一步就被中断=0 等待你批准这份计划=0 计划全文=1 ｜ 全文 3335 字符
+计数：
+  respond.enter                  1
+  respond.GeneratorExit          0
+  respond.finally                1
+  stream.GeneratorExit           0
+  save.enter                     1
+  save.exit                      1
+  save_memory.enter              1
+  save.RAISED                    0
+  mark.enter                     0
+  mark.exit                      0
+  on_load                        1
+  plan.gate.enter                1
+  plan.gate.allowed              0
+  plan.gate.denied               1
+  plan.gate.raise                0
+  plan.update                    3
+  ap.wait.enter+tool=计划          1
+  ap.wait.exit+tool=计划           1
+  ap.wait.enter+tool=run_python  0
+  ap.wait.exit+tool=run_python   0
+  respond.exception              0

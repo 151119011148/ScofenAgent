@@ -1,0 +1,71 @@
+---
+sidebar_position: 1
+---
+
+# In-process (ONNX)
+
+LangChain4j provides local scoring (reranking) models,
+powered by [ONNX runtime](https://onnxruntime.ai/docs/get-started/with-java.html), running in the same Java process.
+
+Many models (e.g., from [Hugging Face](https://huggingface.co/)) can be used,
+as long as they are in the ONNX format.
+
+Information on how to convert models into ONNX format can be found [here](https://huggingface.co/docs/optimum/exporters/onnx/usage_guides/export_a_model).
+
+Many models already converted to ONNX format are available [here](https://huggingface.co/Xenova).
+
+### Usage
+
+By default, scoring (reranking) model uses the CPU. 
+```xml
+<dependency>
+    <groupId>dev.langchain4j</groupId>
+    <artifactId>langchain4j-onnx-scoring</artifactId>
+    <version>1.22.0-beta32</version>
+</dependency>
+```
+```java
+String pathToModel = "/home/langchain4j/model.onnx";
+String pathToTokenizer = "/home/langchain4j/tokenizer.json";
+OnnxScoringModel scoringModel = new OnnxScoringModel(pathToModel, pathToTokenizer);
+
+Response<Double> response = scoringModel.score("query", "passage");
+Double score = response.content();
+```
+
+`OnnxScoringModel` implements `AutoCloseable`; close it when it is no longer needed to release its native resources.
+
+If you want to use the GPU, `onnxruntime_gpu` version can be found
+[here](https://onnxruntime.ai/docs/execution-providers/CUDA-ExecutionProvider.html).
+```xml
+<dependency>
+    <groupId>dev.langchain4j</groupId>
+    <artifactId>langchain4j-onnx-scoring</artifactId>
+    <version>1.22.0-beta32</version>
+    <exclusions>
+        <exclusion>
+            <groupId>com.microsoft.onnxruntime</groupId>
+            <artifactId>onnxruntime</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+
+<!-- use the same version as the onnxruntime dependency of langchain4j-onnx-scoring; 1.23.2 needs CUDA 12.x (12.8 or newer) and cuDNN 9 -->
+<dependency>
+    <groupId>com.microsoft.onnxruntime</groupId>
+    <artifactId>onnxruntime_gpu</artifactId>
+    <version>1.23.2</version>
+</dependency>
+```
+
+```java
+String pathToModel = "/home/langchain4j/model.onnx";
+String pathToTokenizer = "/home/langchain4j/tokenizer.json";
+
+OrtSession.SessionOptions options = new OrtSession.SessionOptions();
+options.addCUDA(0);
+OnnxScoringModel scoringModel = new OnnxScoringModel(pathToModel, options, pathToTokenizer);
+
+Response<Double> response = scoringModel.score("query", "passage");
+Double score = response.content();
+```

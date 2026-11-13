@@ -1,0 +1,87 @@
+<h3>6.1 v1.5 · 2026-10-29 · 记忆落库：重启后模型那一边接着记得 + 停止落在待批之前不再死停（<b>V6 + D7</b>）</h3>
+<div class="src">范围按工单号锁定 V6 + D7（<code>my_coding_agent.py</code>、<code>my_agent.py</code>、上游源码零改动；审批闸、步骤卡、状态条一行未碰）· 全文见 <code>迭代记录.md</code> v1.5 一节</div>
+
+<h4>1 这次解决什么</h4>
+<ul class="tight">
+  <li><b>V6＝V5 的第二半</b>：v1.4 实测的边界——杀掉进程再开，选中旧会话接着问，屏上 4 行历史都在（库里读出来的），模型答 <code>Final answer: 不记得</code>，本题 <code>in 3,384</code>。<b>屏与记忆是两套账</b>。</li>
+  <li><b>为什么不是"重放屏幕文字"</b>：<code>agents.py:767-769</code> 的 <code>write_memory_to_messages()</code> ＝ <code>system_prompt.to_messages()</code> ＋ 逐条 <code>step.to_messages()</code>，模型读的是 <code>memory.steps</code>，不是 chatbot 那串给人看的卡片。重放屏幕文字要<b>重定「本题累计」的边界</b>，且 <code>in</code> 随历史线性涨。所以存<b>字段本身</b>。</li>
+  <li><b>存哪些字段有根据</b>：<code>steps</code> 里只会出现 <code>TaskStep</code>/<code>ActionStep</code>/<code>PlanningStep</code>——<code>FinalAnswerStep</code> 只 yield 不 append（<code>agents.py:609-611</code>），超步数时 <code>:636</code> append 的是<b>带 <code>AgentMaxStepsError</code> 的 ActionStep</b>。存这些＝存"模型下一轮读到的那一串"。</li>
+  <li><b>D7＝v1.4 定位的那条竞态</b>：<code>agents.py:470</code> 在新 run 开头把 <code>interrupt_switch</code> 清回 <code>False</code>，所以落在待批卡<b>之前</b>的停止等于空放，后到的待批没人结算（v1.4 实测死停 <b>142.4s</b>）。取 v1.4 §7 写下的两条修法里的<b>第 ② 条</b>：<code>_stop</code> 给本轮打取消号，闸入队那一刻看到号直接按 <code>cancelled</code> 结算。</li>
+</ul>
+
+<h4>2 改动清单</h4>
+<table>
+  <tr><th>文件:行</th><th>改了什么</th><th>类型</th><th>工单号</th></tr>
+  <tr><td><code>my_ui.py:17-27</code></td><td>import 补齐：<code>ActionStep / FinalAnswerStep / TaskStep / ToolCall</code> + <code>monitoring.Timing, TokenUsage</code> + <code>utils.make_json_serializable</code></td><td>修改</td><td>V6</td></tr>
+  <tr><td><code>my_ui.py:59-76</code></td><td><code>MEM_FMT = "v1"</code> + <code>MEM_FIELDS</code>：三种 step 的字段白名单，清单来自 <code>to_messages()</code>；<code>model_input_messages</code>（整段提示词，O(n²)）<b>不存</b></td><td>新增</td><td>V6</td></tr>
+  <tr><td><code>my_ui.py:78-118</code></td><td><code>_error_types()</code> 沿 <code>AgentError.__subclasses__()</code> 按类名索引；<code>_decode_error()</code> 用 <code>cls.__new__(cls)</code> ＋ <code>Exception.__init__</code> 造错误对象（正常构造会<b>当场</b> <code>log_error</code>，且 logger 必需）；<code>_decode_timing()</code>/<code>_decode_usage()</code> 避开派生字段（<code>Timing.duration</code> 是 property、<code>total_tokens</code> 是 <code>init=False</code>）</td><td>新增</td><td>V6</td></tr>
+  <tr><td><code>my_ui.py:119-150</code></td><td><b><code>encode_memory(steps)</code></b>：<code>tool_calls→[tc.dict()]</code>（OpenAI function 形状，<b>不是</b> <code>asdict</code>）、<code>error→{"type","message"}</code>；<b>文本字段原样存</b>——<code>make_json_serializable</code>（<code>utils.py:146-153</code>）会把<b>长得像 JSON 的字符串解析成 dict</b>，回放时观察值就变字</td><td>新增</td><td>V6</td></tr>
+  <tr><td><code>my_ui.py:153-211</code></td><td><b><code>decode_memory(blob)</code></b>：坏 JSON / <code>fmt</code> 不符 / 顶层不是 dict → <code>[]</code>（当作没记忆）；<b>单条坏了只跳过那一条</b>，不连坐；<code>PlanningStep</code> 的两个无默认字段显式交</td><td>新增</td><td>V6</td></tr>
+  <tr><td><code>my_ui.py:373-400</code></td><td><code>History</code> 文档改口 + DDL 追加 <code>CREATE TABLE IF NOT EXISTS memory(session_id … REFERENCES sessions(id) ON DELETE CASCADE, payload TEXT NOT NULL, updated_at REAL NOT NULL)</code>——<b>additive</b>，老库多一张表就能用</td><td>修改</td><td>V6</td></tr>
+  <tr><td><code>my_ui.py:465-478</code></td><td><code>save_memory(sid, payload)</code>（<code>INSERT OR REPLACE</code>，返字符数）/ <code>load_memory(sid)</code></td><td>新增</td><td>V6</td></tr>
+  <tr><td><code>my_ui.py:507-508</code></td><td><code>OpsUI</code> <b>类级</b> <code>_run_seq</code> / <code>_cancelled_before</code>：闸装在进程唯一的 agent 上，计数器必须同侧</td><td>新增</td><td>D7</td></tr>
+  <tr><td><code>my_ui.py:552-572</code></td><td><b><code>_gated_call</code></b>：入队与判停在<b>同一个临界区</b>——<code>with self._gate_lock: self._pending.append(ap); if _run_seq &lt;= _cancelled_before: ap.decide("cancelled")</code>。两种到达顺序全覆盖：闸先拿锁 → <code>_stop</code> 的 <code>_settle_all</code> 必看得见；<code>_stop</code> 先拿锁 → 入队即自判 cancelled。<b>窗口关死</b></td><td>修改</td><td>D7</td></tr>
+  <tr><td><code>my_ui.py:767-778</code></td><td><code>_stream_response</code>：计数器归零之后、<b>起 worker 线程之前</b>先领这一轮的号</td><td>修改</td><td>D7</td></tr>
+  <tr><td><code>my_ui.py:885-912</code></td><td><code>_bind_memory</code>：进程内未命中时 <code>decode_memory(self.hist.load_memory(sid))</code> → <code>mem.steps.extend(steps)</code>。只回灌 steps，<code>system_prompt</code> 与 <code>monitor</code> 不动</td><td>修改</td><td>V6</td></tr>
+  <tr><td><code>my_ui.py:980-986</code></td><td><code>_respond</code> 的 <code>finally</code>：<code>mem is not None</code> <b>且</b> <code>self._mem_sid == sid</code> 才落库（没绑定记忆的一题不建行；中途换会话别把别人的记忆盖过来）。worker 可能还在跑，<b>半截可接受</b></td><td>修改</td><td>V6</td></tr>
+  <tr><td><code>my_ui.py:992-1013</code></td><td><code>_stop</code>：先打取消号 → 再 <code>_settle_all("cancelled")</code> → 最后 <code>interrupt()</code>；docstring 补根因 <code>agents.py:470</code></td><td>修改</td><td>D7</td></tr>
+  <tr><td><code>ai学习/.rollback/v1.5/</code></td><td>第六套存档，<code>.rollback/</code> 从 10 份变 <b>12 份</b></td><td>新增</td><td>回滚</td></tr>
+</table>
+<p>体量：<code>my_ui.py</code> <b>893 → 1,108 行</b>（44,838 → <b>55,774 B</b>，<code>diff</code> 净 <b>+217 / −2</b>）。<code>my_coding_agent.py</code> <b>204 行 / 8,355 B 未动</b>（<code>cmp</code> 与 <code>.rollback/v1.4</code>、<code>.rollback/v1.5</code> 双份一致）。上游 <code>git status --porcelain</code> 仍只有三个 untracked 的 <code>my_*.py</code>，<code>git diff --name-only</code> <b>0 行</b>。</p>
+
+<h4>3 怎么用</h4>
+<ol class="tight">
+  <li><b>关掉再开，旧会话还记着</b>：问「请把数字 73 记住」→「关闭Agent」收工 → 再开 → 侧栏点那条 → 问「我刚才让你记住的数字是多少」→ 答 <b>73</b>（v1.4 答「不记得」）。</li>
+  <li><b>工具跑过的结果也在记忆里</b>：<code>run_python</code> 打印 <code>21</code> → 重启 → 问「刚才那次 run_python 打印出来的结果是什么」→ 答 <b>21</b>。</li>
+  <li><b>「＋ 新会话」仍然一无所知</b>：答「不记得」，本题 <code>in</code> 回到裸起步 <b>2,363</b>。持久化只针对<b>聊过的那条</b>。</li>
+  <li><b>停止落在待批之前不用再补一刀</b>：按 ■ 停止 → 走到<b>已停止</b>，不再卡「等待审批」等人手点 ✖。</li>
+  <li>被那样取消的调用<b>照样进记忆</b>：模型下一轮读到「用户按了停止，本次执行已取消，未产生任何副作用」。</li>
+  <li>两条边界：① <b>图片不入库</b>（<code>images</code>/<code>image_outputs</code>/<code>model_output_images</code>），重启后带图的观察值不进模型上下文；② 停在半截落的是<b>那一刻</b>的 steps。</li>
+</ol>
+
+<h4>4 上线验收（当场跑过的真实输出）</h4>
+<p><b>离线</b>：<code>/tmp/v15_test.py</code>（venv python，<code>_stream_response</code>/<code>agent.run</code> 打桩、临时库）——<b>65 条断言全 PASS，<code>FAILS: 无</code></b>。分组：编解码 <b>16</b>（1c 观察值 <code>{"ok": true, "n": 73}</code> 逐字保留、1f 恢复后 <code>type(step.error).__name__=="AgentParsingError"</code>、<b>1n 用框架自己的 <code>write_memory_to_messages()</code> 逐字比对回灌前后</b>、1p 图片字段不入库）· 落库重启 <b>22</b>（2h 回灌 4 步、2i 重启前后模型读到的那一串相同、<b>2l 重启后「本题累计」边界仍 300/13</b>、2t <code>DROP</code> memory 表后老库照常用、2v 未绑定记忆的一题不落库且不崩）· D7 <b>17</b>（3a 标记在先 → 1s 内返回、3c 原工具<b>零调用</b>、3d/3d2 <code>_unanswered()==[]</code> 且下一轮开局 <code>_pending.clear()</code>、3e/3f 未标记时老实等人、<b>3l 端到端</b> 0.2s 停止 → 3s 内自己结束、3m 观察值＝取消那句、3o 半截也落库带 <code>⏹</code>）· 回归 <b>10</b>（4a <code>⚪ 已取消</code> 判定、4b/4d 库里 <code>status</code> 合法、4g <code>outputs</code> 7/3/4、4h 门没套两层）。</p>
+<p><b>在线（交付形态 7860，真 qwen-plus；重启一律走 <code>关闭Agent.command</code>，pid 45372 → 46527 → 49146）</b>：</p>
+<table>
+  <tr><th>判据</th><th>方法</th><th>结果</th></tr>
+  <tr><td><b>V6 跨重启·记住</b></td><td>进程 1 两问 → 关停 → 再开 → 点旧会话问第三问</td><td><code>in 2,362 → 2,465</code> →（重启）→ <code>Final answer: 73</code>，<b>本题 <code>in 2,574</code></b>（裸起步 2,363，带上了历史）；再问 <code>in 2,675</code></td></tr>
+  <tr><td><b>V6 工具观察值也带着</b></td><td>审批跑 <code>print(3*7)</code> → 第二次重启后问</td><td>模型 <code>Final answer: 21</code>（<code>in 3,091</code>、进程归零 <code>3,091/17</code>）；库里那条 ActionStep 的观察值是逐字的 <code>exit=0</code>⏎<code>21</code></td></tr>
+  <tr><td>新会话仍隔离</td><td>重启后点「＋ 新会话」问同一题</td><td><code>Final answer: 不记得</code>，<code>in 2,363</code></td></tr>
+  <tr><td>审批 + 落库同屏</td><td>强制 <code>run_python</code> → 点 ✔ 允许</td><td><code>第 1 步 · run_python · 🟢 成功 · 272.9s · in 2,909/out 21</code> + <code>第 2 步 · final_answer · 🟢 成功 · 0.8s · in 2,987/out 17</code>；本题 <code>5,896/38</code>，进程 <code>16,289/109</code></td></tr>
+  <tr><td><b>D7 交付形态复测</b></td><td><code>/tmp/v15_d7.js</code>：提问后 <b>0.2s</b> 按 ■ 停止，观察 30s</td><td><code>awaitingSeen 0</code>（<b>从没进过</b>「等待审批」）、0.7s 停止中 → <b>1.2s 已停止</b>，此后 26s 全是已停止；v1.4 同一路死停 <b>142.4s</b></td></tr>
+  <tr><td>取消那一轮也进记忆</td><td><code>sqlite3</code> 直查 payload</td><td>session 1 里 <code>run_python {"code": "print('D7')"}</code> 的 <code>observations</code> ＝「用户按了停止，本次执行已取消，未产生任何副作用。」</td></tr>
+  <tr><td>库里形状</td><td><code>PRAGMA</code> + <code>json.loads</code></td><td>4 张表（<code>sessions/messages/memory/sqlite_sequence</code>）；两问后 payload <b>1,029 字符 / 4 步</b>，全跑完 <b>4,042 字符 / 15 步</b>；真实库 <code>40,960 B</code>、2 会话 / 27 行消息 / 2 行记忆</td></tr>
+  <tr><td><b>回滚演练（双向）</b></td><td><code>cp .rollback/v1.4/* → 断言 → cp .rollback/v1.5/* → 断言 → cmp</code></td><td>v1.4 方向 <b>15</b> 条全 PASS、v1.5 方向 <b>13</b> 条全 PASS，恢复后与存档<b>逐字节一致</b>，再跑离线 <b>65 条 <code>FAILS: 无</code></b></td></tr>
+  <tr><td><b>v1.4 代码读 v1.5 写过的库</b></td><td>拷库给 v1.4 的 <code>History</code> 读写 ＋ <b>真启动 v1.4 探测口</b></td><td><code>load(1)</code> 读出 <b>12 行</b>不减、<code>save()</code> 正常、<code>memory</code> 表<b>原地留着不碰</b>；v1.4 在 7861 上 <code>HTTP 200</code>、日志无 <code>Traceback</code></td></tr>
+  <tr><td>四条关停判据</td><td><code>bash ~/Desktop/关闭Agent.command</code> 后实测</td><td>7860 监听 <b>0</b>、AgentClient Chrome <b>0</b>、<code>who</code> 只剩 <b>console</b>、Terminal 窗口 <b>0</b></td></tr>
+  <tr><td>日志零噪声</td><td><code>.agent-ui.log</code>（15 行 / 1,850 B）<code>grep -c</code></td><td><code>Traceback</code> / <code>Error in callback</code> / <code>asyncio.exceptions</code> / <code>RuntimeError:</code> / <code>gradio.exceptions</code> / <code>ClosedClient</code> / <code>Event loop</code> <b>全 0</b></td></tr>
+</table>
+<p><b>两条过程问题如实记</b>：① 回滚演练 v1.4 方向<b>首跑 1 条 FAIL</b>，是断言把<b>字节</b>当<b>字符</b>（v1.4 是 44,838 B / 37,365 字符，中文注释 3 字节 1 字符）；改成「import 打出的字符数必须等于磁盘文件字符数」后复跑全绿。② 本轮开始前我用 <code>sqlite3.connect</code> 探测交付库路径时，<code>connect</code> 的副作用<b>建了个 0 字节</b>的 <code>smolagents/.agent-history.sqlite3</code>（该路径原本不存在），当场按文件名 <code>rm -f</code> 撤掉；现在那份是应用自己 22:22 建的，<b>没有既有数据被覆盖</b>。</p>
+
+<h4>5 回滚</h4>
+<p><code>cp .rollback/v1.4/my_ui.py .rollback/v1.4/my_coding_agent.py smolagents/</code>。行为退回「重启后答不记得」＋「停止落在待批之前会死停」。<b>数据不会坏</b>：<code>memory</code> 表是 additive 建的，v1.4 代码不认它（实测读同一份库正常、表原地留着），回滚<b>不删</b>已有 payload，再升回 v1.5 时旧 payload 照读（<code>fmt</code> 不符才降级成"没记忆"）。<b>但回滚会把 V6 和 D7 一起重新打开。</b></p>
+
+<h4>6 口径变化</h4>
+<ol class="tight">
+  <li><b>记忆档位</b>：每会话一份、只在进程里 → 每会话一份、<b>落库</b>。库里形式 <code>{"fmt":"v1","steps":[…]}</code>，一行一个 <code>session_id</code>。</li>
+  <li><b>存的是字段，不是屏幕文字</b>；<code>model_input_messages</code> 与图片三兄弟<b>不存</b> → 带图的观察值重启后进不了模型上下文【多图会话未验证】。</li>
+  <li><b>文本一律原样存</b>，只有 <code>action_output</code> 过 <code>make_json_serializable</code>（<code>utils.py:146-153</code> 会把像 JSON 的串解析成 dict，回放就变字）。</li>
+  <li><b>错误对象是"造"的</b>（<code>__new__</code> ＋ <code>Exception.__init__</code>）；<code>ToolCall</code> 存 OpenAI function 形状。</li>
+  <li><b>坏数据降级</b>：整块坏＝当作没记忆，单条坏＝跳过那一条。<b>不会</b>因一次异常废掉整条会话。</li>
+  <li><b>token 口径不变</b>，跨重启继续涨：<code>2,362 → 2,465 →</code>（重启）<code>2,574 → 2,675 →</code>（审批两步 <code>2,909 + 2,987</code>）<code>→</code>（二次重启）<code>3,091</code>；裸起步恒 <code>2,363</code>；<b>进程档每次重启归零</b>。</li>
+  <li><b>「本题累计」边界不受回灌影响</b>：回灌的是<b>上一题</b>的 steps，本题仍从 0 起算（离线 2l：300/13）。</li>
+  <li><b>停止的语义扩了一格</b>：<code>■ 停止</code> 现在覆盖"本轮之后到达的待批"；被取消的调用照样写进记忆并落库。</li>
+  <li><b>审批等待时间计入步骤耗时</b>（实测 <code>272.9s</code>，真执行 ~1s）：v1.3 起就是这口径，本轮<b>没改</b>。</li>
+  <li><b>体量</b>：<code>my_ui.py</code> <b>893 → 1,108 行</b>、<b>44,838 → 55,774 B</b>、净 <b>+217 / −2</b>；<code>.rollback/</code> <b>10 → 12 份</b>；看板 <b>33 → 34 条</b>（D7/V6 转已上线，新立 <b>V7</b> 侧栏选中态）。</li>
+</ol>
+
+<h4>7 遗留（下次的输入）</h4>
+<ul class="tight">
+  <li><b>侧栏选中态陈旧（v1.4 那条遗留本轮造成了真后果）→ 新立 V7</b>：点「＋ 新会话」后 radio 仍保留上一次的 <code>checked</code>，于是"点那条<b>高亮着的</b>旧会话"＝点了一个值没变的 radio → <b>不触发 change</b> → 问题落进新会话（探测口实测 <code>in 2,463</code>、答「不记得」，数据没坏、只是进错了门）。反证：<code>/tmp/v15_leg.js</code> 每次点击前先读 <code>before-checked</code>，<code>before-checked=0</code> 时一切正常。</li>
+  <li><b>半截落库</b>：停在待批上的那一轮，记忆里有 <code>TaskStep</code> 而无对应 <code>ActionStep</code>——与 v1.4 的停止语义一致，不是新问题。</li>
+  <li><b>取消号是类级</b>：一个标签按停止会让<b>所有</b>在飞的待批按 <code>cancelled</code> 结算【未验证，本轮始终一次一题】。</li>
+  <li><b>带图观察值不进持久记忆</b>；<b>多工具并行只处理最早一条</b>（v1.3 就在）。</li>
+  <li>仍欠你点头：dify Docker Compose（#5）、MCP servers <code>npm ci</code>（#6）、<b>百炼 Key 轮换</b>、<code>gradio_ui.py:456</code> 的 <code>.capitalize()</code>、D2、P0-4。</li>
+</ul>
+<p><b>推荐下一刀 v1.6 = V7（侧栏选中态同步，一句话改动、真后果）＋ 把审批等待时长从步骤耗时里单列</b>。P0-4 继续往后排。</p>
+

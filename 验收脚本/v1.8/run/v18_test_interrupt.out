@@ -1,0 +1,25 @@
+1a 改前冻在待批 PASS '「✔ 允许」** 才真的执行；**「✖ 拒绝」** 则这个工具一行代码都不会跑。'
+1b 改后没有待批字样 PASS '(3 * 7)"\n}\n```\n\n**⏹ 随中断取消**——这个工具没有执行，没有任何副作用。'
+1c 卡片 status 转 done PASS done
+1d 标题带上精确等待秒数 PASS ⏹ 待批 · run_python · 随中断取消 · 等了 5.2s
+1e 原有消息一张不丢 PASS len=3
+1f 卡片说的是「随中断取消」 PASS ')"\n}\n```\n\n**⏹ 随中断取消**——这个工具没有执行，没有任何副作用。'
+1g 标题同一条措辞 PASS ⏹ 待批 · run_python · 随中断取消 · 等了 5.2s
+2a 标记标题是「已中断」而不是「已停止」 PASS ⏹ 已中断 · 审批空等 5.2s
+2b 标记里写了这项审批没等来点击 PASS 
+2c 标记里写了干等多少秒 PASS '中断取消，对应工具一行代码都没执行。\n\n其中干等 **5.2s** 在等人点审批。\n\n想接着做，重新提问即可（这一题的半截内容已经在上面）。'
+2d 标记 status=done（不会被折成待批气泡） PASS 
+3a 等待挂回最后一个 ActionStep PASS 5.231000661849976
+3b encode 之后 payload 里有 wait 这一格 PASS odel_output": "", "token_usage": {"input_tokens": 2355, "output_tokens": 22}, "is_final_answer": false, "wait": 5.231}]}
+3c 回灌读得出这一格（重启后仍在） PASS 5.231
+3d 状态条口径 task_wait 跟着读出来 PASS 5.231
+4a 已有归属的步不许被改写 PASS 1.5
+4b 连跑两次账不翻倍 PASS 5.231000661849976
+5a mem=None 不炸且照样补标记 PASS 
+5b 只有 TaskStep（没有 ActionStep）时不挂账 PASS 
+5c 不在登记表上的单不参与收尾 PASS ⏹ **本题已中断**：页面被刷新或关闭，这一题后面的步骤没有跑。
+
+想接着做，重新提问即可（这一题的半截内容已经在上面
+5d 那种情况下没有空等可报 PASS ⏹ 已中断
+
+全绿  (0 条失败)

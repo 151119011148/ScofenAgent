@@ -1,0 +1,26 @@
+场景 A1：对照：全程不断开，3s 自动允许
+approval_timeout=20.0 s | 探针 t0_epoch=1793584374.333
+  浏览器 S1-set#at              t=  7.489
+  浏览器 S2-send#at             t=  7.494
+  浏览器 S3-first-frame#at      t=  7.536
+  浏览器 S4-wait-stream#at      t=  8.611
+  浏览器 S5-peek#at             t= 16.613
+  服务端事件（全量）：
+    t=  0.192  boot                       port=7871 frames=20 approval_timeout=20.0 auto_allow=True t0_epoch=1793584374.333
+    t=  0.910  event.load                 
+    t=  7.537  gen.start                  message=这道题用来测断开
+    t=  7.538  wait.enter                 tool=run_python timeout=20.0
+    t= 10.541  decide                     decision=allowed waited=3.003
+    t= 10.541  wait.exit                  decision=allowed
+    t= 12.561  worker.alive               tick=4 decision=allowed
+    t= 13.677  gen.finally                state=done frames=20 threads=6
+    t= 14.574  worker.alive               tick=8 decision=allowed
+    t= 16.589  worker.alive               tick=12 decision=allowed
+    t= 18.608  worker.alive               tick=16 decision=allowed
+    t= 19.618  worker.exit                ticks=18 decision=allowed
+  计数 gen.finally    1
+  计数 wait.timeout   0
+  计数 worker.exit    1
+  计数 event.close    0
+  计数 event.load     1
+  计数 decide         1

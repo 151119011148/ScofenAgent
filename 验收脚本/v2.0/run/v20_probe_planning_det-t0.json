@@ -1,0 +1,45 @@
+{
+ "meta": {
+  "ts": "2026-11-06 23:54:27",
+  "tag": "det-t0",
+  "det_only": true,
+  "model": "OpenAIModel/tongyi-xiaomi-analysis-flash",
+  "generation_kwargs": {
+   "temperature": 0.0
+  },
+  "max_steps": 8,
+  "planning_interval_before_probe": 8,
+  "ids": [
+   1,
+   6,
+   9,
+   14,
+   16,
+   12
+  ],
+  "arms": [],
+  "gate": "off（裸 agent，不经界面审批门）"
+ },
+ "determinism": {
+  "qid": 9,
+  "n": 2,
+  "轨迹逐字节相同": true,
+  "答复逐字节相同": true,
+  "判分相同": true,
+  "token": [
+   24342,
+   24148
+  ],
+  "first_diff": null,
+  "why_per_attempt": [
+   [
+    "没调用 run_python"
+   ],
+   [
+    "没调用 run_python"
+   ]
+  ]
+ },
+ "runs": [],
+ "summary": null
+}

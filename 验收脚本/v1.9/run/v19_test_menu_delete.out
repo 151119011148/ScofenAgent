@@ -1,0 +1,54 @@
+D0 任何输入都是六格                        PASS 6
+D1 缺 @ 整串不认                        PASS {'__type__': 'update'}
+D2 id 不是数字不认                       PASS 
+D3 空 payload 不认                    PASS 
+D4 None 也不炸                        PASS 
+D5 第一下是武装不是删                       PASS <div id="flash">确认删除「乙问」？这条的消息和模型记忆都会一起清掉，不可恢复。再点一次这一行的「⋯ → 删除」。</div>
+D6 武装这一帧库里没动                       PASS 
+D7 武装只动状态条                         PASS 
+D8 回执教的是怎么确认                       PASS 和模型记忆都会一起清掉，不可恢复。再点一次这一行的「⋯ → 删除」。</div>
+D9 同号重复投递吞掉                        PASS ({'__type__': 'update'}, {'__type__': 'update'}, {'__type__': 'update'}, {'__typ
+D10 吞掉之后库里还是没动                     PASS 
+E1 第二下删干净                          PASS 
+E2 别的会话一根毛不动                       PASS 
+E3 回执报的是这条的数量                      PASS </i></span></div><div id="flash">已删除「乙问」（3 条消息、1 份模型记忆）。屏幕上这条没动。</div>
+E4 删邻居不动屏幕                         PASS sid='1' chatbot={'__type__': 'update'}
+E5 只有侧栏重画                          PASS None
+E6 进程里那份记忆一起摘                      PASS 
+E7 武装状态清空                          PASS 
+E8 常驻键的文案没被带跑                      PASS {'__type__': 'update'}
+E9 绑定与会话对象都没变                      PASS 
+E10 换一个号才会重新武装                     PASS lash">确认删除「丙问」？这条的消息和模型记忆都会一起清掉，不可恢复。再点一次这一行的「⋯ → 删除」。</div>
+E11 同一次点击的重复投递照样吞                  PASS 
+E12 第三条件也删得掉                       PASS i></span></div><div id="flash">已删除「丙问」（1 条消息）。屏幕上这条没动。</div>
+F1 第一下由那一路武装                       PASS </i></span></div><div id="flash">确认删除「甲问」？这条的消息和模型记忆都会一起清掉，不可恢复。</div>
+F2 六格槽位是那一路的（按钮换文案）                PASS {'value': '⚠ 确认删除？', '__type__': 'update'}
+F3 第二下删掉选中那条                       PASS 
+F4 删完回到没有选中                        PASS sid=None chatbot=[]
+F5 按钮文案复位                          PASS {'value': '🗑 删除', '__type__': 'update'}
+F6 绑定与计划一起清                        PASS 
+G1 生成中不删任何东西                       PASS 
+G2 回执和常驻键同一句                       PASS an></div><div id="flash">生成中不能删除：先按 ■ 停止，等状态变成「已停止」再删。</div>
+G3 状态条跟着这一档染色                      PASS <div id="statusbar" class="st-running"><span class="pill"><b
+G4 不碰屏幕三格                          PASS 
+G5 停止中同样不删                         PASS 
+G6 停了之后这一路还能删                      PASS 
+H1 已不存在的行不报错                       PASS {'__type__': 'update'}
+H2 也不误删当前这条                        PASS 
+H3 只重画侧栏（旧行就此消失）                   PASS 
+H4 行没了就把武装一起清                      PASS 
+H5 连点两下都只有重画、没有回执                  PASS {'__type__': 'update'}
+I1 没选中时删邻居照样走得通                    PASS None
+I2 第二下真删且不碰屏幕                      PASS 
+I3 六格里没有 gr.update 之外的意外类型         PASS ['NoneType', 'dict', 'str', 'dict', 'dict', 'dict']
+I4 模块里两条入口都在                       PASS 
+I5 SIDEBAR_JS 是个箭头函数串              PASS () => {
+  co
+J1 刷新前先把这一行武装                      PASS 和模型记忆都会一起清掉，不可恢复。再点一次这一行的「⋯ → 删除」。</div>
+J2 撞号的串确实会被当重复投递吞掉（旧前端的毛病）         PASS ({'__type__': 'update'}, {'__type__': 'update'}, {'__type__': 'update'}, {'__typ
+J3 换了开场号就重新武装、有回执                  PASS lash">确认删除「乙问」？这条的消息和模型记忆都会一起清掉，不可恢复。再点一次这一行的「⋯ → 删除」。</div>
+J4 回执这一帧库里还没动                      PASS 
+J5 同页第二下才真删                        PASS ></div><div id="flash">已删除「乙问」（3 条消息、1 份模型记忆）。屏幕上这条没动。</div>
+J6 前端送的是两段号（开场号＋页内第几次）             PASS 
+
+断言 51 条，失败 0 条

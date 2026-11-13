@@ -1,0 +1,61 @@
+Tool 'fetch' failed: 'Error executing tool fetch: Refused to fetch http://127.0.0.1:9/robots.txt: 127.0.0.1 resolves to 127.0.0.1, which is not a public address. Start the server with --allow-private-ips to allow private, loopback and link-local addresses.'
+Tool 'fetch' failed: 'Error executing tool fetch: Refused to fetch http://169.254.169.254/robots.txt: 169.254.169.254 resolves to 169.254.169.254, which is not a public address. Start the server with --allow-private-ips to allow private, loopback and link-local addresses.'
+HTTP Request: GET https://example.com/robots.txt "HTTP/1.1 404 Not Found"
+HTTP Request: GET https://example.com/ "HTTP/1.1 200 OK"
+[11/04/26 23:20:26] INFO     Processing request of type            server.py:733
+                             ListToolsRequest                                   
+                    INFO     Processing request of type            server.py:733
+                             ListToolsRequest                                   
+                    INFO     Processing request of type            server.py:733
+                             CallToolRequest                                    
+Process group termination failed for PID 8518: [Errno 1] Operation not permitted, falling back to simple terminate
+Secure MCP Filesystem Server running on stdio
+Client does not support MCP Roots, using allowed directories set from server args: [ '/Users/gaoying/Desktop/study/ai学习/验收脚本/v2.0/run' ]
+起点：工具 8 只、system_prompt 4942 字符、本进程名下子进程 0 个
+
+A01 两个 server 都连上                            PASS ['time', 'fetch']{}
+A02 挂上三只工具                                   PASS {'get_current_time': 'time', 'convert_time': 'time', 'fetch': 'fetch'}
+A03 一只都不该被挡下（清单与 server 对得上）                 PASS []
+A04 原有工具一只没少                                 PASS []
+A05 provenance 贴到了工具上                        PASS 
+A06 三只都出现在模型读得到的清单里                          PASS []
+A07 fetch 的 schema 真带过去了（不是空壳）               PASS ['max_length', 'raw', 'start_index', 'url']
+A08 挂 MCP 的 prompt 代价在预算内（<3000 字符）          PASS +2044 字符
+A09 describe 说得清挂了几个                         PASS time×2、fetch×1
+A10 重复 attach 幂等：返回同一把桥、不重连                  PASS 子进程 2
+B01 get_current_time 给的是真时间（与本机相差 <120s）     PASS 2026-11-04T23:20:21+08:00
+B02 convert_time 会换到别的时区                     PASS {   "source": {     "timezone": "Asia/Shanghai",     "dateti
+B03 fetch 拒打回环地址（SSRF 护栏在）                   PASS Error executing tool fetch: Refused to fetch http://127.0.0.1:9/ro
+B04 fetch 拒打云元数据地址                           PASS Error executing tool fetch: Refused to fetch http://169.254.169.25
+B05 server 侧报错是文本不是异常（模型读得到、能改道）             PASS 
+B06 公网抓取在 30s 超时内拿到正文                        PASS 4.5s · Contents of https://example.com/:
+This domain is for use
+B07 假 server 也挂得上（stdio 通道与 server 种类无关）     PASS {}
+B07b 挂到假 agent 上，没碰单例那把桥                     PASS 
+B08 挂住的外部调用会被超时砍掉                            PASS 2.0s · McpError
+C01 detach 后外部工具从 agent 上摘干净                 PASS 
+C02 原有工具一只没丢                                 PASS []
+C03 system_prompt 回到原长                       PASS 4942 → 挂上 6986 → 摘掉 4942
+C04 agent 上那把桥的记号也清了                         PASS 
+C05 不留子进程                                    PASS 残留 0 个
+C06 重复 detach 不炸                             PASS 
+C07 摘掉之后还能再挂上（桥记号真的清了）                       PASS 期望 ['convert_time', 'fetch', 'get_current_time']
+D01 server 有、清单没点名的工具不挂                      PASS ['time/get_current_time（不在点名清单）']
+D02 可执行文件不在 → 记录原因，不抛                        PASS {'time': '可执行文件不在（/nonexistent/bin/mcp-server-time）'}
+D03 缺 server 时 describe 会如实讲                 PASS 未挂载：time（可执行文件不在（/nonexistent/bin/mcp-server-time））
+D04 与已有工具撞名就不覆盖（哪怕清单点了名）                     PASS ['time/get_current_time（与已有工具撞名，不覆盖）']
+D05 破坏性词根 delete_file 进不了工具表                 PASS 
+D05 破坏性词根 remove_path 进不了工具表                 PASS 
+D05 破坏性词根 move_note 进不了工具表                   PASS 
+D05 破坏性词根 write_note 进不了工具表                  PASS 
+D05 破坏性词根 reset_all 进不了工具表                   PASS 
+D06 正常名字 get_current_time 不误伤                PASS 
+D06 正常名字 fetch 不误伤                           PASS 
+D06 正常名字 nap 不误伤                             PASS 
+D06 正常名字 search_docs 不误伤                     PASS 
+D07 真 filesystem server：write_file/move_file 被拒收 PASS filesystem/write_file（名字含破坏性动词）; filesystem/move_file（名字含破坏性动词）
+D08 真 filesystem server：它的 read_file 因撞名不覆盖我那只 PASS filesystem/read_file（与已有工具撞名，不覆盖）
+D09 filesystem 的其它工具（目录/搜索类）没被点名，一只都不挂       PASS ['filesystem/read_text_file（不在点名清单）', 'filesystem/read_media_file（不在点名清单）', 'filesystem/read_multiple_files（不在点名清单）', 'filesystem/edit_file（不在点名清单）', 'filesystem/create_directory（不在点名清单）', 'filesystem
+
+全绿  42 条断言，失败 0
+收尾子进程：0 个

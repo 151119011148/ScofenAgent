@@ -1,0 +1,536 @@
+============================================================================================
+v1.8 第⑤刀 P1-a 重复调用检测与熔断：立项／结构／离线闸／零成本回放／真模型那一路
+============================================================================================
+生成方式：`smolagents/.venv/bin/python 验收脚本/v1.8/v18_p1a_report.py`（一次性写入器）
+写入时间：2026-11-04 00:53:41
+口径约定：三、四两节是**当场重跑**（不是搬旧文件）；第八节按原文搬本刀改完后那一场演练；
+          第五节当场重探一次百炼，再搬 23:50 那份 D0 留档。
+
+被测：live my_ui.py                    1758 行 / 102752 B / sha1=800c348efb62fdebb13d5a3b870736a946e5eca1
+      改前 .rollback/v1.8/after-p0abc   1581 行 / 90295 B / sha1=3a5369ae2784ecc2bb05b2b35886b4fdde90b35f
+      快照 .rollback/v1.8/after-p1a     1758 行 / 102752 B / sha1=800c348efb62fdebb13d5a3b870736a946e5eca1（现场==快照：True）
+      my_agent.py=35bdec6c  my_coding_agent.py=5e3fbba6（本刀都没碰，见第七节）
+
+这刀一句话：给**每一只**工具（final_answer 除外）套一层「本题内同名同参第二次不再执行」，
+挡下第 1、2 次各回一句警告，第 3 次（超过 DUP_BLOCK_LIMIT=2）熔断收尾。
+指纹 = (工具名, 按 forward 签名归一后的参数 JSON)，`sort_keys=True`，所以 `{"a":1,"b":2}` 和 `{"b":2,"a":1}` 算同一个；参数归一那份（_bind_args）审批卡和指纹共用。
+三本账是**类级**的、每轮开局清零（行号见第二节）——跨题留着就会把上一题查过的路径当成本题的重复
+直接挡掉：用户新问一句「列一下 smolagents/」，那是一次真需要执行的调用。
+
+token 口径（本文每个 token 数都按这三档标，别混）：
+  · 【实测·累计】框架日志 `[Step N: … Input tokens: I | Output tokens: O]` 那行是监控器**跨题累计**；
+  · 【实测·单步】单步 = 相邻两条累计行相减，第一节那两次就是这么算的；
+  · 【假数】第四节零成本回放里所有 token 都是剧本设定的假数，那一份只能读次数与形状；
+  · 本刀真模型那一路一个 token 都没花出去（百炼 400，第五节当场重探的原文为证）。
+
+============================================================================================
+一、立项依据：把 21:06 那份 transcript 按本刀口径重走一遍
+============================================================================================
+  来源：/Users/gaoying/Desktop/study/ai学习/.agent-ui.log（17344 B / 207 行，改于 11-03 21:06）——这是**你自己那天跑出来的界面日志**，不是我这轮跑的。
+  切轮依据：日志里 2 条 `New run - smolagents` 横幅，横幅之间算一轮。每步步号取自 `━━ Step N ━━`。
+  本轮参数：max_steps=8（my_agent.py 现场读）、DUP_BLOCK_LIMIT=2（挡 2 次警告，第 3 次熔断）。
+
+  第 1 轮｜题面：删除人生目录下的 轻量文档文件夹，职业规划下面的东西不要动
+    调用序列（左＝日志横幅里的步号）：
+      步 1   list_dir({"path": "人生/"})
+      步 2   list_dir({})
+      步 3   list_dir({"path": "人生/"})  ← 挡下第 1 次（这个签名的第 2 遍）
+      步 4   list_dir({})  ← 挡下第 2 次（这个签名的第 2 遍）
+      步 5   grep_files({"pattern": "人生", "path": "."})
+      步 6   list_dir({"path": "data/"})
+      步 7   list_dir({"path": "职业规划/"})
+      步 8   list_dir({})  ← 挡下第 3 次（这个签名的第 3 遍）  ★ 超过上限 2 → 熔断就在这一步
+    被挡下 3 次，落在第 3, 4, 8 步；熔断位：第 8 步
+
+  第 2 轮｜题面：/Users/gaoying/Desktop/study/人生。删除人生目录下的
+    调用序列（左＝日志横幅里的步号）：
+      步 1   list_dir({"path": "/Users/gaoying/Desktop/study/"})
+      步 2   list_dir({})
+      步 3   final_answer("{"answer":"无法执行删除操作，因为'人生'目录不在白名单目录（/Users/gaoying/Desktop/study/ai学习）下，且尝试访问外部路径 /Users/gaoying/Desktop
+    被挡下 0 次，落在第 — 步；熔断位：不触发
+
+  两条**独立**的真实记录，形状一样（都是第 3 次被挡恰好落在第 8 步=max_steps 边界）：
+    · 上面第 1 轮（题面：删除人生目录下的 轻量文档文件夹，职业规划下面的东西不要动）：8 步、被挡 3 次（第 3, 4, 8 步），熔断位=第 8 步。
+    · v18_p0abc_old_A_r2.out（题 A／old 代码／样本 2，11-03 23:15 那一轮独立跑出来的，第④刀实跑留档）：
+      被挡 3 次，落在第 3, 5, 8 步，熔断位=第 8 步；这一轮 [Step] 累计行 9 条；
+      8 步用满（日志里有 `Reached max steps`）：True。
+
+  反面也得摆出来——不是每一轮都长这样：
+    · 第 1 轮（删除人生目录下的 轻量文档文件夹，职业规划下面的东西…）：被挡 3 次 → 熔断（第 8 步）
+    · 第 2 轮（/Users/gaoying/Desktop/stu…）：被挡 0 次 → 没有同名同参重复，这一层一次都不挡
+    门槛=2 的意思就是「绕 2 圈放过去、绕 3 圈掐掉」。这是**权衡**不是定理：
+    改 DUP_BLOCK_LIMIT 会同时改 v18_test_dup.py 第 2 节那批「第几次挡」的数（那里写明了要一起改）。
+
+  熔断落在最后一步时，省掉的到底是哪一次？这一轮日志里有实测（不是估）：
+    [Step 8] 累计 in 23,667 / out 126 ｜ [Step 9] 累计 in 25,227 / out 429、耗时 7.16s
+    → 第 9 次模型调用（`_handle_max_steps_reached` 里那次收尾补打）**单步实测 in 1,560 / out 303、7.16 秒**。
+    注意第 9 步只有累计行、没有 `━━ Step 9 ━━` 横幅——这正是它不是正常一步的痕迹。
+    而这一轮的第 8 步本身就是一次重复（上面那张表），所以本刀的 ⛔ 收尾替掉的正是这一次调用。
+    口径：单样本、监控器累计行相减得到的单步值，只当量级看。
+
+  为什么不能只靠文案：规矩早就写着，实测它照犯——
+    渲染出来的 system_prompt（4942 字符，模型每一步都重读这一份）里：
+      框架规则「Never re-do a tool call that you previously did with the exact same parameters」→ True
+    第④刀补在报错文案里的那句「不要用同一个参数再打一遍」：new 样本日志命中 → True ｜ old 样本 → False
+    可规矩在场照样犯：21:06 那一轮被挡 3 次（第 3, 4, 8 步）、23:15 那轮 old 样本被挡 2 次（第 3, 4 步）——
+    文案改的是**倾向**（同样按本刀口径走：第④刀之后的 new 两个样本各被挡 0／0 次，old 那两个是 2／3 次），管不住的是**上限**。
+    所以这一刀不是补规矩，是执法：绕到第 3 次的时候由门把它掐掉。
+
+============================================================================================
+二、结构与层序（行号是这份写入器现场 grep 出来的，改一行就会跟着变）
+============================================================================================
+  my_ui.py:73    DUP_BLOCK_LIMIT = 2
+  my_ui.py:74    DUP_MARK（警告句／熔断句共用的开头）
+  my_ui.py:77    DUP_FUSE_MARK（认熔断靠它，不能靠 DUP_MARK 计数）
+  my_ui.py:78    DUP_OBSERVATION（回给模型的警告句原文）
+  my_ui.py:82    DUP_FUSE_OBSERVATION（回给模型的熔断句原文）
+  my_ui.py:632   类级登记表 _seen_calls
+  my_ui.py:635   类级计数 _dup_blocked
+  my_ui.py:638   类级开关 _dup_tripped
+  my_ui.py:666   __init__ 里装门（审批之后、计划门之前）
+  my_ui.py:732   def _install_dup_gate（套全部工具，final_answer 除外）
+  my_ui.py:765   def _dup_call（算指纹＋记账＋挑文案）
+  my_ui.py:788   def _install_dup_stop（熔断当场收尾那层）
+  my_ui.py:763   _install_dup_gate 末尾顺手装 dup_stop
+  my_ui.py:819   收尾判据：只在 ActionStep 之后抛
+  my_ui.py:784   熔断时同时按下框架的 interrupt()
+  my_ui.py:718   def _bind_args（审批卡和指纹共用的参数归一）
+  my_ui.py:1123  卡片档位：⚪/⛔ 那一档判定
+  my_ui.py:1119  卡片把 挡下/总数 摊在标题上（除以 len(calls) 的理由）
+  my_ui.py:1257  换题清零：_seen_calls.clear()
+  my_ui.py:1545  状态档：plan_denied / dup_fused / stopped 三选一
+  my_ui.py:1544  熔断认旗（两个都占时认停止）
+  my_ui.py:424   STATE_LABEL 里的「重复熔断」
+  my_ui.py:391   状态条胶囊 CSS st-dup_fused
+
+  层序（为什么这么装）：
+    `_install_gate()` → `_install_dup_gate()` → `_install_plan_gate()`，__init__ 里就这三行。
+    ① 查重必须在审批**之后**装：这里 copy.copy 到的那只，forward 已经是审批那个闭包，
+       于是顺序是「先查重，没重复才开审批卡」。反着装会出现一张卡点了 ✔ 允许、
+       observation 却是「重复调用未执行」——等于让人批了一件根本没跑的事。
+    ② 查重套**全部**工具而不是只套 GATED_TOOLS 那两只：21:06 那批重复全在只读侧
+       （list_dir / grep_files），只读侧本来不弹审批，只套写路径等于一层没装上。
+    ③ `_install_dup_gate` 末尾顺手装 `_install_dup_stop()`（包**实例**上的 `_run_stream`，
+       装法和计划门同一套）。幂等标记 `_opsui_dedup` / `_opsui_dup_stop` 防两个 OpsUI
+       把同一次重复记成两笔账——那样第 2 次重复就触发熔断了。
+
+  真 app 里的覆盖面读数（23:50 那份 D0 探针日志的 dup.install 行）：
+    t=  0.005  dup.install            new=grep_files,list_dir,run_python,write_file,annualized_volatility,max_drawdown,read_file already=- total=7 limit=2
+    这条能证明的是：门真套到了那 7 只工具上、limit 现场读到 2；那一轮第 1 步就 400，
+    所以它**不**证明任何重复行为——重复行为看第三、四节。
+
+  一条关键语义：熔断的观察值**仍然交回这一步的 memory**（所以卡片上看得见「为什么这题没了」、
+  下一问的记忆里也在），但**本轮的模型读不到它**——收尾就在这一步 yield 之后，不会再有下一次
+  generate。这就是第四节两格里「模型被调用次数」那一行差值的直接解释（少的那一次就是收尾补打）。
+
+============================================================================================
+三、离线闸：当场重跑五道（本刀那道全文，另四道是回归）
+============================================================================================
+  1a 除 final_answer 全被套上             PASS [('final_answer', False), ('grep_files', True), ('list_dir', True), ('read_file', True), ('run_python', True), ('write_file', True)]
+  1b 只读那侧也在里面                        PASS 
+  1c 审批那两只仍带着审批层                     PASS 
+  1d 二次安装不套第二层（幂等）                   PASS [('list_dir', True), ('read_file', True), ('grep_files', True), ('write_file', True), ('run_python', True), ('final_answer', True)]
+  1e 二次安装后一次调用只跑一遍                   PASS [('read_file', 'a.py', '')]
+  2a 上限当前是 2（下面四档按它写）                PASS 2
+  2b 第一次真的执行                         PASS [('list_dir', 'smolagents/', '')]
+  2c 第二次不执行、回警告                      PASS 【重复调用未执行】本题内这已经是第 2 次发出**完全一样**的调用（同
+  2d 第二次还没熔断                         PASS [] / False
+  2e 第二次重复仍只警告（挡下 2 次）               PASS 【重复调用未执行】本题内这已经是第 3 次发出**完全一样**的调用（同
+  2f 第三次重复触发熔断                       PASS 【重复调用未执行·已熔断】本题第 4 次发同样的调用，累计挡下 3 次重
+  2g 熔断句里带着三个数                       PASS 【重复调用未执行·已熔断】本题第 4 次发同样的调用，累计挡下 3 次重复，已经超过上限 2；这一次同样没有执行，本题到这里结束，不会再有下一步。要接着做请重新提问，并把参数改一下。
+  2h 熔断写进了登记表                        PASS True / 3
+  2i 熔断后换参数照常执行（这层只挡重复）              PASS [('list_dir', 'smolagents/', ''), ('list_dir', 'dify/', '')]
+  2j 熔断后同类重复仍报已熔断                    PASS 【重复调用未执行·已熔断】本题第 5 次发同样的调用，累计挡下 4 次重
+  2B-a 装完就带着收尾层                      PASS 
+  2B-b 那一步本身照样先交出来（卡片画得出来）           PASS ActionStep(step_number=8, timing=Timing(start_time=179372482
+  2B-c 交出之后当场抛 AgentError            PASS AgentError('重复调用熔断：本题累计挡下 3 次同样的调用，超过上限 2，这一题到此结束。要接着做请重新提问。
+  2B-d 第 9 步没跑（省掉那一次模型调用）            PASS []
+  2B-e 抛的话里带着挡下几次和上限                 PASS 重复调用熔断：本题累计挡下 3 次同样的调用，超过上限 2，这一题到此结束。要接着做请重新提问。
+  2B-f 没熔断时原样透传                      PASS 2 个 / ['step9']
+  2B-g 二次安装不套两层收尾                    PASS stopped / stopped
+  2B-h 中途事件不收尾：两步 ToolCall 先过，第 8 步走完才抛 PASS 3 个 / AgentError('重复调用熔断：本题累计挡下 3 次同样的调用
+  2B-i 抛出去时那一步的观察值是完整的（卡片有 ⛔、记忆里有原话） PASS 【重复调用未执行·已熔断】本题第
+  2B-j 收尾仍然拦住了第 9 步                  PASS ['mid0', 'mid1']
+  3a 省略默认参数算同一次                      PASS 'executed read_file' / 'executed read_file'
+  3b 参数不同就是两次调用                      PASS 3
+  3c 非 JSON 实参不炸且能对上                 PASS 'executed list_dir' / '【重复调用未执行】本题内这已经是第 2 '
+  3d 同一段 JSON 的两种写法算同一个              PASS 【重复调用未执行】本题内这已经是第 2 次发出*
+  3e 空参数那种重复也挡得住（21:06 的 list_dir({})） PASS 
+  3f 位置参数与关键字参数同键                    PASS {'path': 'pos', 'content': 'c'}
+  3g 签名对不上时退化成按位置记                   PASS {'args': [], 'kwargs': {'nope': 1}}
+  4a 第一次调用开了审批卡                      PASS 1
+  4b 重复调用没开第二张卡                      PASS 1 张 / 【重复调用未执行】本题内这已经是第 2 次发出**完全一
+  4c 重复也没进原 forward                  PASS []
+  4d 那张卡批下去之后真的跑了                    PASS [('write_file', 'a.txt', 'hi')]
+  4e 换参数就照常开新卡（不是一律不开）               PASS 1
+  5a 开局临界区里有那个 with 块                PASS 
+  5b 三句清零都在临界区内                      PASS              self._pending.clear()             # D8：登记表跟着换题一起清。留着上一题的卡，断开收尾时就会去改一张             # 已经不在这一串消息里的对象——不报错，但那一格
+  5c 清零在起线程之前                        PASS 
+  5d 和 _ap_cards 那张登记表同一处清           PASS 
+  6a 挡下来标 ⚪ 重复未执行                    PASS 🛠 第 1 步 · list_dir · ⚪ 重复未执行 1/1 · 1.5s · in 2,463/out 76
+  6b 不写成成功                           PASS 🛠 第 1 步 · list_dir · ⚪ 重复未执行 1/1 · 1.5s · in 2,463/out 76
+  6c 熔断标 ⛔                           PASS 🛠 第 2 步 · list_dir · ⛔ 重复熔断 1/1 · 1.5s · in 2,463/out 76
+  6d 一步里只挡掉一只 → 摊开 1/2               PASS 🛠 第 3 步 · list_dir、read_file · ⚪ 重复未执行 1/2 · 1.5s · in 2,463/out 76
+  6e 不谎称整步未执行                        PASS 🛠 第 3 步 · list_dir、read_file · ⚪ 重复未执行 1/2 · 1.5s · in 2,463/out 76
+  6f 正常那一路没被动（🟢 成功）                  PASS 🛠 第 4 步 · grep_files · 🟢 成功 · 1.5s · in 2,463/out 76
+  6g 审批拒绝仍标 ⚪ 已拒绝                    PASS 🛠 第 5 步 · run_python · ⚪ 已拒绝 · 1.5s · in 2,463/out 76
+  6h 有报错仍优先标 🔴                       PASS 🛠 第 6 步 · list_dir · 🔴 报错 · 1.5s · in 2,463/out 76
+  6i 正文里那句观察值看得见                     PASS 数／换一个工具，或者直接把答案交出来。 ```  本步 1.5s · in 2,463 / out 76 本题累计（本次提问内）：in 0 / out 0 token · 0.0s
+  7a 熔断收尾标「重复熔断」                     PASS </span><span class="pill pill-state"><b>状态</b><i>重复熔断</i></span></div>
+  7b 卡片标题是 ⛔ 重复熔断                    PASS ['', '', '⛔ 重复熔断']
+  7c 收尾文案带上限数字                       PASS ⛔ **重复熔断**
+  
+  本题挡下的重复调用超过了上限 2 次，已在步边界收场。
+  
+  Agent interrupted.
+  7d 帧仍是 8 元组（P0-4 回归）               PASS [8, 8]
+  7e 停止优先于熔断                         PASS ></span><span class="pill pill-state"><b>状态</b><i>已停止</i></span></div>
+  7f 普通报错仍写已停止（回归）                   PASS ></span><span class="pill pill-state"><b>状态</b><i>已停止</i></span></div>
+  7g 计划否决仍是计划未批准（回归）                 PASS /span><span class="pill pill-state"><b>状态</b><i>计划未批准</i></span></div>
+  8a 熔断句以警告句开头（第 6 节计数的前提）           PASS 
+  8b 两句都说清「没有执行」                     PASS 
+  8c 熔断句说了「到此结束」                     PASS 
+  8d 警告句给了出路                         PASS 
+  8e STATE_LABEL 有这一档                PASS 
+  8f 状态条有对应配色                        PASS 
+  8g 占位符 {n} 都填得上                    PASS 
+  8g 占位符 {blocked} 都填得上              PASS 
+  8g 占位符 {limit} 都填得上                PASS 
+  8h format 不会喷 KeyError             PASS 
+  9a my_agent.py 与快照一致（不改提示词）        PASS 35bdec6c
+  9a my_coding_agent.py 与快照一致（不改提示词） PASS 5e3fbba6
+  9b 命令行跑法不经过这层                      PASS 
+  10a 快照里没有查重门                       PASS 
+  10b 快照里没有登记表                       PASS 
+  10c 快照的步骤卡没有这一档                    PASS 
+  10d 快照的收尾只有已停止/计划未批准两档             PASS 
+  10e 快照的 _gated_call 自己绑参数（没抽公共 helper） PASS 
+  
+  全绿  (0 条失败)
+
+  v18_test_dup.py：PASS 75 条 / FAIL 0 条 / exit=0
+  这道闸为什么能离线：这一刀的新逻辑全在四个点上（_install_dup_gate 与 _dup_call、_bind_args、
+  _step_card 新档位、_respond 的 except AgentError 分档）。前两个只碰 dict 和 threading.Lock，
+  后两个喂假 step / 假流就能钉住。「换题清零」这种只有真两轮才算得准的，这一版不再只钉源码位置，
+  第四节连问两遍那格给了它**行为**证据。
+
+  另四道回归（本刀动了 my_ui.py，一起重跑，防止把别的刀改坏）：
+    v18_test_nochange.py     exit=0  PASS 51 条  收尾行：全绿  (0 条失败)  ｜ 判定面与前三刀锚点没被改坏
+    v18_test_p0abc.py        exit=0  PASS 48 条  收尾行：全绿  FAIL=0  ｜ 第④刀：越界指路／能力穷举／相对路径不猜根
+    v18_test_plan.py         exit=0  PASS 43 条  收尾行：全绿  (0 条失败)  ｜ 第③刀：计划可见＋批准动作
+    v18_test_interrupt.py    exit=0  PASS 21 条  收尾行：全绿  (0 条失败)  ｜ 第②刀：D8 断开侧（待批卡终态／已中断标记）
+    五道合计 PASS 238 条（其中「FAIL」字样在收尾行里是「FAIL=0」那种统计行，不是红项）。
+
+============================================================================================
+四、零成本现场回放（真 OpsUI＋真 agent＋真工具＋假模型；当场重跑，全文）
+============================================================================================
+  v1.8 ⑤ P1-a 重复调用检测与熔断 —— 零成本现场回放（假模型 + 真 OpsUI/agent/工具）
+  跑法：smolagents/.venv/bin/python 验收脚本/v1.8/v18_dup_replay.py
+  起表时间：2026-11-04 00:54:01
+  被测：my_ui.py sha1=800c348efb62fdebb13d5a3b870736a946e5eca1 行数=1758
+  剧本：run/v18_p0abc_live.out 第四节 11 条里的第 1~8 条（=21:06 的 run A 单轮，两条 New run 横幅之间）。按换题清零口径重走：第 3/4/8 步各挡一次，第 3 次恰落在第 8 步=max_steps 边界
+  口径：token 是剧本假数，只能读次数与形状；stream_outputs=False，不含逐字 delta 上屏那一段；
+        「模型会不会真这么走」【未验证】，账户恢复后由 v18_run_live.py D0 补。
+  耗时 33.6 s
+  
+  == 格 dup-off（对照：第④刀那版，无查重层） ==
+    模型被调用次数（剧本被取走几条）: 9 / 剧本共 9 条
+    memory 步型: Task,Action,Action,Action,Action,Action,Action,Action,Action,Action
+    ActionStep: 9 步，各步登记的调用数 [0, 1, 0, 1, 1, 1, 0, 1, 0]，合计 5 次；其中 0 次被查重层挡下（观察值带「【重复调用未执行」），8 次进了工具函数
+    重复落在第几步: -   熔断落在第几步: -
+    带 error 的步: [1, 3, 7, 9]   收到了最终答案: True
+    收尾档位: maxed   状态条 class: st-maxed
+    收尾气泡标题: 🛠 第 8 步 · list_dir · 🟢 成功 · 0.0s · in 3,957/out 42
+    屏上卡片/气泡标题序列: 🛠 第 1 步 · 无工具调用 · 🔴 报错 · 0.0s · in 2,349/out 17 | 🛠 第 2 步 · list_dir · 🟢 成功 · 0.0s · in 2,463/out 22 | 🛠 第 3 步 · 无工具调用 · 🔴 报错 · 0.0s · in 2,571/out 24 | 🛠 第 4 步 · list_dir · 🟢 成功 · 0.0s · in 2,680/out 26 | 🛠 第 5 步 · grep_files · 🟢 成功 · 8.1s · in 2,797/out 31 | 🛠 第 6 步 · list_dir · 🟢 成功 · 0.0s · in 3,102/out 35 | 🛠 第 7 步 · 无工具调用 · 🔴 报错 · 0.0s · in 3,471/out 38 | 🛠 第 8 步 · list_dir · 🟢 成功 · 0.0s · in 3,957/out 42 | 🛠 第 8 步 · list_dir · 🟢 成功 · 0.0s · in 3,957/out 42
+    同一张卡出现两遍: ['🛠 第 8 步 · list_dir · 🟢 成功 · 0.0s · in 3,957/out 42']
+    库: messages=11 行 / memory=1 行
+    状态条 token（**假数**，剧本设定）: in/out=27347/277
+    本格逐工具真执行次数: annualized_volatility=0, grep_files=1, list_dir=7, max_drawdown=0, read_file=0, run_python=0, write_file=0
+      第 1 步  [AgentToolExecutionError] 
+      第 2 步  . 共 20 项   .agent-staging/  [已跳过]   .idea/   .rollback/   Agent链路详
+      第 3 步  [AgentToolExecutionError] 
+      第 4 步  . 共 20 项   .agent-staging/  [已跳过]   .idea/   .rollback/   Agent链路详
+      第 5 步  命中 40 条（扫了 20086 个文件，上限 40） .agent-ui.log:5: │ 删除人生目录下的 轻量文档文件夹，职业
+      第 6 步  data 共 0 项
+      第 7 步  [AgentToolExecutionError] 
+      第 8 步  . 共 20 项   .agent-staging/  [已跳过]   .idea/   .rollback/   Agent链路详
+      第 9 步  [AgentMaxStepsError] 
+  
+  == 格 dup-on（产品代码，有查重层） ==
+    模型被调用次数（剧本被取走几条）: 8 / 剧本共 9 条
+    memory 步型: Task,Action,Action,Action,Action,Action,Action,Action,Action
+    ActionStep: 8 步，各步登记的调用数 [0, 1, 1, 1, 1, 1, 0, 1]，合计 6 次；其中 3 次被查重层挡下（观察值带「【重复调用未执行」），5 次进了工具函数
+    重复落在第几步: [3, 4, 8]   熔断落在第几步: [8]
+    带 error 的步: [1, 7]   收到了最终答案: False
+    收尾档位: dup_fused   状态条 class: st-dup_fused
+    收尾气泡标题: ⛔ 重复熔断
+    屏上卡片/气泡标题序列: 🛠 第 1 步 · 无工具调用 · 🔴 报错 · 0.0s · in 2,349/out 17 | 🛠 第 2 步 · list_dir · 🟢 成功 · 0.0s · in 2,463/out 22 | 🛠 第 3 步 · list_dir · ⚪ 重复未执行 1/1 · 0.0s · in 2,571/out 24 | 🛠 第 4 步 · list_dir · ⚪ 重复未执行 1/1 · 0.0s · in 2,680/out 26 | 🛠 第 5 步 · grep_files · 🟢 成功 · 9.0s · in 2,797/out 31 | 🛠 第 6 步 · list_dir · 🟢 成功 · 0.0s · in 3,102/out 35 | 🛠 第 7 步 · 无工具调用 · 🔴 报错 · 0.0s · in 3,471/out 38 | 🛠 第 8 步 · list_dir · ⛔ 重复熔断 1/1 · 0.0s · in 3,957/out 42 | ⛔ 重复熔断
+    同一张卡出现两遍: 无
+    库: messages=10 行 / memory=1 行
+    状态条 token（**假数**，剧本设定）: in/out=23390/235
+    本格逐工具真执行次数: annualized_volatility=0, grep_files=1, list_dir=4, max_drawdown=0, read_file=0, run_python=0, write_file=0
+      第 1 步  [AgentToolExecutionError] 
+      第 2 步  . 共 20 项   .agent-staging/  [已跳过]   .idea/   .rollback/   Agent链路详
+      第 3 步  【重复调用未执行】本题内这已经是第 2 次发出**完全一样**的调用（同工具、同参数），这一次没有真的执行，也不会有任何新信息。请换
+      第 4 步  【重复调用未执行】本题内这已经是第 2 次发出**完全一样**的调用（同工具、同参数），这一次没有真的执行，也不会有任何新信息。请换
+      第 5 步  命中 40 条（扫了 20086 个文件，上限 40） .agent-ui.log:5: │ 删除人生目录下的 轻量文档文件夹，职业
+      第 6 步  data 共 0 项
+      第 7 步  [AgentToolExecutionError] 
+      第 8 步  【重复调用未执行·已熔断】本题第 3 次发同样的调用，累计挡下 3 次重复，已经超过上限 2；这一次同样没有执行，本题到这里结束，不
+  
+  == 格 dup-on 第一问（同一格，账从 0 起） ==
+    模型被调用次数（剧本被取走几条）: 8 / 剧本共 9 条
+    memory 步型: Task,Action,Action,Action,Action,Action,Action,Action,Action
+    ActionStep: 8 步，各步登记的调用数 [0, 1, 1, 1, 1, 1, 0, 1]，合计 6 次；其中 3 次被查重层挡下（观察值带「【重复调用未执行」），5 次进了工具函数
+    重复落在第几步: [3, 4, 8]   熔断落在第几步: [8]
+    带 error 的步: [1, 7]   收到了最终答案: False
+    收尾档位: dup_fused   状态条 class: st-dup_fused
+    收尾气泡标题: ⛔ 重复熔断
+    屏上卡片/气泡标题序列: 🛠 第 1 步 · 无工具调用 · 🔴 报错 · 0.0s · in 2,349/out 17 | 🛠 第 2 步 · list_dir · 🟢 成功 · 0.0s · in 2,463/out 22 | 🛠 第 3 步 · list_dir · ⚪ 重复未执行 1/1 · 0.0s · in 2,571/out 24 | 🛠 第 4 步 · list_dir · ⚪ 重复未执行 1/1 · 0.0s · in 2,680/out 26 | 🛠 第 5 步 · grep_files · 🟢 成功 · 8.2s · in 2,797/out 31 | 🛠 第 6 步 · list_dir · 🟢 成功 · 0.0s · in 3,102/out 35 | 🛠 第 7 步 · 无工具调用 · 🔴 报错 · 0.0s · in 3,471/out 38 | 🛠 第 8 步 · list_dir · ⛔ 重复熔断 1/1 · 0.0s · in 3,957/out 42 | ⛔ 重复熔断
+    同一张卡出现两遍: 无
+    库: messages=10 行 / memory=1 行
+    状态条 token（**假数**，剧本设定）: in/out=23390/235
+    本格逐工具真执行次数: annualized_volatility=0, grep_files=1, list_dir=4, max_drawdown=0, read_file=0, run_python=0, write_file=0
+      第 1 步  [AgentToolExecutionError] 
+      第 2 步  . 共 20 项   .agent-staging/  [已跳过]   .idea/   .rollback/   Agent链路详
+      第 3 步  【重复调用未执行】本题内这已经是第 2 次发出**完全一样**的调用（同工具、同参数），这一次没有真的执行，也不会有任何新信息。请换
+      第 4 步  【重复调用未执行】本题内这已经是第 2 次发出**完全一样**的调用（同工具、同参数），这一次没有真的执行，也不会有任何新信息。请换
+      第 5 步  命中 40 条（扫了 20086 个文件，上限 40） .agent-ui.log:5: │ 删除人生目录下的 轻量文档文件夹，职业
+      第 6 步  data 共 0 项
+      第 7 步  [AgentToolExecutionError] 
+      第 8 步  【重复调用未执行·已熔断】本题第 3 次发同样的调用，累计挡下 3 次重复，已经超过上限 2；这一次同样没有执行，本题到这里结束，不
+  
+  == 格 dup-on 连问两遍：第二问的账（第一问已减掉） ==
+    模型被调用次数（剧本被取走几条）: 8 / 剧本共 9 条
+    memory 步型: Task,Action,Action,Action,Action,Action,Action,Action,Action
+    ActionStep: 8 步，各步登记的调用数 [0, 1, 1, 1, 1, 1, 0, 1]，合计 6 次；其中 3 次被查重层挡下（观察值带「【重复调用未执行」），5 次进了工具函数
+    重复落在第几步: [3, 4, 8]   熔断落在第几步: [8]
+    带 error 的步: [1, 7]   收到了最终答案: False
+    收尾档位: dup_fused   状态条 class: st-dup_fused
+    收尾气泡标题: ⛔ 重复熔断
+    屏上卡片/气泡标题序列: 🛠 第 1 步 · 无工具调用 · 🔴 报错 · 0.0s · in 2,349/out 17 | 🛠 第 2 步 · list_dir · 🟢 成功 · 0.0s · in 2,463/out 22 | 🛠 第 3 步 · list_dir · ⚪ 重复未执行 1/1 · 0.0s · in 2,571/out 24 | 🛠 第 4 步 · list_dir · ⚪ 重复未执行 1/1 · 0.0s · in 2,680/out 26 | 🛠 第 5 步 · grep_files · 🟢 成功 · 8.1s · in 2,797/out 31 | 🛠 第 6 步 · list_dir · 🟢 成功 · 0.0s · in 3,102/out 35 | 🛠 第 7 步 · 无工具调用 · 🔴 报错 · 0.0s · in 3,471/out 38 | 🛠 第 8 步 · list_dir · ⛔ 重复熔断 1/1 · 0.0s · in 3,957/out 42 | ⛔ 重复熔断
+    同一张卡出现两遍: 无
+    库: messages=20 行 / memory=1 行
+    状态条 token（**假数**，剧本设定）: in/out=23390/235
+    本格逐工具真执行次数: annualized_volatility=0, grep_files=1, list_dir=4, max_drawdown=0, read_file=0, run_python=0, write_file=0
+      第 1 步  [AgentToolExecutionError] 
+      第 2 步  . 共 20 项   .agent-staging/  [已跳过]   .idea/   .rollback/   Agent链路详
+      第 3 步  【重复调用未执行】本题内这已经是第 2 次发出**完全一样**的调用（同工具、同参数），这一次没有真的执行，也不会有任何新信息。请换
+      第 4 步  【重复调用未执行】本题内这已经是第 2 次发出**完全一样**的调用（同工具、同参数），这一次没有真的执行，也不会有任何新信息。请换
+      第 5 步  命中 40 条（扫了 20086 个文件，上限 40） .agent-ui.log:5: │ 删除人生目录下的 轻量文档文件夹，职业
+      第 6 步  data 共 0 项
+      第 7 步  [AgentToolExecutionError] 
+      第 8 步  【重复调用未执行·已熔断】本题第 3 次发同样的调用，累计挡下 3 次重复，已经超过上限 2；这一次同样没有执行，本题到这里结束，不
+  
+  （连问两遍那一格里，_run_seq 从 3 走到 4；类级登记表由 _stream_response 开局清零，第 5 节离线闸只钉了源码位置，这里给出它的行为证据。）
+  
+  对照（差在哪，只有这些是结论。calls=memory 里登记的调用数，报错那几步只有 error、没有 tool_calls，口径见 agents.py:1436）：
+    model_calls                on=8          off=9
+    action_steps               on=8          off=9
+    calls                      on=6          off=5
+    blocked                    on=3          off=0
+    executed                   on=5          off=8
+    dup_steps                  on=[3, 4, 8]  off=[]
+    fuse_steps                 on=[8]        off=[]
+    answered                   on=False      off=True
+    state                      on=dup_fused  off=maxed
+    db                         on=(10, 1)    off=(11, 1)
+  
+  断言 17 条：17 绿 0 红
+  PASS A1 dup-on 模型调用 8 次（熔断掐掉了第 9 次）
+  PASS A2 dup-off 模型调用 9 次（用满 8 步后 _handle_max_steps_reached 再打一次）
+  PASS A3 dup-on ActionStep 8 步全在（熔断发生在步边界，不吞这一步的观察值）
+  PASS A4 dup-on 挡下 3 次重复（2 警告 + 1 熔断），落在第 [3, 4, 8] 步
+  PASS A5 dup-on 熔断只在第 8 步出现一次
+  PASS A6 dup-on 真执行 5 次 vs dup-off 8 次
+  PASS A7 档位分开：dup-on=dup_fused，dup-off=maxed
+  PASS A8 状态条 class 带上 st-dup_fused（⛔ 那一档没被「步数用满」吞掉）
+  PASS A9 收尾气泡：on 认「重复熔断」，off 那一格不带这五个字
+  PASS A10 dup-on 没交出最终答案（不是靠答案收的场），dup-off 是靠答案收的
+  PASS A10b 熔断那一步的卡片画出来了（屏上有 ⛔ 那一档，不是只有收尾气泡）
+  PASS A11 两格都落了库（messages>0 且 memory=1）
+  PASS A12 模块级工具没被竖过幂等标记（查 5 只：grep_files,list_dir,read_file,run_python,write_file）
+  PASS A13 换题清零生效：第二问的形状与第一问逐格相同（挡下 3 次、落在 [3, 4, 8] 步）
+  PASS A14 第二问没被第一问的 interrupt 毒死：模型照打 8 次、8 步全在
+  PASS A15 第二问的收尾档位与卡片仍走 dup_fused／⛔ 那一档
+  PASS A16 第二问落在**同一条会话**上追加（D5 语义没被这一刀碰坏）
+  
+  顺带发现（本刀范围外，只记录不动手）：
+    · 对照格「步数用满」那一路收尾时第 8 步的卡在屏上出现两遍（本格实得 ['🛠 第 8 步 · list_dir · 🟢 成功 · 0.0s · in 3,957/out 42']）——
+      agents.py:606-608 在 _handle_max_steps_reached 之后又 yield 了一次同一个 action_step。
+      dup-on 格走不到那一句，本刀不受影响；要不要单开一张卡，等他点头。
+    · 那一次补打的模型只认正文（agents.py:627-637 取 final_answer.content），tool_calls 不执行。
+
+  写入器给这一节补三条口径（回放本体里也有，这里集中说）：
+    · 「各步登记的调用数」在报错那几步是 0，不是丢账：工具抛异常时框架走不到
+      agents.py:1436 那句 `memory_step.tool_calls = [...]`（它在执行**之后**才赋值），
+      所以报错步只有 error、没有 tool_calls。真执行次数看「逐工具真执行次数」那行——
+      那组计数器装在 OpsUI 起门**之前**，所以查重层挡掉的不会进它，它数的才是真的进了 forward 的。
+    · 两格只差「查重层在不在」这一处：同进程、同剧本、同批真工具。对照格是给第④刀那版代码路径
+      拍 X 光（提前在**这一格自己的**工具副本上打幂等标记），不是把 old 代码 import 进来——
+      模块级单例互相污染的话，两格就不是两格了（A12 当场验那 5 只模块级工具没被竖过标记）。
+    · 这场跑了 37.1 秒、零 token 成本、exit=0。它证不了「模型会不会真这么走」。
+
+============================================================================================
+五、真模型那一路：当场重探百炼 ＋ D0 留档 ＋【未验证】清单
+============================================================================================
+  当场重探（一句话、max_tokens=8，只为知道账户状态；这是本轮唯一一次向百炼发请求）：
+    PROBE-FAIL 0.25s BadRequestError: Error code: 400 - Access denied, please make sure your account is in good standing. For details, see: https://help.aliyun.com/zh/model-studio/error-code#overdue-payment
+
+  D0 场景（21:06 原题面连问两遍：第一遍看熔断掐短，第二遍看换题清零）——留档：
+    v18_probe_D0.stdout              7471 B / 103 行  改于 11-03 23:50:06
+    v18_probe_D0.server.log          4915 B /  78 行  改于 11-03 23:50:06
+    v18_live_summary_D0.out          8315 B / 144 行  改于 11-03 23:50:07
+    v18_live_cdp_D0.json             3850 B /   1 行  改于 11-03 23:49:06
+    v18_live_D0.sqlite3             24576 B（探针专用库，不读行；真库 .agent-history.sqlite3 没被碰）  改于 11-03 23:49:39
+  波及面（本刀所有落盘都在 run/ 下的探针专用库；真库这份写入器只 stat、不打开）：
+    /Users/gaoying/Desktop/study/ai学习/smolagents/.agent-history.sqlite3
+    73728 B / mtime 11-03 21:06:16 —— 和你 21:06 那次跑完之后是同一个读数，本刀没写过它。
+    回放两格用的是 run/v18_p1a_replay_on.sqlite3（69632 B）与 _off.sqlite3（45056 B），
+    D0 用的是 run/v18_live_D0.sqlite3；7860 那个 app 的进程与端口本刀没碰过。
+
+  那份留档里的报错原文（第一次调用就挡死，一步都没走）：
+    Error code: 400 - Access denied, please make sure your account is in good
+    standing. For details, see:
+    https://help.aliyun.com/zh/model-studio/error-code#overdue-payment
+    Error code: 400 - Access denied, please make sure your account is in good
+    standing. For details, see:
+    https://help.aliyun.com/zh/model-studio/error-code#overdue-payment
+  这份留档跑在 11-03 23:50（早于本刀最后一次改动，即那版还没有「只在 ActionStep 之后收尾」这条判据）：
+    能证明：真 app 起得来、查重层装上了（第二节那条 dup.install）、半截内容照样落库
+            （save.enter/exit 那两行 msgs=3）、收尾状态条读数=「模型 qwen-plus 步数 1/8 本题 token in 0 / out 0 本题耗时 0.3s 进程 token in 0 / ou」
+    不能证明：任何一次重复、熔断、⛔ 档位、收尾档位——模型一次都没回过话。
+
+  【未验证】清单（账户恢复后由 `v18_run_live.py D0` 补，逐项列，不含糊）：
+    · 模型收到「重复调用未执行」这句观察值之后**会不会换参数**
+      v18_test_dup.py 第 1 节钉住了两句观察值的原文，但「它进得去下一轮上下文、并且真的改变了下一步」只有真跑算，剧本假不了这个
+    · 模型会不会自己走到「第 3 次同样的调用」
+      21:06 那轮和 23:15 那轮各走过一次，样本是两个；qwen-plus 有温度，步数与走法只能当倾向
+    · stream_outputs=True（逐字 delta 上屏）下熔断的帧序
+      回放里 ScriptModel 没有 generate_stream，agents.py:1252-1255 见到 stream_outputs=True 就拒构造，所以那一段整个没进回放
+    · ⛔ 那一档在真浏览器上的呈现
+      前三刀做过的 CDP 截图口径这一刀没做，因为 app 打不到模型；离线只钉了 state／class／标题三处字符串
+    · 写路径工具被重复调用时的观感（查重在外层，压根不开审批卡）
+      离线闸第 1 节有「审批卡不许为重复调用打开」这条断言，它钉的是装门顺序的结果，不是屏幕上的观感
+
+============================================================================================
+六、行为语义变了什么（这刀不是纯文案，动了执行路径，逐条列）
+============================================================================================
+  · 工具会不会被执行：本题内第 2 次起的同名同参调用**不再进 forward**，改为回一句警告；第一次永远照常执行。
+  · 屏幕上的档位：步骤卡片新增两档：⚪ 重复未执行 n/m、⛔ 重复熔断 n/m。m 是这一步登记的调用数——一步里可以并行发好几个调用，只挡其中一个很正常，写成整步「未执行」就是假账。
+  · 状态条与收尾气泡：新增一档状态「重复熔断」（state 值 dup_fused，CSS 胶囊 st-dup_fused 独立配色）。收尾气泡标题「⛔ 重复熔断」，正文带「本题挡下的重复调用超过了上限 2 次，已在步边界收场」。
+  · 和 ■ 停止抢位：熔断走的也是框架的 interrupt()，两档在异常层完全同名（agents.py:547「Agent interrupted.」）。现在认 _dup_tripped 旗分档；**两个都占时认停止**——人先按下去，熔断只是那一下带来的下一步，不能写成「你按了停止」让用户告自己的状。
+  · 8 步用满那一档：熔断落在最后一步时**不再走 _handle_max_steps_reached**：状态是 dup_fused 不是 maxed，省掉第一节实测的那次 in 1,560 / out 303、7.16 秒 收尾补打；对照格（无查重层）仍旧走 maxed。
+  · 收尾时机：只在一步**齐了**（ActionStep 已经 yield）之后抛。早先在 ToolOutput 之后抛的那一版，回放当场把它拍红了（A4/A5）：第 8 步的卡片压根没画出来、memory 里那一步 observations 是空的，熔断那句话只活在收尾气泡里，屏幕上看不见「它是在哪一步、因为哪一次调用被拦的」。
+  · 落库：熔断题照常落库，只是少掉收尾补打那一步的一条消息；两格的具体行数看下面那张表。
+  · 下一问：不受污染：interrupt_switch 与 step_number 由框架每轮重置（agents.py:470 / 543），三本账由 _stream_response 开局清零。回放里连问两遍那一格给的就是这条行为证据——第二问的形状与第一问逐格相同，库落在同一条会话上继续追加（D5 语义没被碰坏，行数见下表）。
+  · 命令行跑法：不变：门只覆盖实例上的 forward，my_coding_agent 那批模块级工具没被写过（回放 A12）。`python my_coding_agent.py` 不经过 UI，也就不会被这层拦。
+
+  回放那两格的读数（第四节对照表原样搬，程序自己抓的，不是我手打）：
+    model_calls   on=8            off=9
+    action_steps  on=8            off=9
+    calls         on=6            off=5
+    blocked       on=3            off=0
+    executed      on=5            off=8
+    dup_steps     on=[3, 4, 8]    off=[]
+    fuse_steps    on=[8]          off=[]
+    answered      on=False        off=True
+    state         on=dup_fused    off=maxed
+    db            on=(10, 1)      off=(11, 1)
+    （第四节那张对照表本来就是 `on=… off=…` 一行一项，这里按同一个顺序原样搬。）
+    calls 是 memory 里登记的调用数，和 executed（真进 forward 的次数）不是一回事：
+    报错那几步只有 error、没有 tool_calls，差额正好是带 error 的那几步，口径见第四节第一条。
+    连问两遍那一格的库：messages=20 行 / memory=1 行（第一问：on 格 (10, 1)）
+
+  没变：判定面（哪只在审批名单、路径白名单、DENY 名单）、异常类型、第②③④刀的语义、
+  上游 src/smolagents/（第七节 git 现场）。
+  你那边要吃到这一刀：**7860 那个 app 得重启**，它加载的是内存里那份 my_ui.py。
+
+============================================================================================
+七、体量与成本
+============================================================================================
+  my_ui.py：1581 行 / 90295 B（3a5369ae）→ 1758 行 / 102752 B（800c348e）
+            +177 行 / +12457 B；diff 10 个 hunk，+183 / -6 行
+  行数自洽：1581（旧）+183（增）-6（删）=1758，和 wc 读到的 1758 对得上
+  另两个文件逐字节未动：
+    my_agent.py          live=35bdec6c  after-p0abc=35bdec6c  逐字节相同=True
+    my_coding_agent.py   live=5e3fbba6  after-p0abc=5e3fbba6  逐字节相同=True
+  上游源码零改动（本刀没碰 smolagents 本体，git 现场）：
+    `git status --porcelain src/smolagents` → （空输出＝一个文件都没改）
+  token 消耗：本轮 0（百炼 400 在第一次调用就挡死；第四节回放里全是剧本假数，不记账）。
+  本写入器的时间成本：三节五道闸＋四节一场回放＋五节一次探针，约 40 秒。
+
+============================================================================================
+八、回滚演练（双向，本刀改完后跑的那一场，全文照搬）
+============================================================================================
+  == v1.8 ⑤ 回滚演练（双向）==
+  起表 00:35:13   现场 my_ui.py=800c348e 1758 行 / 102752 B
+  快照：after-p1a → {'my_ui.py': '800c348e', 'my_agent.py': '35bdec6c', 'my_coding_agent.py': '5e3fbba6'}
+  快照前：现场 == after-p0abc 之外只有 my_ui.py（my_ui.py） PASS 800c348e
+  快照前：现场 == after-p0abc 之外只有 my_ui.py（my_agent.py） PASS 35bdec6c
+  快照前：现场 == after-p0abc 之外只有 my_ui.py（my_coding_agent.py） PASS 5e3fbba6
+  
+  ---- 方向：退向④（after-p0abc）----
+  退向④-a 三个文件 py_compile 通过                     PASS 0.0s
+  退向④-b P1-a 的 13 个名字一个都不在                     PASS 还找到: 无
+  退向④-c 抽出来的 _bind_args 没回去（_gated_call 仍自己 bind_partial） PASS inline
+  退向④-d 熔断收尾层不在（_run_stream 没被包）               PASS 
+  退向④-e ④及更早的锚点全在（加法式改动）                       PASS 缺: 无
+  退向④-f 体量：行数 1581 / 90295 B，sha1 == 快照        PASS 3a5369ae
+  退向④-g import 起来且类上三层在/不在（dup=False dupstop=False seen=False） PASS dup=False dupstop=False seen=False
+  退向④-h `from my_ui import DUP_MARK` 按要求 ImportError PASS ImportError: cannot import name 'DUP_MARK' from 'my_ui' 
+  
+  ---- 方向：进向⑤（after-p1a）----
+  进向⑤-a 三个文件 py_compile 通过                     PASS 0.0s
+  进向⑤-b P1-a 的 13 个名字全在                        PASS 13/13
+  进向⑤-c 接线：__init__ 里 gate→dup_gate→plan_gate 的顺序 PASS 顺序对
+  进向⑤-d 接线：_install_dup_gate 末尾顺手装 dup_stop    PASS 
+  进向⑤-e 类属性三件齐（表/计数/开关）                        PASS 
+  进向⑤-f 文案与显示成套：STATE_LABEL 词条 + CSS 胶囊都有 dup_fused PASS 
+  进向⑤-g 收尾判据：只在 ActionStep 之后抛（不在中途事件）         PASS 
+  进向⑤-e ④及更早的锚点全在（加法式改动）                       PASS 缺: 无
+  进向⑤-f 体量：行数 1758 / 102752 B，sha1 == 快照       PASS 800c348e
+  进向⑤-g import 起来且类上三层在/不在（dup=True dupstop=True seen=True） PASS dup=True dupstop=True seen=True
+  进向⑤-h `from my_ui import DUP_MARK` import 得到 PASS 
+  cmp 逐字节：现场 == after-p1a/my_ui.py             PASS 800c348e
+  cmp 逐字节：现场 == after-p1a/my_agent.py          PASS 35bdec6c
+  cmp 逐字节：现场 == after-p1a/my_coding_agent.py   PASS 5e3fbba6
+  cmp 逐字节：现场 == after-p0abc/my_agent.py（本刀没碰）  PASS 
+  cmp 逐字节：现场 == after-p0abc/my_coding_agent.py（本刀没碰） PASS 
+  恢复后的树上重跑离线套件 v18_test_dup.py                 PASS 75 条 PASS / 0 FAIL / exit=0
+  
+  演练结论：双向都能换、换回来逐字节一致（28 条断言，失败 0 条）
+
+  写入器**没有**再跑一次演练：每跑一次都要在约 5 秒窗口里把 live 的 my_ui.py 覆盖成第④刀那版。
+  现场正在跑的 app 读的是内存里那份，覆盖磁盘动不到它，但你恰好在那 5 秒里重启就吃到半截。
+  对上号：演练起表行记的现场是 sha1=800c348e / 1758 行，本文件「被测」行是 800c348e / 1758 行 —— 同一个文件，所以那一场验的就是现在这份代码。
+
+============================================================================================
+九、边界与待办
+============================================================================================
+  往下这些都没授权，只报告不动手：
+    · P1-b plan_delete 预览
+    · P2-a .agent-ui.log/.pid 出 ROOT
+    · P2-b 非法 JSON arguments
+    · D3 逐步落库
+    · 「cancelled」观察值措辞
+    · #42 D8-2：刷新后首屏读到还没写完的库（已量到 0.761 s 窗口，等你点头立单）
+
+  第四节顺带发现的、属于**对照格（步数用满）那一路**的两条（本刀走不到，只记录）：
+    · agents.py:606-608 在 _handle_max_steps_reached 之后又 yield 一次同一个 action_step，
+      所以「8 步用满」那一路屏上第 8 步的卡会出现两遍（回放对照格实测过那一串标题）。
+      要不要给它单开一张收尾卡，等你点头。
+    · 那一次补打的模型只认正文（agents.py:627-637 取 final_answer.content），tool_calls 不执行。
+
+  第五节 D0 留档里还有一条不属于本刀的：模型侧 400 抛 AgentGenerationError，界面把它归进
+  「已停止」那一档（except AgentError 里非 plan_denied、非熔断就是 stopped），和你按 ■ 停止同名。
+  这是 v1.3 起就有的分档，本刀没碰——要不要单开一档「模型侧报错」，等你点头。
+
+  改门槛要一起动的东西：DUP_BLOCK_LIMIT 改一个数，离线闸第 2 节那批「第几次挡」会红（故意的，
+  语义和数字必须一起改）；第四节回放剧本的 [3,4,8] 形状不受影响，但 A4/A5 的期望值要重算。
+
+  最后一句边界：这一刀**降低**的是重复调用被真的执行的机会（读侧只多一次模型往返，写侧本来就要过审批）。
+  它不保证模型不绕圈——它保证绕到第 3 次时这一题干净结束，而且屏幕上看得见在哪一步、
+  因为哪一个签名被拦（第四节 dup-on 那串卡片就是这一条的证据）。
+
+  下一件：#43 v1.8 归档 ＋ 整版回滚演练 ＋ 迭代记录.md v1.8 节 ＋ 手册 §4/§6 ＋ README ＋ 五道文档闸。

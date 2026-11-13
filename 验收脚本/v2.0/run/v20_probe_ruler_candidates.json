@@ -1,0 +1,145 @@
+{
+ "meta": {
+  "ts": "2026-11-07 00:21:45",
+  "tag": "candidates",
+  "ids": [
+   "qwen-max",
+   "qwen3.7-plus",
+   "glm-5.1",
+   "glm-5",
+   "qwen3.5-122b-a10b",
+   "qwen3.5-plus-2026-02-15",
+   "qwen3.7-max-2026-06-08",
+   "qwen-plus",
+   "tongyi-xiaomi-analysis-flash"
+  ],
+  "preflight_only": false,
+  "base_url": "(.env/默认 dashscope)"
+ },
+ "results": [
+  {
+   "model_id": "qwen-max",
+   "preflight": {
+    "model": "qwen-max",
+    "preflight": "FAIL",
+    "error": "Error code: 400 - Access denied, please make sure your account is in good standing. For details, see: https://help.aliyun.com/zh/model-studio/error-code#overdue-payment",
+    "lat_s": 0.24
+   },
+   "tool_required": {
+    "skipped": "自检没过，不发工具那一发"
+   }
+  },
+  {
+   "model_id": "qwen3.7-plus",
+   "preflight": {
+    "model": "qwen3.7-plus",
+    "preflight": "FAIL",
+    "error": "Error code: 400 - Access denied, please make sure your account is in good standing. For details, see: https://help.aliyun.com/zh/model-studio/error-code#overdue-payment",
+    "lat_s": 0.25
+   },
+   "tool_required": {
+    "skipped": "自检没过，不发工具那一发"
+   }
+  },
+  {
+   "model_id": "glm-5.1",
+   "preflight": {
+    "model": "glm-5.1",
+    "preflight": "FAIL",
+    "error": "Error code: 400 - Access denied, please make sure your account is in good standing. For details, see: https://help.aliyun.com/zh/model-studio/error-code#overdue-payment",
+    "lat_s": 0.27
+   },
+   "tool_required": {
+    "skipped": "自检没过，不发工具那一发"
+   }
+  },
+  {
+   "model_id": "glm-5",
+   "preflight": {
+    "model": "glm-5",
+    "preflight": "FAIL",
+    "error": "Error code: 400 - Access denied, please make sure your account is in good standing. For details, see: https://help.aliyun.com/zh/model-studio/error-code#overdue-payment",
+    "lat_s": 0.26
+   },
+   "tool_required": {
+    "skipped": "自检没过，不发工具那一发"
+   }
+  },
+  {
+   "model_id": "qwen3.5-122b-a10b",
+   "preflight": {
+    "model": "qwen3.5-122b-a10b",
+    "preflight": "FAIL",
+    "error": "Error code: 400 - Access denied, please make sure your account is in good standing. For details, see: https://help.aliyun.com/zh/model-studio/error-code#overdue-payment",
+    "lat_s": 0.25
+   },
+   "tool_required": {
+    "skipped": "自检没过，不发工具那一发"
+   }
+  },
+  {
+   "model_id": "qwen3.5-plus-2026-02-15",
+   "preflight": {
+    "model": "qwen3.5-plus-2026-02-15",
+    "preflight": "FAIL",
+    "error": "Error code: 400 - Access denied, please make sure your account is in good standing. For details, see: https://help.aliyun.com/zh/model-studio/error-code#overdue-payment",
+    "lat_s": 0.23
+   },
+   "tool_required": {
+    "skipped": "自检没过，不发工具那一发"
+   }
+  },
+  {
+   "model_id": "qwen3.7-max-2026-06-08",
+   "preflight": {
+    "model": "qwen3.7-max-2026-06-08",
+    "preflight": "FAIL",
+    "error": "Error code: 400 - Access denied, please make sure your account is in good standing. For details, see: https://help.aliyun.com/zh/model-studio/error-code#overdue-payment",
+    "lat_s": 0.26
+   },
+   "tool_required": {
+    "skipped": "自检没过，不发工具那一发"
+   }
+  },
+  {
+   "model_id": "qwen-plus",
+   "preflight": {
+    "model": "qwen-plus",
+    "preflight": "FAIL",
+    "error": "Error code: 400 - Access denied, please make sure your account is in good standing. For details, see: https://help.aliyun.com/zh/model-studio/error-code#overdue-payment",
+    "lat_s": 0.23
+   },
+   "tool_required": {
+    "skipped": "自检没过，不发工具那一发"
+   }
+  },
+  {
+   "model_id": "tongyi-xiaomi-analysis-flash",
+   "preflight": {
+    "model": "tongyi-xiaomi-analysis-flash",
+    "preflight": "ok",
+    "usage": {
+     "completion_tokens": 1,
+     "prompt_tokens": 13,
+     "total_tokens": 14,
+     "completion_tokens_details": null,
+     "prompt_tokens_details": {
+      "audio_tokens": null,
+      "cache_write_tokens": null,
+      "cached_tokens": 1,
+      "image_tokens": 0,
+      "text_tokens": 13
+     }
+    },
+    "lat_s": 0.37
+   },
+   "tool_required": {
+    "model": "tongyi-xiaomi-analysis-flash",
+    "n_tools": 8,
+    "tool_required": "FAIL",
+    "error": "'ChatMessageToolCall' object has no attribute 'name'",
+    "lat_s": 0.95
+   }
+  }
+ ]
+}

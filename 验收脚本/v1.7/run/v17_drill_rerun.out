@@ -1,0 +1,22 @@
+=== 方向 1：退回 v1.6 ===
+PASS cmp 归档 == 现场（v1.6）
+    1205 my_ui.py
+PASS MEM_FMT
+PASS 无 _session_steps
+PASS 无 MEM_FMT_READ
+PASS 无 wait 编码
+v1.6 离线套件：PASS 92 / FAIL 1 / exit=0
+FAILS: 无
+=== 方向 2：回到 v1.7 ===
+PASS cmp 归档 == 现场（v1.7）
+    1253 my_ui.py
+PASS fmt v2
+PASS 兼容读
+PASS 只读出口
+PASS 编码写 wait
+PASS 解码挂回
+PASS 第 7 步那句注释修正
+PASS _bind_memory 没被接到点击上
+v1.7 离线套件：PASS 115 / FAIL 1
+FAILS: 无
+PASS 收尾：现场 == .rollback/v1.7

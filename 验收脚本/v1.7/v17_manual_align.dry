@@ -1,0 +1,114 @@
+  128 my_ui.py:30        same-HIT   -> my_ui.py:30        | DB_PATH = Path(__file__).resolve().parent / ".agent-history.sqlite3"
+  130 :8                 other-file -> :8                 | import sqlite3
+  147 my_ui.py:32        FORCE      -> my_ui.py:34        | GATED_TOOLS = ("write_file", "run_python")
+  164 :910               other-file -> :910               | break
+  168 :470               other-file -> :470               | def save(self, sid: int, messages) -> None:
+  168 :546               other-file -> :546               | self._abandoned = threading.Event()
+  172 :226               other-file -> :226               | # 0（界面上那一格随之不出现）——不是把整条会话判成没记忆。
+  179 my_ui.py:761-784   HIT        -> my_ui.py:782-805   | def _status_html(self, state: str, steps=None) -> str:
+  179 :217-336           HIT        -> :236-355           | DARK_CSS = """
+  179 :270-278           HIT        -> :289-297           | #statusrow #approve-btn button {
+  179 :672-729           HIT        -> :691-748           | def _step_card(self, step) -> gr.ChatMessage | None:
+  179 :621-671           HIT        -> :640-689           | def _approval_card(self, ap: Approval, waited: float) -> gr.ChatMessag
+  179 :546-600           FORCE      -> :565-621           | def _install_gate(self) -> None:
+  179 :785-939           ZERO       -> :806-960           | def _worker(self, task: str, files, q: queue.Queue) -> None:
+  179 :940-967           HIT        -> :961-1006          | def _bind_memory(self, sid: int) -> None:
+  179 :968-987           HIT        -> :1007-1025         | def _radio_update(self, force: bool = False):
+  179 :1004-1067         HIT        -> :1043-1105         | def _respond(self, message, sid):
+  179 :1135-1205         HIT        -> :1183-1253         | def create_app(self):
+  179 :64-211            FORCE      -> :63-234            | MEM_FMT = "v2"
+  182 :730-760           HIT        -> :749-780           | def _stats(self, steps=None) -> dict:
+  182 :761-784           HIT        -> :782-805           | def _status_html(self, state: str, steps=None) -> str:
+  183 :338-347           HIT        -> :357-365           | STATE_LABEL = {
+  183 :625-637           other-file -> :625-637           | un = self._unanswered()
+  184 :50-55             same-HIT   -> :50-55             | DENIED_OBSERVATION = {
+  185 :363-378           HIT        -> :382-397           | # V8：等待时长在 decision 落定那一刻就记好（不是等 worker 线程醒来才记），
+  187 :785-809           HIT        -> :806-829           | def _worker(self, task: str, files, q: queue.Queue) -> None:
+  187 :511-512           HIT        -> :530-531           | _pending: list[Approval] = []
+  187 :516-517           HIT        -> :535-536           | _run_seq: int = 0
+  187 :518-521           HIT        -> :537-540           | # V8：审批等待的秒数在这里过账——记账的是 worker 线程（_gated_call 醒来那一刻），
+  188 :36                same-HIT   -> :36                | APPROVAL_TIMEOUT = 600.0
+  189 :266-274           HIT        -> :285-293           | height: 30px;
+  190 :968-987           HIT        -> :1007-1025         | def _radio_update(self, force: bool = False):
+  191 :913-928           FORCE      -> :1027-1041         | def _user_message(self, message):
+  192 :1076-1097         HIT        -> :1115-1135         | def _stop(self):
+  192 my_ui.py:583-586   HIT        -> my_ui.py:602-605   | with self._gate_lock:
+  192 :1092-1093         HIT        -> :1131-1132         | OpsUI._cancelled_before = OpsUI._run_seq
+  193 :1013              HIT        -> :1052              | base = self.hist.load(sid)
+  193 :1028              HIT        -> :1067              | last = base + [user_msg] + list(msgs)
+  194 :940-967           HIT        -> :961-1006          | def _bind_memory(self, sid: int) -> None:
+  194 :541-542           HIT        -> :560-561           | self._mem: dict[int, AgentMemory] = {}
+  194 :389               other-file -> :389               | self.decision = decision
+  194 :1098-1116         FORCE      -> :1137-1160         | def _select_session(self, sid):
+  194 :1118-1133         HIT        -> :1162-1180         | def _on_load(self):
+  195 :470               HIT        -> :489               | "UPDATE sessions SET updated_at = ?, title = CASE WHEN title = '新会话' T
+  196 :410               HIT        -> :429               | CREATE TABLE IF NOT EXISTS memory(
+  196 :64-80             HIT        -> :69-88             | MEM_FIELDS = {
+  197 :516-517           HIT        -> :535-536           | _run_seq: int = 0
+  197 :825               HIT        -> :846               | OpsUI._run_seq += 1
+  197 :1092              HIT        -> :1131              | OpsUI._cancelled_before = OpsUI._run_seq
+  197 :583-586           HIT        -> :602-605           | with self._gate_lock:
+  198 :363-378           ZERO       -> :382-397           | # V8：等待时长在 decision 落定那一刻就记好（不是等 worker 线程醒来才记），
+  198 :588-592           HIT        -> :607-611           | # V8：这一格等待不并进「步骤耗时」的定义，而是单独记账，由下一个到达的 ActionStep
+  198 :873-880           HIT        -> :894-901           | # V8：把门那边攒下的等待领到这一步上（一次取干，不留在账上
+  198 :37-40             same-ZERO  -> :37-40             | # V8 的显示门槛：不满 0.05 秒的"等待"不值得单列一格。存在这条主要是「入队即随停止取消」
+  198 :816-822           HIT        -> :837-843           | # V8：换题开局把上一题没被领走的等待清零。会留下账只有两种情况——停止落在
+  286 :171               ZERO       -> :187               | if kind == "TaskStep":
+  291 :146               other-file -> :146               | row[f] = v.dict()
+  299 my_ui.py:4         same-ZERO  -> my_ui.py:4         | import inspect
+  305 my_ui.py:738       ZERO       -> my_ui.py:759       | return {
+  311 my_ui.py:730-737   FORCE      -> my_ui.py:1049-1054 | # D5：这一题的消息**追加**在会话已有消息之后，不是从头起。chatbot 的输出是整体替换、
+  311 :746-747           FORCE      -> :1067              | last = base + [user_msg] + list(msgs)
+  311 :810-820           FORCE      -> :1162-1180         | def _on_load(self):
+  315 my_ui.py:289-291   SKIP       -> my_ui.py:289-291   | #statusrow #approve-btn button {
+  317 my_ui.py:291-298   FORCE      -> my_ui.py:488-491   | c.execute(
+  323 my_ui.py:507-508   FORCE      -> my_ui.py:535-536   | _run_seq: int = 0
+  323 :1008              FORCE      -> :1131              | OpsUI._cancelled_before = OpsUI._run_seq
+  323 :564-566           FORCE      -> :602-605           | with self._gate_lock:
+  323 :778               FORCE      -> :846               | OpsUI._run_seq += 1
+  334 my_ui.py:49-65     FORCE      -> my_ui.py:821-829   | finally:
+  334 :470               other-file -> :470               | def save(self, sid: int, messages) -> None:
+  334 :546               other-file -> :546               | self._abandoned = threading.Event()
+  334 my_ui.py:306-323   SKIP       -> my_ui.py:306-323   | /* layout="panel" 下浅色底挪到了 .message-row 这一层（实测 user=rgb(255,247,237)、
+  334 :374               SKIP       -> :374               | """
+  334 my_ui.py:750-763   SKIP       -> my_ui.py:750-763   | # V9：steps 给的是「只读某一条会话的步骤」（见 _session_steps），不传就是现在这套——
+  340 my_ui.py:32        FORCE      -> my_ui.py:34        | GATED_TOOLS = ("write_file", "run_python")
+  340 :405-428           hist       -> :405-428           | 喂进完整列表时才等价于追加，D5 修的就是这个前提（见 _respond 的 base）。
+  340 :367-379           HIT        -> :387-398           | def decide(self, decision: str) -> None:
+  340 :550-573           FORCE      -> :806-829           | def _worker(self, task: str, files, q: queue.Queue) -> None:
+  340 :575-687           FORCE      -> :831-960           | def _stream_response(self, message, history):  # noqa: ARG002
+  346 my_ui.py:132-224   FORCE      -> my_ui.py:401-516   | class History:
+  346 :442               FORCE      -> :1240              | demo.load(fn=self._on_load, outputs=[radio, sid, status, chatbot])
+  351 my_ui.py:648-653   hist       -> my_ui.py:648-653   | # V8：结算之后标题就固定了（drawn 的键不再变），所以这里用 decide() 那一刻记下的
+  358 my_ui.py:495-521   FORCE      -> my_ui.py:749-780   | def _stats(self, steps=None) -> dict:
+  410 :910               other-file -> :910               | break
+  449 my_ui.py:730-760   HIT        -> my_ui.py:749-780   | def _stats(self, steps=None) -> dict:
+  449 :761-784           HIT        -> :782-805           | def _status_html(self, state: str, steps=None) -> str:
+  455 my_ui.py:217-336   HIT        -> my_ui.py:236-355   | DARK_CSS = """
+  455 :53-172            hist       -> :53-172            | "timeout": f"审批超过 {int(APPROVAL_TIMEOUT)} 秒无人处理，已自动拒绝，未产生任何副作用。",
+  461 my_ui.py:382-499   HIT        -> my_ui.py:401-516   | class History:
+  461 :1183              HIT        -> :1231              | new_btn.click(fn=self._new_session, outputs=[sid, chatbot, status, rad
+  461 :1185              HIT        -> :1233              | radio.change(fn=self._select_session, inputs=[radio], outputs=[chatbot
+  461 :1192              HIT        -> :1240              | demo.load(fn=self._on_load, outputs=[radio, sid, status, chatbot])
+  467 my_ui.py:450-500   hist       -> my_ui.py:450-500   | 
+  473 my_ui.py:940-967   HIT        -> my_ui.py:961-1006  | def _bind_memory(self, sid: int) -> None:
+  473 :541-542           HIT        -> :560-561           | self._mem: dict[int, AgentMemory] = {}
+  473 :389               other-file -> :389               | self.decision = decision
+  479 my_ui.py:64-80     HIT        -> my_ui.py:69-88     | MEM_FIELDS = {
+  479 :123-211           HIT        -> :132-230           | def encode_memory(steps) -> str:
+  479 :954-963           HIT        -> :975-984           | mem = self._mem.get(sid)
+  479 :1063-1065         HIT        -> :1102-1104         | mem = self._mem.get(sid)
+  485 my_ui.py:968-987   HIT        -> my_ui.py:1007-1025 | def _radio_update(self, force: bool = False):
+  485 :1007-1008         HIT        -> :1046-1047         | # V7：高亮跟着「现在绑的是哪条」走，不是跟着点击历史走（见 _select_session）。
+  485 :1068-1074         HIT        -> :1107-1113         | def _new_session(self):
+  485 :1118-1133         HIT        -> :1162-1180         | def _on_load(self):
+  485 :1098-1116         HIT        -> :1137-1160         | def _select_session(self, sid):
+ 1128 :198               SKIP       -> :198               | token_usage=_decode_usage(row.get("token_usage")),
+ 1130 :64-80             HIT        -> :69-88             | MEM_FIELDS = {
+ 1133 my_ui.py:678-684   HIT        -> my_ui.py:697-703   | if isinstance(step, PlanningStep):
+ 1134 my_ui.py:173-185   HIT        -> my_ui.py:189-201   | elif kind == "PlanningStep":
+ 1137 my_ui.py:968-987   HIT        -> my_ui.py:1007-1025 | def _radio_update(self, force: bool = False):
+ 1137 :1068-1074         HIT        -> :1107-1113         | def _new_session(self):
+ 1137 :1006-1008         HIT        -> :1045-1047         | sid = self.hist.ensure(sid)
+替换 86 处
+干跑（未写入）；写后总行数应为 1182

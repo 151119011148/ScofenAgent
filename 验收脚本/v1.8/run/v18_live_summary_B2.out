@@ -1,0 +1,63 @@
+场景 B2：挂在待批上时 SIGKILL（强关 App 那一路，不给任何收尾机会）
+app 就绪 8.1s（/config 200 39082B）
+起点 epoch 1793714236.599 ｜ 杀掉时刻 SIGKILL @ 1793714253.522（跑完 cdp 剧本之后）
+杀掉之后 2.0s：进程已退出，returncode=-9
+浏览器侧：
+{
+ "__navigate0": 1793714236851,
+ "P0-peek#at": 1793714242936,
+ "P0-peek": 0,
+ "P1-new#at": 1793714242938,
+ "P1-new#click": "clicked@186,134",
+ "P2-read#at": 1793714245463,
+ "P2-read": "模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 空闲",
+ "P3-ask#at": 1793714245468,
+ "P3-ask#type": "clicked-submit",
+ "P4-await#at": 1793714245482,
+ "P4-await#waitedMs": 2019,
+ "P4-await#pred": "YES:模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 等待审批",
+ "P5-hold#at": 1793714247501,
+ "P6-status-before#at": 1793714251500,
+ "P6-status-before": "模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 等待审批",
+ "P7-bot-before#at": 1793714251502,
+ "P7-bot-before": 2,
+ "P7b-mark-before#at": 1793714251502,
+ "P7b-mark-before": "bot=2 已中断标题=N 空等字样=N 随中断取消=N 随停止取消=N 还在等审批=Y",
+ "P10-after-peek-bot#at": 1793714251504,
+ "P10-after-peek-bot": 2,
+ "P11-after-status#at": 1793714251506,
+ "P11-after-status": "模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 等待审批",
+ "P12-mark-after#at": 1793714251507,
+ "P12-mark-after": "bot=2 已中断标题=N 空等字样=N 随中断取消=N 随停止取消=N 还在等审批=Y"
+}
+
+服务端（v18_ui.py 的三层包装）：
+t=  0.000  boot.epoch             t0=1793714234.272981 pid=95583 timeout=600.0 gradio=6.30.0
+t=  3.038  on_load                sid=None steps=0 kinds=- screen_stepno=None screen_in=None screen_out=None screen_wait=0.0 mem_held=[] db_memory=- wall=3.031
+t= 11.225  respond.enter          sid=None
+t= 11.229  poller.start           timeout=600.0
+t= 11.243  stream.enter           sid=1
+t= 11.243  settle_all.enter       decision=cancelled ids=-
+t= 11.243  settle_all.exit        decision=cancelled
+t= 12.234  poll.pending           n=0 state=- unanswered=0
+t= 12.553  ap.wait.enter          id=933782 tool=run_python timeout=600.0
+t= 13.244  poll.pending           n=1 state=933782:pending unanswered=1
+t= 14.248  poll.pending           n=1 state=933782:pending unanswered=1
+t= 15.252  poll.pending           n=1 state=933782:pending unanswered=1
+t= 16.255  poll.pending           n=1 state=933782:pending unanswered=1
+t= 17.261  poll.pending           n=1 state=933782:pending unanswered=1
+t= 18.263  poll.pending           n=1 state=933782:pending unanswered=1
+
+杀进程之后： 库里： {'sessions': 1, 'messages': 0, 'memory': 0} | messages 按会话 []
+计数：
+  respond.enter            1
+  respond.GeneratorExit    0
+  respond.finally          0
+  stream.GeneratorExit     0
+  save.enter               0
+  save.exit                0
+  save_memory.enter        0
+  save.RAISED              0
+  mark.enter               0
+  mark.exit                0
+  on_load                  1

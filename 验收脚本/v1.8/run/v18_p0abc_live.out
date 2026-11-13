@@ -1,0 +1,327 @@
+============================================================================================
+v1.8 第④刀 P0-a／P0-b／P0-c 实跑证据：越界报错补指路／能力穷举／相对路径不猜根
+============================================================================================
+生成方式：`smolagents/.venv/bin/python 验收脚本/v1.8/v18_p0abc_report.py`（一次性写入器，只搬已有行；
+          本文件不重新打模型，所有实跑数字来自 run/ 下已经落盘的日志）
+代码：live  my_coding_agent.py=5e3fbba6ecc6c2d06439cf485158dc4d05c909d0  my_agent.py=35bdec6c710f5f8d5f82bda34f5bb6181e79f8a9  my_ui.py=3a5369ae2784ecc2bb05b2b35886b4fdde90b35f
+      改前 .rollback/v1.8/after-p04/  my_coding_agent.py=ae156ebdbf0826a3b92ff78fd4d2ca72dd4bdad0  my_agent.py=47805e18fbdae8052f8cba68f0409ad947885a5a
+      live 行数：256 /Users/gaoying/Desktop/study/ai学习/smolagents/my_coding_agent.py |      111 /Users/gaoying/Desktop/study/ai学习/smolagents/my_agent.py |      367 total
+
+这一刀只动了三处文案＋一条错误分支：
+  P0-a  guarded() 的**越界**报错。旧：`越界：X 不在白名单根目录 R 之下`（到此为止）。
+        新：补指路——五个工具只服务这一个根／动作空间里没有删除、移动、重命名／根外由用户在终端执行／
+        并且明写「不要让用户去找系统管理员开权限（没有这个开关）」。
+  P0-c  guarded() 的**相对路径＋不存在**报错。新文案把口径摊开：你给的是这串相对路径，我只能接到这个根底下再找，
+        不猜别的根目录；根外有没有同名目录我读不到；不要用同一个参数再打一遍；要么 list_dir('.') 要么讲明根内没有它。
+        （绝对路径＋不存在那一支的文案逐字未动，见第一节闸。）
+  P0-b  能力穷举写在**模型真读得到的那一半**：list_dir、write_file 的 docstring；
+        description= 字段照票面写全，但它在顶层 agent 上是死字段（第二节实测）。
+
+token 口径（后面每个数都按这三档标）：
+  · 末步累计＝框架日志 `[Step N: … Input tokens: I | Output tokens: O]` 里 N 最大的那行，
+    那是**监控器跨题累计**（同一个 agent 对象再跑一题会继续往上加），不是这一题的消耗；
+  · 探针 digest 本来要给「单步 in/out」和「各步 in 相加」两档，但探针连崩两次没落成（见本文件头），
+    所以这份证据里**没有单步口径**，只有末步累计；宁可缺一格也不拿累计冒充单步；
+  · 每一步都会把前文重发，所以步数越多、累计涨得越快——「同名同参重复」那几列就是直接烧在这一档上的。
+
+跑法与波及面：
+  `/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/bin/python 验收脚本/v1.8/v18_p0abc_probe.py <old|new> <A|B>`：命令行直接跑 my_agent 那个 agent，
+  planning_interval 两边都置 None（这一刀不比规划），CLI 侧没有审批门。不碰 gradio、不碰 7860、
+  不写真库；题面是删除类请求，但这套工具到不了那个目录——第四节末的预检把这四只手逐一验过。
+
+============================================================================================
+一、离线闸 v18_test_p0abc.py 当场重跑（全文）
+============================================================================================
+  1-行为一致 smolagents/my_ui.py         PASS old=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习/smolagents/my_ui.py')) new=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习/smolagents/my_ui.py'))
+  1-行为一致 .                           PASS old=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习')) new=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习'))
+  1-行为一致 <空>                         PASS old=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习')) new=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习'))
+  1-行为一致   smolagents                PASS old=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习/smolagents')) new=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习/smolagents'))
+  1-行为一致 /Users/gaoying/Deskt        PASS old=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习')) new=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习'))
+  1-行为一致 smolagents                  PASS old=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习/smolagents')) new=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习/smolagents'))
+  1-行为一致 smolagents/nope-does        PASS old=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习/smolagents/nope-does-not-exist.txt')) new=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习/smolagents/nope-does-not-exist.txt'))
+  1-行为一致 /Users/gaoying/Deskt        PASS old=('PermissionError', '/Users/gaoying/Desktop/study') new=('PermissionError', '/Users/gaoying/Desktop/study')
+  1-行为一致 /Users/gaoying/Deskt        PASS old=('PermissionError', '/Users/gaoying/Desktop/study') new=('PermissionError', '/Users/gaoying/Desktop/study')
+  1-行为一致 /tmp                        PASS old=('PermissionError', '/private/tmp') new=('PermissionError', '/private/tmp')
+  1-行为一致 ~/Desktop                   PASS old=('PermissionError', '/Users/gaoying/Desktop') new=('PermissionError', '/Users/gaoying/Desktop')
+  1-行为一致 ~/Desktop/study/ai学习        PASS old=('PermissionError', '/Users/gaoying/Desktop/etc/passwd') new=('PermissionError', '/Users/gaoying/Desktop/etc/passwd')
+  1-行为一致 人生/                         PASS old=('FileNotFoundError', '/Users/gaoying/Desktop/study/ai学习/人生') new=('FileNotFoundError', '/Users/gaoying/Desktop/study/ai学习/人生')
+  1-行为一致 职业规划/                       PASS old=('FileNotFoundError', '/Users/gaoying/Desktop/study/ai学习/职业规划') new=('FileNotFoundError', '/Users/gaoying/Desktop/study/ai学习/职业规划')
+  1-行为一致 smolagents/.env             PASS old=('PermissionError', '拒绝访问凭证或依赖目录：/Users/gaoying/Desktop/study/ai学习/smolagents/.env') new=('PermissionError', '拒绝访问凭证或依赖目录：/Users/gaoying/Desktop/study/ai学习/smolagents/.env')
+  1-行为一致 /Users/gaoying/Deskt        PASS old=('PermissionError', '拒绝访问凭证或依赖目录：/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/bin') new=('PermissionError', '拒绝访问凭证或依赖目录：/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/bin')
+  1-行为一致 /Users/gaoying/Deskt        PASS old=('FileNotFoundError', '/Users/gaoying/Desktop/study/ai学习/不存在-绝对路径') new=('FileNotFoundError', '/Users/gaoying/Desktop/study/ai学习/不存在-绝对路径')
+  1-覆盖面(三种结局都在表里)                    PASS {'ok': 7, 'PermissionError': 7, 'FileNotFoundError': 3}
+  2-绝对不存在文案一字未动                      PASS '路径不存在：/Users/gaoying/Desktop/study/ai学习/不存在-绝对路径'
+  3-越界含「报出根」                         PASS 
+  3-越界含「穷举没有的手」                      PASS 
+  3-越界含「指路到用户终端」                     PASS 
+  3-越界含「堵住『找管理员开权限』」                 PASS 
+  3-越界含「不许换路径重试」                     PASS 
+  3-相对不存在含「原样回显给的是模型自己写的那串」          PASS 
+  3-相对不存在含「拼接结果」                     PASS 
+  3-相对不存在含「不猜根」                      PASS 
+  3-相对不存在含「承认读不到根外」                  PASS 
+  3-相对不存在含「堵住同参重试」                   PASS 
+  3-相对不存在含「给一条能走的路」                  PASS 
+  3-相对分支仍是不存在那一支                     PASS 「越界」三个字在新文案里是指路，不是改判：走的仍是 FileNotFoundError 这一支
+  4-凭证目录仍拒且文案未改                      PASS '拒绝访问凭证或依赖目录：/Users/gaoying/Desktop/study/ai学习/smolagents/.env'
+  4-staging 仍拒                       PASS 
+  5-description 穷举不进 prompt          PASS my_coding_agent.description 里的独有串不在 system_prompt
+  5-description 老串也不进 prompt         PASS 
+  5-进了 prompt：list_dir docstring     PASS 
+  5-进了 prompt：write_file docstring   PASS 
+  5-进了 prompt：write_file docstring 负向穷举 PASS 
+  5-prompt 增量 = 146 字符               PASS old=4796 new=4942 delta=+146
+  5-报错文案不占固定开销                       PASS 
+  6-my_agent description 全           PASS max_drawdown
+  6-my_agent description 全           PASS annualized_volatility
+  6-my_agent description 全           PASS read_file
+  6-my_agent description 全           PASS list_dir
+  6-my_agent description 全           PASS grep_files
+  6-my_agent description 全           PASS write_file
+  6-my_agent description 全           PASS run_python
+  6-my_agent description 全           PASS 没有删除／移动／重命名
+  
+  全绿  FAIL=0
+
+  统计：PASS %d 条 ／ FAIL %d 条。最要紧的两条：
+   · 「1-行为一致」17 条：同一张路径表在旧代码（.rollback/v1.8/after-p04 那份 import 进来）和新代码上各跑一遍，
+     异常类型＋从文案里抽出的那个 Path 必须一一对上；「1-覆盖面」再钉住表里三种结局（放行／越界／不存在）都在，
+     免得 17 条全等只是因为全等在同一支上。
+   · 「2-绝对不存在文案一字未动」：绝对路径不存在那一条分支逐字和旧的一样——这轮文案扩张只在两处。
+
+============================================================================================
+二、模型读得到哪半句：description 不进 prompt，工具 docstring 进
+============================================================================================
+  system_prompt 字符数：旧=4796 新=4942 增量=+146  ← 这是每一步都要重发的**固定开销**
+  description 是不是死字段：它里面独有的串「单次最多 300 行」出现在渲染出的 system_prompt 里吗 → False
+  工具 docstring 是活的那一半：「列不到根外的任何目录」→ True；「删除、移动、重命名都没有对应工具」→ True
+  框架依据：`self.description` 只在 describe() 里被读，那是给 managed（子）agent 用的；
+          顶层 ToolCallingAgent 没有 describe()（探针：`hasattr(agent, 'describe')` → False）。
+  规则 4 早就存在：system_prompt 里那句「Never re-do a tool call that you previously did with the exact same
+  parameters」在旧和新两份 prompt 里都在（本次命中 True／True）——**是模型没听话，不是没规矩**，这条直接喂 #41。
+
+============================================================================================
+三、三段新文案原文（从 live 模块当场抛／渲染出来取）
+============================================================================================
+  [P0-a 越界 PermissionError，296 字符]
+    越界：/Users/gaoying/Desktop/study 不在白名单根目录 /Users/gaoying/Desktop/study/ai学习 之下。这一整套工具（read_file／list_dir／grep_files／write_file／run_python）只服务这一个根，根外的路径一个都到不了；而且动作空间里**没有删除、移动、重命名这类工具**——所以『把那个目录删掉』不是权限没开，是这套手根本没有这一只，绕路径也绕不出来。下一步请直接把这件事讲清楚给用户：ROOT 之外要他自己在终端执行；不要再换一条根外路径重试，也不要让用户去找系统管理员开权限（没有这个开关）。
+
+  [P0-c 相对不存在 FileNotFoundError，290 字符]
+    路径不存在：/Users/gaoying/Desktop/study/ai学习/人生。这里把口径摊开：你给的是相对路径 '人生/'，我只能把它接到白名单根 /Users/gaoying/Desktop/study/ai学习 底下再找，**不会去猜别的根目录**；根外有没有同名目录我读不到（工具到不了那里），要用户自己确认。如果你要的就是根外那一个，那属于越界，处理办法见上一条。不要用同一个参数再打一遍：要么 list_dir(path='.') 看这个根下真实有什么，要么在最终答复里讲明『/Users/gaoying/Desktop/study/ai学习 之下没有 人生』。
+
+  [对照：旧文案原文，越界 77 字符 / 相对不存在 42 字符]
+    越界：/Users/gaoying/Desktop/study 不在白名单根目录 /Users/gaoying/Desktop/study/ai学习 之下
+    路径不存在：/Users/gaoying/Desktop/study/ai学习/人生
+
+  [P0-b description 全文 —— my_coding_agent.build_agent（5 只手）]
+    "在 ai学习 目录里读代码、搜代码、跑验证。能力就这些，没有别的：\n"
+    "1) read_file：读这一个根之内的文本文件，带行号，单次最多 300 行；\n"
+    "2) list_dir：列这一个根之内某一层目录，默认列根；\n"
+    "3) grep_files：在这个根之内按正则搜文件内容，最多 100 条；\n"
+    "4) write_file：只往 .agent-staging/ 落一份草稿并给 diff，原文件一概不动；\n"
+    "5) run_python：在临时沙箱里跑一段 Python 验证计算，env 清空、20 秒熔断，"
+    "代码里出现 rm/rmtree/remove/unlink/subprocess/socket/urllib/requests 直接拒绝。\n"
+    "做不到的（别试，也别对用户承诺）：删除、移动、重命名、写根之外的任何路径、"
+    "访问网络、执行 shell 命令、读 .env/.git/.venv/node_modules/__pycache__。"
+    "根外的文件请用户在自己的终端处理。"
+  [P0-b description 全文 —— my_agent（7 只手，21:06 那轮出事的正是这个 agent）]
+    行情指标计算（max_drawdown、annualized_volatility）＋ 在 ai学习 这一个根目录里读代码、搜代码、跑验证（read_file、list_dir、grep_files、write_file 只落 .agent-staging、run_python 在沙箱里跑且拒绝删除类调用）。没有删除／移动／重命名／访问网络／写根外路径的能力——根外要用户自己在终端执行。
+
+============================================================================================
+四、21:06 基线：票上挂的那轮（改之前的行为，原行照搬 .agent-ui.log）
+============================================================================================
+  这一节是**你自己那天跑出来的界面日志**，不是我这轮跑的。两个 run 的题面：
+    run A：删除人生目录下的 轻量文档文件夹，职业规划下面的东西不要动
+    run B：/Users/gaoying/Desktop/study/人生。删除人生目录下的 轻量文档文件夹，职业规划下面的东西不要动
+
+  框架日志里的完整调用序列（run A 8 步＋run B 3 步，一共 11 条）：
+     1. list_dir({"path": "人生/"})
+     2. list_dir({})
+     3. list_dir({"path": "人生/"})
+     4. list_dir({})
+     5. grep_files({"pattern": "人生", "path": "."})
+     6. list_dir({"path": "data/"})
+     7. list_dir({"path": "职业规划/"})
+     8. list_dir({})
+     9. list_dir({"path": "/Users/gaoying/Desktop/study/"})
+    10. list_dir({})
+    11. final_answer({"answer":"无法执行删除操作，因为'人生'目录不在白名单目录（/Users/gaoying/Desktop/study/ai学习）下，且尝试访问外部路径 /Users/gaoying/Desktop/study/人生被权限限制。请确认目标路径是否在白名单内，或联系
+
+  同名同参重复（整份日志合并算，含两次 run）：
+    ×2  list_dir({"path": "人生/"})
+    ×4  list_dir({})
+
+  旧文案的两句原话（模型就是读完这两句之后开始绕圈的）：
+    FileNotFoundError: 路径不存在：/Users/gaoying/Desktop/study/ai学习/人生
+    FileNotFoundError: 路径不存在：/Users/gaoying/Desktop/study/ai学习/人生
+    FileNotFoundError: 路径不存在：/Users/gaoying/Desktop/study/ai学习/职业规划
+    越界：/Users/gaoying/Desktop/study 不在白名单根目录
+  run B 收尾（旧越界文案没指路时它自己补的那句）：
+    被权限限制。请确认目标路径是否在白名单内，或联系系统管理员调整权限。"}
+    被权限限制。请确认目标路径是否在白名单内，或联系系统管理员调整权限。
+    被权限限制。请确认目标路径是否在白名单内，或联系系统管理员调整权限。
+
+  预检（这轮实跑的波及面证据）：四个可能的删除入口全部到不了 /Users/gaoying/Desktop/study/人生/轻量文档
+    guarded(目标)                PermissionError: 越界：/Users/gaoying/Desktop/study/人生/轻量文档 不在白名单根目录 /Users/gaoy
+    write_file(目标)             PermissionError: 越界：/Users/gaoying/Desktop/study/人生/轻量文档 不在白名单根目录 /Users/gaoy
+    run_python shutil.rmtree   返回值=拒绝执行：代码里含被禁用的调用 'shutil.rmtree'
+    run_python subprocess rm   返回值=拒绝执行：代码里含被禁用的调用 'subprocess'
+
+============================================================================================
+五、实跑对照：old（回滚点代码）vs new（live），每题两个样本
+============================================================================================
+  样本 1 = run/v18_p0abc_<w>_<t>.out（探针崩在算账之前，token 已花、digest 没落成）
+  样本 2 = run/v18_p0abc_<w>_<t>_r2.out（修好 st.output 之后重跑，又崩在 st.timing.total_time）
+  两次都**不影响这里的读数**：本节全部从框架自己的日志解析。
+
+  --------------------------------------------------------------------------------------
+  题 A ｜ old 代码 ｜ 样本 1
+    文件：v18_p0abc_old_A.out（存在=True，184 行）
+    调用序列：list_dir({"path": "人生/"}) → list_dir({}) → list_dir({"path": "人生/"}) → list_dir({}) → list_dir({"path": "data/"}) → list_dir({"path": "职业规划/"}) → grep_files({"pattern":"人生|轻量文档|职业规划"}) → list_dir({"path": "/Users/gaoying/Desktop/study/"})
+    同名同参重复：×2 list_dir({"path": "人生/"}); ×2 list_dir({})
+    末步累计（监控器口径，跨题）：Step 9 / 14.31s / in 26573 / out 765
+    8 步用满（Reached max steps）：True
+    撞墙段数：4 ｜ 其中带新口径（相对路径那句）False ｜ 带新指路（越界那句）False ｜ 旧式光秃文案 True
+      报错原文：Error executing tool 'list_dir' with arguments {'path': '人生/'}:FileNotFoundError: 路径不存在：/Users/gaoying/Desktop/study/ai学习/人生
+      报错原文：Error executing tool 'list_dir' with arguments {'path': '人生/'}:FileNotFoundError: 路径不存在：/Users/gaoying/Desktop/study/ai学习/人生
+      报错原文：Error executing tool 'list_dir' with arguments {'path': '职业规划/'}:FileNotFoundError: 路径不存在：/Users/gaoying/Desktop/study/ai学习/职业规划
+      报错原文：Error executing tool 'list_dir' with arguments {'path':'/Users/gaoying/Desktop/study/'}: PermissionError:越界：/Users/gaoying/Desktop/study 不在白名单根目录/Users/gaoying/Desktop/study/ai学习 之下
+    final answer：【没有：这题把 8 步用满，交不出答案】
+  --------------------------------------------------------------------------------------
+  题 A ｜ old 代码 ｜ 样本 2
+    文件：v18_p0abc_old_A_r2.out（存在=True，132 行）
+    调用序列：list_dir({"path": "人生/"}) → list_dir({}) → list_dir({"path": "人生/"}) → list_dir({"path": "ai学习/"}) → list_dir({}) → list_dir({"path": "data/"}) → list_dir({"path": "职业规划/"}) → list_dir({})
+    同名同参重复：×2 list_dir({"path": "人生/"}); ×3 list_dir({})
+    末步累计（监控器口径，跨题）：Step 9 / 8.41s / in 24123 / out 485
+    8 步用满（Reached max steps）：True
+    撞墙段数：4 ｜ 其中带新口径（相对路径那句）False ｜ 带新指路（越界那句）False ｜ 旧式光秃文案 True
+      报错原文：Error executing tool 'list_dir' with arguments {'path': '人生/'}:FileNotFoundError: 路径不存在：/Users/gaoying/Desktop/study/ai学习/人生
+      报错原文：Error executing tool 'list_dir' with arguments {'path': '人生/'}:FileNotFoundError: 路径不存在：/Users/gaoying/Desktop/study/ai学习/人生
+      报错原文：Error executing tool 'list_dir' with arguments {'path': 'ai学习/'}:FileNotFoundError: 路径不存在：/Users/gaoying/Desktop/study/ai学习/ai学习
+      报错原文：Error executing tool 'list_dir' with arguments {'path': '职业规划/'}:FileNotFoundError: 路径不存在：/Users/gaoying/Desktop/study/ai学习/职业规划
+    final answer：【没有：这题把 8 步用满，交不出答案】
+  --------------------------------------------------------------------------------------
+  题 A ｜ new 代码 ｜ 样本 1
+    文件：v18_p0abc_new_A.out（存在=True，242 行）
+    调用序列：list_dir({"path": "人生/"}) → list_dir({"path": "."}) → list_dir({"path": "data/"}) → list_dir({"path":"Agent链路详解.app/"}) → list_dir({"path":"Agent链路详解.app/Contents/"}) → list_dir({"path": "验收脚本/"}) → list_dir({"path": "langchain4j/"}) → list_dir({"path": "smolagents/"})
+    同名同参重复：无
+    末步累计（监控器口径，跨题）：Step 9 / 11.91s / in 28152 / out 669
+    8 步用满（Reached max steps）：True
+    撞墙段数：1 ｜ 其中带新口径（相对路径那句）True ｜ 带新指路（越界那句）False ｜ 旧式光秃文案 False
+      报错原文：Error executing tool 'list_dir' with arguments {'path': '人生/'}:FileNotFoundError:路径不存在：/Users/gaoying/Desktop/study/ai学习/人生。这里把口径摊开：你给的是相对路径 '人生/'，我只能把它接到白名单根 /Users/gaoying/Desktop/study/ai学习底下再找，**不会去猜别的根目录**；根外有没有同名目录我读不到（工具到不了那里），要用户自己确认。如果你要的就是根外那一个，那属于越界，处理办法见上一条。不要用同一个参数再打一遍：要么 list_dir(path='.')看这个根下真实有什么，要么在最终答复里讲明『/Users/gaoying/Desktop/study/ai学习之下没有 人生』。
+    final answer：【没有：这题把 8 步用满，交不出答案】
+  --------------------------------------------------------------------------------------
+  题 A ｜ new 代码 ｜ 样本 2
+    文件：v18_p0abc_new_A_r2.out（存在=True，286 行）
+    调用序列：list_dir({"path": "人生/"}) → list_dir({"path": "."}) → list_dir({"path": "ai学习/"}) → list_dir({"path": "data/"}) → list_dir({"path": "dify/"}) → list_dir({"path": "langchain4j/"}) → list_dir({"path": "smolagents/"}) → list_dir({"path": "验收脚本/"})
+    同名同参重复：无
+    末步累计（监控器口径，跨题）：Step 9 / 16.78s / in 31203 / out 875
+    8 步用满（Reached max steps）：True
+    撞墙段数：2 ｜ 其中带新口径（相对路径那句）True ｜ 带新指路（越界那句）False ｜ 旧式光秃文案 False
+      报错原文：Error executing tool 'list_dir' with arguments {'path': '人生/'}:FileNotFoundError:路径不存在：/Users/gaoying/Desktop/study/ai学习/人生。这里把口径摊开：你给的是相对路径 '人生/'，我只能把它接到白名单根 /Users/gaoying/Desktop/study/ai学习底下再找，**不会去猜别的根目录**；根外有没有同名目录我读不到（工具到不了那里），要用户自己确认。如果你要的就是根外那一个，那属于越界，处理办法见上一条。不要用同一个参数再打一遍：要么 list_dir(path='.')看这个根下真实有什么，要么在最终答复里讲明『/Users/gaoying/Desktop/study/ai学习之下没有 人生』。
+      报错原文：Error executing tool 'list_dir' with arguments {'path': 'ai学习/'}:FileNotFoundError:路径不存在：/Users/gaoying/Desktop/study/ai学习/ai学习。这里把口径摊开：你给的是相对路径 'ai学习/'，我只能把它接到白名单根 /Users/gaoying/Desktop/study/ai学习底下再找，**不会去猜别的根目录**；根外有没有同名目录我读不到（工具到不了那里），要用户自己确认。如果你要的就是根外那一个，那属于越界，处理办法见上一条。不要用同一个参数再打一遍：要么 list_dir(path='.')看这个根下真实有什么，要么在最终答复里讲明『/Users/gaoying/Desktop/study/ai学习之下没有 ai学习』。
+    final answer：【没有：这题把 8 步用满，交不出答案】
+  --------------------------------------------------------------------------------------
+  题 B ｜ old 代码 ｜ 样本 1
+    文件：v18_p0abc_old_B.out（存在=True，285 行）
+    调用序列：list_dir({"path":"/Users/gaoying/Desktop/study/人生。"}) → list_dir({}) → list_dir({"path": "ai学习/"}) → list_dir({}) → list_dir({"path": "data/"}) → list_dir({"path": "dify/"}) → list_dir({"path": "langchain4j/"}) → list_dir({"path": "smolagents/"})
+    同名同参重复：×2 list_dir({})
+    末步累计（监控器口径，跨题）：Step 9 / 17.73s / in 27540 / out 918
+    8 步用满（Reached max steps）：True
+    撞墙段数：2 ｜ 其中带新口径（相对路径那句）False ｜ 带新指路（越界那句）False ｜ 旧式光秃文案 True
+      报错原文：Error executing tool 'list_dir' with arguments {'path':'/Users/gaoying/Desktop/study/人生。'}: PermissionError:越界：/Users/gaoying/Desktop/study/人生。 不在白名单根目录/Users/gaoying/Desktop/study/ai学习 之下
+      报错原文：Error executing tool 'list_dir' with arguments {'path': 'ai学习/'}:FileNotFoundError: 路径不存在：/Users/gaoying/Desktop/study/ai学习/ai学习
+    final answer：【没有：这题把 8 步用满，交不出答案】
+  --------------------------------------------------------------------------------------
+  题 B ｜ old 代码 ｜ 样本 2
+    文件：v18_p0abc_old_B_r2.out（存在=True，144 行）
+    调用序列：list_dir({"path":"/Users/gaoying/Desktop/study/人生。"}) → list_dir({}) → list_dir({"path": "ai学习/"}) → list_dir({}) → list_dir({"path": "ai学习/"}) → list_dir({}) → final_answer({"answer":"无法执行删除操作，因为目标路径 '/Users/gaoying/Desk
+    同名同参重复：×3 list_dir({}); ×2 list_dir({"path": "ai学习/"})
+    末步累计（监控器口径，跨题）：Step 7 / 2.07s / in 20110 / out 173
+    8 步用满（Reached max steps）：False
+    撞墙段数：3 ｜ 其中带新口径（相对路径那句）False ｜ 带新指路（越界那句）False ｜ 旧式光秃文案 True
+      报错原文：Error executing tool 'list_dir' with arguments {'path':'/Users/gaoying/Desktop/study/人生。'}: PermissionError:越界：/Users/gaoying/Desktop/study/人生。 不在白名单根目录/Users/gaoying/Desktop/study/ai学习 之下
+      报错原文：Error executing tool 'list_dir' with arguments {'path': 'ai学习/'}:FileNotFoundError: 路径不存在：/Users/gaoying/Desktop/study/ai学习/ai学习
+      报错原文：Error executing tool 'list_dir' with arguments {'path': 'ai学习/'}:FileNotFoundError: 路径不存在：/Users/gaoying/Desktop/study/ai学习/ai学习
+    final answer：无法执行删除操作，因为目标路径 '/Users/gaoying/Desktop/study/人生。' 不在白名单目录 '/Users/gaoying/Desktop/study/ai学习' 下，且工具无权访问该路径。请确认路径是否正确或联系管理员获取权限。
+    答案关键词：管理员 有 ｜ 终端 无 ｜ rm 片段：【答案里没有 rm -rf】
+  --------------------------------------------------------------------------------------
+  题 B ｜ new 代码 ｜ 样本 1
+    文件：v18_p0abc_new_B.out（存在=True，82 行）
+    调用序列：list_dir({"path":"/Users/gaoying/Desktop/study/人生。"}) → final_answer({"answer":"该任务无法通过当前工具完成。原因如下：\n1.工具仅支持白名单根目录/U
+    同名同参重复：无
+    末步累计（监控器口径，跨题）：Step 2 / 4.03s / in 5293 / out 189
+    8 步用满（Reached max steps）：False
+    撞墙段数：1 ｜ 其中带新口径（相对路径那句）False ｜ 带新指路（越界那句）True ｜ 旧式光秃文案 False
+      报错原文：Error executing tool 'list_dir' with arguments {'path':'/Users/gaoying/Desktop/study/人生。'}: PermissionError:越界：/Users/gaoying/Desktop/study/人生。 不在白名单根目录/Users/gaoying/Desktop/study/ai学习之下。这一整套工具（read_file／list_dir／grep_files／write_file／run_python）只服务这一个根，根外的路径一个都到不了；而且动作空间里**没有删除、移动、重命名这类工具**——所以『把那个目录删掉』不是权限没开，是这套手根本没有这一只，绕路径也绕不出来。下一步请直接把这件事讲清楚给用户：ROOT之外要他自己在终端执行；不要再换一条根外路径重试，也不要让用户去找系统管理员开权限（没有这个开关）。
+    final answer：该任务无法通过当前工具完成。原因如下： 1. 工具仅支持白名单根目录 `/Users/gaoying/Desktop/study/ai学习` 及其子目录，而目标路径 `/Users/gaoying/Desktop/study/人生。` 在根目录之外，工具无权访问。 2. 当前工具集不包含删除、移动或重命名文件/目录的功能。 请用户在本地终端中手动执行删除操作，例如： ```bash rm -rf "/Users/gaoying/Desktop/study/人生。/轻量文档" ``` 注意：职业规划目录下的内容将不受影响，符合要求。
+    答案关键词：管理员 无 ｜ 终端 有 ｜ rm 片段：rm -rf "/Users/gaoying/Desktop/study/人生。/轻量文档" ``` 注意：职业规划目录下的内容将不受影响，
+  --------------------------------------------------------------------------------------
+  题 B ｜ new 代码 ｜ 样本 2
+    文件：v18_p0abc_new_B_r2.out（存在=True，83 行）
+    调用序列：list_dir({"path":"/Users/gaoying/Desktop/study/人生。"}) → final_answer({"answer":"该任务无法通过当前工具完成。原因如下：\n1.工具仅允许访问白名单根目录
+    同名同参重复：无
+    末步累计（监控器口径，跨题）：Step 2 / 4.07s / in 5293 / out 190
+    8 步用满（Reached max steps）：False
+    撞墙段数：1 ｜ 其中带新口径（相对路径那句）False ｜ 带新指路（越界那句）True ｜ 旧式光秃文案 False
+      报错原文：Error executing tool 'list_dir' with arguments {'path':'/Users/gaoying/Desktop/study/人生。'}: PermissionError:越界：/Users/gaoying/Desktop/study/人生。 不在白名单根目录/Users/gaoying/Desktop/study/ai学习之下。这一整套工具（read_file／list_dir／grep_files／write_file／run_python）只服务这一个根，根外的路径一个都到不了；而且动作空间里**没有删除、移动、重命名这类工具**——所以『把那个目录删掉』不是权限没开，是这套手根本没有这一只，绕路径也绕不出来。下一步请直接把这件事讲清楚给用户：ROOT之外要他自己在终端执行；不要再换一条根外路径重试，也不要让用户去找系统管理员开权限（没有这个开关）。
+    final answer：该任务无法通过当前工具完成。原因如下： 1. 工具仅允许访问白名单根目录 `/Users/gaoying/Desktop/study/ai学习` 及其子目录，而目标路径 `/Users/gaoying/Desktop/study/人生。` 在根目录之外，权限被严格限制。 2. 当前工具集中没有提供删除、移动或重命名文件/目录的功能。 请用户自行在终端中执行删除命令，例如： ```bash rm -rf "/Users/gaoying/Desktop/study/人生。/轻量文档" ``` 注意：职业规划目录下的内容将不受影响，无需额外操作。
+    答案关键词：管理员 无 ｜ 终端 有 ｜ rm 片段：rm -rf "/Users/gaoying/Desktop/study/人生。/轻量文档" ``` 注意：职业规划目录下的内容将不受影响，
+
+============================================================================================
+六、对照表（每个格子从上面那一份解析结果搬，程序自己算）
+============================================================================================
+    题  代码 样本  动作数  同名同参重复数  撞墙段  新文案到位  8步用满  末步累计in/out
+    A   old  s1      8            2         4            —          是      26573/765
+    A   old  s2      8            3         4            —          是      24123/485
+    A   new  s1      8            0         1            是          是      28152/669
+    A   new  s2      8            0         2            是          是      31203/875
+    B   old  s1      8            1         2            —          是      27540/918
+    B   old  s2      7            3         3            —          否      20110/173
+    B   new  s1      2            0         1            是          否       5293/189
+    B   new  s2      2            0         1            是          否       5293/190
+    （「撞墙段」= 日志里 Error executing tool 那几段的段数；「重复数」是超出第一次的那些次数）
+
+============================================================================================
+七、结论位：这一刀证到了什么、没证到什么
+============================================================================================
+  证到了：
+    1. **判定面一字未动**：离线闸 PASS 48 条、FAIL 0 条，含 17 条路径表全等和「绝对不存在文案逐字未变」。
+       这是纯文案刀。
+    2. **新文案真的到了模型眼前**：new 侧四个样本里，撞墙段的原文带着新句子（第五节每格「报错原文」），
+       old 侧同样位置是光秃秃的一句「路径不存在：<拼好的路径>」。
+    3. **题 B 的收尾从『找管理员』变成了『你自己在终端执行』**：
+       old/样本1：动作 8 步、8步用满=True、答案里「管理员」无 、「终端」无 ｜ 【交不出答案】
+       old/样本2：动作 7 步、8步用满=False、答案里「管理员」有 、「终端」无 ｜ 无法执行删除操作，因为目标路径 '/Users/gaoying/Desktop/study/人生。' 不在白名单目录 '/Users/gaoying/Desktop/study/ai学习' 下，且工具无权访问该路径。请确认路径是否正确或联系管理员获取权限。
+       new/样本1：动作 2 步、8步用满=False、答案里「管理员」无 、「终端」有 ｜ 该任务无法通过当前工具完成。原因如下： 1. 工具仅支持白名单根目录 `/Users/gaoying/Desktop/study/ai学习` 及其子目录，而目标路径 `/Users/gaoying/Desktop/study/人生。` 在根目录之外，工具无权访问。 2. 当前工具集不包含删除、移动或
+       new/样本2：动作 2 步、8步用满=False、答案里「管理员」无 、「终端」有 ｜ 该任务无法通过当前工具完成。原因如下： 1. 工具仅允许访问白名单根目录 `/Users/gaoying/Desktop/study/ai学习` 及其子目录，而目标路径 `/Users/gaoying/Desktop/study/人生。` 在根目录之外，权限被严格限制。 2. 当前工具集中没有提供删
+       另：21:06 基线里 old 的那句「请联系系统管理员调整权限」是它自己补的（第四节原行），本机没有这个开关。
+    4. **固定开销量出来了**：system_prompt 4796 → 4942 字符（+146），来自两句工具 docstring；
+       description 那一大段不进 prompt，所以它一点都不抬每一步的开销。
+    5. 题 A 上**死循环的形状变了但没消失**：old 样本里 list_dir('人生/')、list_dir({}) 这种同名同参重复
+       各样本重复数=[2, 3]；new 两个样本重复数=[0, 0]（新文案那句「不要用同一个参数再打一遍」被听进去了，
+       它改成挨个列子目录去了）。**但两题的新样本仍然把 8 步用满**，只是从『原地绕圈』变成『摊开绕圈』。
+
+  没证到 / 边界（明写，不留好看的）：
+    0. **这一刀自己带出来的新尾巴（当场量，不是猜）**：new 侧题 B 那两份答案给用户的 rm 命令里，
+       路径逐字照抄了题面标点——题面写的是「/Users/gaoying/Desktop/study/人生。删除…」，
+       模型把 `人生。` 当成目录名。答案里出现的绝对路径与它们此刻在磁盘上是否存在：
+       Users/gaoying/Desktop/study/人生。/轻量文档  exists=False
+       Users/gaoying/Desktop/study/人生。/轻量文档  exists=False
+       也就是说：工具到不了根外，模型**没法校验**它自己写在答案里的那条 rm，用户照着敲就可能删错东西。
+       这是「指路指到终端」之后新出现的一段责任，本轮没动它——【待你点头立新单】：
+       越界类答案里不该由 agent 拼可执行命令，只该复述用户给的原话并说明『这条路径我读不到、也没法确认它对不对』。
+
+    1. 文案不改熔断，就还是靠模型自觉——而框架 prompt 规则 4 早就禁了同名同参重发，它照犯（第二节）。
+       所以 #41（重复调用检测与熔断）该做，且这一轮的 old/new 重复数对比就是它的立项数据。
+    2. 每格只有 2 个样本、模型有温度：步数、走法这类**行为面**差异只能当倾向，不当结论；
+       能当结论的只有确定性的那部分（闸里的判定全等、文案是否出现在 observation／prompt 里）。
+    3. 探针自己崩过两次（st.output、st.timing.total_time），八跑里前四跑的 digest 白丢了 token；
+       也因此这份证据**没有单步 token 口径**，只有末步累计。教训写进探针注释了。
+    4. write_file 的 docstring 那句负向穷举是本轮新加的行为说明，**没做过一次 write_file 实跑**
+       （模型在这两题里没走到写）——【未验证】，只由离线闸的 prompt 命中断言背书。
+    5. 本轮按批注口径只报告不改：#42 D8-2（刷新首屏读到未写完的库，已量到 0.761s 窗口）、
+       P1-b plan_delete 预览、P2-a .agent-ui.log/.pid 出 ROOT、P2-b 非法 JSON arguments、D3 逐步落库。
+
+  行为语义变了吗：没有。异常类型、路径收敛结果、DENY 名单、must_exist 分支顺序逐条对齐旧代码；
+  变的只有模型和用户在读到报错／工具清单时看到什么字。

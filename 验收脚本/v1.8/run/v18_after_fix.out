@@ -1,0 +1,388 @@
+# v1.8 第②刀 · D8 断开侧修复 —— 修后实测
+
+生成时间：2026-11-03 晚（各产物的钟点见 §1）
+产品文件：~/Desktop/study/ai学习/smolagents/my_ui.py
+改后 sha1：71e9b938d3f1a015f6f71330f8158e31247d2d3b（1,337 行）
+改前参照：.rollback/v1.8/my_ui.py sha1 03d9a588e955c37af88cba9df456f677918319aa（1,253 行）
+本轮只动了 my_ui.py 一个文件；my_agent.py（a85726b5…）与 my_coding_agent.py（ae156ebd…）sha1 与快照一致，一字未动。
+
+复跑（要 smolagents 的 venv，9333 上要有 headless Chrome）：
+    v18_run_live.py B1          # 挂在待批上刷新页面（主测）；B0 对照 / B4 按停止 / B2 SIGKILL / B3 SIGINT
+    v18_test_interrupt.py ; v18_test_nochange.py      # 两道离线闸
+    v18_baseline_table.py B1 B0 B4 B2 B3              # 对表（§2 就是它的输出）
+
+## 0. 这一刀改的三件事 ＋ 每件的判据
+
+| # | 改了什么 | 判据（屏上/库里读得到的那个东西） | 结果 |
+|---|---|---|---|
+| 1 | 待批卡在断开时改成终态，措辞「随中断取消」 | B1 库里第 3 条消息的 meta.title 与正文 | **达成**，见 §4 |
+| 2 | 追加「⏹ 本题已中断」标记气泡 | B1 库里第 4 条消息 ＋ mark.exit msgs 3→4 | **达成**，见 §4 |
+| 3 | 没人领走的审批等待补进 payload | B1 memory 那行的 `"wait":` ＋ 刷新后状态条「本题审批」 | **达成（库里必读得到）**；屏上那一格撞上另一条 race，见 §3 |
+| 4 | 停止/允许/拒绝/超时四档不许被改坏 | B0 与 B4 的屏上措辞 ＋ mark.enter 次数 ＋ nochange 闸 | **达成**，见 §2 与 §5 |
+
+## 1. 五跑时间与 app 就绪耗时（同一道题：用 run_python 打印 3*7，每跑独立起 app、独立一份库）
+### B1
+app 就绪 6.1s（/config 200 39081B）
+t=  0.000  boot.epoch             t0=1793713882.866936 pid=94416 timeout=600.0 gradio=6.30.0
+### B0
+app 就绪 4.1s（/config 200 39082B）
+t=  0.000  boot.epoch             t0=1793713982.5682292 pid=94797 timeout=600.0 gradio=6.30.0
+### B4
+app 就绪 4.0s（/config 200 39081B）
+t=  0.000  boot.epoch             t0=1793714012.800045 pid=94866 timeout=600.0 gradio=6.30.0
+### B2
+app 就绪 8.1s（/config 200 39082B）
+t=  0.000  boot.epoch             t0=1793714234.272981 pid=95583 timeout=600.0 gradio=6.30.0
+### B3
+app 就绪 8.1s（/config 200 39081B）
+t=  0.000  boot.epoch             t0=1793714262.050604 pid=95768 timeout=600.0 gradio=6.30.0
+
+## 2. 对表（v18_baseline_table.py 的输出，只读现成产物）
+
+# D8 基线对表（生成于 2026-11-03 21:58:39，脚本 v18_baseline_table.py，只读现成产物）
+# 场景：B0 对照允许跑完 ｜ B1 挂在待批上刷新页面 ｜ B2 挂在待批上 SIGKILL ｜ B3 挂在待批上 SIGINT ｜ B4 挂在待批上按 ■ 停止
+
+## B1
+  note            场景 B1：主测：挂在待批上时刷新页面（D8 的扳机），之后没人点
+  boot t0         t=  0.000  boot.epoch             t0=1793713882.866936 pid=94416 timeout=600.0 gradio=6.30.0
+  respond.GX      t= 16.919  respond.GeneratorExit  frames=10
+  respond.finally t= 16.920  respond.finally        frames=10 pending=1 unanswered=1
+  stream.finally  t= 16.920  stream.finally         frames=10
+  settle_all      t= 16.920  settle_all.enter       decision=cancelled ids=5f0c5b
+  ap.decide       t= 16.921  ap.decide              id=5f0c5b tool=run_python want=cancelled before=pending after=cancelled waited=5.172
+  mark.enter      t= 16.923  mark.enter             pending=1 registered=1 mem=2 steps=T,A last_msgs=3
+  mark.exit       t= 16.923  mark.exit              msgs=4 wait_per_actionstep=[5.172] tail=⏹ 已中断 · 审批空等 5.2s
+  on_load(末次)   t= 16.511  on_load                sid=1 steps=1 kinds=T screen_stepno=0 screen_in=0 screen_out=0 screen_wait=0 mem_held=['1'] db_memory=sessions=sid=1 messages=0 memory=0 wall=16.503
+  save.enter      t= 16.924  save.enter             sid=1 msgs=4 before=sessions=sid=1 messages=0 memory=0
+  save_memory     t= 16.927  save_memory.enter      sid=1 chars=366
+  库里            {'sessions': 1, 'messages': 4, 'memory': 1} | messages 按会话 [(1, 4)]
+  屏上·扳机前     模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 等待审批
+  屏上·措辞前     bot=2 已中断标题=N 空等字样=N 随中断取消=N 随停止取消=N 还在等审批=Y
+  屏上·reload 后  模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 空闲
+  屏上·措辞末     bot=0 已中断标题=N 空等字样=N 随中断取消=N 随停止取消=N 还在等审批=N
+  断开延迟        0.540 s（reload 点击 1793713899.246 → 生成器收到 GeneratorExit，两份时钟对表）
+  落库内容        messages 4 条 / memory 1 条
+     - user        41 B  用 run_python 打印 3*7 的结果，最后只回那个数字，不要重复调用工具
+     - assistant   67 B  {"tool": "run_python", "arguments": "{\"code\": \"print(3 * 
+     - assistant  100 B  **工具** `run_python`\n\n**参数**\n```json\n{\n  "code": "print(3 * 7
+     - assistant  127 B  ⏹ **本题已中断**：页面被刷新或关闭，这一题后面的步骤没有跑。\n\n这一题有 **1 项审批没等来点击**，已随中断取
+     o memory   366 B  {"fmt": "v2", "steps": [{"_t": "TaskStep", "task": "用 run_python 打印 3*7 的结果，最后只回那个数字，不要重复调用工具"}, {"_t": "ActionStep", "step_number": 1, "timing": {"start_time": 1793713893.2609642, "end_time": 1793713899.788587, "duratio
+
+## B0
+  note            场景 B0：对照：正常点允许，跑到答完（证明日志里那几行在正常路上会出现）
+  boot t0         t=  0.000  boot.epoch             t0=1793713982.5682292 pid=94797 timeout=600.0 gradio=6.30.0
+  respond.GX      无（这一路生成器没收到 GeneratorExit）
+  respond.finally t= 16.548  respond.finally        frames=17 pending=0 unanswered=0
+  stream.finally  t= 16.534  stream.finally         frames=16
+  settle_all      t=  9.670  settle_all.enter       decision=cancelled ids=-
+  ap.decide       t= 15.690  ap.decide              id=7a3562 tool=run_python want=allowed before=pending after=allowed waited=4.94
+  mark.enter      无（这一路没走断开收尾：改前产品 / 或不是断开场景）
+  mark.exit       无
+  on_load(末次)   t=  1.382  on_load                sid=None steps=0 kinds=- screen_stepno=None screen_in=None screen_out=None screen_wait=0.0 mem_held=[] db_memory=- wall=1.379
+  save.enter      t= 16.535  save.enter             sid=1 msgs=5 before=sessions=sid=1 messages=0 memory=0
+  save_memory     t= 16.538  save_memory.enter      sid=1 chars=966
+  库里            {'sessions': 1, 'messages': 5, 'memory': 1} | messages 按会话 [(1, 5)]
+  屏上·扳机前     模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 等待审批
+  屏上·措辞前     bot=2 已中断标题=N 空等字样=N 随中断取消=N 随停止取消=N 还在等审批=Y
+  屏上·答完后      YES:bot=4 | 模型 qwen-plus 步数 2/8 本题 token in 4,790 / out 39 本题耗时 6.8s 本题审批 4.9s 进程 token in 4,790 / out 39 状态 完成
+  屏上·措辞末     bot=4 已中断标题=N 空等字样=N 随中断取消=N 随停止取消=N 还在等审批=N
+  落库内容        messages 5 条 / memory 1 条
+     - user        41 B  用 run_python 打印 3*7 的结果，最后只回那个数字，不要重复调用工具
+     - assistant   79 B  **工具** `run_python`\n\n**参数**\n```json\n{\n  "code": "print(3 * 7
+     - assistant  178 B  **调用** `run_python`\n```json\n{\n  "code": "print(3 * 7)"\n}\n```
+     - assistant  155 B  **调用** `final_answer`\n```json\n{\n  "answer": "21"\n}\n```\n\n**结果
+     - assistant   21 B  **Final answer:**\n21\n
+     o memory   966 B  {"fmt": "v2", "steps": [{"_t": "TaskStep", "task": "用 run_python 打印 3*7 的结果，最后只回那个数字，不要重复调用工具"}, {"_t": "ActionStep", "step_number": 1, "timing": {"start_time": 1793713992.249652, "end_time": 1793713998.309193, "duration
+
+## B4
+  note            场景 B4：挂在待批上时按 ■ 停止（回归：这一段措辞和标记都不该变）
+  boot t0         t=  0.000  boot.epoch             t0=1793714012.800045 pid=94866 timeout=600.0 gradio=6.30.0
+  respond.GX      无（这一路生成器没收到 GeneratorExit）
+  respond.finally t= 16.414  respond.finally        frames=18 pending=0 unanswered=0
+  stream.finally  t= 16.389  stream.finally         frames=17
+  settle_all      t= 15.456  settle_all.enter       decision=cancelled ids=26a591
+  ap.decide       t= 15.457  ap.decide              id=26a591 tool=run_python want=cancelled before=pending after=cancelled waited=5.029
+  mark.enter      无（这一路没走断开收尾：改前产品 / 或不是断开场景）
+  mark.exit       无
+  on_load(末次)   t=  1.156  on_load                sid=None steps=0 kinds=- screen_stepno=None screen_in=None screen_out=None screen_wait=0.0 mem_held=[] db_memory=- wall=1.154
+  save.enter      t= 16.389  save.enter             sid=1 msgs=6 before=sessions=sid=1 messages=0 memory=0
+  save_memory     t= 16.394  save_memory.enter      sid=1 chars=1008
+  库里            {'sessions': 1, 'messages': 6, 'memory': 1} | messages 按会话 [(1, 6)]
+  屏上·扳机前     模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 等待审批
+  屏上·措辞前     bot=2 已中断标题=N 空等字样=N 随中断取消=N 随停止取消=N 还在等审批=Y
+  屏上·按停止后    bot=2 已中断标题=N 空等字样=N 随中断取消=N 随停止取消=N 还在等审批=Y
+  屏上·措辞末     bot=5 已中断标题=N 空等字样=N 随中断取消=N 随停止取消=Y 还在等审批=N
+  落库内容        messages 6 条 / memory 1 条
+     - user        41 B  用 run_python 打印 3*7 的结果，最后只回那个数字，不要重复调用工具
+     - assistant  100 B  **工具** `run_python`\n\n**参数**\n```json\n{\n  "code": "print(3 * 7
+     - assistant  193 B  **调用** `run_python`\n```json\n{\n  "code": "print(3 * 7)"\n}\n```
+     - assistant  183 B  **调用** `run_python`\n```json\n{\n  "code": "print(3 * 7)"\n}\n```
+     - assistant  100 B  **工具** `run_python`\n\n**参数**\n```json\n{\n  "code": "print(3 * 7
+     - assistant   32 B  ⏹ AgentError: Agent interrupted.
+     o memory  1008 B  {"fmt": "v2", "steps": [{"_t": "TaskStep", "task": "用 run_python 打印 3*7 的结果，最后只回那个数字，不要重复调用工具"}, {"_t": "ActionStep", "step_number": 1, "timing": {"start_time": 1793714022.2510378, "end_time": 1793714028.257776, "duratio
+
+## B2
+  note            场景 B2：挂在待批上时 SIGKILL（强关 App 那一路，不给任何收尾机会）
+  boot t0         t=  0.000  boot.epoch             t0=1793714234.272981 pid=95583 timeout=600.0 gradio=6.30.0
+  respond.GX      无（这一路生成器没收到 GeneratorExit）
+  respond.finally 无
+  stream.finally  无
+  settle_all      t= 11.243  settle_all.enter       decision=cancelled ids=-
+  ap.decide       无（这一路没人结算，直到超时或进程没）
+  mark.enter      无（这一路没走断开收尾：改前产品 / 或不是断开场景）
+  mark.exit       无
+  on_load(末次)   t=  3.038  on_load                sid=None steps=0 kinds=- screen_stepno=None screen_in=None screen_out=None screen_wait=0.0 mem_held=[] db_memory=- wall=3.031
+  save.enter      无（一次库都没落）
+  save_memory     无
+  库里            {'sessions': 1, 'messages': 0, 'memory': 0} | messages 按会话 []
+  屏上·扳机前     模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 等待审批
+  屏上·措辞前     bot=2 已中断标题=N 空等字样=N 随中断取消=N 随停止取消=N 还在等审批=Y
+  屏上·扳机后      模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 等待审批（这一路没有 reload：杀进程前后是同一屏，这条是死屏上最后一帧）
+  屏上·措辞末     bot=2 已中断标题=N 空等字样=N 随中断取消=N 随停止取消=N 还在等审批=Y
+  落库内容        messages 0 条 / memory 0 条
+
+## B3
+  note            场景 B3：挂在待批上时 SIGINT（终端 Ctrl-C 那一路）
+  boot t0         t=  0.000  boot.epoch             t0=1793714262.050604 pid=95768 timeout=600.0 gradio=6.30.0
+  respond.GX      无（这一路生成器没收到 GeneratorExit）
+  respond.finally 无
+  stream.finally  无
+  settle_all      t= 10.788  settle_all.enter       decision=cancelled ids=-
+  ap.decide       无（这一路没人结算，直到超时或进程没）
+  mark.enter      无（这一路没走断开收尾：改前产品 / 或不是断开场景）
+  mark.exit       无
+  on_load(末次)   t=  2.689  on_load                sid=None steps=0 kinds=- screen_stepno=None screen_in=None screen_out=None screen_wait=0.0 mem_held=[] db_memory=- wall=2.683
+  save.enter      无（一次库都没落）
+  save_memory     无
+  库里            {'sessions': 1, 'messages': 0, 'memory': 0} | messages 按会话 []
+  屏上·扳机前     模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 等待审批
+  屏上·措辞前     bot=2 已中断标题=N 空等字样=N 随中断取消=N 随停止取消=N 还在等审批=Y
+  屏上·扳机后      模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 等待审批（这一路没有 reload：杀进程前后是同一屏，这条是死屏上最后一帧）
+  屏上·措辞末     bot=2 已中断标题=N 空等字样=N 随中断取消=N 随停止取消=N 还在等审批=Y
+  落库内容        messages 0 条 / memory 0 条
+
+
+## 3. 同一个 B1 跑了两遍，屏上结果不一样——这条 race 是本刀实测撞出来的（新工单 D8-2）
+
+### 跑①（v18_B1_run1.server.log）
+  reload 点击的绝对时刻 1793713638.398 ｜ app 起进程 t0=1793713621.866
+  页面把请求送到服务端、_on_load 读库  t+  19.205s ｜ 距 reload 点击  +2.673s
+  服务端收到 GeneratorExit  t+  16.584s ｜ 距 reload 点击  +0.052s
+  半截内容＋标记落库完成（save_memory.exit）  t+  16.597s ｜ 距 reload 点击  +0.065s
+  → 屏上：bot=3 ｜ 状态条=模型 qwen-plus 步数 1/8 本题 token in 2,355 / out 22 本题耗时 6.5s 本题审
+  → 措辞命中：bot=3 已中断标记=N 随中断取消=Y 随停止取消=N 还在等审批=N
+  → 库里：见 §4（两跑都是 4 条消息＋payload 带 wait）
+
+### 跑②（v18_probe_B1.server.log）
+  reload 点击的绝对时刻 1793713899.246 ｜ app 起进程 t0=1793713882.867
+  页面把请求送到服务端、_on_load 读库  t+  16.511s ｜ 距 reload 点击  +0.132s
+  服务端收到 GeneratorExit  t+  16.919s ｜ 距 reload 点击  +0.540s
+  半截内容＋标记落库完成（save_memory.exit）  t+  16.929s ｜ 距 reload 点击  +0.550s
+  → 屏上：bot=0 ｜ 状态条=模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token
+  → 措辞命中：bot=0 已中断标题=N 空等字样=N 随中断取消=N 随停止取消=N 还在等审批=N
+  → 库里：见 §4（两跑都是 4 条消息＋payload 带 wait）
+
+判读（机制已由上面两跑的时刻对齐确定，不是推的）：
+  · `_on_load` 是**新页面那次请求**的服务端入口，`GeneratorExit` 是**旧请求被关掉**才发生的，
+    两者没有先后约定：跑① 新页面慢了 2.7s，落库已经写完 → 屏上看见 4 条气泡＋「本题审批 5.0s」；
+    跑② 新页面 0.13s 就到了，比 GeneratorExit 还早 0.41s → 库里当时是 messages=0，屏上全空。
+  · 所以「断开后重开页面看得见那一题」目前**约一半概率成立**。这一刀把账本修对了（两跑的库里
+    都完整），屏上那一半是 race，不在这刀批准的三件里 → 另立 **D8-2**：`_on_load` 读到的是
+    还没写完的库。建议的最小修法（等一轮 in-flight 落库写完再读，有上限、不无休等待）写在
+    迭代记录 v1.8 节，等他点头。
+  · 这条 race **改前也有**（工单基线那一跑 `_on_load` 距 reload 点击 +2.6s 左右，属于跑①那种），
+    不是这一刀引入的。基线那份逐毫秒输出今天被同名复跑覆盖了，屏上气泡数当时没进对表，
+    所以「基线那一跑的 bot 数」我只能标【无档可查】，从这一跑起 P10/P12 两格才在册。
+
+补一条读法上的坑（否则跑① 那行「已中断标记=N」会被当成没生效）：
+  · 跑① 的措辞命中是**旧正则**产的——它按正文里的「本题已中断」匹配，而折叠卡的正文在收起时
+    根本不进 DOM（gradio 展开才挂载内容），所以那一格注定读 N。跑① 的实际证据在别处：
+    `mark.exit` 报 `tail=⏹ 已中断 · 审批空等 5.0s`（那是卡标题），屏上状态条读出「步数 1/8 … 本题审批 5.0s」，
+    库里第 4 条就是这条标记气泡（见 §4）。跑② 起正则改成匹配标题上的「已中断」「审批空等」。
+  · 于是 B1 的**屏上**判据要分两栏读：跑①＝库写完才有人来看（屏上有），跑②＝没人看之前就完了
+    （屏上没有，库里照旧有）。两跑的库内容一致，这一刀的账本判据按 §4 算。
+
+## 4. 库里到底落了什么（逐条读 sqlite，只读模式）
+### B1  v18_live_B1.sqlite3
+  行数 {'sessions': 1, 'messages': 4, 'memory': 1}
+   - user        41B  meta={}
+       用 run_python 打印 3*7 的结果，最后只回那个数字，不要重复调用工具
+   - assistant   67B  meta={}
+       {"tool": "run_python", "arguments": "{\"code\": \"print(3 * 7)\"}"}
+   - assistant  100B  meta={"title": "⏹ 待批 · run_python · 随中断取消 · 等了 5.2s", "status": "done"}
+       **工具** `run_python`\n\n**参数**\n```json\n{\n  "code": "print(3 * 7)"\n}\n```\n\n**⏹ 随中断取消**——这个工具没有执行，没有任何副作用。
+   - assistant  127B  meta={"title": "⏹ 已中断 · 审批空等 5.2s", "status": "done"}
+       ⏹ **本题已中断**：页面被刷新或关闭，这一题后面的步骤没有跑。\n\n这一题有 **1 项审批没等来点击**，已随中断取消，对应工具一行代码都没执行。\n\n其中干等 **5.2s** 在等人点审批。\n\n想接着做，重新提问即可（这一题的半截内容已经在上面）。
+   o memory 366B
+       {"fmt": "v2", "steps": [{"_t": "TaskStep", "task": "用 run_python 打印 3*7 的结果，最后只回那个数字，不要重复调用工具"}, {"_t": "ActionStep", "step_number": 1, "timing": {"start_time": 1793713893.2609642, "end_time": 1793713899.788587, "duration": 6.527622938156128}, "model_output": "", "token_usage": {"input_tokens": 2355, "output_tokens": 22}, "is_final_answer": false, "wait": 5.172}]}
+
+### B0  v18_live_B0.sqlite3
+  行数 {'sessions': 1, 'messages': 5, 'memory': 1}
+   - user        41B  meta={}
+       用 run_python 打印 3*7 的结果，最后只回那个数字，不要重复调用工具
+   - assistant   79B  meta={"title": "🟢 待批 · run_python · 已允许 · 等了 4.9s", "status": "done"}
+       **工具** `run_python`\n\n**参数**\n```json\n{\n  "code": "print(3 * 7)"\n}\n```\n\n**🟢 已允许**
+   - assistant  178B  meta={"title": "🛠 第 1 步 · run_python · 🟢 成功 · 6.1s · 审批 4.9s · in 2,355/out 22", "status": "done"}
+       **调用** `run_python`\n```json\n{\n  "code": "print(3 * 7)"\n}\n```\n\n**结果**\n```\nexit=0\n21\n```\n\n本步 6.1s（含审批 4.9s） · in 2,355 / out 22\n本题累计（本次提问内）：in 2,355 / out 22 token · 6.1s（含审批 4.9
+   - assistant  155B  meta={"title": "🛠 第 2 步 · final_answer · 🟢 成功 · 0.8s · in 2,435/out 17", "status": "done"}
+       **调用** `final_answer`\n```json\n{\n  "answer": "21"\n}\n```\n\n**结果**\n```\n21\n```\n\n本步 0.8s · in 2,435 / out 17\n本题累计（本次提问内）：in 4,790 / out 39 token · 6.8s（含审批 4.9s）
+   - assistant   21B  meta={"status": "done"}
+       **Final answer:**\n21\n
+   o memory 966B
+       {"fmt": "v2", "steps": [{"_t": "TaskStep", "task": "用 run_python 打印 3*7 的结果，最后只回那个数字，不要重复调用工具"}, {"_t": "ActionStep", "step_number": 1, "timing": {"start_time": 1793713992.249652, "end_time": 1793713998.309193, "duration": 6.0595409870147705}, "tool_calls": [{"id": "call_0e62a6deecdf4680bf4c73", "type": "function", "function": {"name": "run_python", "arguments": {"code": "print(3 * 7)"}}}], "model_output": "", "obser
+
+### B4  v18_live_B4.sqlite3
+  行数 {'sessions': 1, 'messages': 6, 'memory': 1}
+   - user        41B  meta={}
+       用 run_python 打印 3*7 的结果，最后只回那个数字，不要重复调用工具
+   - assistant  100B  meta={"title": "⏹ 待批 · run_python · 随停止取消 · 等了 5.0s", "status": "done"}
+       **工具** `run_python`\n\n**参数**\n```json\n{\n  "code": "print(3 * 7)"\n}\n```\n\n**⏹ 随停止取消**——这个工具没有执行，没有任何副作用。
+   - assistant  193B  meta={"title": "🛠 第 1 步 · run_python · ⚪ 已取消 · 6.0s · 审批 5.0s · in 2,355/out 22", "status": "done"}
+       **调用** `run_python`\n```json\n{\n  "code": "print(3 * 7)"\n}\n```\n\n**结果**\n```\n用户按了停止，本次执行已取消，未产生任何副作用。\n```\n\n本步 6.0s（含审批 5.0s） · in 2,355 / out 22\n本题累计（本次提问内）：in 2,355 / out 22 token 
+   - assistant  183B  meta={"title": "🛠 第 2 步 · run_python · ⚪ 已取消 · 0.9s · in 2,444/out 22", "status": "done"}
+       **调用** `run_python`\n```json\n{\n  "code": "print(3 * 7)"\n}\n```\n\n**结果**\n```\n用户按了停止，本次执行已取消，未产生任何副作用。\n```\n\n本步 0.9s · in 2,444 / out 22\n本题累计（本次提问内）：in 4,799 / out 44 token · 6.9s（含审批
+   - assistant  100B  meta={"title": "⏹ 待批 · run_python · 随停止取消", "status": "done"}
+       **工具** `run_python`\n\n**参数**\n```json\n{\n  "code": "print(3 * 7)"\n}\n```\n\n**⏹ 随停止取消**——这个工具没有执行，没有任何副作用。
+   - assistant   32B  meta={"title": "⏹ 已停止：AgentError", "status": "done"}
+       ⏹ AgentError: Agent interrupted.
+   o memory 1008B
+       {"fmt": "v2", "steps": [{"_t": "TaskStep", "task": "用 run_python 打印 3*7 的结果，最后只回那个数字，不要重复调用工具"}, {"_t": "ActionStep", "step_number": 1, "timing": {"start_time": 1793714022.2510378, "end_time": 1793714028.257776, "duration": 6.006738185882568}, "tool_calls": [{"id": "call_dfaf3a00f9e04cc9b99e90", "type": "function", "function": {"name": "run_python", "arguments": {"code": "print(3 * 7)"}}}], "model_output": "", "obser
+
+### B2  v18_live_B2.sqlite3
+  行数 {'sessions': 1, 'messages': 0, 'memory': 0}
+
+### B3  v18_live_B3.sqlite3
+  行数 {'sessions': 1, 'messages': 0, 'memory': 0}
+
+## 5. 两道离线闸（不起进程、不打模型，全部在内存里造 step 对象）
+
+### 5.1 v18_test_interrupt.py —— 这一刀新行为的 20 条断言
+1a 改前冻在待批 PASS '「✔ 允许」** 才真的执行；**「✖ 拒绝」** 则这个工具一行代码都不会跑。'
+1b 改后没有待批字样 PASS '(3 * 7)"\n}\n```\n\n**⏹ 随中断取消**——这个工具没有执行，没有任何副作用。'
+1c 卡片 status 转 done PASS done
+1d 标题带上精确等待秒数 PASS ⏹ 待批 · run_python · 随中断取消 · 等了 5.2s
+1e 原有消息一张不丢 PASS len=3
+1f 卡片说的是「随中断取消」 PASS ')"\n}\n```\n\n**⏹ 随中断取消**——这个工具没有执行，没有任何副作用。'
+1g 标题同一条措辞 PASS ⏹ 待批 · run_python · 随中断取消 · 等了 5.2s
+2a 标记标题是「已中断」而不是「已停止」 PASS ⏹ 已中断 · 审批空等 5.2s
+2b 标记里写了这项审批没等来点击 PASS 
+2c 标记里写了干等多少秒 PASS '中断取消，对应工具一行代码都没执行。\n\n其中干等 **5.2s** 在等人点审批。\n\n想接着做，重新提问即可（这一题的半截内容已经在上面）。'
+2d 标记 status=done（不会被折成待批气泡） PASS 
+3a 等待挂回最后一个 ActionStep PASS 5.23100209236145
+3b encode 之后 payload 里有 wait 这一格 PASS odel_output": "", "token_usage": {"input_tokens": 2355, "output_tokens": 22}, "is_final_answer": false, "wait": 5.231}]}
+3c 回灌读得出这一格（重启后仍在） PASS 5.231
+3d 状态条口径 task_wait 跟着读出来 PASS 5.231
+4a 已有归属的步不许被改写 PASS 1.5
+4b 连跑两次账不翻倍 PASS 5.23100209236145
+5a mem=None 不炸且照样补标记 PASS 
+5b 只有 TaskStep（没有 ActionStep）时不挂账 PASS 
+5c 不在登记表上的单不参与收尾 PASS ⏹ **本题已中断**：页面被刷新或关闭，这一题后面的步骤没有跑。
+
+想接着做，重新提问即可（这一题的半截内容已经在上面
+5d 那种情况下没有空等可报 PASS ⏹ 已中断
+
+全绿  (0 条失败)
+
+### 5.2 v18_test_nochange.py —— 拿改前那份代码当参照，比**没批准改的**那些档
+（同一个函数、不带 shown 的调用形状，新旧两份代码必须产出逐字相同的 content 与 metadata；
+  再比 DECISION_LABEL / DECISION_DOT / DENIED_OBSERVATION / DENIED_VERDICT / STATE_LABEL / MEM_FIELDS）
+卡 pending   waited=0.0         PASS 
+卡 pending   waited=0.04        PASS 
+卡 pending   waited=5.231       PASS 
+卡 pending   waited=600.0       PASS 
+卡 allowed   waited=0.0         PASS 
+卡 allowed   waited=0.04        PASS 
+卡 allowed   waited=5.231       PASS 
+卡 allowed   waited=600.0       PASS 
+卡 denied    waited=0.0         PASS 
+卡 denied    waited=0.04        PASS 
+卡 denied    waited=5.231       PASS 
+卡 denied    waited=600.0       PASS 
+卡 cancelled waited=0.0         PASS 
+卡 cancelled waited=0.04        PASS 
+卡 cancelled waited=5.231       PASS 
+卡 cancelled waited=600.0       PASS 
+卡 timeout   waited=0.0         PASS 
+卡 timeout   waited=0.04        PASS 
+卡 timeout   waited=5.231       PASS 
+卡 timeout   waited=600.0       PASS 
+带 shown 与旧版不同                  PASS '**⏹ 随中断取消**——这个工具没有执行，没有任何副作用。'
+带 shown 时 dot 仍是 ⏹             PASS ⏹ 待批 · run_python · 随中断取消 · 等了 5.2s
+LABEL[pending] 未变              PASS 等待审批
+DOT[pending]   未变              PASS 🟡
+LABEL[allowed] 未变              PASS 已允许
+DOT[allowed]   未变              PASS 🟢
+LABEL[denied] 未变               PASS 已拒绝
+DOT[denied]   未变               PASS ⚪
+LABEL[cancelled] 未变            PASS 随停止取消
+DOT[cancelled]   未变            PASS ⏹
+LABEL[timeout] 未变              PASS 超时未批
+DOT[timeout]   未变              PASS ⏳
+DENIED_OBSERVATION 一字未动（模型可见串） PASS 
+DENIED_VERDICT 一字未动            PASS 
+STATE_LABEL 只多一个 interrupted   PASS {'interrupted'}
+MEM_FIELDS / MEM_FMT 未动        PASS 
+步骤卡 obs='' wait=None           PASS 
+步骤卡 obs='' wait=5.231          PASS 
+步骤卡 obs='' wait=None           PASS 
+步骤卡 obs='' wait=5.231          PASS 
+步骤卡 obs='用户按了停止，本次执行已取消' wait=None PASS 
+步骤卡 obs='用户按了停止，本次执行已取消' wait=5.231 PASS 
+步骤卡 obs='用户拒绝执行，未产生任何副作' wait=None PASS 
+步骤卡 obs='用户拒绝执行，未产生任何副作' wait=5.231 PASS 
+步骤卡 obs='审批超过 600 秒无人处理' wait=None PASS 
+步骤卡 obs='审批超过 600 秒无人处理' wait=5.231 PASS 
+步骤卡 obs='21' wait=None         PASS 
+步骤卡 obs='21' wait=5.231        PASS 
+stats wait=None                PASS 
+stats wait=5.231               PASS 
+
+全绿  (0 条失败)
+
+### 5.3 同一道 nochange 闸连跑三次（第一版有假红，见 §6 缺陷③）
+  第 1 遍：全绿  (0 条失败)
+  第 2 遍：全绿  (0 条失败)
+  第 3 遍：全绿  (0 条失败)
+
+## 6. 探针自己的四个缺陷（都在 v18_ui.py / v18_run_live.py / v18_test_nochange.py，产品一字未动）
+
+| # | 缺陷 | 症状与影响面 | 修法 |
+|---|---|---|---|
+| ① | `rows()` 把 `c.close()` 写在 `with c:` 里面 | 退出 with 时要 commit 一条已关掉的连接 → `ProgrammingError: Cannot operate on a closed database.`。基线那份日志里 save.enter / save.exit / save_memory / （新加的）on_load 四行的 before=、after=、db_memory= **全是这一句**。基线的结论没依赖这几格（库里几行是 v18_run_live.py 的 `dbcount()` 另开连接读的，那条用得对），但从这一跑起这几格才真的算数据 | close 挪进 `try/finally`；顺手把异常消息一起打出来（只报类名定不了因，这一版就是这么看出来的） |
+| ② | 屏上措辞断言按**正文**匹配「本题已中断」 | 折叠卡收起时正文不进 DOM → 明明卡在上面却读 N（§3 跑① 那一行就是这条假 N） | 改成匹配卡标题上的「已中断」「审批空等」；改用 textContent 而不是 innerText（后者连标题一起漏） |
+| ③ | nochange 闸给新旧两边**各造一份 step** | `Timing.duration` 是 end-start 现算的，两份差 2.4e-7 秒 → `stats` 两条假红（task_secs / step_secs）。红的不是产品口径，是造对象那一瞬的墙钟 | 一份 step 对象喂两边（两个模块 import 的是同一个 `smolagents.memory.ActionStep`，isinstance 两边都成立）；§4 步骤卡那段同样改成共用对象。修后连跑三遍全绿，见 §5.3 |
+| ④ | 起跑靠 `bootWait=12000` 盲等 | 今天有一跑 gradio 到 **31.7s** 才画出首屏，P1-new／P3-ask 全打在空白页上，服务端连 `respond.enter` 都没有——那一跑整条作废（现场留在 §5 之外的 console 里） | 起 app 之后先 `GET /config` 探到 200 再放浏览器进场，并把「等了多久」写进每跑 summary 第一行（本次五跑 4.0～8.1s） |
+
+## 7. 这一刀**没有**覆盖的（逐条写清是没做，不是做了没效）
+
+| 项 | 状态 | 依据 |
+|---|---|---|
+| D8-2 屏上重开 race（`_on_load` 读到还没写完的库） | **新发现，未修，等他点头**。这一刀把账本修对了，屏上那一次读约一半概率读到空 | §3 两跑时刻对齐 |
+| 进程被杀那两路（关 App / Ctrl-C） | **行为未变，也不该变**：没有 finally，就没有收尾。修后复跑照旧全丢，与基线同结论 | §2 的 B2（returncode=-9）与 B3（returncode=0，看着像干净退出），两跑库里都是 `{'sessions': 1, 'messages': 0, 'memory': 0}` |
+| D8b 逐步落库（每一步跑完就落一次，而不是整题结束时落） | **本轮未做**，他 2026-11-03 明确排在四个 slice 之外 | 上一轮汇报的 defer 清单 |
+| `DENIED_OBSERVATION["cancelled"]` 那句「用户按了停止…」是**模型可见**串，断开这一路也在用它 | **未动**（动了就是改喂给模型的文本，是另一刀）。界面措辞这一侧本轮已经改成「随中断取消」，两边说法不一致是**已知、故意**的 | §5.2 的 DENIED_OBSERVATION 一字未动那条 PASS；B4 第 2 步的观察值里能看到这句 |
+| 真重启后「本题审批」读回 | 这一刀的库里有 `wait`（§4），跨进程读回是 **V9 已上线**的行为，离线 3c 那条断言覆盖；本轮没有再跑一次真重启 | §5.1 的 3c PASS |
+| 600 秒超时那一档 | 本轮没跑（断开到结算只有 0.05～0.55s，超时永不触发，基线已量）。步骤卡/审批卡的 timeout 渲染由 §5.2 的等值比对覆盖 | §2 断开延迟那一行 |
+
+## 8. 一句话结论
+批准的三件在**断开这一路**全部达成且以库为准：待批卡落成了终态（⏹ 待批 · run_python · 随中断取消 · 等了 5.0s）、
+「⏹ 已中断 · 审批空等 5.0s」这条标记进了消息串、审批的 5.172s 进了 payload 的 `wait` 字段；
+允许（B0）与停止（B4）两条邻居路一字未变（屏上 随停止取消=Y / 随中断取消=N / 已中断标题=N，mark.enter 0 次）。
+没达成的那条不是这一刀的账：刷新后**首屏**能不能看见，取决于新页面请求和旧请求收尾谁先到（D8-2）。
+
+## 9. 双向回滚演练（2026-11-03 22:0x 当场跑的，产品位置曾被快照覆盖过约 1 秒）
+
+演练过程（现场只留 cp＋cmp 两条，毫秒级窗口；他那个 21:03 起在跑的 app 早已 import 完，不受磁盘影响）：
+  方向 A：cp .rollback/v1.8/my_ui.py my_ui.py && cmp → 逐字节一致，sha1=03d9a588e955、1,253 行
+  方向 B：cp /tmp/v18_drill/fixed_my_ui.py my_ui.py && cmp → 逐字节一致，sha1=71e9b938d3f1、1,337 行
+
+演练之后现在的位置（下面这三行是演练完当场重新读出来的，不是抄上面的）：
+71e9b938d3f1a015f6f71330f8158e31247d2d3b  my_ui.py
+03d9a588e955c37af88cba9df456f677918319aa  .rollback/v1.8/my_ui.py
+      1337 my_ui.py
+      1253 .rollback/v1.8/my_ui.py
+      2590 total
+  /tmp/v18_drill 两份中转副本：
+71e9b938d3f1a015f6f71330f8158e31247d2d3b  /tmp/v18_drill/fixed_my_ui.py
+03d9a588e955c37af88cba9df456f677918319aa  /tmp/v18_drill/pre_my_ui.py
+

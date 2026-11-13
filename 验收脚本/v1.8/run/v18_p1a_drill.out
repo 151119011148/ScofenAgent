@@ -1,0 +1,22 @@
+== v1.8 ⑤ 回滚演练（双向）==
+起表 22:45:38   现场 my_ui.py=e29d0102 2065 行 / 123177 B
+本次备份：drill-backup-20261104-224538 → {'my_ui.py': 'e29d0102', 'my_agent.py': 'a9bbce22', 'my_coding_agent.py': '4a3dcfb5'}
+尺子完整：FWD(after-p1a) 不是现场的副本                  FAIL 三份全部 == 现场 → 这份历史快照已被覆盖，进向⑤ 无从可验
+
+---- 方向：退向④（after-p0abc）----
+退向④-a 三个文件 py_compile 通过                     PASS 0.0s
+退向④-b P1-a 的 13 个名字一个都不在                     PASS 还找到: 无
+退向④-c 抽出来的 _bind_args 没回去（_gated_call 仍自己 bind_partial） PASS inline
+退向④-d 熔断收尾层不在（_run_stream 没被包）               PASS 
+退向④-e ④及更早的锚点全在（加法式改动）                       PASS 缺: 无
+退向④-f 体量：行数 1581 / 90295 B，sha1 == 快照        PASS 3a5369ae
+退向④-g import 起来且类上三层在/不在（dup=False dupstop=False seen=False） PASS dup=False dupstop=False seen=False
+退向④-h `from my_ui import DUP_MARK` 按要求 ImportError PASS ImportError: cannot import name 'DUP_MARK' from 'my_ui' 
+
+---- 方向：进向⑤ 跳过（FWD == 现场，跑它等于自证）----
+cmp 逐字节：现场 == 本次备份/my_ui.py（换进换出回到起点）        PASS e29d0102
+cmp 逐字节：现场 == 本次备份/my_agent.py（换进换出回到起点）     PASS a9bbce22
+cmp 逐字节：现场 == 本次备份/my_coding_agent.py（换进换出回到起点） PASS 4a3dcfb5
+恢复后的树上重跑离线套件 v18_test_dup.py                 PASS 75 条 PASS / 0 FAIL / exit=0
+
+演练结论：有红项（13 条断言，失败 1 条）

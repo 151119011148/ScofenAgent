@@ -1,0 +1,40 @@
+t=  0.000  boot.epoch             t0=1793714012.800045 pid=94866 timeout=600.0 gradio=6.30.0
+t=  1.156  on_load                sid=None steps=0 kinds=- screen_stepno=None screen_in=None screen_out=None screen_wait=0.0 mem_held=[] db_memory=- wall=1.154
+t=  9.428  respond.enter          sid=None
+t=  9.429  poller.start           timeout=600.0
+t=  9.439  stream.enter           sid=1
+t=  9.439  settle_all.enter       decision=cancelled ids=-
+t=  9.439  settle_all.exit        decision=cancelled
+t= 10.428  ap.wait.enter          id=26a591 tool=run_python timeout=600.0
+t= 10.434  poll.pending           n=1 state=26a591:pending unanswered=1
+t= 11.439  poll.pending           n=1 state=26a591:pending unanswered=1
+t= 12.444  poll.pending           n=1 state=26a591:pending unanswered=1
+t= 13.447  poll.pending           n=1 state=26a591:pending unanswered=1
+t= 14.450  poll.pending           n=1 state=26a591:pending unanswered=1
+t= 15.451  poll.pending           n=1 state=26a591:pending unanswered=1
+t= 15.456  settle_all.enter       decision=cancelled ids=26a591
+t= 15.457  ap.decide              id=26a591 tool=run_python want=cancelled before=pending after=cancelled waited=5.029
+t= 15.457  ap.wait.exit           id=26a591 tool=run_python decision=cancelled waited=5.029
+t= 15.457  settle_all.exit        decision=cancelled
+t= 16.370  ap.decide              id=28f5b5 tool=run_python want=cancelled before=pending after=cancelled waited=0.0
+t= 16.371  ap.wait.enter          id=28f5b5 tool=run_python timeout=600.0
+t= 16.371  ap.wait.exit           id=28f5b5 tool=run_python decision=cancelled waited=0.0
+t= 16.388  settle_all.enter       decision=cancelled ids=-
+t= 16.388  settle_all.exit        decision=cancelled
+t= 16.388  stream.exception       exc=AgentError frames=17
+t= 16.389  stream.finally         frames=17
+t= 16.389  save.enter             sid=1 msgs=6 before=sessions=sid=1 messages=0 memory=0
+t= 16.393  save.exit              sid=1 after=sessions=sid=1 messages=6 memory=0
+t= 16.394  save_memory.enter      sid=1 chars=1008
+t= 16.397  save_memory.exit       sid=1 changed_rows=1008 after=sessions=sid=1 messages=6 memory=1
+t= 16.414  respond.finally        frames=18 pending=0 unanswered=0
+t= 16.456  poll.pending           n=0 state=- unanswered=0
+t= 17.461  poll.pending           n=0 state=- unanswered=0
+t= 18.466  poll.pending           n=0 state=- unanswered=0
+t= 19.471  poll.pending           n=0 state=- unanswered=0
+t= 20.475  poll.pending           n=0 state=- unanswered=0
+t= 21.480  poll.pending           n=0 state=- unanswered=0
+t= 22.486  poll.pending           n=0 state=- unanswered=0
+t= 23.490  poll.pending           n=0 state=- unanswered=0
+t= 24.494  poll.pending           n=0 state=- unanswered=0
+t= 25.498  poll.pending           n=0 state=- unanswered=0

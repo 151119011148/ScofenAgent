@@ -1,0 +1,19 @@
+{
+ "__navigate0": 1793584421791,
+ "S1-set#at": 1793584428802,
+ "S1-set": "set",
+ "S2-send#at": 1793584428808,
+ "S2-send#click": "clicked@378,142",
+ "S3-first-frame#at": 1793584428827,
+ "S3-first-frame#waitedMs": 1053,
+ "S3-first-frame#pred": "YES frame=3",
+ "S4-pre-reload-peek#at": 1793584429880,
+ "S4-pre-reload-peek": "YES frame=3",
+ "S5-wait#at": 1793584429881,
+ "S6-reload#at": 1793584431882,
+ "S6-reload#reloadAt": 1793584431882,
+ "S6-reload#reloadDoneAt": 1793584435917,
+ "S6-reload#urlAfter": "http://127.0.0.1:7871/",
+ "S7-after-reload-peek#at": 1793584435918,
+ "S7-after-reload-peek": "NO frame=?"
+}

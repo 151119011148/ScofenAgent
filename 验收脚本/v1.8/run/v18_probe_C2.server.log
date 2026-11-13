@@ -1,0 +1,54 @@
+t=  0.000  boot.epoch             t0=1793717211.942125 pid=9632 timeout=600.0 gradio=6.30.0 planning=8
+t=  2.874  plan.update            visible=False chars=0 reading=- sid=None
+t=  2.875  on_load                sid=None steps=0 kinds=- screen_stepno=None screen_in=None screen_out=None screen_wait=0.0 mem_held=[] db_memory=- wall=2.871
+t= 10.739  respond.enter          sid=None
+t= 10.740  poller.start           timeout=600.0
+t= 10.760  stream.enter           sid=1
+t= 10.761  settle_all.enter       decision=cancelled ids=-
+t= 10.761  settle_all.exit        decision=cancelled
+t= 11.766  poll.pending           n=0 state=- unanswered=0
+t= 12.786  poll.pending           n=0 state=- unanswered=0
+t= 13.800  poll.pending           n=0 state=- unanswered=0
+t= 14.812  poll.pending           n=0 state=- unanswered=0
+t= 15.820  poll.pending           n=0 state=- unanswered=0
+t= 16.821  poll.pending           n=0 state=- unanswered=0
+t= 17.829  poll.pending           n=0 state=- unanswered=0
+t= 18.839  poll.pending           n=0 state=- unanswered=0
+t= 19.849  poll.pending           n=0 state=- unanswered=0
+t= 20.858  poll.pending           n=0 state=- unanswered=0
+t= 21.868  poll.pending           n=0 state=- unanswered=0
+t= 22.877  poll.pending           n=0 state=- unanswered=0
+t= 22.995  plan.gate.enter        chars=2211 pending=0 sid=1
+t= 22.996  ap.wait.enter          id=cbeb67 tool=计划 timeout=600.0
+t= 23.007  plan.update            visible=True chars=2300 reading=等待审批 sid=1
+t= 23.882  poll.pending           n=1 state=cbeb67:pending unanswered=1
+t= 24.888  poll.pending           n=1 state=cbeb67:pending unanswered=1
+t= 25.897  poll.pending           n=1 state=cbeb67:pending unanswered=1
+t= 26.912  poll.pending           n=1 state=cbeb67:pending unanswered=1
+t= 27.922  poll.pending           n=1 state=cbeb67:pending unanswered=1
+t= 28.725  settle_all.enter       decision=cancelled ids=cbeb67
+t= 28.726  ap.decide              id=cbeb67 tool=计划 want=cancelled before=pending after=cancelled waited=5.73
+t= 28.726  settle_all.exit        decision=cancelled
+t= 28.726  ap.wait.exit           id=cbeb67 tool=计划 decision=cancelled waited=5.73
+t= 28.730  plan.gate.raise        exc=AgentError label=cbeb67:cancelled/5.730s
+t= 28.746  plan.update            visible=True chars=2255 reading=随停止取消 sid=1
+t= 28.759  settle_all.enter       decision=cancelled ids=-
+t= 28.759  settle_all.exit        decision=cancelled
+t= 28.759  stream.exception       exc=AgentError frames=116
+t= 28.759  stream.finally         frames=116
+t= 28.761  save.enter             sid=1 msgs=4 before=sessions=sid=1 messages=0 memory=0
+t= 28.767  save.exit              sid=1 after=sessions=sid=1 messages=4 memory=0
+t= 28.768  save_memory.enter      sid=1 chars=97
+t= 28.770  save_memory.exit       sid=1 changed_rows=97 after=sessions=sid=1 messages=4 memory=1
+t= 28.789  respond.finally        frames=117 pending=0 unanswered=0
+t= 28.926  poll.pending           n=0 state=- unanswered=0
+t= 29.931  poll.pending           n=0 state=- unanswered=0
+t= 30.936  poll.pending           n=0 state=- unanswered=0
+t= 31.941  poll.pending           n=0 state=- unanswered=0
+t= 32.946  poll.pending           n=0 state=- unanswered=0
+t= 33.951  poll.pending           n=0 state=- unanswered=0
+t= 34.979  poll.pending           n=0 state=- unanswered=0
+t= 35.984  poll.pending           n=0 state=- unanswered=0
+t= 36.988  poll.pending           n=0 state=- unanswered=0
+t= 37.990  poll.pending           n=0 state=- unanswered=0
+t= 38.995  poll.pending           n=0 state=- unanswered=0

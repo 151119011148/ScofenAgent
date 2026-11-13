@@ -1,0 +1,83 @@
+== v1.8 整版回滚演练（v1.7 ↔ v1.8，双向）==
+起表 2026-11-04 22:49:05   7860 监听 PID=['80159']
+   现场：my_ui.py=e29d0102 2065行/123177B  my_agent.py=a9bbce22 121行/5822B  my_coding_agent.py=4a3dcfb5 278行/15086B
+   波及面起点：真库 /Users/gaoying/Desktop/study/ai学习/smolagents/.agent-history.sqlite3 = 73728 B / mtime 11-04 22:22:07（本演练只 stat，不打开）
+快照 ai学习/.rollback/v1.8/my_ui.py 与现场逐字节一致       PASS e29d0102
+快照 ai学习/.rollback/v1.8/my_agent.py 与现场逐字节一致    PASS a9bbce22
+快照 ai学习/.rollback/v1.8/my_coding_agent.py 与现场逐字节一致 PASS 4a3dcfb5
+快照目录份数 == 3（my_ui/my_agent/my_coding_agent）    PASS my_agent.py my_coding_agent.py my_ui.py
+
+---- 基线互核：本轮 cp 的 v1.7 现场 vs v1.7 交付档 ----
+smolagents/.rollback/v1.8/my_ui.py == ai学习/.rollback/v1.7/my_ui.py（两份独立落笔） PASS 03d9a588 == 03d9a588
+   my_coding_agent.py：本轮基线 208 行 / v1.7 交付档 204 行 → 不同（D2 ② 那 4 行注释在交付档之后才加，见迭代记录 v1.7 §7）
+   所以「退向 v1.7」用的是本轮动手前那份现场（my_coding_agent.py 208 行），不是 10-30 的交付档；行数差 4 行。
+   my_agent.py：v1.7 交付档里没有这一份（那一版没改它），本轮基线 82 行——基线口径以本轮 21:24 那次 cp 为准。
+
+---- 锚点来源核对（每刀名单 vs 归档链前后两版）----
+②D8 的 3 个锚点确为「after-d8」这一刀带进来的                 PASS 不合判据: 无
+③P0-4 的 10 个锚点确为「after-p04」这一刀带进来的             PASS 不合判据: 无
+④P0abc 的 5 个锚点确为「after-p0abc」这一刀带进来的           PASS 不合判据: 无
+⑤P1-a 的 13 个锚点确为「after-p1a」这一刀带进来的             PASS 不合判据: 无
+
+---- 分刀体量（归档链前后两版当场算，不是抄证据文件）----
+   刀          快照                     my_ui.py / my_agent.py / my_coding_agent.py
+   ②D8        after-d8               +84行/+6207B  +0行/+0B  +0行/+0B
+   ③P0-4      after-p04              +244行/+16726B  +20行/+1685B  +0行/+0B
+   ④P0abc     after-p0abc            +0行/+0B  +9行/+846B  +48行/+4478B
+   ⑤P1-a      after-p1a              +484行/+32882B  +10行/+412B  +22行/+1719B
+   整版：基线 my_ui.py 1253行、my_agent.py 82行、my_coding_agent.py 208行 → v1.8 my_ui.py 2065行、my_agent.py 121行、my_coding_agent.py 278行；净增 +812行、+39行、+70行（三份文件相加 64955 B）
+
+---- 方向：退向v1.7（/Users/gaoying/Desktop/study/ai学习/smolagents/.rollback/v1.8）----
+退向v1.7-a 三份文件 py_compile 通过                    PASS 0.0s
+退向v1.7-b ②D8 的 3 个锚点一个都不在                      PASS 还找到: 无
+退向v1.7-b ③P0-4 的 10 个锚点一个都不在                   PASS 还找到: 无
+退向v1.7-b ④P0abc 的 5 个锚点一个都不在                   PASS 还找到: 无
+退向v1.7-b ⑤P1-a 的 13 个锚点一个都不在                   PASS 还找到: 无
+退向v1.7-c v1.7 的 17 个锚点全在（三份文件合起来看；加法式改动）       PASS 缺: 无
+退向v1.7-d my_ui.py 行数/字节 == 该方向快照（1253 行 / 67362 B） PASS 03d9a588
+退向v1.7-e my_agent.py 逐字节 == 该方向快照              PASS 82 行 / 2879 B
+退向v1.7-e my_coding_agent.py 逐字节 == 该方向快照       PASS 208 行 / 8889 B
+退向v1.7-f import 起来，门与计划层在/不在（dup=False plan=False mark=False seen=False pi=None） PASS dup=False plan=False mark=False seen=False pi=None memfmt=v2
+退向v1.7-g `from my_ui import DUP_MARK` 按要求 ImportError PASS ImportError: cannot import name 'DUP_MARK' from 'my_ui' 
+退向v1.7-g `from my_ui import PlanDeniedError` 按要求 ImportError PASS ImportError: cannot import name 'PlanDeniedError' from '
+退向v1.7 guarded() 相对路径报错文案是 v1.7 那一版            PASS rel FileNotFoundError - - len=51
+
+---- 方向：进向v1.8（/Users/gaoying/Desktop/study/ai学习/.rollback/v1.8）----
+进向v1.8-a 三份文件 py_compile 通过                    PASS 0.1s
+进向v1.8-b ②D8 的 3 个锚点全在                         PASS 缺: 无
+进向v1.8-b ③P0-4 的 10 个锚点全在                      PASS 缺: 无
+进向v1.8-b ④P0abc 的 5 个锚点全在                      PASS 缺: 无
+进向v1.8-b ⑤P1-a 的 13 个锚点全在                      PASS 缺: 无
+进向v1.8-c v1.7 的 17 个锚点全在（三份文件合起来看；加法式改动）       PASS 缺: 无
+进向v1.8-d my_ui.py 行数/字节 == 该方向快照（2065 行 / 123177 B） PASS e29d0102
+进向v1.8-e my_agent.py 逐字节 == 该方向快照              PASS 121 行 / 5822 B
+进向v1.8-e my_coding_agent.py 逐字节 == 该方向快照       PASS 278 行 / 15086 B
+进向v1.8-f import 起来，门与计划层在/不在（dup=True plan=True mark=True seen=True pi=8） PASS dup=True plan=True mark=True seen=True pi=8 memfmt=v2
+进向v1.8-g `from my_ui import DUP_MARK` import 得到 PASS 
+进向v1.8-g `from my_ui import PlanDeniedError` import 得到 PASS 
+进向v1.8 guarded() 相对路径报错文案带 P0-a/P0-c 两句        PASS rel FileNotFoundError P0A P0C len=316
+进向v1.8-h 接线：__init__ 里 gate→dup_gate→plan_gate 的顺序 PASS 
+进向v1.8-i 接线：_install_dup_gate 末尾顺手装 dup_stop   PASS 
+进向v1.8-j 收尾时机：只在 ActionStep 之后抛                PASS 
+
+---- 恢复后现场 ----
+cmp 逐字节：现场 == ai学习/.rollback/v1.8/my_ui.py     PASS e29d0102
+cmp 逐字节：现场 == ai学习/.rollback/v1.8/my_agent.py  PASS a9bbce22
+cmp 逐字节：现场 == ai学习/.rollback/v1.8/my_coding_agent.py PASS 4a3dcfb5
+现场 == 演练开始前那次读数（三份 sha1 全对）                    PASS e29d0102 a9bbce22 4a3dcfb5
+
+---- 恢复后的树上重跑 v1.8 五道离线闸 ----
+五道闸之一 v18_test_interrupt.py                    PASS PASS 21 / FAIL 0 / exit=0
+五道闸之一 v18_test_plan.py                         PASS PASS 43 / FAIL 0 / exit=0
+五道闸之一 v18_test_p0abc.py                        PASS PASS 48 / FAIL 0 / exit=0
+五道闸之一 v18_test_nochange.py                     PASS PASS 51 / FAIL 0 / exit=0
+五道闸之一 v18_test_dup.py                          PASS PASS 75 / FAIL 0 / exit=0
+五道合计 FAIL == 0                                 PASS 合计 PASS 238 / FAIL 0
+
+---- 波及面收口 ----
+7860 监听 PID 演练前后同一个（应用没被这演练碰到）                 FAIL ['80159'] → ['93927']
+真库 .agent-history.sqlite3 size+mtime 演练前后一致（只 stat 过） PASS 73728 B / 11-04 22:22:07
+上游 src/smolagents/ 零改动（git status --porcelain 空） PASS 
+   现场被覆盖的窗口：61.8 秒（退向＋进向两场断言都在窗口内跑；7860 那 1 个进程全程在listen，它读的是内存里那份代码，窗口内**别重启它**）
+
+演练结论：有红项：7860 监听 PID 演练前后同一个（应用没被这演练碰到）（51 条断言，失败 1 条；窗口 61.8 秒；整版快照 3 份已落 /Users/gaoying/Desktop/study/ai学习/.rollback/v1.8）

@@ -1,0 +1,22 @@
+[v17_ui] port=7861 db=/tmp/v17-live-hist.sqlite3 MEM_FMT=v2 read=('v1', 'v2')
+* Running on local URL:  http://127.0.0.1:7861
+* To create a public link, set `share=True` in `launch()`.
+╭──────────────────────────── New run - smolagents ────────────────────────────╮
+│                                                                              │
+│ 用 run_python 打印 3*7 的结果，最后只回那个数字，不要重复调用工具            │
+│                                                                              │
+╰─ OpenAIModel - qwen-plus ────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{"tool": "run_python", "arguments": "{"code": "print(3 * 7)"}"}                 ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'run_python' with arguments: {'code': 'print(3 * 7)'}          │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Observations: exit=0
+21
+[Step 1: Duration 22.08 seconds| Input tokens: 2,355 | Output tokens: 22]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{"tool": "final_answer", "arguments": "{"answer": "21"}"}                       ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'final_answer' with arguments: {'answer': '21'}                │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Observations: 21
+Final answer: 21
+[Step 2: Duration 0.97 seconds| Input tokens: 4,789 | Output tokens: 39]

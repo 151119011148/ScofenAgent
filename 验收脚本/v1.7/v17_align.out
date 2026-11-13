@@ -1,0 +1,528 @@
+候选 207 条，其中号要动 196 条 {'MOVE-HIT': 181, 'MOVE-ZERO': 11, 'HIT': 12, 'ZERO': 1, 'skip': 2}
+--- L639
+   MOVE-HIT my_ui.py:1197  -> :1245          cur      [ov=4/4] ⌖OpsUI(agent, file_upload_folder="./data").launch(⌖ -> ⌖OpsUI(agent, file_upload_folder="./data").launch(⌖
+      ctx ‖    L["OpsUI(agent).launch()<br/>my_ui.py:1197"] --> D{"share 参数默认值‖
+--- L641
+   MOVE-HIT my_ui.py:1198-1201 -> :1246-1249     cur      [ov=1/1] ⌖share=False,⌖ -> ⌖share=False,⌖
+      ctx ‖    D -->|"写死 share=False 与 127.0.0.1<br/>my_ui.py:1198-1201"| LOCAL["只有本机能访‖
+--- L642
+   MOVE-HIT my_ui.py:1205  -> :1253          cur      [ov=2/2] ⌖os._exit(0)⌖ -> ⌖os._exit(0)⌖
+      ctx ‖["Ctrl-C 后端口释放但进程挂在非守护线程<br/>→ 显式 os._exit(0)，my_ui.py:1205"]‖
+--- L647
+   MOVE-HIT my_ui.py:923   -> :944           cur      [ov=3/3] ⌖yield list(msgs)⌖ -> ⌖yield list(msgs)⌖
+      ctx ‖自己维护那份内部列表、每次 `yield list(msgs)` 交副本给 gradio（`my_ui.py:923`；v1.1/v1.2 是 `list(ms‖
+   MOVE-ZERO :310           -> :329           cur      [ov=0/0] ⌖#brand { display: flex; flex-direction: column; gap:⌖ -> ⌖#brand { display: flex; flex-direction: column; gap:⌖
+      ctx ‖py:923`；v1.1/v1.2 是 `list(msgs) + [stats]` 在 `:310`，v1.3 把统计并进了步骤卡，见 6.3.5）。收益是上‖
+--- L657
+   MOVE-HIT :672-727       -> :691-746       cur      [ov=3/3] ⌖def _step_card(self, step) -> gr.ChatMessage | None:⌖ -> ⌖def _step_card(self, step) -> gr.ChatMessage | None:⌖
+      ctx ‖*：一个 step 只出一张卡，上面那串数字并进了步骤卡的标题（`_step_card`，`:672-727`；标题拼装 `:705-710`，末行 `:721‖
+   MOVE-HIT :705-710       -> :724-729       cur      [ov=3/3] ⌖title = (⌖ -> ⌖title = (⌖
+      ctx ‖上面那串数字并进了步骤卡的标题（`_step_card`，`:672-727`；标题拼装 `:705-710`，末行 `:721-724`），三档口径一字未改。‖
+   MOVE-HIT :721-724       -> :740-743       cur      [ov=3/3] ⌖parts.append(⌖ -> ⌖parts.append(⌖
+      ctx ‖题（`_step_card`，`:672-727`；标题拼装 `:705-710`，末行 `:721-724`），三档口径一字未改。下面这张表和"为什么写在 t‖
+--- L669
+   MOVE-HIT :800-808       -> :821-829       cur      [ov=3/3] ⌖finally:⌖ -> ⌖finally:⌖
+      ctx ‖rker 线程**，于是"关内层生成器"这一步只能跟着挪进那条线程的 `finally`（`:800-808`），`_stream_response` 的 `f‖
+   MOVE-HIT :928-937       -> :949-958       cur      [ov=5/5] ⌖finally:⌖ -> ⌖finally:⌖
+      ctx ‖的 `finally` 只剩三个动作——置放弃标记、`interrupt()`、结算待批（`:928-937`）：‖
+--- L675
+   MOVE-HIT my_ui.py:810-937 -> :831-958       cur      [ov=2/2] ⌖def _stream_response(self, message, history):  # noq⌖ -> ⌖def _stream_response(self, message, history):  # noq⌖
+      ctx ‖  participant O as OpsUI._stream_response<br/>my_ui.py:810-937‖
+--- L676
+   MOVE-HIT my_ui.py:785-808 -> :806-829       cur      [ov=1/1] ⌖def _worker(self, task: str, files, q: queue.Queue) ⌖ -> ⌖def _worker(self, task: str, files, q: queue.Queue) ⌖
+      ctx ‖    participant W as _worker 线程<br/>my_ui.py:785-808‖
+--- L679
+   MOVE-HIT :928           -> :949           cur      [ov=1/1] ⌖finally:⌖ -> ⌖finally:⌖
+      ctx ‖    G->>O: 关掉这层生成器（finally 在 :928）‖
+--- L681
+   MOVE-HIT :935           -> :956           cur      [ov=3/3] ⌖self._abandoned.set()⌖ -> ⌖self._abandoned.set()⌖
+      ctx ‖    O->>W: _abandoned.set()（:935）→ 那个 for 循环下一轮 break‖
+--- L682
+   MOVE-HIT :805           -> :826           cur      [ov=3/3] ⌖inner.close()⌖ -> ⌖inner.close()⌖
+      ctx ‖>>W: 生成器被弃 → 它的 finally 在起它的线程里 inner.close()（:805）‖
+--- L684
+   MOVE-HIT :806-807       -> :827-828       cur      [ov=3/3] ⌖except RuntimeError:⌖ -> ⌖except RuntimeError:⌖
+      ctx ‖    A-->>W: 该 RuntimeError 由 W 自己吃掉（:806-807），否则 stderr 每次 Stop 喷一条 Ge‖
+--- L686
+   MOVE-ZERO :545-547       -> :564-566       cur      [ov=0/0] ⌖# ---- P0-2：审批门 ------------------------------------⌖ -> ⌖# ---- P0-2：审批门 ------------------------------------⌖
+      ctx ‖hile 顶部检查 interrupt_switch → raise AgentError（:545-547）‖
+--- L696
+   HIT      my_ui.py:15    -> :15            cur      [ov=2/2] ⌖from my_agent import agent⌖ -> ⌖from my_agent import agent⌖
+      ctx ‖ `if __name__ == "__main__"` 分支里，而 UI 的真实链路是 `my_ui.py:15 → my_agent.py:8 → from‖
+   ZERO     my_ui.py:10    -> :10            cur      [ov=0/0] ⌖import time⌖ -> ⌖import time⌖
+      ctx ‖ my_coding_agent import …`（v1.2 前那条 import 在 `my_ui.py:10`，更早 `:4`）——**import 不执‖
+   skip     :4             -> :4             HIST     
+      ctx ‖import …`（v1.2 前那条 import 在 `my_ui.py:10`，更早 `:4`）——**import 不执行 `__main__`**。目录‖
+--- L706
+   MOVE-HIT my_ui.py:1004-1066 -> :1043-1105     cur      [ov=4/4] ⌖def _respond(self, message, sid):⌖ -> ⌖def _respond(self, message, sid):⌖
+      ctx ‖>|"box.submit"| R["_respond(message, sid)<br/>my_ui.py:1004-1066"]‖
+--- L707
+   MOVE-HIT :988           -> :1027          cur      [ov=1/1] ⌖def _user_message(self, message):⌖ -> ⌖def _user_message(self, message):⌖
+      ctx ‖    R --> U["_user_message<br/>:988 自建用户气泡"]‖
+--- L708
+   MOVE-HIT :810           -> :831           cur      [ov=1/1] ⌖def _stream_response(self, message, history):  # noq⌖ -> ⌖def _stream_response(self, message, history):  # noq⌖
+      ctx ‖    R --> S["_stream_response<br/>:810 v1.1 的刹车语义原样保留<br/>v1.3 起它只是取‖
+--- L709
+   MOVE-HIT :785           -> :806           cur      [ov=4/4] ⌖def _worker(self, task: str, files, q: queue.Queue) ⌖ -> ⌖def _worker(self, task: str, files, q: queue.Queue) ⌖
+      ctx ‖    S --> W["threading.Thread → _worker :785<br/>agent.run(stream=True)"]‖
+--- L711
+   MOVE-HIT :571           -> :590           cur      [ov=1/1] ⌖def _gated_call(self, name: str, original, args: tup⌖ -> ⌖def _gated_call(self, name: str, original, args: tup⌖
+      ctx ‖    W --> GT["工具实例上的审批门<br/>_gated_call :571（见 6.3.5）"]‖
+--- L712
+   MOVE-HIT :730           -> :749           cur      [ov=1/1] ⌖def _stats(self) -> dict:⌖ -> ⌖def _stats(self, steps=None) -> dict:⌖
+      ctx ‖    S --> ST["_stats :730 一份数字"]‖
+--- L713
+   MOVE-HIT :672           -> :691           cur      [ov=1/1] ⌖def _step_card(self, step) -> gr.ChatMessage | None:⌖ -> ⌖def _step_card(self, step) -> gr.ChatMessage | None:⌖
+      ctx ‖    ST --> C1["_step_card :672 一步一张卡<br/>卡末行就是原来的统计卡"]‖
+--- L714
+   MOVE-HIT :761           -> :782           cur      [ov=1/1] ⌖def _status_html(self, state: str) -> str:⌖ -> ⌖def _status_html(self, state: str, steps=None) -> st⌖
+      ctx ‖    ST --> C2["_status_html :761 顶部胶囊<br/>有待批时多一颗「待批」"]‖
+--- L716
+   MOVE-HIT :451           -> :470           cur      [ov=2/2] ⌖def save(self, sid: int, messages) -> None:⌖ -> ⌖def save(self, sid: int, messages) -> None:⌖
+      ctx ‖   R -->|"finally"| H["History.save 整条覆盖写<br/>:451，DELETE 在 :463"]‖
+   MOVE-HIT :463           -> :482           cur      [ov=2/2] ⌖c.execute("DELETE FROM messages WHERE session_id = ?⌖ -> ⌖c.execute("DELETE FROM messages WHERE session_id = ?⌖
+      ctx ‖lly"| H["History.save 整条覆盖写<br/>:451，DELETE 在 :463"]‖
+--- L718
+   MOVE-HIT :1192          -> :1240          cur      [ov=3/3] ⌖demo.load(fn=self._on_load, outputs=[radio, sid, sta⌖ -> ⌖demo.load(fn=self._on_load, outputs=[radio, sid, sta⌖
+      ctx ‖    L["demo.load :1192"] --> DB2["History.choices /‖
+--- L719
+   MOVE-HIT :1155          -> :1203          cur      [ov=1/1] ⌖stop_btn = gr.Button("■ 停止", variant="stop", scale=0⌖ -> ⌖stop_btn = gr.Button("■ 停止", variant="stop", scale=0⌖
+      ctx ‖    SB["■ 停止 :1155"] -->|"interrupt + 结算待批"| AG‖
+--- L724
+   MOVE-HIT my_ui.py:1135-1193 -> :1183-1241     cur      [ov=4/4] ⌖def create_app(self):⌖ -> ⌖def create_app(self):⌖
+      ctx ‖往消息流旁边插侧栏、也没有口子把状态条提到输入框上方。所以 `create_app()`（`my_ui.py:1135-1193`）整体覆盖成 `gr.Bloc‖
+--- L725
+   MOVE-HIT :988-1002      -> :1027-1041     cur      [ov=6/6] ⌖def _user_message(self, message):⌖ -> ⌖def _user_message(self, message):⌖
+      ctx ‖屏幕第一行会凭空消失、库里也没有。**必须自己拼**（`_user_message()`，`:988-1002`），而且只拼显示、不重跑 `_process_m‖
+--- L727
+   MOVE-HIT :1192          -> :1240          cur      [ov=6/6] ⌖demo.load(fn=self._on_load, outputs=[radio, sid, sta⌖ -> ⌖demo.load(fn=self._on_load, outputs=[radio, sid, sta⌖
+      ctx ‖测重载后侧栏是空的——这恰好是 V3 要消灭的那个缺陷。解法是挂 `demo.load`（`:1192`，回调 `:1118-1132`）把库里的会话重新推一遍‖
+   MOVE-HIT :1118-1132     -> :1162-1179     cur      [ov=5/5] ⌖def _on_load(self):⌖ -> ⌖def _on_load(self):⌖
+      ctx ‖这恰好是 V3 要消灭的那个缺陷。解法是挂 `demo.load`（`:1192`，回调 `:1118-1132`）把库里的会话重新推一遍，并自动展开最新一条。‖
+--- L729
+   MOVE-HIT :382-497       -> :401-516       cur      [ov=18/18] ⌖class History:⌖ -> ⌖class History:⌖
+      ctx ‖`History`（`:382-497`）管**三张表**：`sessions(id, t‖
+--- L733
+   HIT      :30            -> :30            cur      [ov=4/4] ⌖DB_PATH = Path(__file__).resolve().parent / ".agent-⌖ -> ⌖DB_PATH = Path(__file__).resolve().parent / ".agent-⌖
+      ctx ‖PATH` 用 `Path(__file__).resolve()` 而不是 cwd | `:30` | 启动器 `cd smolagents` 与否都落在同一‖
+--- L734
+   MOVE-HIT :451-472       -> :470-491       cur      [ov=2/2] ⌖def save(self, sid: int, messages) -> None:⌖ -> ⌖def save(self, sid: int, messages) -> None:⌖
+      ctx ‖| `save()` 是**整条覆盖写**（先删后插全量） | `:451-472`，`DELETE` 在 `:463` | 半截停止‖
+   MOVE-HIT :463           -> :482           cur      [ov=2/2] ⌖c.execute("DELETE FROM messages WHERE session_id = ?⌖ -> ⌖c.execute("DELETE FROM messages WHERE session_id = ?⌖
+      ctx ‖` 是**整条覆盖写**（先删后插全量） | `:451-472`，`DELETE` 在 `:463` | 半截停止的那次也落库；重复保存不会产生双份消息。所以‖
+--- L735
+   MOVE-HIT :458-459       -> :477-478       cur      [ov=5/5] ⌖if d.get("role") == "user" and title is None:⌖ -> ⌖if d.get("role") == "user" and title is None:⌖
+      ctx ‖前 **28** 字，且只在仍是「新会话」时写；`updated_at` 每次存都刷 | `:458-459` 取值，`:469-472` 那条 `CASE W‖
+   MOVE-HIT :469-472       -> :488-491       cur      [ov=5/5] ⌖c.execute(⌖ -> ⌖c.execute(⌖
+      ctx ‖仍是「新会话」时写；`updated_at` 每次存都刷 | `:458-459` 取值，`:469-472` 那条 `CASE WHEN title = '新‖
+--- L736
+   MOVE-HIT :434-439       -> :453-458       cur      [ov=3/3] ⌖def choices(self, limit: int = 50):⌖ -> ⌖def choices(self, limit: int = 50):⌖
+      ctx ‖oices()` 按 `updated_at DESC` 取，上限 **50** 条 | `:434-439` | 不搜索、不分组、不分页——这是 v1.2 的‖
+--- L737
+   MOVE-HIT :410           -> :429           cur      [ov=1/1] ⌖CREATE TABLE IF NOT EXISTS memory(⌖ -> ⌖CREATE TABLE IF NOT EXISTS memory(⌖
+      ctx ‖**一条会话一行**（主键就是 `session_id`），返回存了多少字符 | DDL `:410`，方法 `:474-482`，读回 `:484-487` ‖
+   MOVE-HIT :474-482       -> :493-501       cur      [ov=4/4] ⌖def save_memory(self, sid: int, payload: str) -> int⌖ -> ⌖def save_memory(self, sid: int, payload: str) -> int⌖
+      ctx ‖（主键就是 `session_id`），返回存了多少字符 | DDL `:410`，方法 `:474-482`，读回 `:484-487` | 和 `save(‖
+   MOVE-HIT :484-487       -> :503-506       cur      [ov=1/1] ⌖def load_memory(self, sid: int):⌖ -> ⌖def load_memory(self, sid: int):⌖
+      ctx ‖_id`），返回存了多少字符 | DDL `:410`，方法 `:474-482`，读回 `:484-487` | 和 `save()` 同样是覆盖式，所以调用‖
+--- L739
+   MOVE-HIT :455-460       -> :474-479       cur      [ov=8/8] ⌖d = dataclasses.asdict(m) if dataclasses.is_dataclas⌖ -> ⌖d = dataclasses.asdict(m) if dataclasses.is_dataclas⌖
+      ctx ‖ssage.metadata` 的 JSON（`role`/`content` 各自一列，`:455-460` 先用 `dataclasses.asdict` ‖
+   MOVE-HIT :448           -> :467           cur      [ov=7/7] ⌖out.append(gr.ChatMessage(role=role, content=content⌖ -> ⌖out.append(gr.ChatMessage(role=role, content=content⌖
+      ctx ‖lass 拍平成字典再拆），`load()` 拿它重建 `gr.ChatMessage`（`:448`），所以折叠卡、报错条这类带 `metadata.titl‖
+--- L741
+   MOVE-HIT :217-336       -> :236-355       cur      [ov=18/18] ⌖DARK_CSS = """⌖ -> ⌖DARK_CSS = """⌖
+      ctx ‖深色壳（`DARK_CSS`，`:217-336`）分两类活：一类是 `:root` 变量同名覆盖（‖
+   MOVE-HIT :269-279       -> :288-298       cur      [ov=18/18] ⌖/* P0-2 审批键：平时不可见（visible=False），有待批项时才由后端点亮。 */⌖ -> ⌖/* P0-2 审批键：平时不可见（visible=False），有待批项时才由后端点亮。 */⌖
+      ctx ‖，这就是第一版截图里右边空一大片的原因。v1.3 在这段 CSS 里追加了审批相关的规则（`:269-279`：待批胶囊的描边、`#approve-btn` /‖
+--- L748
+   MOVE-HIT :546-569       -> :565-588       cur      [ov=11/11] ⌖def _install_gate(self) -> None:⌖ -> ⌖def _install_gate(self) -> None:⌖
+      ctx ‖的 `output_type` 包装全都不受影响。套法见 `_install_gate`（`:546-569`）：`copy.copy(base)` 换一个新实‖
+   MOVE-HIT :560           -> :579           cur      [ov=11/11] ⌖wrapped_tool = copy.copy(base)⌖ -> ⌖wrapped_tool = copy.copy(base)⌖
+      ctx ‖gate`（`:546-569`）：`copy.copy(base)` 换一个新实例再盖（`:560`、`:567-569`），**不去改 `my_coding‖
+   MOVE-HIT :567-569       -> :586-588       cur      [ov=2/2] ⌖wrapped_tool.forward = gated⌖ -> ⌖wrapped_tool.forward = gated⌖
+      ctx ‖:546-569`）：`copy.copy(base)` 换一个新实例再盖（`:560`、`:567-569`），**不去改 `my_coding_agent.‖
+--- L750
+   MOVE-HIT :566           -> :585           cur      [ov=5/5] ⌖gated.__signature__ = inspect.signature(original)⌖ -> ⌖gated.__signature__ = inspect.signature(original)⌖
+      ctx ‖__signature__ = inspect.signature(original)`（`:566`）。不保签名的话，`*a, **kw` 会把参数吞成一个元‖
+   MOVE-HIT :574           -> :593           cur      [ov=7/7] ⌖bound = dict(inspect.signature(original).bind_partia⌖ -> ⌖bound = dict(inspect.signature(original).bind_partia⌖
+      ctx ‖了它，`bind_partial(*args, **kwargs).arguments`（`:574`）能把参数还原成字典——**展示用的和执行用的是同一份**‖
+--- L751
+   MOVE-HIT :558           -> :577           cur      [ov=2/2] ⌖if base is None or getattr(base, "_opsui_gated", Fal⌖ -> ⌖if base is None or getattr(base, "_opsui_gated", Fal⌖
+      ctx ‖- 幂等标记 `_opsui_gated`（`:558`、`:568`）。多个 `OpsUI` 实例（离线测试里反‖
+   MOVE-HIT :568           -> :587           cur      [ov=1/1] ⌖wrapped_tool._opsui_gated = True⌖ -> ⌖wrapped_tool._opsui_gated = True⌖
+      ctx ‖- 幂等标记 `_opsui_gated`（`:558`、`:568`）。多个 `OpsUI` 实例（离线测试里反复建）不能把门‖
+--- L752
+   MOVE-HIT :511-512       -> :530-531       cur      [ov=3/3] ⌖_pending: list[Approval] = []⌖ -> ⌖_pending: list[Approval] = []⌖
+      ctx ‖- `_pending` 和 `_gate_lock` 挂在**类**上（`:511-512`），不是实例上。因为门守的是**进程里那一个 ag‖
+--- L754
+   HIT      :34            -> :34            cur      [ov=3/3] ⌖GATED_TOOLS = ("write_file", "run_python")⌖ -> ⌖GATED_TOOLS = ("write_file", "run_python")⌖
+      ctx ‖`GATED_TOOLS = ("write_file", "run_python")`（`:34`）；`read_file` / `list_dir` / `‖
+--- L756
+   MOVE-HIT :785-808       -> :806-829       cur      [ov=7/7] ⌖def _worker(self, task: str, files, q: queue.Queue) ⌖ -> ⌖def _worker(self, task: str, files, q: queue.Queue) ⌖
+      ctx ‖3 把 `agent.run(stream=True)` 挪进 `_worker` 线程（`:785-808`），事件塞 `queue.Queue`；`_str‖
+   MOVE-HIT :810-937       -> :831-958       cur      [ov=8/8] ⌖def _stream_response(self, message, history):  # noq⌖ -> ⌖def _stream_response(self, message, history):  # noq⌖
+      ctx ‖5-808`），事件塞 `queue.Queue`；`_stream_response`（`:810-937`）变成一条**只取队列**的壳，用 `q.get(‖
+   MOVE-HIT :841           -> :862           cur      [ov=8/8] ⌖kind, payload = q.get(timeout=0.25)⌖ -> ⌖kind, payload = q.get(timeout=0.25)⌖
+      ctx ‖-937`）变成一条**只取队列**的壳，用 `q.get(timeout=0.25)`（`:841`）驱动。关键一点：**空转的那 0.25 秒也要走一遍渲染‖
+   MOVE-HIT :898-920       -> :919-941       cur      [ov=8/8] ⌖for ap in self._pending_snapshot():⌖ -> ⌖for ap in self._pending_snapshot():⌖
+      ctx ‖25)`（`:841`）驱动。关键一点：**空转的那 0.25 秒也要走一遍渲染判定**（`:898-920`），否则待批卡要等下一个 agent 事件才画得出‖
+--- L760
+   MOVE-HIT :1004          -> :1043          cur      [ov=2/2] ⌖def _respond(self, message, sid):⌖ -> ⌖def _respond(self, message, sid):⌖
+      ctx ‖    T["提问 box.submit"] --> RS["_respond :1004<br/>7 元组输出"]‖
+--- L761
+   MOVE-HIT :810           -> :831           cur      [ov=2/2] ⌖def _stream_response(self, message, history):  # noq⌖ -> ⌖def _stream_response(self, message, history):  # noq⌖
+      ctx ‖    RS --> SR["_stream_response :810<br/>UI 线程 · q.get 0.25s"]‖
+--- L762
+   MOVE-HIT :785           -> :806           cur      [ov=4/4] ⌖def _worker(self, task: str, files, q: queue.Queue) ⌖ -> ⌖def _worker(self, task: str, files, q: queue.Queue) ⌖
+      ctx ‖    SR -->|"起线程"| WK["_worker :785<br/>agent.run stream=True"]‖
+--- L765
+   MOVE-HIT :571           -> :590           cur      [ov=3/3] ⌖def _gated_call(self, name: str, original, args: tup⌖ -> ⌖def _gated_call(self, name: str, original, args: tup⌖
+      ctx ‖->|"self.forward 已被实例属性盖住"| GATE["_gated_call :571<br/>Approval 入类级 _pending :51‖
+   MOVE-HIT :511           -> :530           cur      [ov=4/4] ⌖_pending: list[Approval] = []⌖ -> ⌖_pending: list[Approval] = []⌖
+      ctx ‖E["_gated_call :571<br/>Approval 入类级 _pending :511"]‖
+--- L766
+   MOVE-HIT :374           -> :393           cur      [ov=1/1] ⌖def wait(self) -> str:⌖ -> ⌖def wait(self) -> str:⌖
+      ctx ‖    GATE --> WAIT["ap.wait 600s :374<br/>只阻塞 worker 这一条线程"]‖
+--- L767
+   MOVE-HIT :621           -> :640           cur      [ov=1/1] ⌖def _approval_card(self, ap: Approval, waited: float⌖ -> ⌖def _approval_card(self, ap: Approval, waited: float⌖
+      ctx ‖"每轮扫 _pending_snapshot"| CARD["_approval_card :621<br/>🟡 待批 · 参数原样贴出"]‖
+--- L769
+   MOVE-HIT :1189          -> :1237          cur      [ov=3/3] ⌖allow_btn.click(fn=lambda: self._decide("allowed"), ⌖ -> ⌖allow_btn.click(fn=lambda: self._decide("allowed"), ⌖
+      ctx ‖    BTN -->|"✔ 允许 :1189"| OK["_decide allowed :604<b‖
+   MOVE-HIT :604           -> :623           cur      [ov=2/2] ⌖def _decide(self, decision: str):⌖ -> ⌖def _decide(self, decision: str):⌖
+      ctx ‖    BTN -->|"✔ 允许 :1189"| OK["_decide allowed :604<br/>decision + Event.set"]‖
+--- L770
+   MOVE-HIT :1190          -> :1238          cur      [ov=2/2] ⌖deny_btn.click(fn=lambda: self._decide("denied"), ou⌖ -> ⌖deny_btn.click(fn=lambda: self._decide("denied"), ou⌖
+      ctx ‖    BTN -->|"✖ 拒绝 :1190"| NO["_decide denied"]‖
+--- L771
+   MOVE-HIT :1186          -> :1234          cur      [ov=1/1] ⌖stop_btn.click(fn=self._stop, outputs=[status])⌖ -> ⌖stop_btn.click(fn=self._stop, outputs=[status])⌖
+      ctx ‖    BTN -->|"■ 停止 :1186"| STOP["_stop :1076 → _settl‖
+   MOVE-HIT :1076          -> :1115          cur      [ov=3/3] ⌖def _stop(self):⌖ -> ⌖def _stop(self):⌖
+      ctx ‖    BTN -->|"■ 停止 :1186"| STOP["_stop :1076 → _settle_all cancelled :616‖
+   MOVE-HIT :616           -> :635           cur      [ov=1/1] ⌖def _settle_all(self, decision: str) -> None:⌖ -> ⌖def _settle_all(self, decision: str) -> None:⌖
+      ctx ‖6"| STOP["_stop :1076 → _settle_all cancelled :616"]‖
+--- L773
+   HIT      :50            -> :50            cur      [ov=1/1] ⌖DENIED_OBSERVATION = {⌖ -> ⌖DENIED_OBSERVATION = {⌖
+      ctx ‖    NO --> OBS["观察值 DENIED_OBSERVATION :50<br/>写明未产生任何副作用"]‖
+--- L776
+   MOVE-HIT :672           -> :691           cur      [ov=2/2] ⌖def _step_card(self, step) -> gr.ChatMessage | None:⌖ -> ⌖def _step_card(self, step) -> gr.ChatMessage | None:⌖
+      ctx ‖    EXEC --> STEP["_step_card :672<br/>🟢 成功 · 秒 · token"]‖
+--- L780
+   MOVE-HIT :846-857       -> :867-878       cur      [ov=6/6] ⌖if isinstance(payload, ChatMessageStreamDelta):⌖ -> ⌖if isinstance(payload, ChatMessageStreamDelta):⌖
+      ctx ‖**一条流上现在有三种卡，身份存对象不存下标。** 流式思考气泡（`:846-857`）、审批卡（`:898-920`）、步骤卡（`:8‖
+   MOVE-HIT :898-920       -> :919-941       cur      [ov=6/6] ⌖for ap in self._pending_snapshot():⌖ -> ⌖for ap in self._pending_snapshot():⌖
+      ctx ‖流上现在有三种卡，身份存对象不存下标。** 流式思考气泡（`:846-857`）、审批卡（`:898-920`）、步骤卡（`:858-884`）都往同一个 `m‖
+   MOVE-HIT :858-884       -> :879-905       cur      [ov=6/6] ⌖elif isinstance(payload, ActionStep | PlanningStep |⌖ -> ⌖elif isinstance(payload, ActionStep | PlanningStep |⌖
+      ctx ‖下标。** 流式思考气泡（`:846-857`）、审批卡（`:898-920`）、步骤卡（`:858-884`）都往同一个 `msgs` 列表里写。审批卡按 `‖
+   MOVE-HIT :833           -> :854           cur      [ov=6/6] ⌖cards: dict[str, gr.ChatMessage] = {}   # 审批单 id -> ⌖ -> ⌖cards: dict[str, gr.ChatMessage] = {}   # 审批单 id -> ⌖
+      ctx ‖84`）都往同一个 `msgs` 列表里写。审批卡按 `ap.id` 存**卡片对象**（`:833`、`:905-906`），更新时**原地改** `cont‖
+   MOVE-HIT :905-906       -> :926-927       cur      [ov=6/6] ⌖cards[ap.id] = self._approval_card(ap, waited)⌖ -> ⌖cards[ap.id] = self._approval_card(ap, waited)⌖
+      ctx ‖一个 `msgs` 列表里写。审批卡按 `ap.id` 存**卡片对象**（`:833`、`:905-906`），更新时**原地改** `content` / ‖
+   MOVE-HIT :913-914       -> :934-935       cur      [ov=6/6] ⌖cards[ap.id].content = new.content⌖ -> ⌖cards[ap.id].content = new.content⌖
+      ctx ‖:905-906`），更新时**原地改** `content` / `metadata`（`:913-914`）——因为步骤事件到达时会 `pop` 掉那条流式‖
+   MOVE-HIT :860           -> :881           cur      [ov=6/6] ⌖msgs.pop(stream_idx)  # 思考已经并进卡片正文，不留两份⌖ -> ⌖msgs.pop(stream_idx)  # 思考已经并进卡片正文，不留两份⌖
+      ctx ‖adata`（`:913-914`）——因为步骤事件到达时会 `pop` 掉那条流式气泡（`:860`），任何存过的下标从那一刻起都不作数（踩过：按下标写回，把‖
+   MOVE-HIT :917-920       -> :938-941       cur      [ov=6/6] ⌖if ap.decision != "pending":⌖ -> ⌖if ap.decision != "pending":⌖
+      ctx ‖不作数（踩过：按下标写回，把刚生成的步骤卡盖成了审批卡）。摘单也挪到"画上收尾状态之后"（`:917-920`）：先前有一版只在更新分支里摘，结果**点得快**‖
+--- L782
+   MOVE-HIT :672-727       -> :691-746       cur      [ov=6/6] ⌖def _step_card(self, step) -> gr.ChatMessage | None:⌖ -> ⌖def _step_card(self, step) -> gr.ChatMessage | None:⌖
+      ctx ‖**V4：一个 step 一张卡。** `_step_card`（`:672-727`）把上游那 5~6 条无差别折叠卡并成一条，标题带‖
+   MOVE-HIT :705-710       -> :724-729       cur      [ov=6/6] ⌖title = (⌖ -> ⌖title = (⌖
+      ctx ‖`）把上游那 5~6 条无差别折叠卡并成一条，标题带工具名、结果色点、秒数和 token（`:705-710`），正文依次是模型思考、调用参数、结果、报错，末行‖
+   MOVE-HIT :721-724       -> :740-743       cur      [ov=6/6] ⌖parts.append(⌖ -> ⌖parts.append(⌖
+      ctx ‖ken（`:705-710`），正文依次是模型思考、调用参数、结果、报错，末行是本题累计（`:721-724`）。数字仍然必须写进 `metadata.titl‖
+--- L784
+   HIT      :41-47         -> :41-47         cur      [ov=1/1] ⌖DECISION_LABEL = {⌖ -> ⌖DECISION_LABEL = {⌖
+      ctx ‖** 拒绝 / 停止取消 / 超时无人批，在审批卡上是 `DECISION_LABEL`（`:41-47`）的「已拒绝 / 随停止取消 / 超时未批」，在步骤卡‖
+   HIT      :55            -> :55            cur      [ov=1/1] ⌖DENIED_VERDICT = {"denied": "已拒绝", "cancelled": "已取消⌖ -> ⌖DENIED_VERDICT = {"denied": "已拒绝", "cancelled": "已取消⌖
+      ctx ‖「已拒绝 / 随停止取消 / 超时未批」，在步骤卡上是 `DENIED_VERDICT`（`:55`）的「已拒绝 / 已取消 / 超时未批」，交回模型的是 `D‖
+   HIT      :50-54         -> :50-54         cur      [ov=1/1] ⌖DENIED_OBSERVATION = {⌖ -> ⌖DENIED_OBSERVATION = {⌖
+      ctx ‖拒绝 / 已取消 / 超时未批」，交回模型的是 `DENIED_OBSERVATION`（`:50-54`）三条写明"未产生任何副作用"的话。步骤卡靠正文反查命‖
+   MOVE-HIT :691           -> :710           cur      [ov=2/2] ⌖withheld = next((DENIED_VERDICT[k] for k, v in DENIE⌖ -> ⌖withheld = next((DENIED_VERDICT[k] for k, v in DENIE⌖
+      ctx ‖`（`:50-54`）三条写明"未产生任何副作用"的话。步骤卡靠正文反查命中哪一条来上色（`:691`），所以**这三个字典必须同步改**，改一个不改另两个就会‖
+--- L786
+   MOVE-HIT :928-937       -> :949-958       cur      [ov=11/11] ⌖finally:⌖ -> ⌖finally:⌖
+      ctx ‖**停止要多结算一处。** `_stream_response` 的 `finally`（`:928-937`）现在是三件事：`_abandoned.set()‖
+   MOVE-HIT :813-815       -> :834-836       cur      [ov=11/11] ⌖self._settle_all("cancelled")⌖ -> ⌖self._settle_all("cancelled")⌖
+      ctx ‖线程还挂在 `wait()` 上，`agent` 也就永远占着。换题开局同样先结算再摘除（`:813-815`）。‖
+--- L788
+   MOVE-HIT :1053          -> :1092          cur      [ov=9/9] ⌖metadata={"title": f"⏹ {STATE_LABEL[state]}：{type(ex⌖ -> ⌖metadata={"title": f"⏹ {STATE_LABEL[state]}：{type(ex⌖
+      ctx ‖ingError`，**整条 chatbot 输出直接丢掉**。已改成 `"done"`（`:1053`）。这条坑的通用形态是：折叠卡里任何字段不合 schem‖
+--- L796
+   MOVE-HIT :451-472       -> :470-491       cur      [ov=7/7] ⌖def save(self, sid: int, messages) -> None:⌖ -> ⌖def save(self, sid: int, messages) -> None:⌖
+      ctx ‖ FROM messages WHERE session_id=?` 的**整条覆盖**（`:451-472`，`DELETE` 在 `:463`）——它只有在‖
+   MOVE-HIT :463           -> :482           cur      [ov=7/7] ⌖c.execute("DELETE FROM messages WHERE session_id = ?⌖ -> ⌖c.execute("DELETE FROM messages WHERE session_id = ?⌖
+      ctx ‖ession_id=?` 的**整条覆盖**（`:451-472`，`DELETE` 在 `:463`）——它只有在调用方喂进**完整列表**时才等价于追加；③‖
+   MOVE-HIT :1178-1182     -> :1226-1230     cur      [ov=9/9] ⌖box.submit(⌖ -> ⌖box.submit(⌖
+      ctx ‖`sid` 同时挂在 `box.submit` 的 inputs 和 outputs 上（`:1178-1182`），所以第二轮**沿用同一条会话**。三条凑齐‖
+   MOVE-HIT :1013          -> :1052          cur      [ov=13/13] ⌖base = self.hist.load(sid)⌖ -> ⌖base = self.hist.load(sid)⌖
+      ctx ‖只能是一条：起点从库里那一串起（`base = self.hist.load(sid)`，`:1013`；每一帧 `last = base + [user_ms‖
+   MOVE-HIT :1028          -> :1067          cur      [ov=13/13] ⌖last = base + [user_msg] + list(msgs)⌖ -> ⌖last = base + [user_msg] + list(msgs)⌖
+      ctx ‖；每一帧 `last = base + [user_msg] + list(msgs)`，`:1028`）。**覆盖语义一个字都没改**，改的是喂给它的那串。‖
+--- L798
+   MOVE-HIT :940-965       -> :961-986       cur      [ov=11/11] ⌖def _bind_memory(self, sid: int) -> None:⌖ -> ⌖def _bind_memory(self, sid: int) -> None:⌖
+      ctx ‖**V5 的核心动作只有"换引用"这一件事。** `_bind_memory(sid)`（`:940-965`）把 `agent.memory` 指向 `_me‖
+   MOVE-HIT :541-542       -> :560-561       cur      [ov=5/5] ⌖self._mem: dict[int, AgentMemory] = {}⌖ -> ⌖self._mem: dict[int, AgentMemory] = {}⌖
+      ctx ‖`（`:940-965`）把 `agent.memory` 指向 `_mem[sid]`（`:541-542` 那两个字段），依据是框架的两行事实：`Gradi‖
+--- L801
+   MOVE-HIT :730           -> :749           cur      [ov=4/4] ⌖def _stats(self) -> dict:⌖ -> ⌖def _stats(self, steps=None) -> dict:⌖
+      ctx ‖y.steps`，中途换引用等于把一条会话的历史灌进另一条的当前步，`_stats()`（`:730`）那条"最后一个 `TaskStep` 之后"的本题边界也‖
+   MOVE-HIT :1009          -> :1048          cur      [ov=4/4] ⌖self._bind_memory(sid)⌖ -> ⌖self._bind_memory(sid)⌖
+      ctx ‖TaskStep` 之后"的本题边界也会跟着错位。所以只在 `_respond` 开头调（`:1009`）。‖
+--- L806
+   MOVE-HIT :489           -> :508           cur      [ov=2/2] ⌖def ensure(self, sid):⌖ -> ⌖def ensure(self, sid):⌖
+      ctx ‖["提问 message + sid"] --> EN["hist.ensure(sid) :489"]‖
+--- L807
+   MOVE-HIT :940           -> :961           cur      [ov=2/2] ⌖def _bind_memory(self, sid: int) -> None:⌖ -> ⌖def _bind_memory(self, sid: int) -> None:⌖
+      ctx ‖    EN --> BM["_bind_memory(sid) :940"]‖
+--- L815
+   MOVE-HIT :441           -> :460           cur      [ov=2/2] ⌖def load(self, sid: int):⌖ -> ⌖def load(self, sid: int):⌖
+      ctx ‖    SWAP --> BASE["base = hist.load(sid) :441"]‖
+--- L818
+   MOVE-HIT :1015          -> :1054          cur      [ov=2/2] ⌖last: list = base + [user_msg]⌖ -> ⌖last: list = base + [user_msg]⌖
+      ctx ‖   RUN --> FR["每一帧 last = base + 本题 + 本轮流<br/>:1015 与 :1028"]‖
+   MOVE-HIT :1028          -> :1067          cur      [ov=2/2] ⌖last = base + [user_msg] + list(msgs)⌖ -> ⌖last = base + [user_msg] + list(msgs)⌖
+      ctx ‖-> FR["每一帧 last = base + 本题 + 本轮流<br/>:1015 与 :1028"]‖
+--- L819
+   MOVE-HIT :1058          -> :1097          cur      [ov=5/5] ⌖self.hist.save(sid, last)  # 停止时生成器被关掉，这一句保证半截内容也落库⌖ -> ⌖self.hist.save(sid, last)  # 停止时生成器被关掉，这一句保证半截内容也落库⌖
+      ctx ‖    FR --> SV["finally：hist.save(sid, last) :1058<br/>整条覆盖，所以喂进去的必须是完整列表"]‖
+--- L820
+   MOVE-HIT :1185          -> :1233          cur      [ov=3/3] ⌖radio.change(fn=self._select_session, inputs=[radio]⌖ -> ⌖radio.change(fn=self._select_session, inputs=[radio]⌖
+      ctx ‖    SEL["侧栏 radio.change :1185"] -->|"交出第三个值 int(sid) :1116‖
+   MOVE-HIT :1116          -> :1160          cur      [ov=2/2] ⌖return self.hist.load(int(sid)), self._status_html("⌖ -> ⌖return self.hist.load(int(sid)), self._status_html("⌖
+      ctx ‖"侧栏 radio.change :1185"] -->|"交出第三个值 int(sid) :1116"| BM‖
+--- L821
+   MOVE-HIT :1192          -> :1240          cur      [ov=3/3] ⌖demo.load(fn=self._on_load, outputs=[radio, sid, sta⌖ -> ⌖demo.load(fn=self._on_load, outputs=[radio, sid, sta⌖
+      ctx ‖    LD["demo.load :1192"] -->|"最近一条的消息 + 它的 sid :113‖
+   MOVE-HIT :1132          -> :1179          cur      [ov=2/2] ⌖return self._radio_update(force=True), sid, self._st⌖ -> ⌖shown = self._session_steps(sid) if sid else None⌖
+      ctx ‖  LD["demo.load :1192"] -->|"最近一条的消息 + 它的 sid :1132"| BM‖
+--- L824
+   MOVE-HIT :1185          -> :1233          cur      [ov=10/10] ⌖radio.change(fn=self._select_session, inputs=[radio]⌖ -> ⌖radio.change(fn=self._select_session, inputs=[radio]⌖
+      ctx ‖** 三处一起改：`radio.change` 的 `outputs` 多带 `sid`（`:1185`）、`_select_session` 交出 `int(‖
+   MOVE-HIT :1098-1116     -> :1137-1160     cur      [ov=7/7] ⌖def _select_session(self, sid):⌖ -> ⌖def _select_session(self, sid):⌖
+      ctx ‖id`（`:1185`）、`_select_session` 交出 `int(sid)`（`:1098-1116`）、`demo.load` 的回调把 `_on‖
+   MOVE-HIT :1118-1132     -> :1162-1179     cur      [ov=3/4] ⌖def _on_load(self):⌖ -> ⌖def _on_load(self):⌖
+      ctx ‖8-1116`）、`demo.load` 的回调把 `_on_load` 从闭包提成方法（`:1118-1132`）并同样交出 `sid`。为什么刷新那条也要给‖
+--- L826
+   MOVE-HIT :469-472       -> :488-491       cur      [ov=10/10] ⌖c.execute(⌖ -> ⌖c.execute(⌖
+      ctx ‖WHEN title = '新会话' THEN ? ELSE title END` 保住（`:469-472`）。离线 8c 就是这条的正向断言：老会话一有动作‖
+--- L836
+   MOVE-HIT my_ui.py:64-79 -> :69-84         cur      [ov=1/1] ⌖MEM_FIELDS = {⌖ -> ⌖MEM_FIELDS = {⌖
+      ctx ‖StepsError` 的 ActionStep**），白名单 `MEM_FIELDS`（`my_ui.py:64-79`）就是按 `to_messages()‖
+--- L842
+   MOVE-HIT :92-107        -> :101-116       cur      [ov=11/11] ⌖def _decode_error(d):⌖ -> ⌖def _decode_error(d):⌖
+      ctx ‖ption.__init__(err, message)` 再手设 `.message`（`:92-107`）。能落库的只有**类名**，所以 `_error_‖
+   MOVE-HIT :82-89         -> :91-98         cur      [ov=5/5] ⌖def _error_types() -> dict:⌖ -> ⌖def _error_types() -> dict:⌖
+      ctx ‖s()` 沿 `AgentError.__subclasses__()` 递归建类名索引（`:82-89`）——恢复出来 `type(step.error)._‖
+--- L843
+   MOVE-HIT :110-120       -> :119-129       cur      [ov=1/1] ⌖def _decode_timing(d):⌖ -> ⌖def _decode_timing(d):⌖
+      ctx ‖ns` 是 `init=False`，`dict()` 出来的键比构造参数多，只能挑着交（`:110-120`）。‖
+--- L846
+   MOVE-HIT :157-213       -> :173-232       cur      [ov=6/6] ⌖def decode_memory(blob) -> list:⌖ -> ⌖def decode_memory(blob) -> list:⌖
+      ctx ‖坏数据的降级路径是**分层的**（`decode_memory`，`:157-213`）：整块坏 JSON / `fmt` 不符 / 顶‖
+--- L851
+   MOVE-HIT my_ui.py:123-154 -> :132-170       cur      [ov=2/2] ⌖def encode_memory(steps) -> str:⌖ -> ⌖def encode_memory(steps) -> str:⌖
+      ctx ‖py:477"] --> A2["encode_memory(mem.steps)<br/>my_ui.py:123-154"]‖
+--- L852
+   MOVE-HIT my_ui.py:1064-1065 -> :1103-1104     cur      [ov=5/5] ⌖if mem is not None and self._mem_sid == sid:⌖ -> ⌖if mem is not None and self._mem_sid == sid:⌖
+      ctx ‖个条件<br/>mem is not None 且 _mem_sid == sid<br/>my_ui.py:1064-1065"]‖
+--- L854
+   MOVE-HIT my_ui.py:410   -> :429           cur      [ov=2/2] ⌖CREATE TABLE IF NOT EXISTS memory(⌖ -> ⌖CREATE TABLE IF NOT EXISTS memory(⌖
+      ctx ‖ory 表：一行一个 session_id<br/>INSERT OR REPLACE · my_ui.py:410 与 :474-482")]‖
+   MOVE-HIT :474-482       -> :493-501       cur      [ov=4/4] ⌖def save_memory(self, sid: int, payload: str) -> int⌖ -> ⌖def save_memory(self, sid: int, payload: str) -> int⌖
+      ctx ‖ion_id<br/>INSERT OR REPLACE · my_ui.py:410 与 :474-482")]‖
+--- L855
+   MOVE-HIT my_ui.py:960-962 -> :981-983       cur      [ov=4/4] ⌖steps = decode_memory(self.hist.load_memory(sid))⌖ -> ⌖steps = decode_memory(self.hist.load_memory(sid))⌖
+      ctx ‖y 未命中<br/>decode_memory(load_memory(sid))<br/>my_ui.py:960-962"]‖
+--- L860
+   MOVE-ZERO :410           -> :429           cur      [ov=0/0] ⌖CREATE TABLE IF NOT EXISTS memory(⌖ -> ⌖CREATE TABLE IF NOT EXISTS memory(⌖
+      ctx ‖有三处，两处刻意保持小。** `History` 加一张 additive 的表（DDL `:410`，方法 `save_memory` `:474-482` ‖
+   MOVE-HIT :474-482       -> :493-501       cur      [ov=2/2] ⌖def save_memory(self, sid: int, payload: str) -> int⌖ -> ⌖def save_memory(self, sid: int, payload: str) -> int⌖
+      ctx ‖ 加一张 additive 的表（DDL `:410`，方法 `save_memory` `:474-482` / `load_memory` `:484-48‖
+   MOVE-HIT :484-487       -> :503-506       cur      [ov=2/2] ⌖def load_memory(self, sid: int):⌖ -> ⌖def load_memory(self, sid: int):⌖
+      ctx ‖，方法 `save_memory` `:474-482` / `load_memory` `:484-487`）；`_bind_memory`（`:940-96‖
+   MOVE-HIT :940-965       -> :961-986       cur      [ov=13/13] ⌖def _bind_memory(self, sid: int) -> None:⌖ -> ⌖def _bind_memory(self, sid: int) -> None:⌖
+      ctx ‖` / `load_memory` `:484-487`）；`_bind_memory`（`:940-965`）在进程内 `_mem` 未命中时回灌 steps‖
+   MOVE-HIT :1056-1066     -> :1095-1105     cur      [ov=14/14] ⌖finally:⌖ -> ⌖finally:⌖
+      ctx ‖动（否则「进程累计」作废，见 6.3.6）；`_respond` 的 `finally`（`:1056-1066`）在 `hist.save(sid, last‖
+--- L875
+   MOVE-HIT :516-517       -> :535-536       cur      [ov=5/5] ⌖_run_seq: int = 0⌖ -> ⌖_run_seq: int = 0⌖
+      ctx ‖. **类级**计数器 `_run_seq` / `_cancelled_before`（`:516-517`）。闸装在**进程唯一**的那个 agent 上，‖
+   MOVE-HIT :511-512       -> :530-531       cur      [ov=5/5] ⌖_pending: list[Approval] = []⌖ -> ⌖_pending: list[Approval] = []⌖
+      ctx ‖t 上，所以计数器必须和 `_pending`、`_gate_lock` 同侧（也是类级，`:511-512`）；放实例上就出现"A 领的号管不住 A 装的那道‖
+--- L876
+   MOVE-HIT :824-825       -> :845-846       cur      [ov=4/4] ⌖with self._gate_lock:⌖ -> ⌖with self._gate_lock:⌖
+      ctx ‖器归零之后、**起 worker 线程之前**`OpsUI._run_seq += 1`（`:824-825`）。号没领上就开工，闸读到的还是上一轮的号。‖
+--- L877
+   MOVE-HIT :583-586       -> :602-605       cur      [ov=11/11] ⌖with self._gate_lock:⌖ -> ⌖with self._gate_lock:⌖
+      ctx ‖3. **入队与判停在同一个临界区**（`_gated_call`，`:583-586`）：`with self._gate_lock: ‖
+--- L878
+   MOVE-HIT :1091-1096     -> :1130-1135     cur      [ov=4/4] ⌖with self._gate_lock:⌖ -> ⌖with self._gate_lock:⌖
+      ctx ‖4. `_stop`（`:1091-1096`）先领取消号，再 `_settle_all("‖
+--- L890
+   MOVE-HIT :1008          -> :1047          cur      [ov=5/5] ⌖self._sid = str(sid)⌖ -> ⌖self._sid = str(sid)⌖
+      ctx ‖id`——它在 v1.5 有**三条互不回写高亮的写路径**：`_respond` 建条（`:1008`）、`_new_session` 清空（`:1073`）‖
+   MOVE-HIT :1073          -> :1112          cur      [ov=4/4] ⌖self._sid = None⌖ -> ⌖self._sid = None⌖
+      ctx ‖径**：`_respond` 建条（`:1008`）、`_new_session` 清空（`:1073`）、`_on_load` 指到最近一条（`:1131`）‖
+   MOVE-HIT :1131          -> :1178          cur      [ov=3/3] ⌖self._sid = str(sid) if sid else None⌖ -> ⌖self._sid = str(sid) if sid else None⌖
+      ctx ‖`_new_session` 清空（`:1073`）、`_on_load` 指到最近一条（`:1131`）。于是点「＋ 新会话」之后屏幕换成空白（绑定＝一条还不‖
+--- L892
+   MOVE-HIT :968-986       -> :1007-1025     cur      [ov=12/12] ⌖def _radio_update(self, force: bool = False):⌖ -> ⌖def _radio_update(self, force: bool = False):⌖
+      ctx ‖定真的换了那一次给**，新增的 `_radio_update(force=False)`（`:968-986`）就是这一句：`force or self._si‖
+   MOVE-HIT :983-985       -> :1022-1024     cur      [ov=12/12] ⌖if force or self._sid_shown != self._sid:⌖ -> ⌖if force or self._sid_shown != self._sid:⌖
+      ctx ‖id` 才交 `value=self._sid`，同时把 `_sid_shown` 记上（`:983-985`）。`force` 专给 `_on_load`（`‖
+   MOVE-HIT :1132          -> :1179          cur      [ov=6/7] ⌖return self._radio_update(force=True), sid, self._st⌖ -> ⌖shown = self._session_steps(sid) if sid else None⌖
+      ctx ‖_shown` 记上（`:983-985`）。`force` 专给 `_on_load`（`:1132`）——刷新后浏览器那一侧的 radio 是全新的、没勾选‖
+   MOVE-HIT :1111-1112     -> :1155-1156     cur      [ov=10/10] ⌖if not sid or str(sid) == self._sid:⌖ -> ⌖if not sid or str(sid) == self._sid:⌖
+      ctx ‖不补那一下。真送回的那一次由 `_select_session` 的**回声守卫**退回（`:1111-1112`）：`if not sid or str(si‖
+   MOVE-HIT :1113          -> :1157          cur      [ov=10/10] ⌖self._sid = str(sid)⌖ -> ⌖self._sid = str(sid)⌖
+      ctx ‖` 的回声不会崩。真切换时 `_sid` 与 `_sid_shown` **一起**更新（`:1113`、`:1115`），下一帧就不会再多送一次 `value‖
+   MOVE-HIT :1115          -> :1159          cur      [ov=10/10] ⌖self._sid_shown = self._sid⌖ -> ⌖self._sid_shown = self._sid⌖
+      ctx ‖。真切换时 `_sid` 与 `_sid_shown` **一起**更新（`:1113`、`:1115`），下一帧就不会再多送一次 `value`。‖
+--- L899
+   MOVE-HIT my_ui.py:371   -> :390           cur      [ov=2/2] ⌖self.waited = time.time() - self.created⌖ -> ⌖self.waited = time.time() - self.created⌖
+      ctx ‖        D1["waited 记在落定那一刻<br/>decide() my_ui.py:371<br/>超时分支 :377 记 APPRO‖
+   MOVE-HIT :377           -> :396           cur      [ov=2/2] ⌖self.waited = APPROVAL_TIMEOUT⌖ -> ⌖self.waited = APPROVAL_TIMEOUT⌖
+      ctx ‖ed 记在落定那一刻<br/>decide() my_ui.py:371<br/>超时分支 :377 记 APPROVAL_TIMEOUT"] --> D2{"‖
+   HIT      :40            -> :40            cur      [ov=1/1] ⌖APPROVAL_WAIT_MIN = 0.05⌖ -> ⌖APPROVAL_WAIT_MIN = 0.05⌖
+      ctx ‖2{"ap.waited ≥<br/>APPROVAL_WAIT_MIN=0.05<br/>:40"}‖
+--- L900
+   MOVE-ZERO :590-592       -> :609-611       cur      [ov=0/0] ⌖with self._gate_lock:⌖ -> ⌖with self._gate_lock:⌖
+      ctx ‖        D2 -->|否| D3["不过账<br/>随停止取消的微秒级等待<br/>:590-592 之前就被筛掉"]‖
+--- L901
+   MOVE-HIT :590-592       -> :609-611       cur      [ov=4/4] ⌖with self._gate_lock:⌖ -> ⌖with self._gate_lock:⌖
+      ctx ‖pending_wait += waited<br/>同一个 _gate_lock 临界区 :590-592"]‖
+--- L903
+   MOVE-HIT :876-877       -> :897-898       cur      [ov=2/2] ⌖with self._gate_lock:⌖ -> ⌖with self._gate_lock:⌖
+      ctx ‖> U1["_stream_response 收到 ActionStep<br/>一次取干 :876-877"]‖
+--- L904
+   MOVE-HIT :64-79         -> :69-84         cur      [ov=1/1] ⌖MEM_FIELDS = {⌖ -> ⌖MEM_FIELDS = {⌖
+      ctx ‖yload._opsui_wait = waited（私有属性，不在 MEM_FIELDS :64-79）<br/>self._run_wait += wait‖
+   MOVE-HIT :879-880       -> :900-901       cur      [ov=4/4] ⌖payload._opsui_wait = waited⌖ -> ⌖payload._opsui_wait = waited⌖
+      ctx ‖M_FIELDS :64-79）<br/>self._run_wait += waited :879-880"]‖
+--- L905
+   MOVE-ZERO :702-708       -> :721-727       cur      [ov=0/0] ⌖wait = getattr(step, "_opsui_wait", 0.0) or 0.0⌖ -> ⌖wait = getattr(step, "_opsui_wait", 0.0) or 0.0⌖
+      ctx ‖    U2 --> V1["步骤卡 22.1s · 审批 21.0s<br/>:702-708，末行「含审批」:723"]‖
+   MOVE-ZERO :723           -> :742           cur      [ov=0/0] ⌖+ (f"（含审批 {self._run_wait:.1f}s）" if self._run_wait ⌖ -> ⌖+ (f"（含审批 {self._run_wait:.1f}s）" if self._run_wait ⌖
+      ctx ‖ V1["步骤卡 22.1s · 审批 21.0s<br/>:702-708，末行「含审批」:723"]‖
+--- L906
+   MOVE-HIT :748           -> :769           cur      [ov=3/3] ⌖"task_wait": sum(getattr(s, "_opsui_wait", 0.0) or 0⌖ -> ⌖"task_wait": sum(getattr(s, "_opsui_wait", 0.0) or 0⌖
+      ctx ‖  U2 --> V2["_stats 的 task_wait（当前会话 steps 求和）:748<br/>→ 状态条「本题审批」pill :771-772"‖
+   MOVE-HIT :771-772       -> :792-793       cur      [ov=3/4] ⌖if s["task_wait"]:⌖ -> ⌖if s["task_wait"]:⌖
+      ctx ‖k_wait（当前会话 steps 求和）:748<br/>→ 状态条「本题审批」pill :771-772"]‖
+--- L907
+   MOVE-HIT :818           -> :839           cur      [ov=2/2] ⌖OpsUI._pending_wait = 0.0⌖ -> ⌖OpsUI._pending_wait = 0.0⌖
+      ctx ‖    U3["开局清零 _pending_wait / _run_wait<br/>:818 / :822"] -.-> D4‖
+   MOVE-HIT :822           -> :843           cur      [ov=2/2] ⌖self._run_wait = 0.0⌖ -> ⌖self._run_wait = 0.0⌖
+      ctx ‖U3["开局清零 _pending_wait / _run_wait<br/>:818 / :822"] -.-> D4‖
+--- L910
+   MOVE-HIT :1023          -> :1062          cur      [ov=5/5] ⌖radio = self._radio_update⌖ -> ⌖radio = self._radio_update⌖
+      ctx ‖hoices=...)` 改成 `radio = self._radio_update`（`:1023`，可调用、逐帧现算）、`_new_session` 返回‖
+   MOVE-HIT :1074          -> :1113          cur      [ov=3/3] ⌖return None, [], self._status_html("idle"), self._ra⌖ -> ⌖return None, [], self._status_html("idle"), self._ra⌖
+      ctx ‖现算）、`_new_session` 返回 `self._radio_update()`（`:1074`）、`_on_load` 返回 `force=True`‖
+   MOVE-HIT :1132          -> :1179          cur      [ov=4/4] ⌖return self._radio_update(force=True), sid, self._st⌖ -> ⌖shown = self._session_steps(sid) if sid else None⌖
+      ctx ‖te()`（`:1074`）、`_on_load` 返回 `force=True` 那版（`:1132`）。② 等待的**记**与**取**分在两条线程上，所以‖
+   MOVE-HIT :521           -> :540           cur      [ov=13/13] ⌖_pending_wait: float = 0.0⌖ -> ⌖_pending_wait: float = 0.0⌖
+      ctx ‖待的**记**与**取**分在两条线程上，所以账挂在类级 `_pending_wait`（`:521`）上——和 `_run_seq` 同一个理由：门只装在进程‖
+   MOVE-ZERO :708           -> :727           cur      [ov=0/0] ⌖+ (f" · 审批 {wait:.1f}s" if wait else "")⌖ -> ⌖+ (f" · 审批 {wait:.1f}s" if wait else "")⌖
+      ctx ‖门的实例和画卡的实例可能不是同一个。③ 显示面三处各加一格且**都是加法**：步骤卡标题（`:708`）与正文（`:703`、`:723`）、审批卡结算后 `·‖
+   MOVE-ZERO :703           -> :722           cur      [ov=0/0] ⌖span = f"{secs:.1f}s" + (f"（含审批 {wait:.1f}s）" if wai⌖ -> ⌖span = f"{secs:.1f}s" + (f"（含审批 {wait:.1f}s）" if wai⌖
+      ctx ‖能不是同一个。③ 显示面三处各加一格且**都是加法**：步骤卡标题（`:708`）与正文（`:703`、`:723`）、审批卡结算后 `· 等了 X.Xs`（`‖
+   MOVE-ZERO :723           -> :742           cur      [ov=0/0] ⌖+ (f"（含审批 {self._run_wait:.1f}s）" if self._run_wait ⌖ -> ⌖+ (f"（含审批 {self._run_wait:.1f}s）" if self._run_wait ⌖
+      ctx ‖③ 显示面三处各加一格且**都是加法**：步骤卡标题（`:708`）与正文（`:703`、`:723`）、审批卡结算后 `· 等了 X.Xs`（`:631`）、‖
+   MOVE-HIT :631           -> :650           cur      [ov=1/1] ⌖+ ("" if state == "pending" or ap.waited < APPROVAL_⌖ -> ⌖+ ("" if state == "pending" or ap.waited < APPROVAL_⌖
+      ctx ‖`:708`）与正文（`:703`、`:723`）、审批卡结算后 `· 等了 X.Xs`（`:631`）、状态条 pill（`:771-772`）。④ 门槛 `‖
+   MOVE-HIT :771-772       -> :792-793       cur      [ov=2/2] ⌖if s["task_wait"]:⌖ -> ⌖if s["task_wait"]:⌖
+      ctx ‖、`:723`）、审批卡结算后 `· 等了 X.Xs`（`:631`）、状态条 pill（`:771-772`）。④ 门槛 `APPROVAL_WAIT_MIN‖
+   HIT      :40            -> :40            cur      [ov=1/1] ⌖APPROVAL_WAIT_MIN = 0.05⌖ -> ⌖APPROVAL_WAIT_MIN = 0.05⌖
+      ctx ‖（`:771-772`）。④ 门槛 `APPROVAL_WAIT_MIN = 0.05`（`:40`）在**过账点**和**审批卡标题**两处生效，所以「本题审‖
+--- L938
+   MOVE-HIT :64-79         -> :69-84         cur      [ov=1/1] ⌖MEM_FIELDS = {⌖ -> ⌖MEM_FIELDS = {⌖
+      ctx ‖ 是 `ActionStep` 对象上的**进程内私有属性**，`MEM_FIELDS`（`:64-79`）不认它 → 回到旧会话只见「本题耗时」不见「本题审批‖
+   MOVE-HIT :1073          -> :1112          cur      [ov=2/2] ⌖self._sid = None⌖ -> ⌖self._sid = None⌖
+      ctx ‖t.ensure`），所以 `self._sid = None`、侧栏一条都不亮才是实话（`:1073`）；若哪天改成点击即建行，这里必须跟着改成"亮那一条"，‖
+--- L1251
+   MOVE-HIT my_ui.py:672-727 -> :691-746       cur      [ov=3/3] ⌖def _step_card(self, step) -> gr.ChatMessage | None:⌖ -> ⌖def _step_card(self, step) -> gr.ChatMessage | None:⌖
+      ctx ‖| 25 | `smolagents/my_ui.py:672-727` | 步骤卡把数字写进 `meta‖
+   skip     :31-36         -> :31-36         HIST     
+      ctx ‖不是正文：gradio 折叠组收起时**正文不在 DOM 里**（v1.1 独立统计卡在 `:31-36`，v1.3 起并进这张卡） |‖
+--- L1255
+   HIT      my_ui.py:30    -> :30            cur      [ov=7/7] ⌖DB_PATH = Path(__file__).resolve().parent / ".agent-⌖ -> ⌖DB_PATH = Path(__file__).resolve().parent / ".agent-⌖
+      ctx ‖| 29 | `smolagents/my_ui.py:30` | `DB_PATH` 按 `Path(_‖
+--- L1256
+   MOVE-HIT my_ui.py:546-569 -> :565-588       cur      [ov=8/8] ⌖def _install_gate(self) -> None:⌖ -> ⌖def _install_gate(self) -> None:⌖
+      ctx ‖上而不动上游、不动模块级 `@tool` 对象（v1.3 `_install_gate`，`my_ui.py:546-569`） |‖
+--- L1257
+   MOVE-ZERO my_ui.py:608   -> :627           cur      [ov=0/0] ⌖un[0].decide(decision)  # 一次只处理最早的一张，多条待批时按顺序来⌖ -> ⌖un[0].decide(decision)  # 一次只处理最早的一张，多条待批时按顺序来⌖
+      ctx ‖428-1434`）。阻塞式审批因此可能一次收到多条待批，而 UI 的按钮只结算最早那条（`my_ui.py:608`）——**并行审批是已知缺口，不是漏写**‖
+--- L1259
+   MOVE-HIT my_ui.py:785-808 -> :806-829       cur      [ov=4/4] ⌖def _worker(self, task: str, files, q: queue.Queue) ⌖ -> ⌖def _worker(self, task: str, files, q: queue.Queue) ⌖
+      ctx ‖| 33 | `smolagents/my_ui.py:785-808`、`:810-937` | 线程 ‖
+   MOVE-HIT :810-937       -> :831-958       cur      [ov=4/4] ⌖def _stream_response(self, message, history):  # noq⌖ -> ⌖def _stream_response(self, message, history):  # noq⌖
+      ctx ‖| 33 | `smolagents/my_ui.py:785-808`、`:810-937` | 线程 + 队列的驱动骨架：`_worker`‖
+--- L1260
+   HIT      my_ui.py:50-55 -> :50-55         cur      [ov=1/1] ⌖DENIED_OBSERVATION = {⌖ -> ⌖DENIED_OBSERVATION = {⌖
+      ctx ‖| 34 | `smolagents/my_ui.py:50-55` | `DENIED_OBSERVAT‖
+--- L1261
+   MOVE-HIT my_ui.py:940-965 -> :961-986       cur      [ov=6/6] ⌖def _bind_memory(self, sid: int) -> None:⌖ -> ⌖def _bind_memory(self, sid: int) -> None:⌖
+      ctx ‖就是这两行——一 reset 连 `monitor` 一起清零，「进程累计」口径当场作废（`my_ui.py:940-965`） |‖
+--- L1262
+   MOVE-HIT my_ui.py:123-213 -> :132-232       cur      [ov=2/2] ⌖def encode_memory(steps) -> str:⌖ -> ⌖def encode_memory(steps) -> str:⌖
+      ctx ‖(de)serializer**——框架不给口子，所以 v1.5 的 V6 是自己写字段（`my_ui.py:123-213`），而不是给 `AgentMemo‖
+--- L1264
+   MOVE-HIT my_ui.py:1013  -> :1052          cur      [ov=6/6] ⌖base = self.hist.load(sid)⌖ -> ⌖base = self.hist.load(sid)⌖
+      ctx ‖| 38 | `smolagents/my_ui.py:1013`、`:1028` | D5 的全部修法就‖
+   MOVE-HIT :1028          -> :1067          cur      [ov=6/6] ⌖last = base + [user_msg] + list(msgs)⌖ -> ⌖last = base + [user_msg] + list(msgs)⌖
+      ctx ‖| 38 | `smolagents/my_ui.py:1013`、`:1028` | D5 的全部修法就这两行：起点是库里那一串（`ba‖
+--- L1265
+   MOVE-HIT my_ui.py:1098  -> :1137          cur      [ov=5/5] ⌖def _select_session(self, sid):⌖ -> ⌖def _select_session(self, sid):⌖
+      ctx ‖| 39 | `smolagents/my_ui.py:1098`、`:1185`、`:1118`、`:1‖
+   MOVE-HIT :1185          -> :1233          cur      [ov=8/8] ⌖radio.change(fn=self._select_session, inputs=[radio]⌖ -> ⌖radio.change(fn=self._select_session, inputs=[radio]⌖
+      ctx ‖| 39 | `smolagents/my_ui.py:1098`、`:1185`、`:1118`、`:1192` | V5 的接线：`_‖
+   MOVE-HIT :1118          -> :1162          cur      [ov=3/4] ⌖def _on_load(self):⌖ -> ⌖def _on_load(self):⌖
+      ctx ‖| 39 | `smolagents/my_ui.py:1098`、`:1185`、`:1118`、`:1192` | V5 的接线：`_select_s‖
+   MOVE-HIT :1192          -> :1240          cur      [ov=8/8] ⌖demo.load(fn=self._on_load, outputs=[radio, sid, sta⌖ -> ⌖demo.load(fn=self._on_load, outputs=[radio, sid, sta⌖
+      ctx ‖| `smolagents/my_ui.py:1098`、`:1185`、`:1118`、`:1192` | V5 的接线：`_select_session` ‖
+--- L1266
+   MOVE-HIT my_ui.py:469-472 -> :488-491       cur      [ov=6/6] ⌖c.execute(⌖ -> ⌖c.execute(⌖
+      ctx ‖| 40 | `smolagents/my_ui.py:469-472` | `updated_at` 必‖
+--- L1267
+   MOVE-HIT my_ui.py:123-154 -> :132-170       cur      [ov=2/3] ⌖def encode_memory(steps) -> str:⌖ -> ⌖def encode_memory(steps) -> str:⌖
+      ctx ‖ges()`。所以持久化要存的是 **steps 的字段**而不是屏上的卡片文字；编码在 `my_ui.py:123-154`，回灌在 `:960-962` |‖
+   MOVE-HIT :960-962       -> :981-983       cur      [ov=5/5] ⌖steps = decode_memory(self.hist.load_memory(sid))⌖ -> ⌖steps = decode_memory(self.hist.load_memory(sid))⌖
+      ctx ‖s 的字段**而不是屏上的卡片文字；编码在 `my_ui.py:123-154`，回灌在 `:960-962` |‖
+--- L1268
+   MOVE-HIT my_ui.py:64-79 -> :69-84         cur      [ov=1/1] ⌖MEM_FIELDS = {⌖ -> ⌖MEM_FIELDS = {⌖
+      ctx ‖xStepsError` 的 ActionStep。字段白名单 `MEM_FIELDS`（`my_ui.py:64-79`）就是照这个集合列的 |‖
+--- L1270
+   MOVE-ZERO my_ui.py:583-586 -> :602-605       cur      [ov=0/0] ⌖with self._gate_lock:⌖ -> ⌖with self._gate_lock:⌖
+      ctx ‖，中断的是**空闲的** agent（空放），后到的待批没人结算。修法不在上游这一行，在 `my_ui.py:583-586` 那个临界区 |‖
+--- L1271
+   MOVE-HIT my_ui.py:516-517 -> :535-536       cur      [ov=7/7] ⌖_run_seq: int = 0⌖ -> ⌖_run_seq: int = 0⌖
+      ctx ‖| 45 | `smolagents/my_ui.py:516-517`、`:824-825`、`:109‖
+   MOVE-HIT :824-825       -> :845-846       cur      [ov=5/5] ⌖with self._gate_lock:⌖ -> ⌖with self._gate_lock:⌖
+      ctx ‖| 45 | `smolagents/my_ui.py:516-517`、`:824-825`、`:1091-1096` | 取消号三件套：**‖
+   MOVE-HIT :1091-1096     -> :1130-1135     cur      [ov=5/5] ⌖with self._gate_lock:⌖ -> ⌖with self._gate_lock:⌖
+      ctx ‖5 | `smolagents/my_ui.py:516-517`、`:824-825`、`:1091-1096` | 取消号三件套：**类级** `_run_‖
+--- L1272
+   MOVE-HIT my_ui.py:1064-1065 -> :1103-1104     cur      [ov=3/3] ⌖if mem is not None and self._mem_sid == sid:⌖ -> ⌖if mem is not None and self._mem_sid == sid:⌖
+      ctx ‖| 46 | `smolagents/my_ui.py:1064-1065` | 记忆落库的两个条件：`m‖
+--- L1273
+   MOVE-HIT my_ui.py:968-986 -> :1007-1025     cur      [ov=6/6] ⌖def _radio_update(self, force: bool = False):⌖ -> ⌖def _radio_update(self, force: bool = False):⌖
+      ctx ‖| 47 | `smolagents/my_ui.py:968-986` + `:1111-1112` |‖
+   MOVE-HIT :1111-1112     -> :1155-1156     cur      [ov=6/6] ⌖if not sid or str(sid) == self._sid:⌖ -> ⌖if not sid or str(sid) == self._sid:⌖
+      ctx ‖| 47 | `smolagents/my_ui.py:968-986` + `:1111-1112` | **V7 的全部根据是一条实测的 gra‖
+   MOVE-HIT :983-985       -> :1022-1024     cur      [ov=6/6] ⌖if force or self._sid_shown != self._sid:⌖ -> ⌖if force or self._sid_shown != self._sid:⌖
+      ctx ‖真点选才三件齐发。所以 `choices` 每帧刷、`value` 只在绑定真换那一次给（`:983-985`），送回的那次由 `_select_session‖
+--- L1274
+   MOVE-HIT my_ui.py:371   -> :390           cur      [ov=1/1] ⌖self.waited = time.time() - self.created⌖ -> ⌖self.waited = time.time() - self.created⌖
+      ctx ‖| 48 | `smolagents/my_ui.py:371`、`:590-592`、`:876-880‖
+   MOVE-HIT :590-592       -> :609-611       cur      [ov=5/5] ⌖with self._gate_lock:⌖ -> ⌖with self._gate_lock:⌖
+      ctx ‖| 48 | `smolagents/my_ui.py:371`、`:590-592`、`:876-880`、`:40` | **V8：‖
+   MOVE-HIT :876-880       -> :897-901       cur      [ov=5/5] ⌖with self._gate_lock:⌖ -> ⌖with self._gate_lock:⌖
+      ctx ‖| 48 | `smolagents/my_ui.py:371`、`:590-592`、`:876-880`、`:40` | **V8：一次等待跨两条线程**‖
+   HIT      :40            -> :40            cur      [ov=1/1] ⌖APPROVAL_WAIT_MIN = 0.05⌖ -> ⌖APPROVAL_WAIT_MIN = 0.05⌖
+      ctx ‖olagents/my_ui.py:371`、`:590-592`、`:876-880`、`:40` | **V8：一次等待跨两条线程**。记在 `decide‖
+   MOVE-HIT :64-79         -> :69-84         cur      [ov=1/1] ⌖MEM_FIELDS = {⌖ -> ⌖MEM_FIELDS = {⌖
+      ctx ‖ step 的私有属性 `_opsui_wait`。**它不在 `MEM_FIELDS`（`:64-79`）里**，所以总时长口径不变、重启后这一格读不出（→ ‖

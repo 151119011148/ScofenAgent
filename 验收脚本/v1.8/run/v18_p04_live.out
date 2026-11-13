@@ -1,0 +1,361 @@
+====================================================================================================
+v1.8 第③刀 P0-4「计划可见 ＋ 批准动作」现场验收（真 app ＋ 真 qwen-plus ＋ headless Chrome）
+====================================================================================================
+跑的对象：smolagents/my_ui.py（计划门 _install_plan_gate / _plan_gate、面板 _plan_update、
+          8 元组输出、PlanDeniedError）＋ smolagents/my_agent.py（PLANNING_INTERVAL=8）
+离线那一路的断言不在这里，是 v18_test_plan.py（40 条）＋ v18_test_nochange.py ＋ v18_test_interrupt.py
+
+环境（每跑第一行 boot.epoch 原样，见下面各节）：端口 7872，每场景各一个隔离库
+  run/v18_live_<tag>.sqlite3 —— 他本人的 7860 界面和 .agent-history.sqlite3 全程没碰
+  浏览器侧：9333 上的 headless Chrome，profile run/chrome-d168，驱动 v18_cdp.js
+  剧本：v18_run_live.py c_steps()，每场景 12～16 步，步名 C0-…C15-
+
+怎么复跑：
+  cd 验收脚本/v1.8 && ../smolagents/.venv/bin/python v18_run_live.py C1   # 单场景
+  然后 python v18_p04_report.py                                            # 重新生成这份
+
+判据一览：
+  C0  面板上屏 → ✔ 允许 → 工具门照常 → 跑完；批准过的那份计划**必须**进记忆
+  C1  ✖ 拒绝 → 抛 PlanDeniedError；一个工具都不许跑；那份计划**不许**进记忆
+  C2  ■ 停止落在计划待批上 → 抛的是普通 AgentError（不是 PlanDeniedError）、状态「已停止」，不许写成「计划未批准」，也不许长出「已中断」
+  C3  刷新落在计划待批上 → GeneratorExit 后待批随中断结算、「已中断」卡用计划那一句措辞；顺带量首屏读空那一档（#42）
+  C4  没人点，等到审批超时 → 与 ✖ 拒绝同一档（状态「计划未批准」），计划不进记忆
+
+====================================================================================================
+【C0】面板上屏 → ✔ 允许 → 工具门照常 → 跑完；批准过的那份计划**必须**进记忆
+----------------------------------------------------------------------------------------------------
+原始场景行：场景 C0：对照：面板上屏 → ✔ 允许计划 → 工具审批照常 → 跑到答完（两道门串起来走通）
+探针配置：  t=  0.000  boot.epoch             t0=1793717092.1564538 pid=9120 timeout=600.0 gradio=6.30.0 planning=8
+
+── 服务端：计划门那一路的关键时刻（v18_ui.py 里 _plan_gate/_plan_update 的包装打的点）
+  t=  3.178  plan.update            visible=False chars=0 reading=- sid=None
+  t= 20.891  plan.gate.enter        chars=1820 pending=0 sid=1
+  t= 20.892  ap.wait.enter          id=4bd571 tool=计划 timeout=600.0
+  t= 20.913  plan.update            visible=True chars=1909 reading=等待审批 sid=1
+  t= 22.177  ap.decide              id=4bd571 tool=计划 want=allowed before=pending after=allowed waited=1.285
+  t= 22.177  ap.wait.exit           id=4bd571 tool=计划 decision=allowed waited=1.285
+  t= 22.178  plan.gate.allowed      label=4bd571:allowed/1.285s
+  t= 22.218  plan.update            visible=True chars=1858 reading=已允许 sid=1
+  t= 23.399  ap.wait.enter          id=243b6d tool=run_python timeout=600.0
+  t= 25.176  ap.decide              id=243b6d tool=run_python want=allowed before=pending after=allowed waited=1.777
+  t= 25.177  ap.wait.exit           id=243b6d tool=run_python decision=allowed waited=1.777
+  t= 26.259  save_memory.exit       sid=1 changed_rows=3021 after=sessions=sid=1 messages=7 memory=1
+
+── 数字①：审批读数落定 → 那一格面板在服务端算出新读数，隔了 0.040 s
+   （落定那一行：t= 22.178  plan.gate.allowed      label=4bd571:allowed/1.285s）
+   面板不是挂在 ✔/✖ 的 click 输出上的（单主人纪律：消息流和面板都归那条流式生成器），
+   所以它靠下一帧跟上；my_ui.py 注释里写的「最多 0.25 秒」量的就是这一档。
+
+── 数字②：库里那条会话的记忆步型（**「计划进没进记忆」只有这里能证**）
+   sid=1 {'TaskStep': 1, 'PlanningStep': 1, 'ActionStep': 2} 顺序=T,P,A,A token按步型in/out=TaskStep:0/0 PlanningStep:1081/419 ActionStep:5703/39 合计=in 6784/out 458
+   读法：顺序里带 P 就是那份计划已经进了 agent 的记忆；只带 T 就是这一题停在计划之前。
+
+── 数字③：库里的正文命中的句子（折叠卡正文不在 DOM 里，只能从库里读）
+   一个工具都没跑=0 没有进模型的记忆=0 批准这一步就被中断=0 等待你批准这份计划=0 计划全文=1 ｜ 全文 4208 字符
+
+── 浏览器侧读数（原样，未改写）
+  __navigate0              1793717094496
+  C0-peek                  0
+  C1-panel-before-ask      panel=NO:DOM 里没有 #planpanel 这个元素（visible=False 时 gradio 不建它）
+  C2-new#click             clicked@186,134
+  C3-ask#type              clicked-submit
+  C5b-mark-pending         bot=2 计划审批卡标题=Y 未批准卡标题=N 已中断卡标题=N 工具那路审批卡标题=N
+  C5c-status-pending       模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 计划 状态 等待审批
+  C6-approve-plan#click    clicked@409,43
+  C7-panel-allowed         panel=YES:panel=VISIBLE 字符=1832 等待审批=N 已允许=Y 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=N 开头=[🧭 本轮计划 · 🟢 已允许——后面的步骤照这份计划走。]
+  C9-panel-still           panel=YES:panel=VISIBLE 字符=1832 等待审批=N 已允许=Y 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=N 开头=[🧭 本轮计划 · 🟢 已允许——后面的步骤照这份计划走。]
+  C10-approve-tool#click   clicked@409,43
+  C12-panel-final          panel=YES:panel=VISIBLE 字符=1832 等待审批=N 已允许=Y 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=N 开头=[🧭 本轮计划 · 🟢 已允许——后面的步骤照这份计划走。]
+  C13-mark-final           bot=6 计划审批卡标题=Y 未批准卡标题=N 已中断卡标题=N 工具那路审批卡标题=Y
+  C14-status-final         模型 qwen-plus 步数 2/8 本题 token in 5,703 / out 39 本题耗时 4.0s 本题审批 3.1s 进程 token in 5,703 / out 39 状态 完成
+  C11-await-done           waitedMs=None YES:bot=6 | 模型 qwen-plus 步数 2/8 本题 token in 5,703 / out 39 本题耗时 4.0s 本题审批 3.1s 进程 token in 5,703 / out 39 状态 完成
+  C4-await-plan            waitedMs=None YES:模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 计划 状态 等待审批
+  C5-panel-pending         waitedMs=None YES:panel=VISIBLE 字符=1875 等待审批=Y 已允许=N 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=N 开头=[🧭 本轮计划 · 🟡 等待审批：agent 停在计划上等]
+  C8-await-tool            waitedMs=None YES:模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 等待审批
+
+====================================================================================================
+【C1】✖ 拒绝 → 抛 PlanDeniedError；一个工具都不许跑；那份计划**不许**进记忆
+----------------------------------------------------------------------------------------------------
+原始场景行：场景 C1：主测：在计划待批上点 ✖ 拒绝 → 状态「计划未批准」，整题不开工、计划不进记忆
+探针配置：  t=  0.000  boot.epoch             t0=1793717160.5433412 pid=9433 timeout=600.0 gradio=6.30.0 planning=8
+
+── 服务端：计划门那一路的关键时刻（v18_ui.py 里 _plan_gate/_plan_update 的包装打的点）
+  t=  3.893  plan.update            visible=False chars=0 reading=- sid=None
+  t= 20.845  plan.gate.enter        chars=1697 pending=0 sid=1
+  t= 20.846  ap.wait.enter          id=e013c2 tool=计划 timeout=600.0
+  t= 20.862  plan.update            visible=True chars=1786 reading=等待审批 sid=1
+  t= 21.902  ap.decide              id=e013c2 tool=计划 want=denied before=pending after=denied waited=1.056
+  t= 21.902  ap.wait.exit           id=e013c2 tool=计划 decision=denied waited=1.056
+  t= 21.908  plan.gate.denied       label=e013c2:denied/1.056s msg=已拒绝：这一题没有开工，一个工具都没跑。
+  t= 21.982  plan.update            visible=True chars=1739 reading=已拒绝 sid=1
+  t= 22.025  save_memory.exit       sid=1 changed_rows=97 after=sessions=sid=1 messages=4 memory=1
+
+── 数字①：审批读数落定 → 那一格面板在服务端算出新读数，隔了 0.074 s
+   （落定那一行：t= 21.908  plan.gate.denied       label=e013c2:denied/1.056s msg=已拒绝：这一题没有开工，一个工具都没跑。）
+   面板不是挂在 ✔/✖ 的 click 输出上的（单主人纪律：消息流和面板都归那条流式生成器），
+   所以它靠下一帧跟上；my_ui.py 注释里写的「最多 0.25 秒」量的就是这一档。
+
+── 数字②：库里那条会话的记忆步型（**「计划进没进记忆」只有这里能证**）
+   sid=1 {'TaskStep': 1} 顺序=T token按步型in/out=TaskStep:0/0 合计=in 0/out 0
+   读法：顺序里带 P 就是那份计划已经进了 agent 的记忆；只带 T 就是这一题停在计划之前。
+
+── 数字③：库里的正文命中的句子（折叠卡正文不在 DOM 里，只能从库里读）
+   一个工具都没跑=2 没有进模型的记忆=1 批准这一步就被中断=0 等待你批准这份计划=0 计划全文=1 ｜ 全文 3567 字符
+
+── 浏览器侧读数（原样，未改写）
+  __navigate0              1793717163612
+  C0-peek                  0
+  C1-panel-before-ask      panel=NO:DOM 里没有 #planpanel 这个元素（visible=False 时 gradio 不建它）
+  C2-new#click             clicked@186,134
+  C3-ask#type              clicked-submit
+  C5b-mark-pending         bot=2 计划审批卡标题=Y 未批准卡标题=N 已中断卡标题=N 工具那路审批卡标题=N
+  C5c-status-pending       模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 计划 状态 等待审批
+  C6-deny-plan#click       clicked@501,43
+  C7-panel                 panel=YES:panel=VISIBLE 字符=1691 等待审批=N 已允许=N 已拒绝=Y 已取消=N 已超时=N 一个工具都没跑=Y 开头=[🧭 本轮计划 · ⚪ 已拒绝——这一题没有开工，一个工具都]
+  C8-status                模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 计划未批准
+  C9-mark                  bot=3 计划审批卡标题=Y 未批准卡标题=Y 已中断卡标题=N 工具那路审批卡标题=N
+  C11-panel-final          panel=YES:panel=VISIBLE 字符=1691 等待审批=N 已允许=N 已拒绝=Y 已取消=N 已超时=N 一个工具都没跑=Y 开头=[🧭 本轮计划 · ⚪ 已拒绝——这一题没有开工，一个工具都]
+  C12-mark-final           bot=3 计划审批卡标题=Y 未批准卡标题=Y 已中断卡标题=N 工具那路审批卡标题=N
+  C13-status-final         模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 计划未批准
+  C10-await-settled        waitedMs=None YES:bot=3 | 模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 计划未批准
+  C4-await-plan            waitedMs=None YES:模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 计划 状态 等待审批
+  C5-panel-pending         waitedMs=None YES:panel=VISIBLE 字符=1731 等待审批=Y 已允许=N 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=N 开头=[🧭 本轮计划 · 🟡 等待审批：agent 停在计划上等]
+
+====================================================================================================
+【C2】■ 停止落在计划待批上 → 抛的是普通 AgentError（不是 PlanDeniedError）、状态「已停止」，不许写成「计划未批准」，也不许长出「已中断」
+----------------------------------------------------------------------------------------------------
+原始场景行：场景 C2：■ 停止正好落在计划待批上：随停止取消、状态「已停止」，不是「计划未批准」也不是「已中断」
+探针配置：  t=  0.000  boot.epoch             t0=1793717211.942125 pid=9632 timeout=600.0 gradio=6.30.0 planning=8
+
+── 服务端：计划门那一路的关键时刻（v18_ui.py 里 _plan_gate/_plan_update 的包装打的点）
+  t=  2.874  plan.update            visible=False chars=0 reading=- sid=None
+  t= 22.995  plan.gate.enter        chars=2211 pending=0 sid=1
+  t= 22.996  ap.wait.enter          id=cbeb67 tool=计划 timeout=600.0
+  t= 23.007  plan.update            visible=True chars=2300 reading=等待审批 sid=1
+  t= 28.726  ap.decide              id=cbeb67 tool=计划 want=cancelled before=pending after=cancelled waited=5.73
+  t= 28.726  ap.wait.exit           id=cbeb67 tool=计划 decision=cancelled waited=5.73
+  t= 28.730  plan.gate.raise        exc=AgentError label=cbeb67:cancelled/5.730s
+  t= 28.746  plan.update            visible=True chars=2255 reading=随停止取消 sid=1
+  t= 28.770  save_memory.exit       sid=1 changed_rows=97 after=sessions=sid=1 messages=4 memory=1
+
+── 数字①：审批读数落定 → 那一格面板在服务端算出新读数，隔了 0.016 s
+   （落定那一行：t= 28.730  plan.gate.raise        exc=AgentError label=cbeb67:cancelled/5.730s）
+   面板不是挂在 ✔/✖ 的 click 输出上的（单主人纪律：消息流和面板都归那条流式生成器），
+   所以它靠下一帧跟上；my_ui.py 注释里写的「最多 0.25 秒」量的就是这一档。
+
+── 数字②：库里那条会话的记忆步型（**「计划进没进记忆」只有这里能证**）
+   sid=1 {'TaskStep': 1} 顺序=T token按步型in/out=TaskStep:0/0 合计=in 0/out 0
+   读法：顺序里带 P 就是那份计划已经进了 agent 的记忆；只带 T 就是这一题停在计划之前。
+
+── 数字③：库里的正文命中的句子（折叠卡正文不在 DOM 里，只能从库里读）
+   一个工具都没跑=1 没有进模型的记忆=1 批准这一步就被中断=0 等待你批准这份计划=0 计划全文=1 ｜ 全文 4596 字符
+
+── 浏览器侧读数（原样，未改写）
+  __navigate0              1793717214063
+  C0-peek                  0
+  C1-panel-before-ask      panel=NO:DOM 里没有 #planpanel 这个元素（visible=False 时 gradio 不建它）
+  C2-new#click             clicked@186,134
+  C3-ask#type              clicked-submit
+  C5b-mark-pending         bot=2 计划审批卡标题=Y 未批准卡标题=N 已中断卡标题=N 工具那路审批卡标题=N
+  C5c-status-pending       模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 计划 状态 等待审批
+  C6-stop-plan#click       clicked@599,43
+  C7-panel                 panel=YES:panel=VISIBLE 字符=2207 等待审批=N 已允许=N 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=Y 开头=[🧭 本轮计划 · ⏹ 随停止取消——这一题没有开工，一个工]
+  C8-status                模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 已停止
+  C9-mark                  bot=3 计划审批卡标题=Y 未批准卡标题=N 已中断卡标题=N 工具那路审批卡标题=N
+  C11-panel-final          panel=YES:panel=VISIBLE 字符=2207 等待审批=N 已允许=N 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=Y 开头=[🧭 本轮计划 · ⏹ 随停止取消——这一题没有开工，一个工]
+  C12-mark-final           bot=3 计划审批卡标题=Y 未批准卡标题=N 已中断卡标题=N 工具那路审批卡标题=N
+  C13-status-final         模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 已停止
+  C10-await-settled        waitedMs=None YES:bot=3 | 模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 已停止
+  C4-await-plan            waitedMs=None YES:模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 计划 状态 等待审批
+  C5-panel-pending         waitedMs=None YES:panel=VISIBLE 字符=2245 等待审批=Y 已允许=N 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=N 开头=[🧭 本轮计划 · 🟡 等待审批：agent 停在计划上等]
+
+====================================================================================================
+【C3】刷新落在计划待批上 → GeneratorExit 后待批随中断结算、「已中断」卡用计划那一句措辞；顺带量首屏读空那一档（#42）
+----------------------------------------------------------------------------------------------------
+原始场景行：场景 C3：刷新页面正好落在计划待批上（D8 扳机 + 计划门）：已中断措辞走计划那一路，刷新后面板读不到计划
+探针配置：  t=  0.000  boot.epoch             t0=1793717471.1824481 pid=10964 timeout=600.0 gradio=6.30.0 planning=8
+
+── 服务端：计划门那一路的关键时刻（v18_ui.py 里 _plan_gate/_plan_update 的包装打的点）
+  t=  2.217  plan.update            visible=False chars=0 reading=- sid=None
+  t= 19.216  plan.gate.enter        chars=1697 pending=0 sid=1
+  t= 19.216  ap.wait.enter          id=2c1c09 tool=计划 timeout=600.0
+  t= 19.225  plan.update            visible=True chars=1786 reading=等待审批 sid=1
+  t= 19.505  plan.update            visible=False chars=0 reading=- sid=1
+  t= 20.255  plan.update            visible=True chars=1786 reading=等待审批 sid=1
+  t= 20.264  respond.GeneratorExit  frames=86
+  t= 20.264  ap.decide              id=2c1c09 tool=计划 want=cancelled before=pending after=cancelled waited=1.048
+  t= 20.264  ap.wait.exit           id=2c1c09 tool=计划 decision=cancelled waited=1.048
+  t= 20.265  plan.gate.raise        exc=AgentError label=2c1c09:cancelled/1.048s
+  t= 20.266  ap.decide              id=2c1c09 tool=计划 want=cancelled before=cancelled after=cancelled waited=1.048
+  t= 20.266  mark.enter             pending=1 registered=1 mem=1 steps=T last_msgs=3
+  t= 20.266  mark.exit              msgs=4 wait_per_actionstep=[] tail=⏹ 已中断 · 审批空等 1.0s
+  t= 20.271  save_memory.exit       sid=1 changed_rows=97 after=sessions=sid=1 messages=4 memory=1
+  t= 40.553  plan.update            visible=False chars=0 reading=- sid=1
+
+── 数字①：**这一页在那一帧之后再没有下一格**（门落定之后先来的事件是 plan.update）。
+   （门之后下一条相关日志：t= 40.553  plan.update            visible=False chars=0 reading=- sid=1）
+   断开这一路本来就没有后续帧：生成器已经 unwind，最后一帧是「⏹ 已中断」那一条，
+   面板上的读数停在断开前最后一帧的「等待审批」，之后由下一次页面加载重算（见⑥）。
+   这一档不许当成「面板延迟几十秒」来读——那不是延迟，是换页。
+
+── 数字②：库里那条会话的记忆步型（**「计划进没进记忆」只有这里能证**）
+   sid=1 {'TaskStep': 1} 顺序=T token按步型in/out=TaskStep:0/0 合计=in 0/out 0
+   读法：顺序里带 P 就是那份计划已经进了 agent 的记忆；只带 T 就是这一题停在计划之前。
+
+── 数字③：库里的正文命中的句子（折叠卡正文不在 DOM 里，只能从库里读）
+   一个工具都没跑=2 没有进模型的记忆=1 批准这一步就被中断=1 等待你批准这份计划=0 计划全文=1 ｜ 全文 3670 字符
+
+── 浏览器侧读数（原样，未改写）
+  __navigate0              1793717472834
+  C0-peek                  0
+  C1-panel-before-ask      panel=NO:DOM 里没有 #planpanel 这个元素（visible=False 时 gradio 不建它）
+  C2-new#click             clicked@186,134
+  C3-ask#type              clicked-submit
+  C5b-mark-pending         bot=2 计划审批卡标题=Y 未批准卡标题=N 已中断卡标题=N 工具那路审批卡标题=N
+  C5c-status-pending       模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 计划 状态 等待审批
+  C6-reload#reloadAt       1793717490517
+  C6-reload#reloadDoneAt   1793717496552
+  C6-reload#urlAfter       http://127.0.0.1:7872/
+  C7-panel-after-reload    panel=NO:DOM 里没有 #planpanel 这个元素（visible=False 时 gradio 不建它）
+  C8-mark-after-reload     bot=0 计划审批卡标题=N 未批准卡标题=N 已中断卡标题=N 工具那路审批卡标题=N
+  C9-status-after-reload   模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 计划 状态 空闲
+  C11-reload-again#reloadAt 1793717511556
+  C11-reload-again#reloadDoneAt 1793717519612
+  C11-reload-again#urlAfter http://127.0.0.1:7872/
+  C13-mark-2nd-plan        bot=3 计划审批卡标题=Y 未批准卡标题=N 已中断卡标题=Y 工具那路审批卡标题=N
+  C14-mark-2nd-tool        bot=3 已中断标题=Y 空等字样=Y 随中断取消=Y 随停止取消=N 还在等审批=N
+  C15-status-2nd           模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 空闲
+  C12-panel-2nd            waitedMs=None NO:DOM 里没有 #planpanel 这个元素（visible=False 时 gradio 不建它）
+  C4-await-plan            waitedMs=None YES:模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 计划 状态 等待审批
+  C5-panel-pending         waitedMs=None YES:panel=VISIBLE 字符=1731 等待审批=Y 已允许=N 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=N 开头=[🧭 本轮计划 · 🟡 等待审批：agent 停在计划上等]
+
+====================================================================================================
+【C4】没人点，等到审批超时 → 与 ✖ 拒绝同一档（状态「计划未批准」），计划不进记忆
+----------------------------------------------------------------------------------------------------
+原始场景行：场景 C4：计划待批一直没人点，等到审批超时（探针侧 V18_TIMEOUT 改短，产品里仍 600）
+探针配置：  t=  0.000  boot.epoch             t0=1793717567.3199098 pid=11256 timeout=20.0 gradio=6.30.0 planning=8
+
+── 服务端：计划门那一路的关键时刻（v18_ui.py 里 _plan_gate/_plan_update 的包装打的点）
+  t=  2.066  plan.update            visible=False chars=0 reading=- sid=None
+  t= 18.630  plan.gate.enter        chars=1580 pending=0 sid=1
+  t= 18.631  ap.wait.enter          id=910638 tool=计划 timeout=20.0
+  t= 18.642  plan.update            visible=True chars=1669 reading=等待审批 sid=1
+  t= 38.636  ap.wait.exit           id=910638 tool=计划 decision=timeout waited=20.0
+  t= 38.637  plan.gate.denied       label=910638:timeout/20.000s msg=超时未批：这一题没有开工，一个工具都没跑。
+  t= 38.638  plan.update            visible=True chars=1623 reading=超时未批 sid=1
+  t= 38.661  save_memory.exit       sid=1 changed_rows=97 after=sessions=sid=1 messages=4 memory=1
+
+── 数字①：审批读数落定 → 那一格面板在服务端算出新读数，隔了 0.001 s
+   （落定那一行：t= 38.637  plan.gate.denied       label=910638:timeout/20.000s msg=超时未批：这一题没有开工，一个工具都没跑。）
+   面板不是挂在 ✔/✖ 的 click 输出上的（单主人纪律：消息流和面板都归那条流式生成器），
+   所以它靠下一帧跟上；my_ui.py 注释里写的「最多 0.25 秒」量的就是这一档。
+
+── 数字②：库里那条会话的记忆步型（**「计划进没进记忆」只有这里能证**）
+   sid=1 {'TaskStep': 1} 顺序=T token按步型in/out=TaskStep:0/0 合计=in 0/out 0
+   读法：顺序里带 P 就是那份计划已经进了 agent 的记忆；只带 T 就是这一题停在计划之前。
+
+── 数字③：库里的正文命中的句子（折叠卡正文不在 DOM 里，只能从库里读）
+   一个工具都没跑=2 没有进模型的记忆=1 批准这一步就被中断=0 等待你批准这份计划=0 计划全文=1 ｜ 全文 3335 字符
+
+── 浏览器侧读数（原样，未改写）
+  __navigate0              1793717568846
+  C0-peek                  0
+  C1-panel-before-ask      panel=NO:DOM 里没有 #planpanel 这个元素（visible=False 时 gradio 不建它）
+  C2-new#click             clicked@186,134
+  C3-ask#type              clicked-submit
+  C5b-mark-pending         bot=2 计划审批卡标题=Y 未批准卡标题=N 已中断卡标题=N 工具那路审批卡标题=N
+  C5c-status-pending       模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 计划 状态 等待审批
+  C6b-still-pending        YES:模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 计划 状态 等待审批
+  C7-panel                 panel=YES:panel=VISIBLE 字符=1614 等待审批=Y 已允许=N 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=N 开头=[🧭 本轮计划 · 🟡 等待审批：agent 停在计划上等]
+  C8-status                模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 计划 状态 等待审批
+  C9-mark                  bot=2 计划审批卡标题=Y 未批准卡标题=N 已中断卡标题=N 工具那路审批卡标题=N
+  C11-panel-final          panel=YES:panel=VISIBLE 字符=1575 等待审批=N 已允许=N 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=Y 开头=[🧭 本轮计划 · ⏳ 超时未批——这一题没有开工，一个工具]
+  C12-mark-final           bot=3 计划审批卡标题=Y 未批准卡标题=Y 已中断卡标题=N 工具那路审批卡标题=N
+  C13-status-final         模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 计划未批准
+  C10-await-settled        waitedMs=None YES:bot=3 | 模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 计划未批准
+  C4-await-plan            waitedMs=None YES:模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 计划 状态 等待审批
+  C5-panel-pending         waitedMs=None YES:panel=VISIBLE 字符=1614 等待审批=Y 已允许=N 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=N 开头=[🧭 本轮计划 · 🟡 等待审批：agent 停在计划上等]
+
+====================================================================================================
+跨场景汇总（每条都能在上面的原始行里对回去）
+====================================================================================================
+① 面板第一次上屏的延迟（状态条已经报出「待批 计划」之后，浏览器里 #planpanel 真的画出来）
+   C0  1006 ms   （读数：YES:panel=VISIBLE 字符=1875 等待审批=Y 已允许=N 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=N 开头=[🧭 本轮计划 ）
+   C1  2 ms   （读数：YES:panel=VISIBLE 字符=1731 等待审批=Y 已允许=N 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=N 开头=[🧭 本轮计划 ）
+   C2  3 ms   （读数：YES:panel=VISIBLE 字符=2245 等待审批=Y 已允许=N 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=N 开头=[🧭 本轮计划 ）
+   C3  8 ms   （读数：YES:panel=VISIBLE 字符=1731 等待审批=Y 已允许=N 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=N 开头=[🧭 本轮计划 ）
+   C4  2 ms   （读数：YES:panel=VISIBLE 字符=1614 等待审批=Y 已允许=N 已拒绝=N 已取消=N 已超时=N 一个工具都没跑=N 开头=[🧭 本轮计划 ）
+   这一档量的是**服务端 yield 到浏览器可见**（gradio websocket 一帧 ＋ 前端渲染），
+   和上面「数字①」那档（决定落定到服务端算出下一格读数）不是同一件事，两档分开记。
+   **量法自带的粒度**：剧本用 until 轮询，每 1,000 ms 一次，第一次就命中则 waitedMs 只有几毫秒；
+   C0 落在第二次轮询（1,006 ms），其余四跑第一次就命中。所以这五跑能说的是
+   「面板在 1 秒的轮询粒度内已经上屏」，**不能**当成精确延迟——要毫秒级得换 MutationObserver，
+   这一刀的判据不需要那么细，故不做。
+
+② 提问之前那块面板在不在屏上：
+   C0  panel=NO:DOM 里没有 #planpanel 这个元素（visible=False 时 gradio 不建它）
+   C1  panel=NO:DOM 里没有 #planpanel 这个元素（visible=False 时 gradio 不建它）
+   C2  panel=NO:DOM 里没有 #planpanel 这个元素（visible=False 时 gradio 不建它）
+   C3  panel=NO:DOM 里没有 #planpanel 这个元素（visible=False 时 gradio 不建它）
+   C4  panel=NO:DOM 里没有 #planpanel 这个元素（visible=False 时 gradio 不建它）
+   → visible=False 的 gr.Markdown 在初始 DOM 里**根本没有这个元素**，第一次有读数时 gradio 才建它。
+     所以「面板没上墙」有两种：元素没建 / 建了但是空的。这份证据里 C3 第二刷读到的是前者。
+
+③ 拒绝／超时／停止 三档的分工（服务端抛出的异常类型，逐条摘自上面的门日志）：
+   C1 期望 PlanDeniedError ｜ 实际 t= 21.908  plan.gate.denied       label=e013c2:denied/1.056s msg=已拒绝：这一题没有开工，一个工具都没跑。
+   C4 期望 PlanDeniedError ｜ 实际 t= 38.637  plan.gate.denied       label=910638:timeout/20.000s msg=超时未批：这一题没有开工，一个工具都没跑。
+   C2 期望 AgentError（停止） ｜ 实际 t= 28.730  plan.gate.raise        exc=AgentError label=cbeb67:cancelled/5.730s
+   C3 期望 AgentError（断开） ｜ 实际 t= 20.265  plan.gate.raise        exc=AgentError label=2c1c09:cancelled/1.048s
+
+④ 状态条那一档（屏幕上的字，不是日志）：
+   C0  模型 qwen-plus 步数 2/8 本题 token in 5,703 / out 39 本题耗时 4.0s 本题审批 3.1s 进程 token in 5,703 / out 39 状态 完成
+   C1  模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 计划未批准
+   C2  模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 已停止
+   C3  模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 空闲
+   C4  模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 计划未批准
+
+⑤ 「本题 token」那颗药丸**不含规划那一次调用**——这一刀顺量出来的口径差：
+   C0：库里 PlanningStep in/out = 1081/419，ActionStep in/out = 5703/39，合计 in 6784 / out 458
+   C0：状态条「本题 token」显示 in 5,703 / out 39 ——只加 ActionStep
+   差额：in 6784 − 5703 = **1081 个不在药丸上**（占这一题真实 input 的 15.9%）；
+           out 458 − 39 = **419 个**（占 91.5%）。药丸显示的是「工具那两步」，不是「本题」。
+   代码位置：_stream_response 只把 ActionStep 的 token_usage 累进 _run_in/_run_out（:1152-1155），
+   PlanningStep 那一次的用量只出现在计划卡标题上（🧭 计划 · 已允许 · X.Xs · in/out）。
+   这不是这一刀引入的 bug（规划那一次调用以前压根不存在），但**开了规划就变成一个看得见的缺口**：
+   看板上「本题 token」会低估。留作 P1 单（口径要么把规划算进本题、要么把 PlanningStep 并进累加），
+   这一刀不动，因为动 _stats 的口径会把 v18_test_nochange.py 里比对旧版的那几条一起改黄。
+
+⑥ 刷新首屏读空那一档（#42 的新证据，来自 C3）：
+   首屏 on_load（t=19.506）读到 messages=0；半截内容落库在 t=20.267 ——首屏比落库早 0.761 s，
+   于是第一刷的屏幕上是：bot=0（一条消息没有）＋ 状态条还带着上一题的「待批 计划」（gradio 把
+   组件缓存值一起画了出来）。两个信号自相矛盾，但都只是**首屏那一下**：第二刷（C13-mark-2nd-plan）读到 bot=3、已中断标题=Y。
+   第二刷读数：bot=3 计划审批卡标题=Y 未批准卡标题=N 已中断卡标题=Y 工具那路审批卡标题=N
+   这一档不是这一刀引入的，是 D8-2（#42）那张单的范围；此处只补一个数：0.761 s。
+
+====================================================================================================
+结论位
+====================================================================================================
+  C0：门=allowed      label=4bd571:allowed/1.285s ｜ run_python 那一侧的日志行数=3 ｜ 记忆顺序=T,P,A,A
+  C1：门=denied       label=e013c2:denied/1.056s msg=已拒绝：这一题没有开工，一个工具都没跑。 ｜ run_python 那一侧的日志行数=0 ｜ 记忆顺序=T
+  C2：门=raise        exc=AgentError label=cbeb67:cancelled/5.730s ｜ run_python 那一侧的日志行数=0 ｜ 记忆顺序=T
+  C3：门=raise        exc=AgentError label=2c1c09:cancelled/1.048s ｜ run_python 那一侧的日志行数=0 ｜ 记忆顺序=T
+  C4：门=denied       label=910638:timeout/20.000s msg=超时未批：这一题没有开工，一个工具都没跑。 ｜ run_python 那一侧的日志行数=0 ｜ 记忆顺序=T
+
+要证的三件事，逐条对上：
+  1) 计划真的先上墙、再等批准：每跑都有 plan.gate.enter → plan.update(等待审批) → ap.decide 这个次序，
+     且工具那一侧的门只在**计划被允许之后**才出现。两道的 wait.enter 行数逐跑：
+     C0 计划门1/工具门1  C1 计划门1/工具门0  C2 计划门1/工具门0  C3 计划门1/工具门0  C4 计划门1/工具门0
+     ——只有 C0 有工具门那一步（其余四路一个工具都没跑，run_python 行数为 0）。
+  2) 「没批的计划不进模型记忆」：库里那条会话的步型顺序逐跑 = C0:T,P,A,A  C1:T  C2:T  C3:T  C4:T。
+     带 P 的只有 C0（批过的那一跑）；其余四跑的 P 一个都没有——门卡在 memory.steps.append 之前
+     （agents.py:556-562 的顺序），这句在离线闸 v18_test_plan.py 第 3 节是断言，在这里是实测行）。
+  3) 三档结局分得开：✖ 拒绝／超时 → 状态「计划未批准」＋面板 ⚪已拒绝／⏳超时未批；
+     ■ 停止 → 状态「已停止」＋面板 ⏹随停止取消，且抛的是普通 AgentError；
+     刷新断开 → 「已中断」卡用的是计划那一句措辞（库里 批准这一步就被中断=1）。
+已声明的边界（不是这刀的 bug，写在文档里）：
+  · 面板在批准之后**不会**在刷新后重现：那份计划没进 memory，_on_load 无从读起（C3 第二刷实测 8,018ms
+    等满，仍然是「DOM 里没有 #planpanel」）。卡还在会话里（计划审批卡标题=Y），收起着。
+  · 计划正文是英文的（框架的规划 prompt 是英文），这一刀不改语言。
+  · 「本题 token」药丸不含规划那一次调用，见上面⑤的差额。
+  · 开规划的代价（单题样本、同一道 12 日行情题）见 run/v18_plan_probe.out：
+    关 7.1s / in 5,260 / out 262 → 开 40.1s / in 13,591 / out 1,713，其中规划那一次单独 in 1,188 / out 1,458、32.9s。

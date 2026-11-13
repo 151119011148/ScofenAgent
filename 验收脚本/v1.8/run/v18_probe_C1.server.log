@@ -1,0 +1,45 @@
+t=  0.000  boot.epoch             t0=1793717160.5433412 pid=9433 timeout=600.0 gradio=6.30.0 planning=8
+t=  3.893  plan.update            visible=False chars=0 reading=- sid=None
+t=  3.894  on_load                sid=None steps=0 kinds=- screen_stepno=None screen_in=None screen_out=None screen_wait=0.0 mem_held=[] db_memory=- wall=3.89
+t= 11.705  respond.enter          sid=None
+t= 11.714  poller.start           timeout=600.0
+t= 11.728  stream.enter           sid=1
+t= 11.728  settle_all.enter       decision=cancelled ids=-
+t= 11.729  settle_all.exit        decision=cancelled
+t= 12.715  poll.pending           n=0 state=- unanswered=0
+t= 13.720  poll.pending           n=0 state=- unanswered=0
+t= 14.725  poll.pending           n=0 state=- unanswered=0
+t= 15.730  poll.pending           n=0 state=- unanswered=0
+t= 16.737  poll.pending           n=0 state=- unanswered=0
+t= 17.742  poll.pending           n=0 state=- unanswered=0
+t= 18.747  poll.pending           n=0 state=- unanswered=0
+t= 19.752  poll.pending           n=0 state=- unanswered=0
+t= 20.757  poll.pending           n=0 state=- unanswered=0
+t= 20.845  plan.gate.enter        chars=1697 pending=0 sid=1
+t= 20.846  ap.wait.enter          id=e013c2 tool=计划 timeout=600.0
+t= 20.862  plan.update            visible=True chars=1786 reading=等待审批 sid=1
+t= 21.851  poll.pending           n=1 state=e013c2:pending unanswered=1
+t= 21.902  ap.decide              id=e013c2 tool=计划 want=denied before=pending after=denied waited=1.056
+t= 21.902  ap.wait.exit           id=e013c2 tool=计划 decision=denied waited=1.056
+t= 21.908  plan.gate.denied       label=e013c2:denied/1.056s msg=已拒绝：这一题没有开工，一个工具都没跑。
+t= 21.982  plan.update            visible=True chars=1739 reading=已拒绝 sid=1
+t= 22.015  settle_all.enter       decision=cancelled ids=-
+t= 22.015  settle_all.exit        decision=cancelled
+t= 22.016  stream.exception       exc=PlanDeniedError frames=86
+t= 22.016  stream.finally         frames=86
+t= 22.017  save.enter             sid=1 msgs=4 before=sessions=sid=1 messages=0 memory=0
+t= 22.021  save.exit              sid=1 after=sessions=sid=1 messages=4 memory=0
+t= 22.022  save_memory.enter      sid=1 chars=97
+t= 22.025  save_memory.exit       sid=1 changed_rows=97 after=sessions=sid=1 messages=4 memory=1
+t= 22.050  respond.finally        frames=87 pending=0 unanswered=0
+t= 22.859  poll.pending           n=0 state=- unanswered=0
+t= 23.866  poll.pending           n=0 state=- unanswered=0
+t= 24.869  poll.pending           n=0 state=- unanswered=0
+t= 25.874  poll.pending           n=0 state=- unanswered=0
+t= 26.883  poll.pending           n=0 state=- unanswered=0
+t= 27.889  poll.pending           n=0 state=- unanswered=0
+t= 28.893  poll.pending           n=0 state=- unanswered=0
+t= 29.898  poll.pending           n=0 state=- unanswered=0
+t= 30.905  poll.pending           n=0 state=- unanswered=0
+t= 31.911  poll.pending           n=0 state=- unanswered=0
+t= 32.915  poll.pending           n=0 state=- unanswered=0

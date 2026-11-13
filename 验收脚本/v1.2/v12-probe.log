@@ -1,0 +1,14 @@
+* Running on local URL:  http://127.0.0.1:7861
+* To create a public link, set `share=True` in `launch()`.
+╭──────────────────────────── New run - smolagents ────────────────────────────╮
+│                                                                              │
+│ 1+1 等于几？直接回答，不要调用工具                                           │
+│                                                                              │
+╰─ OpenAIModel - qwen-plus ────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{"tool": "final_answer", "arguments": "{"answer": "2"}"}                        ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'final_answer' with arguments: {'answer': '2'}                 │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Observations: 2
+Final answer: 2
+[Step 1: Duration 0.87 seconds| Input tokens: 2,347 | Output tokens: 16]

@@ -1,0 +1,55 @@
+A01 今天那句 400 认得                                  PASS Error while generating output: Error code: 400 - Access 
+A02 429 限流也认（同一档：服务商不接，不是代码错）                    PASS 
+A03 顺着 __cause__ 找得到（框架那句是包装过的）                  PASS Error while generating output: Error code: 400 - A
+A04 负控：■ 停止抛的那句返回 None（仍然是「已停止」）                 PASS 
+A05 负控：否决计划返回 None（走 plan_denied 那一档）            PASS 
+A06 负控：真·实现错误返回 None（解析炸了不能算账户问题）                PASS 
+A07 负控：工具自己的报错返回 None                            PASS 
+A08 命中就压成一行并限长（卡片不被 5KB 正文撑爆）                    PASS 
+A09 __cause__ 成环也不转圈（返回 None，不是挂死）               PASS 
+B01 状态档有词条                                       PASS 
+B02 这一档的字不等于「已停止」也不等于「已中断」                       PASS 
+B03 状态条有独立配色                                     PASS 
+B04 配色和 st-stopped 那个红不是同一个色                     PASS 
+B05 v1.8 的收尾锚点行没被挪位改坏（v18_drill_p1a 的字面断言）       PASS 
+B06 dup_fused / plan_denied 两条 CSS 仍在            PASS 
+B08 收尾分档在代码里只有一处（这一刀没把它复制成两份）                    PASS 三选一 1 处 / 新档 1 处
+B07 指纹表只在异常串上判：全项目就定义 1 处、用 1 处                  PASS 2
+C01 状态落在 model_refused，不是 stopped                PASS model_refused
+C02 状态条 class 带的就是这一档                            PASS <span class="pill pill-state"><b>状态</b><i>模型侧拒绝</i></span></div>
+C03 状态格那一格写的是「模型侧拒绝」                             PASS 
+C04 卡片是 🔒 那一档，不是 ⏹                               PASS 🔒 模型侧拒绝
+C05 卡片明说不是人按的停止                                  PASS 🔒 **模型侧拒绝**  这一次模型调用被服务商直接拒了，不是你按了 ■，也不是这台机器里的代码。  Error while g
+C06 卡片留着原文（那句里自带厂商的排障链接）                         PASS 
+C07 卡片给出要动的两处（账户状态 / key+MODEL_ID）               PASS 
+C08 卡片不许诺「什么都没发生」：已批过的工具不回滚这句在                   PASS 
+C09 收尾卡片进了历史库（不只是屏幕上的临时帧）                        PASS 2
+C10 429 那一枪同样落进这一档                               PASS 
+D01 按 ■ 停止仍然是 ⏹ 已停止                              PASS stopped · ⏹ 已停止：AgentError
+D02 实现错误仍然是 ⏹ 已停止（没被误判成账户问题）                     PASS stopped
+D03 否决计划仍然是 ✖ 计划未批准                              PASS plan_denied · ✖ 计划未批准
+D04 拒收这一档不吃 ■ 停止的旗（两档各写各的）                       PASS 
+F01 设了 AGENT_MODEL_ID/AGENT_BASE_URL 就整个换过去（含活 model 对象） PASS deepseek-chat https://api.deepseek.com/v1
+deepseek-chat https://api.deepseek.com/v1/
+F02 不设就是原来的默认值（行为逐字不变）                           PASS qwen-plus https://dashscope.aliyuncs.com/compatible-mode/v1
+qwen-plus https://dashscope.aliyuncs.com
+F03 只有一个来源：my_agent 不再自己硬编码第二份                   PASS my_agent 里 0 处 dashscope 字面量，且活 model 对象 == 那两个常量
+F04 自检读的就是界面在跑的那个 client 对象（不是新拼一个）              PASS 
+F05 自检和直接开一枪说的是同一句话（状态怎么变都跟着，不写死某一天的结论）          PASS 自检=BadRequestError · 直调=BadRequestError
+    当前状态：🔒 拒 · Error code: 400 - Access denied, please make sure your account is in g
+F06 __init__ 一条网络都不发（自检不在那条路上）                   PASS ''
+🔒 模型侧拒绝：Error while generating output: Error code: 400 - Access denied, please make sure your account is in good standing. For details, see: https://help.aliyun.com/zh/model-studio/error-code#overdue-payment
+   要动的两处都在外面：服务商控制台的账户状态，或 smolagents/.env 的 OPENAI_API_KEY / AGENT_MODEL_ID / AGENT_BASE_URL。
+F07 launch 打自检并把结论挂进状态格（拒的那一支）                   PASS [1] ·  🔒拒
+F07b 自检说通就写 ✓（这一支不许冒出 🔒）                         PASS  ✓
+F08 没起过服务就没有后缀（离线套件的「模型」格口径不变）                   PASS 
+F09 负控：v1.8 快照里的 my_agent.py 既没有自检，模型配置也只能改代码    PASS 111 行 · 硬编码 BASE_URL=True
+E00 尺子完整：after-p0abc 与现场不同版                      PASS 1581 行 vs 现场 2315 行
+E01 那一版没有分类器                                     PASS 
+E02 那一版没有这一档                                     PASS 
+E03 那一版没有这组指纹                                    PASS 
+E04 那一版没有第四色                                     PASS 
+E05 after-p1a 那份是现场副本，不是 v1.8 历史（不得当尺子用）         PASS _mcp_pill 2 处 / 2065 行（v1.8 那版没有这只方法）
+
+全绿  47 条断言，失败 0
+临时库 24576 字节 · 测试审计行 0 条 · 测试流量没进真审计文件=True

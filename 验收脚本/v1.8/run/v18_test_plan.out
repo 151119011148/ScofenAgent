@@ -1,0 +1,45 @@
+1a 门装在实例上且幂等                       PASS 
+1b 第一个事件是 PlanningStep             PASS 
+1c 交出事件那一刻还没入队                     PASS []
+1d 门把计划登记成一张待批单                    PASS [('计划', 'plan', 'pending')]
+1e 单子挂在那儿、agent 没往下走               PASS [] / []
+2a 允许之后内层被续跑                       PASS ['appended']
+2b 下一个事件是 ActionStep               PASS ActionStep(step_number=1, timing=Timing(start_time=1793805594.9693432,
+2c 等待照样过账（V8 口径）                   PASS 0.09644579887390137 / 0.09644579887390137
+3a 拒绝抛出 PlanDeniedError            PASS PlanDeniedError('已拒绝：这一题没有开工，一个工具都没跑。')
+3b 抛出去就没有下一步                       PASS []
+3c 话里说清「没开工」                       PASS 已拒绝：这一题没有开工，一个工具都没跑。
+4a 超时也是 PlanDeniedError            PASS PlanDeniedError('超时未批：这一题没有开工，一个工具都没跑。')
+4b 措辞是超时未批                         PASS 超时未批：这一题没有开工，一个工具都没跑。
+4c 超时同样不进记忆                        PASS []
+5a 入队即随停止结算                        PASS 
+5b 停的是 AgentError 不是否决             PASS AgentError('Agent interrupted.')
+5c 这一路不进记忆                         PASS []
+6a 待批标题带「计划」                       PASS 🟡 待批 · 计划 · 等待审批
+6b 正文有字符数                          PASS 
+6c 说的是批计划不是跑代码                     PASS 
+6d 否决后写「没进模型的记忆」                   PASS  the plan of action:\n```\n1. call max_drawdown\n2. call final_answer\n```
+6e 标题带精确等待                         PASS ⚪ 待批 · 计划 · 已拒绝 · 等了 5.2s
+7a 没计划时面板不出现                       PASS {'value': '', '__type__': 'update', 'visible': False}
+7b 待批面板带挂起秒数                       PASS **🧭 本轮计划** · 🟡 **等待审批**（已挂起 12s）：agent 停在计划上等你。点顶部 **「✔ 允许」** 才开始动手，**「✖ 拒绝」** 则
+7c 面板正文就是计划原文                      PASS 
+7d 已允许面板                           PASS 
+7e 否决面板                            PASS 
+7f 计划卡标题写明已允许                      PASS 🧭 计划 · 已允许 · 32.9s · in 1,188/out 1,458
+7g 标题带这一拍的耗时与 token                PASS 🧭 计划 · 已允许 · 32.9s · in 1,188/out 1,458
+7h 正文仍是计划全文                        PASS 
+8a 无计划读空                           PASS 
+8b 读到那份计划                          PASS ('Here are the facts I know and the plan
+8c 读数固定 allowed（能进库的都批过）           PASS allowed
+8d 多份计划取最后一份                       PASS ('第二份', 'allowed', None)
+8e steps=None 不炸                   PASS 
+9a 每帧都是 8 元组                       PASS [8, 8]
+9b 面板在第 8 格                        PASS 
+9c 收尾状态是完成                         PASS /b><i>in 0 / out 0</i></span><span class="pill pill-state"><b>状态</b><i>完成</i></span></div>
+9d 否决帧也是 8 元组                      PASS 
+9e 收尾卡片标题「✖ 计划未批准」                 PASS ✖ 计划未批准
+9f 没写成「已停止」                        PASS ✖ 计划未批准
+9g 状态条那一格是计划未批准                    PASS out 0</i></span><span class="pill pill-state"><b>状态</b><i>计划未批准</i></span></div>
+9h 面板这时还在（读数是已拒绝）                  PASS 
+
+全绿  (0 条失败)

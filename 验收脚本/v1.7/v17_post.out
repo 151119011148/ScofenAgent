@@ -1,0 +1,8 @@
+{
+ "S0-read-on-load": "{\"chk\":[true,false,false],\"labs\":[\"用 run_python 打印 3*7 的结果，最后只回\",\"v1旧记忆-乙\",\"v1旧记忆-甲\"],\"userN\":1,\"botN\":4,\"last\":\"Final answer: 21\",\"cardTitles\":[],\"heads\":[\"\",\"\",\"\"],\"state\":\"空闲\",\"pillRun\":\"本题耗时 23.0s\",\"pillWait\":\"本题审批 20.7s\",\"pillPending\":null}",
+ "S1-read-again": "{\"chk\":[true,false,false],\"labs\":[\"用 run_python 打印 3*7 的结果，最后只回\",\"v1旧记忆-乙\",\"v1旧记忆-甲\"],\"userN\":1,\"botN\":4,\"last\":\"Final answer: 21\",\"cardTitles\":[],\"heads\":[\"\",\"\",\"\"],\"state\":\"空闲\",\"pillRun\":\"本题耗时 23.0s\",\"pillWait\":\"本题审批 20.7s\",\"pillPending\":null}",
+ "S2-click-v1-甲#click": "clicked@140,235",
+ "S2-read-甲": "{\"chk\":[false,false,true],\"labs\":[\"用 run_python 打印 3*7 的结果，最后只回\",\"v1旧记忆-乙\",\"v1旧记忆-甲\"],\"userN\":1,\"botN\":1,\"last\":\"（v1 时代攒下的答复）\",\"cardTitles\":[],\"heads\":[],\"state\":\"空闲\",\"pillRun\":\"本题耗时 41.0s\",\"pillWait\":null,\"pillPending\":null}",
+ "S3-click-v1-乙#click": "clicked@140,234",
+ "S3-read-乙": "{\"chk\":[false,true,false],\"labs\":[\"用 run_python 打印 3*7 的结果，最后只回\",\"v1旧记忆-乙\",\"v1旧记忆-甲\"],\"userN\":1,\"botN\":1,\"last\":\"（v1 时代攒下的答复）\",\"cardTitles\":[],\"heads\":[],\"state\":\"空闲\",\"pillRun\":\"本题耗时 12.5s\",\"pillWait\":null,\"pillPending\":null}"
+}

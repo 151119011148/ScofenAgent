@@ -1,0 +1,32 @@
+Tool 'fetch' failed: 'Error executing tool fetch: Refused to fetch http://127.0.0.1:9/robots.txt: 127.0.0.1 resolves to 127.0.0.1, which is not a public address. Start the server with --allow-private-ips to allow private, loopback and link-local addresses.'
+起点：工具 11 只 · 桥 time×2、fetch×1 · 门名单 ['convert_time', 'fetch', 'get_current_time', 'run_python', 'write_file']
+
+A01 三只外部工具都进了审批门                               PASS []
+A02 同一只上也套了查重（两层都在）                            PASS 
+A03 门名单 = 本地两只 + 桥上现挂的，没有旁路                    PASS ('write_file', 'run_python', 'get_current_time', 'convert_time', 'fetch')
+A04 本地只读那三只没被误伤（还是不打扰人）                        PASS 
+A05 桥上挂了多少，门就套多少（gated 是 added 的投影）            PASS ('get_current_time', 'convert_time', 'fetch')
+A06 状态条上有 MCP 这一格                              PASS time×2、fetch×1
+A07 第二个 OpsUI 没把门套成两层（同一只工具还是同一个对象）            PASS []
+A08 第二个 OpsUI 复用同一把桥，没有重连出第二批子进程               PASS 
+B01 外部工具真会卡在门上等人（不是默默跑完）                       PASS 
+B02 单子上带着来源与风险档（这就是审批卡上那一行）                    PASS 'time' / '读，无副作用'
+B03 卡片正文写着「外部 MCP server」＋server 名             PASS **工具** `get_current_time`  **来源** 外部 MCP server `time` · 风险：读，无副作用  **
+B04 卡片仍留着原来那两格（工具 / 参数），只是多一行来源                PASS 
+B05 点了「✔ 允许」才真的执行，拿回的是真时间                      PASS {
+  "timezone": "Asia/Shanghai",
+  "datetime": "2026-11-
+B06 点了「✖ 拒绝」：返回的是「没有执行」那句，server 那边没跑          PASS 用户拒绝执行，未产生任何副作用。请改用只读工具，或直接把结论交出来。
+B07 批了之后外部 server 的报错是文本回去的（模型读得到）             PASS Error executing tool fetch: Refused to fetch http://127.0.0.
+B08 同名同参第二次**在开卡之前**就被查重挡掉（查重套在审批外）            PASS 【重复调用未执行】本题内这已经是第 2 次发出**完全一样**的调用（同工具、同参数），这一次没有真的执 | 队列 3→3
+B09 本地工具的卡片不写来源（source 是 None，不是空串）            PASS **工具** `write_file`  **参数** ```json {   "path": "笔记/a2.t
+C01 detach 后外部工具从 agent 上消失                    PASS []
+C02 门名单回到只有本地那两只（名单跟着桥走，不是写死的）                 PASS ('write_file', 'run_python')
+C03 模型的清单里读不到 fetch 了                          PASS 
+C04 本地七只手一只没少                                  PASS 
+C05 摘除不留本进程名下的子进程                              PASS 残留 0 个
+D01 命令行那条路（import my_agent）不连 MCP：工具表里还是七只     PASS False | _mcp_bridge=0
+D02 my_agent 那一侧也没起子进程（数的是那个子进程自己名下）           PASS 孩子数=0
+D03 门套在副本上：my_coding_agent 的模块级原件没被写过          PASS 
+
+全绿  25 条断言，失败 0

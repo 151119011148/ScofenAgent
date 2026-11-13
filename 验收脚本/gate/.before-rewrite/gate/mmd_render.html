@@ -1,0 +1,22 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><script src="/tmp/mermaid.min.js"></script></head>
+<body><div id="C"></div><pre id="R">PENDING</pre>
+<script>
+mermaid.initialize({startOnLoad:false, securityLevel:'loose', theme:'neutral'});
+(async ()=>{
+  const blocks = await (await fetch('/tmp/mmd_blocks.json')).json();
+  const lines = []; let bad = 0;
+  for (const b of blocks) {
+    try {
+      const {svg} = await mermaid.render('g' + b.i, b.text, document.getElementById('C'));
+      const ok = /^<svg[\s>]/.test(svg) && svg.length > 800;
+      if (!ok) { bad++; lines.push(b.i + ' THINSVG ' + b.kind + ' len=' + svg.length); }
+      else lines.push(b.i + ' RENDER-OK ' + b.kind + ' svg=' + svg.length);
+    } catch (e) {
+      bad++; lines.push(b.i + ' RENDER-FAIL ' + b.kind + ' :: ' + String(e && e.message || e).replace(/\s+/g,' ').slice(0,200));
+    }
+  }
+  lines.push('TOTAL ' + blocks.length + ' BAD ' + bad);
+  document.getElementById('R').textContent = '###' + lines.join('\n###');
+})();
+</script></body></html>

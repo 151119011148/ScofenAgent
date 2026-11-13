@@ -1,0 +1,21 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><script src="/Users/gaoying/Desktop/study/ai学习/验收脚本/gate/run/mermaid.min.js"></script></head>
+<body><pre id="R">PENDING</pre>
+<script>
+mermaid.initialize({startOnLoad:false, securityLevel:'loose'});
+window.RESULTS = fetch('/Users/gaoying/Desktop/study/ai学习/验收脚本/gate/run/mmd_blocks.json').then(r=>r.json()).then(async (blocks)=>{
+  const lines = [];
+  let bad = 0;
+  for (const b of blocks) {
+    try {
+      await mermaid.parse(b.text);
+      lines.push(b.i + ' OK   ' + b.kind);
+    } catch (e) {
+      bad++;
+      lines.push(b.i + ' FAIL ' + b.kind + ' :: ' + String(e && e.message || e).replace(/\s+/g,' ').slice(0,300));
+    }
+  }
+  lines.push('TOTAL ' + blocks.length + ' BAD ' + bad);
+  document.getElementById('R').textContent = '###' + lines.join('\n###');
+});
+</script></body></html>

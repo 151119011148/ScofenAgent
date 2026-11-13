@@ -1,0 +1,12 @@
+{
+ "D0-read": "{\"chk\":[true,false,false,false],\"labs\":[\"新会话\",\"新会话\",\"v1旧记忆-乙\",\"v1旧记忆-甲\"],\"userN\":0,\"botN\":0,\"last\":null,\"cardTitles\":[],\"heads\":[],\"state\":\"空闲\",\"pillRun\":\"本题耗时 25.1s\",\"pillWait\":\"本题审批 22.1s\",\"pillPending\":\"待批 run_python\"}",
+ "D1-approve#click": "NO-ELEMENT",
+ "D2-approve#click": "NO-ELEMENT",
+ "D3-approve#click": "NO-ELEMENT",
+ "D4-approve#click": "NO-ELEMENT",
+ "D5-approve#click": "NO-ELEMENT",
+ "D6-approve#click": "NO-ELEMENT",
+ "D7-wait-done#waitedMs": 120353,
+ "D7-wait-done#pred": "NO:busy=false|bot=0|模型 qwen-plus 步数 3/8 本题 token in 7,334 / out 63 本题耗时 25.1s 本题审批 22.1s 进程 token in 7,334 / o",
+ "D8-read": "{\"chk\":[true,false,false,false],\"labs\":[\"新会话\",\"新会话\",\"v1旧记忆-乙\",\"v1旧记忆-甲\"],\"userN\":0,\"botN\":0,\"last\":null,\"cardTitles\":[],\"heads\":[],\"state\":\"空闲\",\"pillRun\":\"本题耗时 25.1s\",\"pillWait\":\"本题审批 22.1s\",\"pillPending\":\"待批 run_python\"}"
+}

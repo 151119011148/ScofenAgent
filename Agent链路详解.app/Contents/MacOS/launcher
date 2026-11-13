@@ -1,0 +1,26 @@
+#!/bin/bash
+# 把 agent链路详解.html 以「独立应用窗口」的形式打开：无地址栏、无标签页、独立 Dock 身份。
+set -u
+
+DOC="$(cd "$(dirname "$0")/../../.." && pwd)/agent链路详解.html"
+CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+PROFILE="$HOME/Library/Application Support/AgentDocViewer"
+
+if [ ! -x "$CHROME" ]; then
+  /usr/bin/osascript -e 'display dialog "没有找到 Google Chrome，无法以应用窗口打开。" buttons {"好"} with icon stop'
+  exit 1
+fi
+if [ ! -f "$DOC" ]; then
+  /usr/bin/osascript -e "display dialog \"文档不存在：\n$DOC\" buttons {\"好\"} with icon stop"
+  exit 1
+fi
+
+mkdir -p "$PROFILE"
+# 路径含中文，必须百分号编码后再交给 Chrome，否则 --app 会被静默忽略、退化成新标签页
+DOC_URL="$(/usr/bin/python3 -c 'import sys,urllib.parse;print("file://"+urllib.parse.quote(sys.argv[1]))' "$DOC")"
+
+exec "$CHROME" \
+  --app="$DOC_URL" \
+  --user-data-dir="$PROFILE" \
+  --no-first-run --no-default-browser-check --disable-sync \
+  --window-size=1200,900 >/dev/null 2>&1

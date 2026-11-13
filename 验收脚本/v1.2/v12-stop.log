@@ -1,0 +1,45 @@
+╭──────────────────────────── New run - smolagents ────────────────────────────╮
+│                                                                              │
+│ 依次读取                                                                     │
+│ my_agent.py、my_coding_agent.py、monitoring.py、agents.py、gradio_ui.py、mem │
+│ ory.py、tools.py 七个文件，每个都 grep 出 class 定义行号，最后汇总           │
+│                                                                              │
+╰─ OpenAIModel - qwen-plus ────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[yield   1] bubbles=  3 step=0/8 state=生成中
+[yield   2] bubbles=  3 step=0/8 state=生成中
+[yield   3] bubbles=  3 step=0/8 state=生成中
+>>> 点停止（调 agent.interrupt()）
+[yield   4] bubbles=  3 step=0/8 state=生成中
+[yield   5] bubbles=  3 step=0/8 state=生成中
+{"tool": "list_dir", "arguments": "{"path": "."}"}                              ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'list_dir' with arguments: {'path': '.'}                       │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Observations: . 共 17 项
+  .agent-staging/  |已跳过]
+  .idea/
+  .rollback/
+  Agent链路详解.app/
+  dify/
+  langchain4j/
+  servers/
+  smolagents/
+  .agent-client-icon-source.png  687146B
+  .agent-icon-source.png  652118B
+  .agent-ui.log  106B
+  .agent-ui.pid  6B
+  agent功能手册.html  61057B
+  agent链路图.html  22245B
+  agent链路详解.html  28792B
+  README.md  59543B
+  迭代记录.md  17807B
+[Step 1: Duration 0.91 seconds| Input tokens: 2,379 | Output tokens: 15]
+[yield   6] bubbles=  3 step=1/8 state=生成中
+[yield   7] bubbles=  4 step=1/8 state=生成中
+[yield   8] bubbles=  5 step=1/8 state=生成中
+[yield   9] bubbles=  6 step=1/8 state=生成中
+Agent interrupted.
+[yield  10] bubbles=  7 step=1/8 state=已停止
+=== 终态: 已停止
+=== 末条气泡: ⏹ 已停止：AgentError | ⏹ AgentError: Agent interrupted.
+=== 库里的消息数: 7 标题: [('依次读取 my_agent.py、my_coding_a', '1')]

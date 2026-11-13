@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>我的Agent 功能手册与迭代看板 — v1.7</title>
+<style>
+  :root{
+    --bg:#000; --panel:#0e1218; --panel2:#151b24; --line:#272f3a;
+    --ink:#e9ecf1; --sub:#8c97a6; --acc:#2ed0a8; --gold:#e8c16a; --red:#e8735f;
+    --code:#0b0f14; --okbg:#0a1b18; --warnbg:#1b1407;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.75 "PingFang SC","Hiragino Sans GB",system-ui,sans-serif;}
+  .wrap{max-width:1080px;margin:0 auto;padding:34px 22px 90px}
+  header.top{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:26px}
+  h1{font-size:29px;margin:0 0 10px;letter-spacing:.3px}
+  .meta{color:var(--sub);font-size:13.5px}
+  .meta b{color:var(--ink);font-weight:600}
+  nav.toc{position:sticky;top:0;z-index:9;background:rgba(0,0,0,.94);
+    border-bottom:1px solid var(--line);padding:11px 0;margin:0 0 30px;font-size:13.5px}
+  nav.toc a{color:var(--sub);text-decoration:none;margin-right:16px;white-space:nowrap}
+  nav.toc a:hover{color:var(--acc)}
+  h2{font-size:22px;margin:44px 0 14px;padding-left:13px;border-left:3px solid var(--acc)}
+  h3{font-size:17.5px;margin:28px 0 9px;color:var(--acc)}
+  h4{font-size:15.5px;margin:20px 0 6px;color:var(--gold)}
+  p{margin:9px 0}
+  code{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px;
+    background:var(--panel2);padding:1.5px 5px;border-radius:3px;color:var(--gold)}
+  pre{background:var(--code);border:1px solid var(--line);border-left:3px solid var(--acc);
+    border-radius:5px;padding:13px 15px;overflow-x:auto;font-size:12.6px;line-height:1.62;margin:11px 0}
+  pre code{background:none;padding:0;color:var(--ink);font-size:12.6px}
+  .src{color:var(--sub);font-size:11.5px;font-family:"SF Mono",Menlo,monospace;margin-bottom:-6px}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.6px}
+  th,td{border-bottom:1px solid var(--line);padding:8px 9px;text-align:left;vertical-align:top}
+  th{color:var(--acc);font-weight:600;background:var(--panel);position:sticky;top:44px}
+  td b{color:var(--gold)}
+  td .ev{color:var(--sub);font-family:"SF Mono",Menlo,monospace;font-size:11.4px;line-height:1.5}
+  #s4 td:first-child,#s4 th:first-child{white-space:nowrap;width:62px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:16px 18px;margin:14px 0}
+  .warn{border-left:3px solid var(--gold);background:var(--warnbg)}
+  .bad{border-left:3px solid var(--red);background:#1c0f0c}
+  .ok{border-left:3px solid var(--acc);background:var(--okbg)}
+  .key{color:var(--acc);font-weight:600}
+  .g{color:var(--gold);font-weight:600}
+  .r{color:var(--red);font-weight:600}
+  ul.tight{margin:7px 0;padding-left:21px}
+  ul.tight li{margin:4px 0}
+  .pill{display:inline-block;font-size:11.5px;font-family:"SF Mono",Menlo,monospace;
+    padding:1px 7px;border-radius:10px;border:1px solid var(--line);color:var(--sub);white-space:nowrap}
+  .pill.todo{color:var(--red);border-color:#4a2521}
+  .pill.doing{color:var(--gold);border-color:#4a3d1c}
+  .pill.done{color:var(--acc);border-color:#1c4a3b}
+  .pill.na{color:var(--sub)}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 6px}
+  .bar button{background:var(--panel2);border:1px solid var(--line);color:var(--sub);
+    font:13px "SF Mono",Menlo,monospace;padding:5px 11px;border-radius:5px;cursor:pointer}
+  .bar button:hover{color:var(--ink);border-color:var(--acc)}
+  .bar button.on{color:#000;background:var(--acc);border-color:var(--acc)}
+  .cnt{color:var(--sub);font-size:12.5px;margin-left:4px}
+  footer{margin-top:52px;padding-top:18px;border-top:1px solid var(--line);color:var(--sub);font-size:13px}
+  @media print{
+    :root{--bg:#fff;--panel:#f4f5f7;--panel2:#eef0f3;--line:#ccd2da;--ink:#111;--sub:#5a6472;
+      --acc:#0a8f6e;--gold:#8a6d1b;--red:#b3361f;--code:#f6f7f9;--okbg:#eef7f3;--warnbg:#fbf3df}
+    body{font-size:11pt} nav.toc,.bar{display:none} .wrap{max-width:none;padding:0}
+    th{position:static}
+    pre{page-break-inside:avoid;border-color:#bbb} table{page-break-inside:auto}
+    tr{page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>我的Agent 功能手册与迭代看板</h1>
+  <div class="meta">
+    版本 <b>v1.7</b> · 建档 <b>2026-10-28</b> · 最近更新 <b>2026-10-30</b>（上线 <b>V9 审批等待进记忆格式：重启、点旧会话都读得出那一格</b>；上一轮 V7 侧栏选中态同步 + V8 审批等待时长单列）· 对象 <b>~/Desktop/我的Agent.app + ~/Desktop/study/ai学习/smolagents</b><br>
+    参照基准 <b>WorkBuddy 5.9.3（腾讯，拆包取证）</b> 与 <b>Qoder 0.4.4（本会话实时工具面）</b> ·
+    文字事实源 <b>迭代记录.md</b>，本 HTML 是渲染视图
+  </div>
+</header>
+
+<nav class="toc">
+  <a href="#s1">1 怎么用</a>
+  <a href="#s2">2 现状能力面</a>
+  <a href="#s3">3 参照基准</a>
+  <a href="#s4">4 缺口看板</a>
+  <a href="#s5">5 迭代手册</a>
+  <a href="#s6">6 迭代记录</a>
+  <a href="#s7">7 待补</a>
+</nav>
+
+<h2 id="s1">1 这份手册怎么用</h2>
+
+<p>它回答三个问题，别的都不回答：</p>
+<ul class="tight">
+  <li><b>我的智能体现在到底有什么</b>（第 2 节）——只写磁盘上真实存在、当场验过的东西，每条挂文件与行号。</li>
+  <li><b>对着成熟产品还缺什么</b>（第 3、4 节）——缺口编号化，你可以直接回「做 P0 的 1、5」，我按编号动。</li>
+  <li><b>每迭代一次怎么留痕</b>（第 5、6 节）——第 5 节是<b>手册</b>（怎么写一条迭代记录、上线要走哪几步），第 6 节是<b>记录本身</b>。</li>
+</ul>
+
+<div class="card warn">
+  <b>两份文件的关系，必须搞清：</b>
+  <ul class="tight">
+    <li><code>迭代记录.md</code> = <span class="key">事实源</span>。每次迭代先追加它（纯文本，能 diff，能在编辑器里改）。</li>
+    <li><code>agent功能手册.html</code> = <span class="key">视图</span>。第 4 节的状态列和第 6 节的记录，由我按 md 回写。两者若冲突，<b>以 md 为准</b>，并立刻重生成 HTML。</li>
+  </ul>
+</div>
+
+<p>取证口径先说死，免得你看下去把猜测当事实：</p>
+<table>
+  <tr><th>来源</th><th>怎么取的</th><th>可信度</th></tr>
+  <tr><td>你的 Agent 现状</td><td>直接读磁盘文件、<code>.venv/bin/python</code> 实调工具、<code>lsof</code>/<code>who</code> 实测</td><td><span class="key">高</span>，每条可复跑</td></tr>
+  <tr><td>WorkBuddy 5.9.3</td><td>静态解包 <code>app.asar</code>（12,063 条中文文案 + 主进程文件名），<b>未运行该应用</b></td><td><span class="g">中高</span>：文案证据强，文件名证据弱</td></tr>
+  <tr><td>Qoder 0.4.4</td><td>用本会话可见的真实工具面（MCP/skills/plan/tasks/memory）对照，<b>未拆包</b></td><td><span class="g">中</span>：能证明"这类产品有"，不能证明"页面长这样"</td></tr>
+  <tr><td>各缺口的"代价"</td><td>我的工程估计，<b>没有一次实测支撑</b></td><td><span class="r">低</span>，见第 7 节【待补】</td></tr>
+</table>
+
+<h2 id="s2">2 现状能力面（v1.7，全部实测）</h2>
+
+<h3>2.1 组件与体量</h3>
+<div class="src">wc -l / ls 实测 · 2026-10-30 12:58（本轮，第 7 步文档闸收尾时重算，回滚演练恢复之后）</div>
+<table>
+  <tr><th>文件</th><th>行数</th><th>职责</th></tr>
+  <tr><td><code>smolagents/my_ui.py</code></td><td>1,253 <span class="key">↑ v1.6:1,205 ↑ v1.5:1,108 ↑ v1.4:893 ↑ v1.3:850 ↑ v1.2:462 ↑ v1.1:76 ↑ v1.0:15</span></td><td><code>OpsUI(GradioUI)</code>：<b>自建 <code>gr.Blocks</code></b>（侧栏 + 状态条 + panel 消息流）、<code>DARK_CSS</code> 深色壳、<code>History</code> 会话库、<b>真刹车</b>、<b>一步一张带状态色的步骤卡（V4）</b>、<b><code>write_file</code>/<code>run_python</code> 执行前审批（P0-2）</b>、<b>连问累加不吞前一题（D5）</b>、<b>会话级记忆隔离：点旧会话能接着聊（V5）</b>、<b>记忆落库：重启进程后模型那一边接着记得（V6）</b>、<b>停止落在待批卡之前不再死停（D7）</b>、<b>历史库按题序落库（D6）</b>、<b>侧栏高亮跟着绑定走：新会话不再留上一条骗人（V7）</b>、<b>审批等待时长从步骤耗时里单列（V8）</b>、<b>那一格跟着记忆进库：重启后旧步骤仍读得出「本题审批」，状态条改报屏幕上这一条会话（V9）</b>。v1.3 起 <code>agent.run()</code> 跑在<b>工作线程</b>上，UI 以 0.25s 轮询事件队列。仍绑 <code>share=False</code>、<code>127.0.0.1:7860</code>；Ctrl-C 后 <code>os._exit(0)</code> 硬退。<b>67,362 B</b> / 53,019 字符（v1.6 是 63,316 B，v1.5 是 55,774 B，v1.4 是 44,838 B）</td></tr>
+  <tr><td><code>smolagents/.agent-history.sqlite3</code></td><td>单文件</td><td><b>v1.2 新增（V3）</b>：<b>三张</b>表 <code>sessions</code> / <code>messages</code> / <b><code>memory</code>（v1.5 起，V6）</b>，侧栏的历史与模型的记忆都在这里。<b>此刻磁盘上有</b>：<code>49,152 B</code>、<b>8</b> 条会话 / <b>54</b> 行消息 / <b>8</b> 行记忆（v1.7 本轮交付形态实跑<b>只追加</b>了 1 条（会话 8），旧 <b>7</b> 行 payload 的 <code>sha1</code> 逐行不变、零丢失；验收数据要复现请先备份再删）。<code>my_ui.py:30</code> 按 <code>Path(__file__)</code> 定位，与 cwd 无关；v1.1~v1.4 读不到 <code>memory</code> 表，<b>留着无害</b>（实测 v1.4 代码在同一份库上读写正常、表原地不动）。<b>口径</b>：<code>messages</code> 是<b>屏上的话</b>，<code>memory</code> 是<b>模型读的那一串</b>（<code>{"fmt":"v2","steps":[…]}</code>，只存 <code>to_messages()</code> 用得到的字段，<code>model_input_messages</code> 与图片一律不存；v1.7 起 <code>ActionStep</code> 多一个<b>可选</b>键 <code>wait</code>＝审批等待秒数，真等过才写、0 不占位，见 §2.5 的 V9 行）。D5 已在 v1.4 修掉（连问不覆盖，改为累加），<b>V6 在 v1.5 修掉</b>（重启后模型接着记得），<b>V7 在 v1.6 修掉</b>（点旧会话不再点错门），<b>V9 在 v1.7 修掉</b>（「本题审批」跨重启读得出了）。<span class="r">同一个库里现在 <code>v1</code> / <code>v2</code> 两种 <code>fmt</code> 长期并存</span>：新代码认 <code>MEM_FMT_READ=("v1","v2")</code>，<b>旧代码只认 <code>"v1"</code></b> → 回滚会把 v1.7 期间新建的会话读成「没记忆」（本手册 §6.1 第 5 节）</td></tr>
+
+  <tr><td><code>smolagents/my_agent.py</code></td><td>82</td><td>合并后的单一 agent：2 个行情指标工具 + 复用 5 只手，<code>max_steps=8</code>，<code>stream_outputs=True</code>。<b>D1 链路关键</b>：<code>:8</code> 从 <code>my_coding_agent</code> import，所以那文件的模块级 <code>mkdir</code> 会执行。<b>v1.2 / v1.3 / v1.4 / v1.5 / v1.6 / v1.7 都没动</b></td></tr>
+  <tr><td><code>smolagents/my_coding_agent.py</code></td><td>204 <span class="key">↑ v1.0:202</span></td><td>五只手 + <code>guarded()</code> 路径收敛 + staging 写入 + 沙箱执行；<code>STAGING.mkdir()</code> 已提到<b>模块级</b>（D1）。<b>v1.2 / v1.3 / v1.4 / v1.5 / v1.6 / v1.7 都没动</b>（与 <code>.rollback/v1.6</code>、<code>.rollback/v1.7</code> 存档逐字节 <code>cmp</code> 一致）；审批闸不在这里装，见 §2.5 的「审批」两行</td></tr>
+  <tr><td><code>ai学习/.rollback/</code></td><td>16 份</td><td><code>my_ui.py</code> 与 <code>my_coding_agent.py</code> 的 <b>v1.0 / v1.1 / v1.2 / v1.3 / v1.4 / v1.5 / v1.6 / v1.7</b> 八版存档（每版两份，共 16 个文件），回滚靠它（这几份 <code>my_*.py</code> 不在 git 里，见 D3）。v1.7 演练做了<b>双向</b>：<code>cp .rollback/v1.6/my_ui.py → smolagents/</code> ＋ <code>cmp</code> 逐字节一致 → 跑 v1.6 那份离线套件 <b>92 条全 PASS</b>；<code>cp .rollback/v1.7/my_ui.py</code> 回去 ＋ <code>cmp</code> 一致 → 再跑 v1.7 套件 <b>115 条全 PASS</b>（第 7 步改注释之后原样重跑一遍，两个方向仍旧全绿）。<span class="r">但这一轮的回滚不是无损的</span>：v1.7 写的 <code>fmt="v2"</code> 在 v1.6 代码里整块读空，见 §2.1 库那行与 §6.1 第 5 节</td></tr>
+  <tr><td><code>~/Desktop/我的Agent.app/…&#47;launcher</code></td><td>132</td><td>双击启动：端口检测、会话恢复清理、Terminal 日志窗、Chrome app 窗口</td></tr>
+  <tr><td><code>~/Desktop/关闭Agent.command</code></td><td>~90</td><td>关停：7860 监听者 + 启动器 shell + 专用 Chrome profile + 收日志终端窗</td></tr>
+</table>
+
+<h3>2.2 动作空间：你自己声明 <b>7</b> 项，注册表实测 <b>8</b> 项</h3>
+<div class="src">my_agent.py:55-56 的 tools=[…]<b>（7）</b> · <code>len(agent.tools)</code> 实测 <b>8</b>：第 8 项 <code>final_answer</code> 由 <code>agents.py:402</code> <code>setdefault</code> 自动补 · 2026-10-29 复核</div>
+<div class="card">下面这张表列的是<b>你写的 7 项</b>（"只手"口径）。凡引用"动作空间"这个数字，<b>必须说明是哪一口径</b>——模型实际看见的是 8 项，第 8 项是交卷动作本身。README §9.2 同此。</div>
+<table>
+  <tr><th>#</th><th>工具</th><th>能做什么</th><th>硬约束（代码里，不靠模型自觉）</th></tr>
+  <tr><td>1</td><td><code>max_drawdown</code></td><td>收盘价序列最大回撤 + 发生区间</td><td>纯计算，无 IO</td></tr>
+  <tr><td>2</td><td><code>annualized_volatility</code></td><td>日收益年化波动率（×√252）</td><td>纯计算，无 IO</td></tr>
+  <tr><td>3</td><td><code>read_file</code></td><td>带行号读文本片段</td><td>≤300 行；越界/凭证目录 <code>PermissionError</code></td></tr>
+  <tr><td>4</td><td><code>list_dir</code></td><td>列一层目录</td><td>跳过 <code>.git/.venv/node_modules</code> 等</td></tr>
+  <tr><td>5</td><td><code>grep_files</code></td><td>正则全库搜，返 <code>文件:行:内容</code></td><td>≤100 命中；单文件 ≤200 KB</td></tr>
+  <tr><td>6</td><td><code>write_file</code></td><td>生成新内容 + unified diff</td><td><span class="key">不写原文件</span>，只落 <code>ai学习/.agent-staging/</code>，要你自己 <code>cp</code>；<b>v1.3 起执行前还要审批</b>（<code>GATED_TOOLS</code>，<code>my_ui.py:34</code>）</td></tr>
+  <tr><td>7</td><td><code>run_python</code></td><td>临时沙箱跑 Python</td><td><b>v1.3 起执行前审批</b>；AST 语法预检；正则禁 <code>rmtree/socket/urllib/requests/subprocess</code>；env 只留 5 个变量（<b>拿不到 API Key</b>）；20 秒熔断。<span class="key">审批只装在 UI 实例的 <code>forward</code> 上，命令行直调不过闸</span></td></tr>
+</table>
+
+<h3>2.3 交付外壳：双击与关停</h3>
+<ul class="tight">
+  <li><b>起</b>：双击 <code>我的Agent.app</code> → 需要时拉起 Terminal 日志窗跑 <code>my_ui.py</code> → 等 <code>7860</code> 监听（最多 40 秒，超时弹告警）→ <code>open -n</code> 起独立 Chrome 实例以 <code>--app</code> 模式开无地址栏窗口，专用 <code>--user-data-dir</code> 隔离，不碰你日常 Chrome。</li>
+  <li><b>停</b>：日志窗 <b>Ctrl-C</b> 与双击 <code>关闭Agent.command</code> <span class="key">等价</span>（2026-10-28 两条路各自验过）。四条验收：<code>lsof</code> 端口 0 监听、Agent 专用 Chrome 进程 0、<code>who</code> 只剩 console、System Events 窗口数 0，且<b>不弹「终止正在运行的进程」警告</b>。</li>
+  <li><b>禁忌</b>：Terminal 的 <code>count of windows</code> 会把幽灵窗口算进去，不能当判据；也不要用 <code>do script "exit"</code> 关窗（会留下带 <code>exit</code> 标题的空壳并触发警告表）。</li>
+</ul>
+
+<h3>2.4 已有的上游能力：接上的、没接的、主动放弃的</h3>
+<div class="card">
+  <p>这一节是第 4 节很多缺口的根因——<b>能力不是没有，是没插</b>：</p>
+  <table>
+    <tr><th>上游开关</th><th>位置</th><th>你现在</th></tr>
+    <tr><td>MCP 客户端装载</td><td><code>tools.py:951 ToolCollection.from_mcp</code></td><td>未用；<code>.venv</code> 里 <b>没装 <code>mcp</code> 包</b>（实测 <code>ModuleNotFoundError</code>）</td></tr>
+    <tr><td>工具仓库动态拉取</td><td><code>tools.py:517 / :910 from_hub</code></td><td>未用</td></tr>
+    <tr><td>子 agent 当工具</td><td><code>agents.py:369-387 _setup_managed_agents</code></td><td>未用</td></tr>
+    <tr><td>联网搜索工具</td><td><code>default_tools.py:342 WebSearchTool</code></td><td>未装依赖（<code>duckduckgo_search</code> 缺失），且 <code>run_python</code> 从结构上禁止联网</td></tr>
+    <tr><td>token 累计统计</td><td><code>monitoring.py:86-111</code></td><td><span class="key">v1.1 已接</span>：进统计卡的「进程累计」行，与框架 <code>[Step N]</code> 日志逐位相符</td></tr>
+    <tr><td>原生中断</td><td><code>agents.py:754 interrupt()</code> + <code>:470 / :546 interrupt_switch</code></td><td><span class="key">v1.1 已接</span>（Stop 的 <code>finally</code> 里调用）。<b>看板 v1.0 曾判"smolagents 无原生中断、要自己插桩"，那是错的</b></td></tr>
+    <tr><td>跨题记忆复位</td><td><code>gradio_ui.py:310 reset_agent_memory</code></td><td>没传，默认 <code>False</code> → 同进程内记忆累积，第二题起步就更贵。<b>这也是统计卡与 <code>[Step N]</code> 步号必然不同的原因</b></td></tr>
+    <tr><td>多模态上传</td><td><code>gradio_ui.py:457 multimodal=file_upload_folder is not None</code></td><td>已开（你传了 <code>./data</code>），这是上游<b>唯一还在用的现成能力</b>（其余两条见下）</td></tr>
+    <tr><td><code>ChatInterface</code> 现成壳</td><td><code>chat_interface.py:265 _setup_events()</code>（在 <code>__init__</code> 内跑完）</td><td><b>v1.2 主动放弃</b>：构造之后没有口子往消息流旁插侧栏、也没口子把状态条提到输入框上方，所以 <code>create_app()</code> 覆盖成自建 <code>gr.Blocks</code>。副作用两条都实测到了：用户气泡要自己拼（<code>_user_message</code>），gradio 自带的 stop 键失效（<code>chat_interface.py:371-372</code> 只有 <code>ChatInterface</code> 会接）</td></tr>
+    <tr><td><code>GradioUI._stream_response</code> 的默认渲染（一步三张卡）</td><td><code>gradio_ui.py:80-163 _process_action_step</code>（吐 5-6 条 <code>status:"done"</code> 消息）、<code>:226 pull_messages_from_step</code></td><td><b>v1.3 主动脱离</b>：<code>_stream_response()</code> 不再调 <code>super()</code>，改为自己起线程 + <code>_step_card()</code> 组卡。<b>为什么必须脱离</b>：上游那张 <code>ChatMessageStreamDelta</code> 的流式泡是同步推的，在里面 <code>Event.wait()</code> 等审批会把整条事件循环钉死。仍从上游复用的只有 <code>_clean_model_output</code> 与 <code>_process_final_answer_step</code>（最终答案那一条保持原样）</td></tr>
+    <tr><td><code>BaseTool.__call__</code> 走 <code>self.forward</code></td><td><code>tools.py:231-249</code>（末行 <code>return self.forward(...)</code>）</td><td><span class="key">v1.3 已接</span>：审批闸靠<b>实例属性遮蔽类静态方法</b>装上去，<code>copy.copy</code> 一份再覆盖 <code>forward</code>，上游源码零改动、命令行路径不受影响</td></tr>
+    <tr><td>一步多工具并行</td><td><code>agents.py:1361-1437 process_tool_calls</code>（N&gt;1 时进 <code>ThreadPoolExecutor</code>）</td><td>没测到：本轮三条路的题面都是<b>单工具调用</b>。并行时队列里会同时躺多条待批，而允许/拒绝只处理<b>最早</b>那条 —— 见 §7 的【待补】</td></tr>
+  </table>
+</div>
+
+<h3>2.5 界面构成、审批、刹车与会话连续性（v1.7 后，实测）</h3>
+<div class="src">my_ui.py:782-803 状态条 · :236-355 <code>DARK_CSS</code>（审批键 <code>:289-297</code>）· :691-746 <code>_step_card</code> · :640-689 <code>_approval_card</code> ＋它的两个渲染小工具 <code>_fence</code>/<code>_args_text</code> · :565-621 审批闸 · :806-958 线程驱动与流式渲染 · :961-986 <code>_bind_memory</code> · :1007-1025 <code>_radio_update</code>（V7）· :1043-1105 <code>_respond</code> · :1183-1241 <code>create_app</code> · <b>:988-1004 <code>_session_steps</code>（V9 只读出口）</b> · :63-232 记忆编解码（V6，v1.7 升 <code>fmt=v2</code>）· 离线 <b>115</b> 条断言（<code>/tmp/v17_test.py</code>）+ CDP 实采（交付形态 7860 一轮、探测口 7861 一轮，headless Chrome 9333，真鼠标事件）</div>
+<table>
+  <tr><th>件</th><th>看得见的东西</th><th>口径（写死）</th></tr>
+  <tr><td><b>顶部状态条</b>（V1）</td><td><b>常驻六颗</b>胶囊：<code>模型</code> <code>步数</code> <code>本题 token</code> <code>本题耗时</code> <code>进程 token</code> <code>状态</code>，另加<b>两颗按需出现的</b>：<b><code>待批</code></b>（队里有东西时才出现，显示被拦的工具名）、<b><code>本题审批</code>（v1.6 新增，V8：本题累计里花在等点按钮上的秒数；没审批就<b>不出现</b>）</b>；右侧一枚自建「■ 停止」，待批时它左边多两枚「✔ 允许」「✖ 拒绝」</td><td>v1.6 实测同一题跑完的一帧：<code>步数 2/8 · 本题 token in 4,782 / out 39 · 本题耗时 22.9s · <b>本题审批 21.0s</b> · 状态 完成</code>；没审批的题那一颗<b>整个不出现</b>（<code>pillWait=null</code>）。数字与下面的步骤卡<b>同源</b>：都出自 <code>_stats()</code>（<code>:749-780</code>）与 <code>_status_html()</code>（<code>:782-803</code>），不存在两套算法。<b>v1.7 起（V9）这一串报的是屏幕上这一条会话</b>：点侧栏旧会话、刷新页面时它走 <code>_session_steps()</code>（<code>:988-1004</code>）的<b>只读</b>路径，进程里有这一份就读它的 <code>steps</code>，没有就 decode 库里那一串 → 同一个数在你来回切会话时<b>会跟着变，以前不会</b>。v1.6 这里报的是"上一次提问那条会话"，什么都没提问过时甚至是一份空的 <code>0/8</code>——屏上是甲、条上是乙。<b>只读路径不改绑定</b>：<code>agent.memory</code> 仍停在上一条提问的会话（V5 的语义），所以下一次提问照样落进它自己那条</td></tr>
+  <tr><td><b>七种状态</b></td><td><code>空闲 / 生成中 / 等待审批 / 停止中 / 完成 / 已停止 / 步数用满</code>（<code>STATE_LABEL</code>，<code>:357-365</code>；生成中<b>橙</b>、<b>等待审批与停止中与用满黄</b>、已停止<b>红</b>，空闲与完成默认灰）</td><td>「等待审批」是 v1.3 新加的一档（<code>awaiting</code>）：只要 <code>_unanswered()</code> 非空就顶掉「生成中」。v1.2 那档「步数用满」的机制不变——框架用满 <code>max_steps</code> 后<b>不抛异常</b>，而是在 <code>while</code> 循环外补一步收尾问答（<code>agents.py:606-608</code>、<code>:625-637</code>），只能从 <code>memory</code> 里认，这时步数显示 <code>9/8</code> 是<b>真实值</b></td></tr>
+  <tr><td><b>步骤卡</b>（V4，取代 v1.2 的三张折叠卡）</td><td>一次执行<b>一张</b>卡，标题一行读完：<code>🛠 第 1 步 · run_python · 🟢 成功 · 22.1s · <b>审批 21.0s</b> · in 2,349/out 22</code>（v1.6 起中间那格是 V8 单列出来的等待；<b>没等人就没有这一格</b>，如 <code>第 2 步 · final_answer · 🟢 成功 · 0.8s · in 2,433/out 17</code>）；左边框按判定上色（<b>绿</b>成功 / <b>红</b>报错 / <b>灰</b>被拦）。点开四段：<b>模型思考</b>、<b>调用</b>（工具名 + 参数全文）、<b>结果</b>、<b>本步 + 本题累计</b>数字（<code>本步 22.1s（含审批 21.0s） · in 2,349 / out 22</code>）</td><td>判定三档写死：<code>🟢 成功</code> / <code>🔴 报错</code> / <code>⚪ 已拒绝·已取消·超时未批</code>。<span class="key">被拦下的那一步在框架眼里是一次正常观察值</span>，所以 <code>⚪</code> 不是错误、别当失败读——判据是"返回值是否等于 <code>DENIED_OBSERVATION</code> 里的文案"（<code>:50-55</code>），不是 <code>is_error</code>。<span class="key">两格的口径要读死</span>：前面那格总时长<b>永远是框架的 <code>timing.duration</code></b>（含等待，v1.3 起没变），后面那格才是"其中等你点按钮多久"；纯执行时间＝两者相减。📊 独立统计卡<b>已取消</b>（v1.1 那张），数字进步骤卡。实测与框架日志逐位相符：卡上 <code>in 2,349</code> = 日志 <code>[Step 1: Input tokens: 2,349]</code></td></tr>
+  <tr><td><b>审批卡</b>（P0-2）</td><td>模型要动 <code>write_file</code> 或 <code>run_python</code> 时<b>先出卡后执行</b>：标题 <code>🟡 待批 · run_python · 等待审批</code>，正文是<b>工具名 + 完整参数</b>（要跑的代码全文在围栏里）。决定后同一张卡原地改标题：<code>🟢 已允许 · 等了 21.0s</code> / <code>⚪ 已拒绝 · 等了 7.0s</code> / <code>⏹ 随停止取消</code> / <code>⏳ 超时未批</code>（「等了」那一格是 v1.6 的 V8；<b>随停止取消的那条没有这一格</b>）</td><td>闸的装法：<code>copy.copy(tool)</code> 后<b>只覆盖实例属性 <code>forward</code></b>（<code>tools.py:231-249</code> 的 <code>__call__</code> 末行就是 <code>self.forward(...)</code>），所以<b>模块级 <code>@tool</code> 对象、命令行路径、上游源码都不受影响</b>；<code>_opsui_gated</code> 标记做幂等，第二次开 UI 不会套娃。<code>__signature__</code> 手工保留（<code>validate_tool_arguments</code> 看的是 <code>tool.inputs</code>，但 gradio 之外还有人签参数）。参数超 <b>1,200</b> 字符截断并写明原长。<span class="key">「等了」的秒数记在 <code>decide()</code> 那一刻</span>（<code>Approval.waited</code>，<code>:382-397</code>），不是画卡时的现场时钟——否则"工具又跑了多久"会被算进等待，而且<b>已结算卡片的标题会随帧变化</b>（<code>drawn</code> 的键就不再稳定了）</td></tr>
+  <tr><td><b>✔ 允许 / ✖ 拒绝</b></td><td>状态条右侧两枚键，<b>平时不出现</b>，有待批才点亮：允许实底绿 <code>#238636</code>、拒绝描边红</td><td>必须是<b>真按钮</b>：gradio 6.30 的 Chatbot <b>没有</b> <code>.select</code>/选项事件，卡上做不了可点区域。两枚键的 handler <b>只改 decision + 收起自己</b>，<b>不碰 chatbot</b>——消息列表由那条还在跑的流独占，两边写同一输出会互相盖掉（踩过：写回旧下标把刚生成的步骤卡盖成了审批卡）</td></tr>
+  <tr><td><b>执行模型</b>（v1.3 换的底层）</td><td>看不出来，但它是"能停下来等你点按钮"的全部原因</td><td><code>agent.run(stream=True)</code> 搬进<b>工作线程</b>（<code>_worker</code>，<code>:806-829</code>），事件塞 <code>queue.Queue</code>；UI 侧 <code>q.get(timeout=0.25)</code> 轮询。<span class="key">阻塞式审批不能留在 gradio 的生成器里</span>：那条流是被前端<b>同步推</b>着走的，生成器里 <code>Event.wait()</code> 会把整条事件循环钉死（连状态条都不刷新）。<code>_pending</code> 与 <code>_gate_lock</code> 挂<b>类</b>上（<code>:530-531</code>）——闸装在进程唯一的 agent 上，队列也必须是类级；v1.5 的 <code>_run_seq</code>/<code>_cancelled_before</code>（<code>:535-536</code>）<b>同理必须类级</b>，v1.6 的 <code>_pending_wait</code>（<code>:537-540</code>）也是：<b>记帐的是 worker 线程、取帐的是 UI 线程</b>，放实例上会把账落在没人看的那一边</td></tr>
+  <tr><td><b>审批超时</b></td><td>一直不点 → 卡变 <code>⏳ 超时未批</code>，步骤卡 <code>⚪</code>，模型收到"超过 600 秒无人处理，已自动拒绝"</td><td><code>APPROVAL_TIMEOUT = 600.0</code>（<code>:36</code>）。超时<b>按拒绝</b>处理：题可以重问，但 worker 线程不能永远挂在 <code>wait()</code> 上。<span class="key">600 秒这条路只做过离线验证</span>（把常量压到 1 秒跑），在线【未验证】</td></tr>
+  <tr><td><b>深色壳</b>（V2）</td><td>整页深色，页脚「通过 API 使用 🚀 · 使用 Gradio 构建 🌊 · 设置 ⚙️」已隐藏；发送键橙色（与 App 图标同色）</td><td>两层：<code>:root</code> 变量同名覆盖 + <b>六处 gradio 硬编浅色的定点压制</b>（块标题 <code>rgb(255,255,255)</code>、secondary 按钮 <code>rgb(228,228,231)</code>、气泡底 <code>rgb(250,250,250)</code>、panel 下 <code>.message-row</code> user <code>rgb(255,247,237)</code>/bot <code>rgb(250,250,250)</code>、折叠卡 <code>.thought-group</code>、页脚）。全部取自 <code>getComputedStyle()</code> 实测；最终扫描只剩三处浅色：0 宽的隐藏上传 input、故意橙的发送键、自定义 user 行。v1.3 追加两枚审批键的配色（<code>:285-293</code>）</td></tr>
+  <tr><td><b>会话侧栏</b>（V3 = P0-3）</td><td>左边一条列表：「＋ 新会话」按钮 + 历史会话（标题取首问前 <b>28</b> 字）；点一条就把那次的消息贴回屏幕。<b>v1.6（V7）：亮着的那一条永远等于"下一条问题落进哪一条"</b>——新会话没建行时<b>一条都不亮</b>，刷新页面会补上高亮，提问新建的那条当场点亮</td><td>存 <code>smolagents/.agent-history.sqlite3</code>（<code>sessions</code> + <code>messages</code> + <b><code>memory</code>（v1.5）</b>，全 <code>ON DELETE CASCADE</code>）。<b><code>messages</code> 是屏上的字，<code>memory</code> 是模型读的那一串</b>——v1.4 起两者<b>按会话一一对应</b>：<b>D5 已修</b>，连问两题不再整条覆盖，改为累加；<b>V5 已修（进程内）</b>，点旧会话会同步换 <code>agent.memory</code>，<b>v1.5 起记忆也落库</b>（V6）：重启后点回旧会话，模型那一边接着记得（实测答 <b>73</b>、<code>in 2,574</code>）；<b>V7 已修（v1.6）</b>：高亮由 <code>self._sid</code> <b>单向驱动</b>（<code>_radio_update</code> <code>:1007-1025</code>），v1.5 是"上一条还亮着 → 照着亮的点＝点一个没变的值 → gradio 不派发 change → 问题落进新会话"。<code>choices()</code> 上限 <b>50</b> 条，不搜索不分组不分页；排序 v1.4 起才是真的 <code>updated_at DESC</code>（D6）</td></tr>
+  <tr><td><b>消息流</b></td><td>整行宽；屏幕第一行是<b>你自己的问题</b>，之后每步<b>一张</b>步骤卡，模型的话在卡之间以流式泡出现、步骤一到即被摘掉</td><td>必须 <code>layout="panel"</code>：默认 <code>bubble</code> 会把消息列按内容收缩，实测折叠卡只有 <b>353px</b>（容器 950px）。用户气泡要自己拼（<code>_user_message()</code>，<code>:1027-1041</code>）——<code>ChatInterface</code> 不在了，没人替我们补这句。v1.4 起这一行的<b>起点变了</b>：整串 = 库里已有 + 本题 + 本轮输出，所以「屏幕第一行」在连问之后是<b>上一题</b>而不是本题</td></tr>
+  <tr><td><b>刹车</b></td><td>生成中点状态条右侧的 <b>■ 停止</b> → 当前这步跑完就停，状态先转「停止中」再转「已停止」；<b>待批时点停止同样有效</b>；<b>之后直接问下一题即可，不用重启</b></td><td>v1.2 的语义（<span class="key">在步边界停，不打断正在执行的那一步</span>，停止点 <code>agents.py:545-547</code>）保留，v1.3 <b>扩大</b>了一条：<b>停止 = 同时拒绝所有待批</b>（<code>_stop()</code> 里先 <code>_settle_all("cancelled")</code> 再 <code>interrupt()</code>，<code>:1115-1135</code>）。不这么做的话待批时点停止，worker 会永远等在 <code>Event.wait()</code> 上。<span class="key">v1.4 实测出的那条例外（D7）已在 v1.5 修掉</span>：<code>_stop</code> 先给本轮打<b>取消号</b>，闸在入队那一刻看到号就在<b>同一个临界区</b>里直接按 <code>cancelled</code> 结算（<code>my_ui.py:602-605</code>、<code>:1131-1132</code>），两种到达顺序都覆盖、窗口关死。v1.5 在<b>交付形态 7860</b> 复测同一时机（提问后 0.2s 按停止）：<b>从没进过</b>「等待审批」，1.2s 落到已停止、观察 26s 没回潮；<b>v1.6 再复测</b>（0.9s 那一下）：<code>awaitSeen 0</code>、<b>2.0s 自己收尾</b>、状态 <code>已停止</code>，而且 V8 的门槛生效后<b>不再有「审批 0.0s」那种噪声格</b>。见 §4.1。实测停止后：审批卡 <code>⏹ 随停止取消</code>、步骤卡 <code>⚪ 已取消 · 1.1s · in 2,349/out 22</code>、气泡 <code>⏹ 已停止：AgentError</code>、<b>副作用文件未生成</b>。<b>例外（v1.2 实测撞上）</b>：正好跨过 <code>max_steps</code> 时那次循环外的收尾问答 <code>interrupt</code> 拦不住，实测多花 <b>36.74 s / +9,096 input token</b></td></tr>
+  <tr><td><b>连问累加</b>（D5，v1.4）</td><td>同一页面连问两题、<b>不点</b>「＋ 新会话」：屏上<b>两问两答都在</b>，侧栏仍是<b>一条</b>会话（标题取最早那题）</td><td>做法不是让 chatbot 变，而是<b>换起点</b>：<code>_respond()</code> 每轮的 <code>base = self.hist.load(sid)</code>（<code>:1052</code>），流式每一帧 <code>last = base + [user_msg] + msgs</code>（<code>:1067</code>，v1.3 是 <code>[user_msg] + msgs</code>）。<code>History.save()</code> 的<b>写法语义没变</b>（仍是 <code>DELETE</code> 后整条重插），变的是调用方终于喂完整列表，"覆盖"第一次等价于"追加"。实测：屏上 4 行、<code>session 1</code> 一路长到 <b>26 行</b>、第一题「记住 73」第二题答 <code>Final answer: 73</code>。<span class="key">副作用</span>：<code>messages.rowid</code> 每轮跳号（实测 <code>1,2,3 → 4..9</code>），<b>排序与去重一律看 <code>ord</code>，别看 <code>rowid</code></b></td></tr>
+  <tr><td><b>会话级记忆隔离</b>（V5，v1.4，<b>只在进程里</b>）</td><td>点「＋ 新会话」后问「我刚才让你记住的数字」→ 答<b>「不记得」</b>；点侧栏那条旧会话 → 屏上回到原对话，接着问就接在它的下文里</td><td><code>_bind_memory(sid)</code>（<code>:961-986</code>）把 <code>agent.memory</code> 换成 <code>self._mem[sid]</code>（<code>:560-561</code>）。<b>只换引用，从不 <code>reset()</code></b>：<code>reset=False</code> 时框架会把新任务<b>追加</b>进 <code>self.memory</code>（<code>gradio_ui.py:310</code> 默认、<code>:389</code> 实传），所以"谁的记忆"＝"起 worker 那一刻 <code>self.memory</code> 指向谁"。<b>刻意不传 <code>reset=True</code></b>——那会连 <code>monitor</code> 一起清零（<code>agents.py:478-480</code>），「进程累计」口径就废了。<code>_select_session</code> 交出第三个值 <code>int(sid)</code>（<code>:1137-1160</code>）、<code>_on_load</code> 从闭包提成方法并把 <code>sid</code> 指到侧栏第一条（<code>:1162-1180</code>）。<span class="r">边界（v1.4 时）</span>：<code>AgentMemory</code> 没有 (de)serializer（<code>memory.py:214-232</code>），所以 v1.4 <b>重启即忘</b>——<b>v1.5 由 V6 自己补了一层</b>：按 <code>to_messages()</code> 读到的字段清单序列化落库、重启后回灌，见下一行</td></tr>
+  <tr><td><b>历史落库排序</b>（D6，v1.4 顺带修）</td><td>侧栏按<b>最近有动作</b>排，不是按"标题还没改"排</td><td><code>History.save()</code> 那条 <code>UPDATE sessions SET updated_at=?, title=CASE WHEN title='新会话' THEN ? ELSE title END</code>（<code>:489</code>）去掉了 v1.2 起的 <code>WHERE title='新会话'</code>。<b>为什么现在必须修</b>：v1.4 的 <code>sid</code> 由侧栏第一条决定，排序错了等于问错地方。离线 8a~8e 五条断言，其中 8c 是"老会话一有动作就回到第一"的正向断言</td></tr>
+  <tr><td><b>记忆持久化</b>（V6，v1.5）</td><td><b>关掉再开，选中旧会话接着问，模型那一边真的记得</b>：答 <b>73</b>；<code>run_python</code> 跑出来的 <code>21</code> 隔两次重启还答得出来</td><td>库里第三张表 <code>memory</code>（<code>:429</code>，additive）一行一条会话，内容 <code>{"fmt":"v1","steps":[…]}</code>（<b>v1.7 起这个 fmt 写 "v2"</b>，见本行末与下一行）。<b>存的是 <code>to_messages()</code> 用得到的字段，不是屏幕文字</b>（<code>agents.py:767-769</code>）；<code>steps</code> 只会出现 <code>TaskStep</code>/<code>ActionStep</code>/<code>PlanningStep</code>——<code>FinalAnswerStep</code> 只 yield（<code>agents.py:609-611</code>）。<b>四个坑</b>：① <code>AgentError.__init__(message, logger)</code> 会<b>当场</b> <code>log_error</code> → 用 <code>cls.__new__(cls)</code> 造；② <code>ToolCall</code> 要 <code>tc.dict()</code>（OpenAI function 形状），不是 <code>asdict</code>；③ <code>Timing.duration</code> 是 property、<code>TokenUsage.total_tokens</code> 是 <code>init=False</code> 派生，只交构造参数；④ <code>make_json_serializable</code>（<code>utils.py:146-153</code>）会把<b>长得像 JSON 的字符串解析成 dict</b>，所以文本字段一律原样存。<span class="key">不存的两块</span>：<code>model_input_messages</code>（整段提示词，O(n²)）与图片三兄弟 → <b>带图的观察值重启后进不了模型上下文</b>【多图会话未验证】。<span class="key">v1.6 曾"有意不存"那一格等待，v1.7 由 V9 收掉</span>：等待秒数仍挂在 step 的私有属性 <code>_opsui_wait</code> 上、<code>MEM_FIELDS</code>（<code>:69-84</code>）<b>仍然不认它</b>（白名单的口径是"下一轮模型读到的字段"，纪律没破），但 <code>encode_memory</code> 单独认这一格 → <code>ActionStep</code> 多一个<b>可选</b>键 <code>wait</code>（<code>:162-168</code>，真等过才写、0 不占位），<code>MEM_FMT</code> 升 <b><code>"v2"</code></b> ＋ <code>MEM_FMT_READ=("v1","v2")</code> 兼容读（<code>:63</code> / <code>:68</code> / <code>:179-180</code>），读回来挂回<b>同一个私有属性</b>（<code>:225-229</code>）→ 显示层一行没改就跨重启读得出了。v1 的老账照读，只是没有那一格（不猜、不补）。见下一行 V9 与 §4.5。<b>坏数据降级</b>：整块坏＝当作没记忆，单条坏＝只跳那一条。落库时机在 <code>_respond</code> 的 <code>finally</code>，判据 <code>_mem_sid == sid</code>（中途换会话不盖别人），<b>半截可接受</b>。实测交付形态：<code>in 2,362 → 2,465 →</code>（重启）<code>2,574 → 2,675 →</code>（二次重启）<code>3,091</code>，而新会话恒为 <b>2,363</b></td></tr>
+  <tr><td><b>停止的取消号</b>（D7，v1.5）</td><td>■ 停止按在待批卡出现<b>之前</b>也不再死停：状态走到<b>已停止</b>，✔/✖ 不会一直挂着</td><td>类级 <code>_run_seq</code> / <code>_cancelled_before</code>（<code>:535-536</code>）：<code>_stream_response</code> 起线程<b>之前</b>领号（<code>:846</code>），<code>_stop</code> 把号抬到当前轮（<code>:1131</code>），<code>_gated_call</code> 在<b>入队那同一个临界区</b>里判号并直接 <code>decide("cancelled")</code>（<code>:602-605</code>）——闸先到 / 停止先到两种顺序都被覆盖。离线 3a~3l 十七条（含 3l 端到端），交付形态 0.2s 那一路实测 <b>1.2s 落到已停止</b>，v1.6 又用 0.9s 那一路复测一次（<code>awaitSeen 0</code>、2.0s 收尾）。<span class="key">代价</span>：号是<b>类级</b>的，一个标签按停止会让所有在飞的待批一起被取消【未验证，当前仍假设一次一题】</td></tr>
+  <tr><td><b>审批等待单列</b>（V8，v1.6）</td><td>等过审批之后，三处各多一格：状态条 <code>本题审批 21.0s</code>、步骤卡标题 <code>22.1s · 审批 21.0s</code>、审批卡结算后 <code>已允许 · 等了 21.0s</code>。<b>没审批过就一格都不多</b></td><td>三段路：<b>记</b>在 <code>Approval.decide()</code> 那一刻（<code>:382-397</code>，超时分支记 <code>APPROVAL_TIMEOUT</code>）→ <b>过账</b>在 <code>_gated_call</code> 醒来后的<b>同一个 <code>_gate_lock</code> 临界区</b>里累进类级 <code>_pending_wait</code>（<code>:607-611</code>）→ <b>取账</b>在 UI 线程收到 <code>ActionStep</code> 那一刻<b>一次取干</b>并挂到那个 step 上（<code>:894-901</code>）。<span class="key">门槛 <code>APPROVAL_WAIT_MIN = 0.05</code></span>（<code>:37-40</code>）在过账点和审批卡标题<b>两处</b>都生效——这条不是审美：D7 那条"入队即随停止取消"的路，账上确实有 0.0004 秒，不加门槛屏上就写 <code>审批 0.0s</code>（交付形态实测抓到过）。总时长那一格<b>定义没动</b>，仍是 <code>timing.duration</code>。换题开局把没领走的账清零（<code>:837-843</code>）。<b>v1.7 追加</b>：这一格现在<b>跟着记忆进库</b>，见下一行 V9</td></tr>
+  <tr><td><b>等待进库 ＋ 状态条读屏幕上这一条</b>（V9，v1.7）</td><td><b>重启之后刷新页面</b>，状态条上「本题审批 X.Xs」自己回来了；<b>点侧栏任意一条旧会话</b>，那串「本题」的数就是那一条的。v1 时代（v1.6 及更早）攒下的会话照读，只是<b>没有</b>「本题审批」那一格</td><td>两段：<b>写</b>在 <code>encode_memory</code> 的 <code>ActionStep</code> 分支（<code>:162-168</code>，<code>row["wait"]=round(_opsui_wait,3)</code>，只有真等过才写 → 没审批的会话编出来与 v1.6 <b>逐字相同</b>，只差 <code>fmt</code> 那两位）；<b>读出口</b>是新增的 <code>_session_steps(sid)</code>（<code>:988-1004</code>）＋ <code>_stats(steps=None)</code> / <code>_status_html(state, steps=None)</code>（<code>:749-752</code> / <code>:782</code>），两个调用点是 <code>_select_session</code>（<code>:1150-1153</code> / <code>:1160</code>）与 <code>_on_load</code>（<code>:1175-1180</code>）。<span class="key">为什么不在点击时顺手 <code>_bind_memory</code></span>：那条路会把 worker 线程正在读的记忆换掉，而且 V5 的语义不该由一次点击改动 → 所以这条路<b>只读</b>。<span class="r">代价（本轮唯一"回滚有代价"的地方）</span>：<code>fmt</code> 升到 <code>v2</code>，旧代码见 <code>fmt != "v1"</code> 整块读空 → 回滚后 v1.7 期间新建的会话在模型那一边变成"没记忆"。实测：交付形态状态条 <code>本题耗时 23.4s / 本题审批 20.7s</code>，走关闭器真重启后第一次加载仍是这两个数；库里 sid 8 <code>fmt=v2</code>、<code>wait=[20.672, 无]</code>、967 字符（UTF-8 1,015 B）；离线 <b>7 V9 二十二条</b>（7a 没等过的步与归档编码器逐字相同、7d 模型读到的那一串不掺这格、7l 只做一次 <code>_on_load</code> 就能读回、7m/7p 全程只读、7n/7o 屏上是甲条上就报甲）</td></tr>
+  <tr><td><b>gradio 自带 stop 键</b></td><td>已关掉（<code>stop_btn=False</code>）</td><td>它在自建 Blocks 下<b>是死的</b>：取消链路只有 <code>ChatInterface</code> 会接（<code>chat_interface.py:371-372</code> 把按钮摘下来自己管）。实测在 <code>步数 7/8</code> 点它，照样跑到 <code>9/8</code> 才完</td></tr>
+  <tr><td><b>噪声</b></td><td>停止之后日志干净</td><td>每次停止喷的 <code>Exception ignored … generator ignored GeneratorExit</code> 归零（<code>grep -c</code>=0，本轮三条路复测仍 0）。根因是上游 <code>agents.py:599-602</code> 在 <code>finally</code> 里还有一次 <code>yield</code>；做法是<b>在工作线程自己那侧</b> <code>inner.close()</code> 并吃掉 <code>RuntimeError</code>——v1.3 事件循环换了线程，这一步必须跟着搬</td></tr>
+  <tr><td><b>最便宜的题</b></td><td>—</td><td>「1+1 等于几、不许调工具」单步 <b>input 6,220 / output 16</b> token、<b>1.22 s</b>（v1.2 实测）。v1.3 同题在交付实例上实测 <b>in 3,464 / out 16 · 1.0s</b>——底价仍来自 7 件工具的描述全量进 system prompt，<span class="key">但两次不同进程、不同上下文长度，不能当 A/B 读</span></td></tr>
+</table>
+
+<h2 id="s3">3 参照基准：两个成熟产品的功能面</h2>
+
+<h3>3.1 WorkBuddy 5.9.3 —— 拆包证据（24 项）</h3>
+<div class="src">证据键：<code>zh:</code> = app.asar:/renderer/assets/zh-cn-d6gazmYf.js · <code>en:</code> = i18n-BManNiRi.js · <code>menu:</code> = main/menu-i18n.js</div>
+<table>
+  <tr><th>#</th><th>功能面</th><th>包内证据（原文）</th></tr>
+  <tr><td>1</td><td>会话 / 任务聊天</td><td class="ev">zh: <code>"搜索任务"</code>；main:/main/conversations.js；menu: <code>chat.permissionRequest/Allow/Deny</code></td></tr>
+  <tr><td>2</td><td>Agent 模式体系</td><td class="ev">zh: <code>mode.ask"仅能读取文件"</code> / <code>mode.agent"自动设计、编码、测试和部署"</code> / <code>mode.craft</code> / <code>mode.plan"擅长制定多步骤计划"</code></td></tr>
+  <tr><td>3</td><td>计划 / 执行状态</td><td class="ev">zh: <code>taskStatus.planning"规划中"/working/pending"等待输入"</code>；en: <code>planEditor.*</code>（280 键）；<code>tool.planCreate</code></td></tr>
+  <tr><td>4</td><td>定时任务</td><td class="ev">zh: <code>automation.title"定时任务"</code>、<code>INVALID_CRON_EXPR</code>、<code>CronCreate/CronList</code>；/main/automation-failure-galileo.js</td></tr>
+  <tr><td>5</td><td>后台 / 多任务并行</td><td class="ev">zh: <code>backgroundTask.capsuleLabel"{count} 个后台任务运行中"</code>、<code>workspace.keep.dialog.feature1"可同时运行多个任务"</code></td></tr>
+  <tr><td>6</td><td>技能 / 专家 / 连接器市场</td><td class="ev">zh: <code>unifiedMarket.tab.{experts,skills,connectors}</code>、<code>expertCenter.title"专家中心"</code>、<code>discover.title"灵感社区"</code></td></tr>
+  <tr><td>7</td><td>MCP 服务器接入</td><td class="ev">zh: <code>mcp.title"MCP 服务器"</code>、<code>mcp.addServer</code>、<code>mcpApps.launch</code>；/main/app-server-mcp-apps-host.js</td></tr>
+  <tr><td>8</td><td>记忆与进化</td><td class="ev">zh: <code>settings.nav.memory"记忆与进化"</code>、<code>localSkillsMemory"管理…MEMORY.md…每日记忆日志 YYYY-MM-DD.md"</code>、<code>tool.memory.{created,updated,deleted}</code></td></tr>
+  <tr><td>9</td><td>审批与权限模式</td><td class="ev">en: <code>permissionMode.{defaultSandbox,fullAccess}</code>；zh: <code>sandbox.intercept"AI 想要访问当前沙箱范围之外的资源"</code>、<code>browser.approval"允许在内置浏览器执行脚本？"</code></td></tr>
+  <tr><td>10</td><td>工具执行 / 终端</td><td class="ev">en: <code>tool.name.{write_to_file,executeCommand}</code>；zh: <code>detailPanel.newTab"打开终端"</code>；resources/devtools-terminal/（ghostty-web）</td></tr>
+  <tr><td>11</td><td>浏览器与电脑操控</td><td class="ev">/main/browser-preview.js；zh: <code>settings.agent.computerUse"电脑操控"</code>；native/computer-use-launcher</td></tr>
+  <tr><td>12</td><td>Diff 与文件版本回滚</td><td class="ev">en: <code>fileChanges.viewDiff/keep/discard</code>；zh: <code>fileVersion.title"文件版本管理"</code>、<code>revert/reset"回滚到此版本"</code>、<code>worktree.newWorktree</code></td></tr>
+  <tr><td>13</td><td>知识库 / 云文件</td><td class="ev">zh: <code>knowledgeBase.search"搜索文档"</code>、<code>tencentLexiang"乐享知识库"</code>、<code>ima"连接 ima"</code>、<code>allAppSearch"统一检索…腾讯 ima、会议、文档、网盘"</code></td></tr>
+  <tr><td>14</td><td>图像生成</td><td class="ev">zh: <code>tool.approval.imageGenHint"图片生成将消耗 5-10 积分"</code></td></tr>
+  <tr><td>15</td><td>模型选择（含本地）</td><td class="ev">zh: <code>model.{claudeSonnet4,gpt4o,builtIn,custom,enterprise}</code>、<code>ollama"Ollama 本地"</code></td></tr>
+  <tr><td>16</td><td>成本统计 / 经济模式</td><td class="ev">zh: <code>subscriptionUsage"套餐与积分"</code>；en: <code>creditEstimate"Estimated cost"</code>；<code>economyMode"上下文压缩…降低积分消耗"</code></td></tr>
+  <tr><td>17</td><td>协同 / 项目空间</td><td class="ev">zh: <code>collab.*</code>（1494 键，项目/事项/计划看板/转交）；<code>colleagues.title"助理协作空间"</code></td></tr>
+  <tr><td>18</td><td>IM 渠道接入</td><td class="ev">/main/{feishu,dingtalk,slack,discord,telegram,qq,wecom,wechat,yuanbao}.js；resources/extensions/im-channels/</td></tr>
+  <tr><td>19</td><td>分享 / 导出</td><td class="ev">zh: <code>shareExport.markdown"导出自 {brand}"</code>；Resources/conversation-report.html、markdown-shared-guest.html、<code>deeplinkLanding"Share to WorkBuddy"</code></td></tr>
+  <tr><td>20</td><td>通知 / 消息中心</td><td class="ev">zh: <code>msgCenter"消息中心"</code>；Resources/workbuddy-wechat-notifier；electron-macos-notification</td></tr>
+  <tr><td>21</td><td>快捷键 / 主题</td><td class="ev">zh: <code>settings.nav.keyboardShortcuts"快捷键"</code>、<code>settings.theme.{dark,light}</code>、<code>appearance"主题皮肤"</code></td></tr>
+  <tr><td>22</td><td>更新机制</td><td class="ev">zh: <code>update.restartToUpdate</code>；/main/update-service*.js、software-update/update-window.html</td></tr>
+  <tr><td>23</td><td>语音 / 诊断 / 安全中心</td><td class="ev">zh: <code>voice.start"语音输入"</code>、<code>selfCheck"诊断工具"</code>、<code>securityCenter"安全中心/智能体工具管控"</code></td></tr>
+  <tr><td>24</td><td>CLI 内核与内置工作流</td><td class="ev">/cli/dist/codebuddy-lite-wb.mjs（CodeBuddy）；/cli/builtin/workflows/deep-research.workflow.js；<code>agentMail"智能体邮箱"</code>、<code>mobileConnect"连接移动端"</code></td></tr>
+</table>
+<p><b>页面/面板清单</b>（由窗口名与设置导航文案推出，粒度受限）：主会话页、定时任务页、市场（专家/技能/连接器）、专家中心、助理协作空间、项目协同空间、我的文件、乐享知识库、ima、消息中心；独立窗口：global-search、image-viewer、browser 预览、MCP Apps、后台任务、文件版本；设置页 16 个。</p>
+<p><b>包里也没找到的</b>（别当成"这类产品都有"）：独立 PR 评审 UI、按 token 的逐条用量（只有积分）、自定义 prompt 片段管理器、跨设备会话实时同步、本地离线降级模式。</p>
+
+<h3>3.2 Qoder 0.4.4 —— 本会话实时可见的工具面</h3>
+<p>没有拆包，用的是此刻真实挂在我这边的能力，足够证明"这类客户端长什么样"：</p>
+<table>
+  <tr><th>功能面</th><th>本会话可见的证据</th></tr>
+  <tr><td>计划模式 + 计划审批</td><td><code>EnterPlanMode</code> / <code>ExitPlanMode</code>（要你批准才动手）</td></tr>
+  <tr><td>任务清单与依赖</td><td><code>TaskCreate/TaskUpdate/TaskList</code>——本次会话就挂着 7 条，你能看到进度</td></tr>
+  <tr><td>子 agent 分工</td><td><code>Explore</code>（搜代码）、<code>Plan</code>（出方案）、<code>general-purpose</code>；可并行、可后台、可 worktree 隔离</td></tr>
+  <tr><td>MCP 生态</td><td>此刻 6 个 server 在线：browser-use(16)、builtin(8)、extension-market(2)、node-repl(5)、qmind(6)、sites(47)</td></tr>
+  <tr><td>技能（Skills）</td><td>20+ 个可调用 skill：canvas、find-extensions、skill-creator、qmind、sites 系列、desktop-pet…</td></tr>
+  <tr><td>持久记忆</td><td>user / project 两级 memory 目录 + <code>MEMORY.md</code> 索引（本会话读了 26 条）</td></tr>
+  <tr><td>知识库 RAG</td><td><code>SearchKnowledge</code>、qmind 的 <code>retrieve/list_sources/read_source</code></td></tr>
+  <tr><td>浏览器实操与验证</td><td><code>browser-use</code> 的 navigate/snapshot/screenshot/upload_file</td></tr>
+  <tr><td>定时任务</td><td><code>mcp__builtin__qoder_cron</code></td></tr>
+  <tr><td>会话管理</td><td><code>list/read/fork/create_chat_session</code>、<code>send_message_to_chat_session</code></td></tr>
+  <tr><td>中断</td><td><code>TaskStop</code>（可按 agent id 停）</td></tr>
+  <tr><td>权限模式</td><td>工具级审批（本次多次触发你的授权弹窗）、<code>acceptEdits/plan/bypass</code> 分级</td></tr>
+  <tr><td>发布链路</td><td>sites 的 <code>prepare_site/publish_site/release_backend</code> 等 47 个工具</td></tr>
+</table>
+<p>两个参照物合起来给出的结论很朴素：<span class="g">这类产品的核心竞争力不在"模型会不会想"，而在"人能不能随时插进去"</span>——审批、中断、计划可见、历史可查、成本可见。这五件事到 v1.4 为止<b>上了四件</b>：<span class="key">中断</span>（v1.1 P0-1，v1.2 换成自建刹车键并实测，v1.3 起停止同时拒绝待批，v1.4 复测出边界 <b>D7</b>）、<span class="key">成本可见</span>（v1.1 P0-5，v1.2 提到顶部常驻状态条，v1.3 数字并入步骤卡）、<span class="key">历史可查</span>（v1.2 V3，v1.4 补上"连问不吞"与"点进去能接着聊"）、<span class="key">审批</span>（v1.3 P0-2：<code>write_file</code>/<code>run_python</code> 先看参数再执行）。只剩一件：<b>计划可见</b>（P0-4）。</p>
+
+<h2 id="s4">4 缺口看板（37 条，编号即工单号）</h2>
+
+<div class="bar">
+  <button class="on" onclick="filterBoard('all',this)">全部</button>
+  <button onclick="filterBoard('bug',this)">缺陷 D</button>
+  <button onclick="filterBoard('p0',this)">P0</button>
+  <button onclick="filterBoard('p1',this)">P1</button>
+  <button onclick="filterBoard('p2',this)">P2</button>
+  <button onclick="filterBoard('v',this)">V 界面</button>
+  <button onclick="filterBoard('todo',this)">未开工</button>
+  <button onclick="filterBoard('doing',this)">进行中</button>
+  <button onclick="filterBoard('done',this)">已上线</button>
+  <button onclick="filterBoard('na',this)">待你定性</button>
+  <span class="cnt" id="cnt">显示 37 / 37 条</span>
+</div>
+
+<div class="card bad">
+  <b>用法：</b>回我「做 P0 的 1、5 + D1」这种编号，我就按这几条动，其余不碰。做完我把该行状态从
+  <span class="pill todo">未开工</span> 推到 <span class="pill done">已上线 vX.Y</span>，
+  并在第 6 节追加一条迭代记录。<b>没有上线证据（复跑命令 + 输出）我不改状态。</b>
+</div>
+
+<h3>4.1 缺陷八条（D1 v1.1、D4 v1.3、D5 + D6 v1.4、D7 v1.5 已上线；<b>D2 v1.7 已定性：故意闭环，不改行为</b>、D3 未动、<b>D8 v1.7 新立</b>）</h3>
+<table>
+  <tr><th>ID</th><th>问题</th><th>证据</th><th>影响</th><th>手段 · 代价</th><th>状态</th></tr>
+  <tr data-st="done" data-p="D"><td><b>D1</b></td>
+    <td><code>run_python</code> 依赖 <code>ai学习/.agent-staging</code> 预先存在</td>
+    <td class="ev">创建它的 <code>STAGING.mkdir()</code> 原写在 <code>my_coding_agent.py</code> 的 <code>if __name__=="__main__"</code> 分支里；走 <code>my_ui.py→my_agent.py:8→import</code> <b>不执行</b>。<b>v1.1 实测成对复现</b>：目录挪开后 v1.0 <code>import 后目录存在: False</code> 且 <code>run_python</code> 抛 <code>FileNotFoundError</code>；v1.1 <code>True</code> 且 <code>'exit=0\n42\n'</code></td>
+    <td>目录一旦被清，<code>tempfile.TemporaryDirectory(dir=…)</code>（<code>:178</code>）抛 <code>FileNotFoundError</code>，执行工具整条挂掉且是裸栈不是友好文案</td>
+    <td>把 <code>mkdir</code> 提到模块级 · <b>已做</b>（<code>my_coding_agent.py:26-28</code>，含两条注释说明为什么必须在 import 时执行）</td>
+    <td><span class="pill done">已上线 v1.1</span></td></tr>
+  <tr data-st="na" data-p="D"><td><b>D2</b></td>
+    <td>agent 读不到自己刚暂存出去的副本</td>
+    <td class="ev"><code>.agent-staging</code> 同时在拒绝名单 <code>my_coding_agent.py:37</code>；<code>write_file</code> 落盘在 <code>:153</code>；名单上方 <code>:32-36</code> 是本轮写的<b>定性注释</b></td>
+    <td>它只能凭返回值里那段 diff 判断，看不到完整落地文件；无法自我校验</td>
+    <td>你点了 <b>②</b>：明确「故意闭环」并写进注释 · <b>已做</b>——加 <b>4 行注释、行为零改动</b>（与 <code>.rollback/v1.7</code> 归档做 <code>ast.dump</code> 同形比对，<code>验收脚本/v1.7/v17_d2_assert.py</code> <b>15 条全 PASS</b>，负控跑过）</td>
+    <td><span class="pill na">已定性·不改行为</span></td></tr>
+  <tr data-st="todo" data-p="D"><td><b>D3</b></td>
+    <td>三份 <code>my_*.py</code> 不在版本控制里，一条 <code>git clean -fd</code> 就全没</td>
+    <td class="ev">v1.1 回滚时发现：<code>my_agent.py / my_coding_agent.py / my_ui.py</code> 位于 smolagents <b>克隆目录内</b>却是 <b>untracked</b>（<code>git status --porcelain</code> → <code>?? my_agent.py</code> 等三条）。所以<b>没有 <code>git checkout</code> 可用来回滚</b>，反向地 <code>git clean -fd</code>（清克隆时很顺手的一条）会<b>全删且 git 无法恢复</b></td>
+    <td>你所有的 agent 定制——七只手、路径收敛、沙箱、统计卡、刹车——一次误清就归零。本轮已用 <code>.rollback/</code> 存档缓解，但存档与克隆<b>同父目录同磁盘</b>，一起被清的风险仍在</td>
+    <td>把三份挪出克隆（另建 <code>ai学习/my-agent/</code>），或把 <code>ai学习</code> 单独 <code>git init</code> 一层 · <b>半小时</b>。【未验证】挪出去会连带改 <code>my_ui.py:4</code> 的 import 路径与 launcher 里的启动路径</td>
+    <td><span class="pill todo">未开工</span></td></tr>
+  <tr data-st="done" data-p="D"><td><b>D4</b></td>
+    <td>停止后<b>屏上看不到「⏹ 已停止」气泡</b>，整条对话区那一帧不更新</td>
+    <td class="ev"><b>v1.1 就在，v1.3 才发现并修掉</b>。<code>my_ui.py</code> 里收尾气泡写的是 <code>metadata={"status": "complete"}</code>，而 gradio 6.30 的 <code>ChatMessage.metadata.status</code> 是 <code>Literal["pending","done"]</code>（<code>chatbot.py:55</code>）。实测抛 <code>pydantic_core.ValidationError: Input should be 'pending' or 'done'</code>，外面包一层 <code>ComponentProcessingError: Could not postprocess output component at index 0 (a chatbot component) of the event handler (named "_respond")</code> ——<b>整个 chatbot 输出被 gradio 丢掉</b>。之所以拖三轮：v1.1/v1.2 的停止验收只读了<b>状态条数字</b>（那一列是独立组件，不受影响），没人去看气泡</td>
+    <td>点停止后前端没有任何"已经停了"的交代，只有状态胶囊变色；用户会以为卡住而再点一次。同理，任何 <code>status</code> 写错的字面量都会<b>静默吃掉一整帧消息</b>，比崩还难查</td>
+    <td><b>已做</b>（v1.3）：改 <code>"done"</code>（<code>my_ui.py:1092</code>，注释里写清 <code>chatbot.py:55</code> 与实测异常名）；补两条回归——离线断言 6f「⏹ 收尾气泡的 status 也是合法字面量」+ 在线三条路的 <code>grep -c literal_error=0</code>、停止那一路实测到 <code>⏹ 已停止：AgentError</code> 气泡</td>
+    <td><span class="pill done">已上线 v1.3</span></td></tr>
+  <tr data-st="done" data-p="D"><td><b>D5</b></td>
+    <td><b>同一页面连问两题（不点「＋ 新会话」），前一题从屏上和历史库里双双消失</b></td>
+    <td class="ev"><b>v1.2 就在，v1.3 实测撞上，v1.4 修掉</b>。三处叠加：① <code>_respond()</code> 每轮从 <code>last = [user_msg] + msgs</code> 起，<code>chatbot</code> 是<b>整体替换</b>不是追加；② <code>History.save()</code> 是 <code>DELETE FROM messages WHERE session_id=?</code> 整条覆盖；③ <code>sid</code> 同时挂在 <code>box.submit</code> 的 <code>inputs</code> 和 <code>outputs</code> 上，所以不点新会话就<b>沿用同一条会话</b>。v1.3 的实测（7861，连问两题）：<code>sessions</code> 只新增 <b>1</b> 条且<b>标题还是第一题</b>，<code>messages</code> 里只剩<b>第二题</b>那 3 行。<b>v1.4 复测</b>：屏上 <b>4</b> 行（两问两答都在）、<code>session 1</code> 长到 <b>26 行</b>、第一题「记住 73」第二题答 <code>Final answer: 73</code></td>
+    <td>日常用法就是连着问。不问之前点一下「＋ 新会话」的话，前面的过程与结论<b>当场看不见、事后也找不回</b>——这是看板里唯一会<b>丢用户内容</b>的一条，<span class="key">现已关闭</span></td>
+    <td><b>已做（选路 ②，与 V5 同批）</b>：<code>_respond()</code> 的起点换成 <code>base = self.hist.load(sid)</code>（<code>my_ui.py:1049-1054</code>），每一帧 <code>last = base + [user_msg] + msgs</code>（<code>:1067</code>）；<code>save()</code> 的写法语义不动，靠调用方喂完整列表。<b>另堵了第二条路径</b>：<code>_on_load</code> 从闭包提成方法（<code>:1162-1180</code>），刷新后把 <code>sid</code> 指到侧栏第一条——v1.3 刷新后 <code>sid</code> 是空的，下一条提问会另开一条并把刚看到的那串字整体替换掉</td>
+    <td><span class="pill done">已上线 v1.4</span></td></tr>
+  <tr data-st="done" data-p="D"><td><b>D6</b></td>
+    <td>侧栏排序失真：<code>updated_at</code> 从 v1.2 起只在标题还是「新会话」时才刷新</td>
+    <td class="ev"><code>History.save()</code> 那条 <code>UPDATE sessions SET updated_at=? … WHERE id=? AND title='新会话'</code>（旧 <code>my_ui.py:289-291</code>）。会话一旦由首问定了标题，之后再问多少次都不刷时间 → <code>ORDER BY updated_at DESC</code> 排的是"<b>哪条还没起标题</b>"，不是"哪条最近有动作"</td>
+    <td>v1.2/v1.3 只影响"刷新页面看到哪条"；<b>v1.4 起决定"下一条提问落进哪条"</b>（<code>_on_load</code> 把 <code>sid</code> 指到侧栏第一条），顺序错了等于问错地方——所以和 D5 一起修</td>
+    <td><b>已做（v1.4）</b>：<code>UPDATE sessions SET updated_at=?, title=CASE WHEN title='新会话' THEN ? ELSE title END WHERE id=?</code>（<code>my_ui.py:488-491</code>）。离线 8a~8e 五条断言，8c 是"老会话一有动作就回到第一"的正向断言；标题不被后续问题覆盖（8d）、空列表 <code>save()</code> 不把标题写成 <code>NULL</code>（8e）</td>
+    <td><span class="pill done">已上线 v1.4</span></td></tr>
+  <tr data-st="done" data-p="D"><td><b>D7</b></td>
+    <td><b>■ 停止</b> 按在待批卡<b>出现之前</b> → 界面死停在「等待审批」，那条待批没人结算</td>
+    <td class="ev"><b>v1.4 复现并定位 · v1.5 已修并复测</b>。<code>/tmp/v14_d7.js</code>：提问后 <b>0.2s</b> 按 ■ 停止，那一按等于空放——<code>agents.py:470</code> 在新 run 开头把 <code>interrupt_switch</code> 清回 <code>False</code>，中断的是<b>空闲的</b> agent；随后到的待批卡没人结算，状态死停 <code>状态/等待审批</code> + 胶囊 <code>待批/run_python</code>，✔/✖ 一直挂着。挂了 <b>142.4s</b>（<code>APPROVAL_TIMEOUT</code> 是 600s，不会自己解）。<code>/tmp/v14_d7fix.js</code> 不刷新补点 ✖ 拒绝：<b>0.0s 解开</b>，<code>⚪ 待批 · run_python · 已拒绝</code> → <code>第 1 步 · run_python · ⚪ 已拒绝 · 142.4s · in 2,690/out 20</code> → <code>⏹ 已停止：AgentError</code>，状态 <code>已停止</code>。对照组（2.0s 按停止，卡已在屏上）：0.5s 内 <code>⏹ … 随停止取消</code>，正常。<b>v1.5 在交付形态 7860 复测 0.2s 那一路</b>：<code>awaitingSeen 0</code>、1.2s <code>已停止</code>、观察 26s 没回潮；离线 3a~3l 十七条（3c 原工具零调用、3m 观察值＝取消那句、3o 半截也落库带 <code>⏹</code>）</td>
+    <td><b>无数据丢失</b>（那一轮照样落库，库里 14 行、<code>⏹ AgentError</code> 气泡也在）。代价是<b>界面挂住</b>：用户以为卡死，只能再点一次 ✖ 或等到 600s。是 P0-2「停止 = 同时拒绝所有待批」的一条漏网路径——那只覆盖了"停止时队里已有待批"，没覆盖"停止在先、入队在后"</td>
+    <td><b>已做（v1.5）＝第 ② 条</b>：类级 <code>_run_seq</code>/<code>_cancelled_before</code>（<code>my_ui.py:535-536</code>），<code>_stop</code> 打号（<code>:1131</code>）、闸在<b>入队那同一个临界区</b>判号自结算（<code>:602-605</code>）、开跑先领号（<code>:846</code>）。几十行 · 与 V6 同批上线</td>
+    <td><span class="pill done">已上线 v1.5</span></td></tr>
+  <tr data-st="todo" data-p="D"><td><b>D8</b></td>
+    <td><b>正在流式（尤其挂在审批闸上等人点）的时候刷新页面或关页面 → 这一题<u>一行都不落库</u></b>：屏上曾经有字，事后什么都没有</td>
+    <td class="ev"><b>v1.7 实跑撞出来的，两条路都有留痕：</b><code>/tmp/v17_drain.out</code> <code>/tmp/v17_finish.out</code> <code>/tmp/v17_peek.out</code>。CDP 每份剧本开头都会 <code>Page.navigate</code>，中途去 peek 一下就是把正在流式的那一题掐断：进程内状态条仍报 <code>步数 3/8 本题 in 7,334/out 63 本题耗时 25.1s 本题审批 22.1s</code>（另一条 <code>步数 1/8 27.2s / 26.0s</code>），屏上却是 <code>bot=0</code>（一个气泡都没有）；库里那条会话<b>只有 <code>_respond</code> 开头 <code>ensure</code> 建的那一行会话</b>，<code>messages</code> 0 行、<code>memory</code> 没写；<code>待批 run_python</code> 的 pill 挂在状态已经是「空闲」的条上，<code>#approve-btn</code> reload 后 <code>NO-ELEMENT</code>；两次 <code>until DONE</code> 分别跑到 <b>120,353ms</b> 与 <b>300,967ms</b> 超时。<b>这是 v1.6 就有的行为，不是 V9 的回归</b>（改成「一整轮只跑一份剧本」之后探测口与交付形态两轮都干净跑通）</td>
+    <td><b>会丢用户内容</b>，而且是看板里唯一还在丢的这一条量级：一屏字 ＋ 那笔审批等待一起蒸发。v1.5 那句「半截可接受」的前提是半截会落库，实测<b>连半截都没有</b></td>
+    <td>先问三件事（<span class="r">机制【未验证】</span>）：① 客户端断开时 <code>_respond</code> 的 <code>finally</code> 到底跑没跑到（gradio 会不会 <code>close()</code> 那条生成器）；② worker 正阻塞在 <code>ap.wait()</code> 时那条 <code>pending</code> 怎么随断开结算——现在只能等 <code>APPROVAL_TIMEOUT=600s</code> 自己按拒绝结算；③ 选「落半截」还是「标已中断」。<b>几十行 · 数据完整性优先</b>，<b>建议 v1.8 第一刀</b></td>
+    <td><span class="pill todo">未开工</span> <span class="ev">v1.7 新立</span></td></tr>
+</table>
+
+<h3>4.2 P0 —— 交互闭环缺口（每天都会被卡）</h3>
+<table>
+  <tr><th>ID</th><th>缺什么</th><th>参照证据</th><th>你的现状</th><th>最小手段 · 代价</th><th>状态</th></tr>
+  <tr data-st="done" data-p="P0"><td><b>P0-1</b></td>
+    <td>停止 / 中断按钮</td>
+    <td class="ev">WB <code>taskStatus.pending"等待输入"</code>、<code>chat.permissionRequest/Allow/Deny</code>；Qoder <code>TaskStop</code></td>
+    <td>v1.1 <b>前</b>的真实情况：按钮<b>本来就在</b>——gradio 6.30 的 <code>stop_btn</code> 默认 True，点它只是关掉前端渲染，服务端照旧把 <code>max_steps=8</code> 跑完。缺的是"点了真停"，不是缺按钮</td>
+    <td><b>已做</b>（<code>my_ui.py:821-829</code>：<code>finally</code> 里 <code>agent.interrupt()</code> + 主动 <code>inner.close()</code>），代价 <b><code>my_ui.py</code> 净增 61 行</b>。<span class="key">纠正 v1.0 错判</span>：原文「smolagents 无原生中断，要自己插桩 · 半天」不成立——原生就有 <code>agents.py:754 interrupt()</code> 与 <code>interrupt_switch</code>（<code>:470/:546</code>）。<b>残余</b>：步边界才停，慢工具要等自己返回，实测最长 21.57 s。<b>v1.2 追加两笔</b>：① 这段 <code>finally</code> <b>一字未改</b>搬到 <code>my_ui.py:306-323</code>，但触发源换成自建「■ 停止」（<code>:374</code>）——gradio 那个 stop 键在自建 Blocks 下是死的；② 又实测出一个<b>例外</b>：用满 <code>max_steps</code> 时框架在 <code>while</code> 循环<b>外</b>补一步收尾问答（<code>agents.py:606-608</code>），<code>interrupt</code> 拦不住，多花 <b>36.74 s / +9,096 input token</b>。<b>v1.3 追加第三笔</b>：待批时点停止，<code>_stop()</code> 先 <code>_settle_all("cancelled")</code> 再 <code>interrupt()</code>（<code>my_ui.py:750-763</code>）——不这么做 worker 会永远等在 <code>Event.wait()</code> 上，停止键等于失效</td>
+    <td><span class="pill done">已上线 v1.1</span></td></tr>
+  <tr data-st="done" data-p="P0"><td><b>P0-2</b></td>
+    <td>工具执行前审批</td>
+    <td class="ev">WB <code>permissionMode.{defaultSandbox,fullAccess}</code>、<code>sandbox.intercept"AI 想要访问当前沙箱范围之外的资源"</code>、<code>browser.approval"允许在内置浏览器执行脚本？"</code></td>
+    <td>v1.3 <b>前</b>的真实情况：只有 <code>write_file</code> 靠 staging <b>变相</b>审批（它不问你，而是自己落副本让你 <code>cp</code>）；<code>run_python</code> <b>不问就跑</b>——唯一拦阻是 <code>my_coding_agent.py:175</code> 那条正则黑名单，它拦得住"删库"，拦不住"往你磁盘写文件"</td>
+    <td><b>已做</b>（v1.3）：<b>先看参数再执行</b>。<code>GATED_TOOLS = ("write_file","run_python")</code>（<code>my_ui.py:34</code>）→ 黄色待批卡（工具名 + <b>参数全文</b>，v1.4 行号 <code>:405-428</code>）→ 状态条点亮「✔ 允许 / ✖ 拒绝」→ <code>Event</code> 解开才决定跑不跑（<code>:387-398</code>）。<b>看板那句"需要设计"的答案</b>：阻塞审批<b>不能</b>待在 gradio 的流式生成器里（同步推的流里 <code>wait()</code> 会钉死事件循环），所以 <code>agent.run()</code> 搬进<b>工作线程</b>（<code>:806-829</code>），UI 以 <b>0.25s</b> 轮询队列（<code>:831-958</code>）。<b>三条路全部实跑过</b>（真 qwen-plus）：允许→副作用文件 <code>16:04</code> 落盘、拒绝→<b>没有</b>文件、停止→审批卡 <code>⏹ 随停止取消</code> 且<b>没有</b>文件。<b>v1.4 在同一套闸上追加实测</b>：审批与屏上累加共存一屏（待批卡出现时屏上已有 3 张旧步骤卡，允许后旧卡一张不丢）。<b>残余</b>：① 只读三件不拦（故意的）；② 600s 超时只做过离线验证【未验证】；③ 一步内多工具并行时按钮只处理最早那条【未验证】；④ 闸只装在 UI，命令行直调不过闸；⑤ <b>停止按在待批卡出现之前会留一条没人结算的待批（<span class="r">D7，未修</span>，见 §4.1）</b></td>
+    <td><span class="pill done">已上线 v1.3</span></td></tr>
+  <tr data-st="done" data-p="P0"><td><b>P0-3</b></td>
+    <td>会话列表与历史持久化</td>
+    <td class="ev">WB <code>/main/conversations.js</code> + <code>"搜索任务"</code>；Qoder <code>list/read/fork_chat_session</code></td>
+    <td><b>先更正 v1.0 的措辞</b>：原文写「<code>gradio_ui.py:458 save_history=True</code> 只存浏览器本地；<b>进程重启即空</b>」——前半句对（存的是浏览器 <b>localStorage</b>，<code>chat_interface.py:145</code> docstring 原话），后半句<b>不对</b>，localStorage 恰恰<b>能</b>活过服务端重启。真正的缺口是：服务端<b>没有一份可查的账</b>——换浏览器 / 换 Chrome profile / 清缓存即丢，别的工具读不到，也没法按会话取数</td>
+    <td><b>已做</b>（v1.2）：<code>History</code>（<code>my_ui.py:401-516</code>）落 <code>smolagents/.agent-history.sqlite3</code>，两张表 <code>sessions</code> / <code>messages</code>，侧栏列表 + 点开回看；<code>demo.load</code>（<code>:1240</code>）保证刷新页面也有。<b>残余</b>：上限 50 条、不搜索不分组；库是显示层，<b>不含</b> <code>agent.memory.steps</code>（接回上下文要另开 <b>V5</b>）</td>
+    <td><span class="pill done">已上线 v1.2</span></td></tr>
+  <tr data-st="todo" data-p="P0"><td><b>P0-4</b></td>
+    <td>计划可见 + 任务清单面板</td>
+    <td class="ev">WB <code>mode.plan"擅长制定多步骤计划"</code>、<code>planEditor.*</code>(280 键)、<code>tool.planCreate</code>；Qoder <code>EnterPlanMode</code> + <code>TaskCreate/TaskList</code></td>
+    <td>只有一行行 step 日志流水；没有"先出计划、我批了再跑"这一步。<b>v1.3 之后</b>：计划若出现会是一张 <code>🧭 计划步</code> 卡（<code>_step_card()</code> 的 <code>PlanningStep</code> 分支，v1.4 行号 <code>my_ui.py:648-653</code>），但它<b>不带批准动作</b>，而且本轮三条实测路（真 qwen-plus）都没触发过这个分支【未验证】</td>
+    <td>把 <code>PlanningStep</code> 独立成面板 + 批准动作 · <b>1 天</b>。<b>v1.3 已经替它把地基打好</b>：阻塞等人工的线程 + 队列 + 允许/拒绝键那套（P0-2）可以直接复用到"批准计划"</td>
+    <td><span class="pill todo">未开工</span></td></tr>
+  <tr data-st="done" data-p="P0"><td><b>P0-5</b></td>
+    <td>成本 / token 上墙</td>
+    <td class="ev">WB <code>subscriptionUsage"套餐与积分"</code>、<code>creditEstimate</code>、<code>economyMode"上下文压缩…降低积分消耗"</code></td>
+    <td><code>monitoring.py:86-111</code> 的累计计数器<b>一直在跑</b>，v1.1 之前 UI 一个字节都没显示。你被 2,375→19,399 那件事坑过，就是缺这块面板</td>
+    <td><b>已做</b>（v1.1；v1.2 抽出 <code>_stats()</code> 成<b>唯一算法源</b>，现 <code>my_ui.py:749-780</code>）。三档口径分开报：本步 / 本题累计 / 进程累计，与框架 <code>[Step N]</code> 日志<b>逐位相符</b>（v1.3 在线复测：卡上 <code>in 2,874</code> = 日志 <code>Input tokens: 2,874</code>）。<b>v1.2</b> 同一份数字进<b>顶部常驻状态条</b>；<b>v1.3</b> 那张 v1.1 的 <code>📊</code> 独立统计卡<b>取消</b>，数字改进步骤卡的标题（<code>耗时 · in/out</code>）与正文最后一行（<code>本步 … 本题累计 …</code>）——一张卡只说一件事。<span class="key">实现点不变</span>：数字必须写进折叠栏<b>标题</b>，gradio 把 <code>metadata.title</code> 组收起时正文根本不在 DOM 里</td>
+    <td><span class="pill done">已上线 v1.1</span></td></tr>
+</table>
+
+<h3>4.3 P1 —— 能力面缺口（上游已备好，你没接）</h3>
+<table>
+  <tr><th>ID</th><th>缺什么</th><th>参照证据</th><th>你的现状</th><th>最小手段 · 代价</th><th>状态</th></tr>
+  <tr data-st="todo" data-p="P1"><td><b>P1-6</b></td>
+    <td>MCP 接入（把五只手协议化）</td>
+    <td class="ev">WB <code>mcp.title"MCP 服务器"</code>、<code>unifiedMarket.tab.connectors</code>；Qoder 6 个 server 在线</td>
+    <td>工具硬编码在 py 里。上游 <code>tools.py:951 from_mcp</code> 现成；<code>.venv</code> <b>未装 <code>mcp</code></b>（实测 ModuleNotFoundError）</td>
+    <td><code>pip install mcp</code> + 新建一个 server 目录 · <b>半天成体系</b>（README §9.5 的 P0）</td>
+    <td><span class="pill todo">未开工</span></td></tr>
+  <tr data-st="todo" data-p="P1"><td><b>P1-7</b></td>
+    <td>子 agent / 专家分工</td>
+    <td class="ev">WB <code>expertCenter.title"专家中心"</code>、<code>unifiedMarket.tab.experts</code>；Qoder Explore/Plan/general-purpose</td>
+    <td>完全没用。<code>agents.py:369-387 _setup_managed_agents</code> 就在手边——子 agent 即工具，<b>没有第二套路由代码</b></td>
+    <td><code>managed_agents=[…]</code> 一行起步 · <b>小</b></td>
+    <td><span class="pill todo">未开工</span></td></tr>
+  <tr data-st="na" data-p="P1"><td><b>P1-8</b></td>
+    <td>联网检索</td>
+    <td class="ev">WB 走 connectors；Qoder <code>WebSearch/WebFetch</code></td>
+    <td>动作空间无 web 工具，且 <code>run_python:175</code> 正则<b>明禁</b> <code>socket/urllib/requests</code> → 结构上不可能联网。<code>default_tools.py:342 WebSearchTool</code> 存在但 <code>duckduckgo_search</code> 未装</td>
+    <td>这是<b>安全取舍不是疏忽</b>：开联网等于打通外传通道 · <b>要你点头</b></td>
+    <td><span class="pill na">待你定性</span></td></tr>
+  <tr data-st="todo" data-p="P1"><td><b>P1-9</b></td>
+    <td>知识库 / 语义检索（RAG）</td>
+    <td class="ev">WB <code>knowledgeBase.search"搜索文档"</code>、<code>tencentLexiang"乐享知识库"</code>、<code>allAppSearch"统一检索…"</code>；Qoder <code>SearchKnowledge</code> + qmind</td>
+    <td>只有 <code>grep_files</code> 正则，无分块、无 embedding、无语义召回。<b>讽刺点</b>：<code>ai学习/</code> 里躺着 langchain4j 的 <code>DefaultRetrievalAugmentor:169</code> 四阶段和 dify 的 <code>core/rag</code> 两份参考实现</td>
+    <td>先做最小向量库（sqlite-vss 或 faiss）+ 复用 <code>guarded()</code> 白名单 · <b>需要设计</b></td>
+    <td><span class="pill todo">未开工</span></td></tr>
+  <tr data-st="todo" data-p="P1"><td><b>P1-10</b></td>
+    <td>文件版本管理 / 回滚</td>
+    <td class="ev">WB <code>fileVersion.title"文件版本管理"</code>、<code>revert/reset"回滚到此版本"</code>、<code>worktree.newWorktree</code>、<code>fileChanges.{viewDiff,keep,discard}</code></td>
+    <td>只有 unified diff 预览 + 提示你自己 <code>cp</code>。没有 keep/discard 一键，没有回滚</td>
+    <td>staging 加时间戳快照 + 两个按钮 · <b>半天</b></td>
+    <td><span class="pill todo">未开工</span></td></tr>
+  <tr data-st="todo" data-p="P1"><td><b>P1-11</b></td>
+    <td>模型可选 / 密钥入口</td>
+    <td class="ev">WB <code>model.{builtIn,custom,enterprise,ollama"Ollama 本地"}</code></td>
+    <td><code>MODEL_ID="qwen-plus"</code> 硬编码 <code>my_agent.py:20</code>；key 单条明文在 <code>smolagents/.env</code>（<span class="r">你贴进过聊天，仍待轮换</span>）</td>
+    <td>UI 下拉 + 缺 key 引导页 · <b>小</b></td>
+    <td><span class="pill todo">未开工</span></td></tr>
+  <tr data-st="todo" data-p="P1"><td><b>P1-12</b></td>
+    <td>导出报告</td>
+    <td class="ev">WB <code>Resources/conversation-report.html</code>、<code>shareExport.markdown"导出自 {brand}"</code></td>
+    <td>只有 <code>.agent-ui.log</code> 流水，步数/token/工具参数全揉在一起</td>
+    <td><code>memory.steps</code> 渲染成 md/html · <b>半天</b>（和你现有两份 HTML 同路子）</td>
+    <td><span class="pill todo">未开工</span></td></tr>
+  <tr data-st="todo" data-p="P1"><td><b>P1-13</b></td>
+    <td>工具市场 / 远程装载</td>
+    <td class="ev">WB 市场四 tab + <code>plugins.addMarketplace.sourceTip</code>；Qoder extension-market</td>
+    <td>上游有 <code>tools.py:517 与 :910 from_hub</code>（HF 工具仓库动态拉），你完全没用</td>
+    <td><code>ToolCollection.from_hub([...])</code> · <b>小，但引入网络依赖</b></td>
+    <td><span class="pill todo">未开工</span></td></tr>
+</table>
+
+<h3>4.4 P2 —— 外壳与运营（现在靠手敲命令补偿）</h3>
+<table>
+  <tr><th>ID</th><th>缺什么</th><th>参照证据</th><th>你的现状</th><th>手段 · 代价</th><th>状态</th></tr>
+  <tr data-st="todo" data-p="P2"><td><b>P2-14</b></td><td>定时 / 后台任务</td>
+    <td class="ev">WB <code>automation.title"定时任务"</code>、<code>INVALID_CRON_EXPR</code>、<code>CronCreate/CronList</code>；Qoder <code>qoder_cron</code></td>
+    <td>无；每日复盘要你自己开窗口</td><td>launchd plist 或 APScheduler · <b>半天</b></td><td><span class="pill todo">未开工</span></td></tr>
+  <tr data-st="todo" data-p="P2"><td><b>P2-15</b></td><td>通知 / IM 渠道 / 移动端</td>
+    <td class="ev">WB <code>/main/{feishu,dingtalk,wecom,wechat,slack,discord,telegram,qq}.js</code>、<code>msgCenter"消息中心"</code>、<code>mobileConnect"连接移动端"</code>、<code>agentMail"智能体邮箱"</code></td>
+    <td>只有 Terminal 日志窗口；跑完你不知道</td><td>先只接 macOS 原生通知 · <b>小</b>；接企业微信要设计，且涉密内容<b>不许</b>外发</td><td><span class="pill todo">未开工</span></td></tr>
+  <tr data-st="todo" data-p="P2"><td><b>P2-16</b></td><td>内置浏览器 / 预览面板</td>
+    <td class="ev">WB <code>/main/browser-preview.js</code>、<code>resources/devtools-terminal/</code>（ghostty-web）、<code>image-viewer</code> 独立窗</td>
+    <td>Gradio 里无预览面板；<code>data/</code> 上传的文件 agent 只拿到路径，你看不到渲染结果</td><td>gr.HTML 组件回显 · <b>小</b></td><td><span class="pill todo">未开工</span></td></tr>
+  <tr data-st="todo" data-p="P2"><td><b>P2-17</b></td><td>自检 / 诊断入口</td>
+    <td class="ev">WB <code>selfCheck"诊断工具"</code>、<code>securityCenter"安全中心/智能体工具管控"</code></td>
+    <td>README §9.3 写了 4 条验收命令，<b>要手敲</b>；端口残留只能肉眼发现</td><td>把 4 条命令收成一个 <code>agent-check.sh</code> + UI 一键 · <b>小</b></td><td><span class="pill todo">未开工</span></td></tr>
+  <tr data-st="todo" data-p="P2"><td><b>P2-18</b></td><td>更新机制</td>
+    <td class="ev">WB <code>/main/update-service*.js</code>、<code>update.restartToUpdate</code>；Qoder <code>Resources/app-update.yml</code></td>
+    <td>launcher 是手写脚本，源码改了不重启不生效，<b>无版本校验</b>——手册版本与实际代码可能悄悄分叉</td><td>launcher 里比对 git hash 并提示重启 · <b>小</b></td><td><span class="pill todo">未开工</span></td></tr>
+  <tr data-st="todo" data-p="P2"><td><b>P2-19</b></td><td>多任务并行</td>
+    <td class="ev">WB <code>backgroundTask.capsuleLabel"{count} 个后台任务运行中"</code>、<code>workspace.keep.dialog.feature1"可同时运行多个任务"</code></td>
+    <td>单进程单会话，<code>7860</code> 上只有一个 agent；跑长任务时界面被占死</td><td>多端口多实例或队列化 · <b>需要设计</b></td><td><span class="pill todo">未开工</span></td></tr>
+  <tr data-st="na" data-p="P2"><td><b>P2-20</b></td><td>跨题记忆复位开关</td>
+    <td class="ev">WB <code>settings.nav.memory"记忆与进化"</code></td>
+    <td><code>gradio_ui.py:310 reset_agent_memory</code> 你没传，默认 <code>False</code> → 同进程内记忆累积，第二题起步更贵</td><td>传 <code>True</code> 是一行；但会丢掉"接着上一题聊"能力 · <b>要你定性：这是 bug 还是特性</b></td><td><span class="pill na">待你定性</span></td></tr>
+</table>
+
+<h3>4.5 V 组 —— 界面产品化（v1.2 新立的编号，来源是你那句「和 qoder 和 workbuddy 差很多啊」）</h3>
+<div class="card">V 组与 P 组<b>不是同一把尺</b>：P 组量"人能不能插进去"（交互闭环），V 组量"这东西像不像个成品"（信息架构与视觉）。v1.2 这一刀砍的是 V 组，代价是它顺手把 P0-3 关掉了——会话列表本来就同时是两组的缺口。</div>
+<table>
+  <tr><th>ID</th><th>缺什么</th><th>参照证据</th><th>你的现状</th><th>最小手段 · 代价</th><th>状态</th></tr>
+  <tr data-st="done" data-p="V"><td><b>V1</b></td>
+    <td>顶部常驻状态条（步数 / token / 模型 / 耗时 / 状态）</td>
+    <td class="ev">WB <code>taskStatus.{planning,working,pending}"等待输入"</code>、<code>backgroundTask.capsuleLabel"{count} 个后台任务运行中"</code>；Qoder 顶部状态行 + 逐 token 计数</td>
+    <td>v1.1 的数只以"每步一张折叠卡"沉在消息流底部，问一题要往下翻才看得全</td>
+    <td>胶囊 + <code>_stats()</code> 单一算法源 · <b>已做</b>（<code>my_ui.py:749-780</code>、<code>:782-803</code>）。<b>v1.3 起七颗</b>（多一颗「待批」，有待审批时才出现，显示被拦的工具名）；<b>v1.6 起八颗</b>（再多一颗「本题审批」，同样按需出现，没审批过就不出现 = V8）</td>
+    <td><span class="pill done">已上线 v1.2</span></td></tr>
+  <tr data-st="done" data-p="V"><td><b>V2</b></td>
+    <td>深色主题 + 去掉 Gradio 品牌尾巴</td>
+    <td class="ev">WB <code>settings.theme.{dark,light}</code>、<code>appearance"主题皮肤"</code>；Qoder 全程深色</td>
+    <td>v1.1 是 gradio 默认浅色，页脚挂着「通过 API 使用 🚀 · 使用 Gradio 构建 🌊 · 设置 ⚙️」</td>
+    <td><code>DARK_CSS</code>（<code>my_ui.py:236-355</code>，v1.2 时是 :53-172）：变量覆盖 + 六处硬编浅色定点压制 + 页脚 <code>display:none</code> · <b>已做</b>，CDP 全量扫描无浅色残留</td>
+    <td><span class="pill done">已上线 v1.2</span></td></tr>
+  <tr data-st="done" data-p="V"><td><b>V3</b></td>
+    <td>会话侧栏 + 历史持久化（<b>= P0-3</b>，证据与更正见 4.2 那行）</td>
+    <td class="ev">WB <code>/main/conversations.js</code>；Qoder <code>list/read/fork_chat_session</code></td>
+    <td>v1.1 只有浏览器 localStorage，服务端没有可查的账</td>
+    <td>SQLite 两张表 + 侧栏 Radio + <code>demo.load</code> · <b>已做</b>（<code>History</code> <code>my_ui.py:401-516</code>、事件绑定 <code>:1231</code>/<code>:1233</code>/<code>:1240</code>）。<span class="key">v1.3 实测出 D5，v1.4 修掉</span>：不点「＋ 新会话」连问两题时，v1.3 是同一 <code>sid</code> 被整条覆盖、前一题从屏面与库里双双消失；v1.4 改为<b>按题累加</b>（实测 <code>session 1</code> 长到 26 行、屏上两问两答都在）。<b>但库里存的始终是"话"，不是模型的记忆</b>——记忆（<code>agent.memory</code>）在 v1.4 按会话各存一份、<b>只在进程里</b>，重启即忘，这一半记为 <b>V6</b></td>
+    <td><span class="pill done">已上线 v1.2</span></td></tr>
+  <tr data-st="done" data-p="V"><td><b>V4</b></td>
+    <td>步骤卡片化：一次工具调用一张带状态色的卡</td>
+    <td class="ev">WB <code>tool.name.{write_to_file,executeCommand}</code>、<code>fileChanges.{viewDiff,keep,discard}</code>、<code>detailPanel.newTab"打开终端"</code>；Qoder 每个工具调用一张可折叠卡（参数 / 输出 / 耗时分开）</td>
+    <td>v1.3 <b>前</b>：消息流里是<b>三种</b>折叠卡（🛠️ 工具调用、📝 执行日志、📊 统计），全是 gradio 的默认样式，彼此没有状态色，也没有"这一步成功/失败"的一眼判断</td>
+    <td><b>已做</b>（v1.3 <code>_step_card()</code>，v1.4 行号 <code>my_ui.py:450-500</code>）：自己接管 <code>ChatMessage</code> 的组装，<b>一步一张</b>，标题 <code>🛠 第 N 步 · 工具 · 判定 · 耗时 · in/out</code>，判定三档 <b>🟢 成功 / 🔴 报错（左边框红）/ ⚪ 被拦下</b>；正文四段思考 / 调用+参数 / 结果 / 数字。<b>在线实测</b>：2 步的题正好两张卡，📊 卡不再存在，最终答案仍是独立气泡。<b>v1.4 复测</b>：累加的旧消息下面照常一步一张（<code>in 2,672</code> / <code>in 2,751</code> 两张卡，本题累计 <code>in 5,423</code> 与两卡之和逐位相符）。<b>注意</b>：被审批拦下的那一步在框架里是一次<b>正常观察值</b>，所以 <code>⚪</code> 不等于失败</td>
+    <td><span class="pill done">已上线 v1.3</span></td></tr>
+  <tr data-st="done" data-p="V"><td><b>V5</b></td>
+    <td>会话级记忆隔离（点开旧会话能接着聊）</td>
+    <td class="ev">WB <code>settings.nav.memory"记忆与进化"</code>；Qoder 的会话记忆 + <code>fork_chat_session</code></td>
+    <td>v1.2 的侧栏<b>只回贴屏幕上的字</b>，模型并不记得；点旧会话后提问会<b>另开一条</b>。这是有意为之，见 §6.6 口径第 2、4 条。<b>v1.3 又量到更前面的一个问题</b>：连"同一条会话里的上一题"都保不住（<b>D5</b>，§4.1）——同一页面连问两题，前一题当场从屏面上被替换掉。<span class="key">这两件事是同一块肌肉</span>：都要消息列表跨题累加</td>
+    <td><b>已做（v1.4，进程内）</b>：切会话时同步换 <code>agent.memory</code>——<code>_bind_memory(sid)</code>（<code>my_ui.py:961-986</code>）把引用换成 <code>self._mem[sid]</code>（<code>:560-561</code>）。<b>看板那句"需要设计"的答案</b>：<b>不传 <code>reset=True</code></b>，所以 <code>monitor</code> 不被清（<code>agents.py:478-480</code>），「进程累计」口径原样保住；框架本来就在 <code>reset=False</code> 时把新任务<b>追加</b>进 <code>self.memory</code>（<code>gradio_ui.py:310</code>/<code>:389</code>），所以"谁的记忆"＝"起 worker 那一刻 <code>self.memory</code> 指向谁"，只换引用即可。<b>在线实测四条</b>：新会话答「不记得」（<code>in 2,363</code>）、点旧会话接着聊（第三问 <code>in 2,564</code>，历史越问越厚）、审批与累加同屏、屏上两问两答都在。<span class="key">剩下的那一半（跨进程持久化）另立 V6</span></td>
+    <td><span class="pill done">已上线 v1.4（进程内）</span></td></tr>
+  <tr data-st="done" data-p="V"><td><b>V6</b></td>
+    <td><b>记忆持久化</b>：旧会话跨进程也记得（V5 的第二半）</td>
+    <td class="ev">WB <code>localSkillsMemory"管理…MEMORY.md…每日记忆日志 YYYY-MM-DD.md"</code>；Qoder 的会话可 <code>read_chat_session</code> 后继续</td>
+    <td>v1.4 实测出的<b>边界</b>：杀掉进程再开，选中旧会话接着问「最早让你记住的数字」——屏上 4 行历史都在（库里读出来的），模型答 <code>Final answer: 不记得</code>，本题 <code>in 3,384</code>（框架日志 <code>Step 3: Input tokens 9,015</code>，减去本题正好是没带上会话历史的差额）。<b>屏与记忆现在是两套账</b>：屏上有，模型没有</td>
+    <td><b>已做（v1.5）＝第 ① 条</b>：字段级序列化（<code>MEM_FIELDS</code> <code>my_ui.py:69-84</code>、编解码 <code>:132-232</code>），库里第三张表 <code>memory</code>；回灌在 <code>_bind_memory</code>（<code>:975-984</code>）、落库在 <code>_respond</code> 的 <code>finally</code>（<code>:1102-1104</code>）。<b>为什么不是 ②</b>：模型读的是 <code>memory.steps</code> 而不是屏幕文字（<code>agents.py:767-769</code> 的 <code>write_memory_to_messages()</code>），重放屏幕文字要重定"本题累计"边界、<code>in</code> 线性涨。实测：交付形态跨两次重启答回 <b>73</b> 与 <b>21</b>；新会话仍 <code>不记得</code>（<code>in 2,363</code>）；离线 1n 用<b>框架自己的</b> <code>write_memory_to_messages()</code> 逐字比对回灌前后</td>
+    <td><span class="pill done">已上线 v1.5</span></td></tr>
+  <tr data-st="done" data-p="V"><td><b>V7</b></td>
+    <td><b>侧栏选中态陈旧</b>：点「＋ 新会话」后 radio 仍留着上一条的 <code>checked</code>，于是"点那条高亮着的旧会话"＝空点</td>
+    <td class="ev">v1.4 记下的是"高亮没跟"（纯界面层）；<b>v1.5 造成了真后果</b>：那一按不触发 change 事件，问题落进了<b>新会话</b>——探测口实测 <code>in 2,463</code>、答「不记得」，数据没坏、只是进错了门。反证 <code>/tmp/v15_leg.js</code>：每次点击前先读 <code>before-checked</code>，<code>before-checked=0</code> 时点击正常。<b>v1.6 又用真鼠标链路在种子库上把这条复现了一遍</b>（<code>/tmp/v16_base.before.txt</code>）：新会话之后 <code>chk=[false,false,true]</code>（甲还亮着）而屏上已是「还没有会话」，再点甲 → <code>chk</code> 不变、气泡 0 条 ＝ <b>change 没派发</b>；同一条链路改完后（<code>/tmp/v16_base.after.txt</code>）第 2 步 <code>chk=[false,false,false]</code>、第 3 步 <code>chk=[false,false,true]</code> 且 1 问 1 答回来</td>
+    <td>不是数据错、是<b>点错门</b>：用户以为在接着聊旧会话，其实模型那边是开局。V6 上线后这条更容易撞上——因为"点旧会话"现在真的会带记忆</td>
+    <td><b>已做（v1.6）＝"反过来：<code>checked</code> 由 <code>sid</code> 单向驱动"</b>：新增 <code>_radio_update(force)</code>（<code>my_ui.py:1007-1025</code>），<code>choices</code> 每帧刷、<code>value</code> 只在绑定真的换了那一次给；<code>_respond</code>（<code>:1046-1047</code>）绑定即记 <code>_sid</code>、<code>_new_session</code>（<code>:1107-1113</code>）把高亮<b>清掉</b>（那一刻库里还没有这条）、<code>_on_load</code>（<code>:1162-1180</code>）<code>force=True</code> 补刷新高亮、<code>_select_session</code>（<code>:1137-1160</code>）加"值没变＝回声"守卫。<span class="key">为什么不能每帧都带 value</span>：本轮实测 gradio 6.30 <b>服务端设 value 也会被算成一次 <code>.change</code> 送回后端</b>（设 <code>None</code> 也送回），流式期间 0.25s 一帧＝每秒两次空转事件、还会和正在流式的那条抢同一个 chatbot 输出。离线 5a~5j 十条；交付形态实测：新会话清亮 → 点旧的真的回来（<code>Final answer: 21</code>）→ 追问落在对的那条（<code>in 2,525</code>、侧栏没多出会话）</td>
+    <td><span class="pill done">已上线 v1.6</span></td></tr>
+  <tr data-st="done" data-p="V"><td><b>V8</b></td>
+    <td><b>审批等待时长从步骤耗时里单列</b>：等人点按钮的秒数一直混在"这一步跑了多久"那一格里</td>
+    <td class="ev">v1.5 §6.9 白纸黑字：一格 <code>272.9s</code>、真执行约 1s（<code>本题耗时 273.7s</code> 同）。v1.3 卡片化时就是这口径，当时说了"要不要单列另立 V 单"。<b>诊断上读不住</b>：一个数分不清是模型慢、工具慢还是没人点按钮</td>
+    <td>题跑完了看不出"这 272.9 秒里有多少是我自己去倒水了"；连"审批到底卡了多久"都没地方查</td>
+    <td><b>已做（v1.6）＝只加不减</b>：三处各多一格（状态条「本题审批」、步骤卡「· 审批 X.Xs」、审批卡「等了 X.Xs」），<b>总时长那一格定义一字未动</b>（仍是框架 <code>timing.duration</code>，含等待）。三段路见 §2.5 的 V8 行；门槛 <code>APPROVAL_WAIT_MIN = 0.05</code> 是实跑露出来的：<b>D7 那条"入队即取消"的路会写出 <code>审批 0.0s</code></b>。离线 6a~6q 十七条，交付形态实测 <code>本题耗时 22.9s / 本题审批 21.0s</code>、<code>22.1s · 审批 21.0s</code>。<span class="key">代价</span>：等待<b>不进记忆库</b>（白名单不认私有属性）→ 重启后旧步骤读不出这一格，另立 <b>V9</b></td>
+    <td><span class="pill done">已上线 v1.6</span></td></tr>
+  <tr data-st="done" data-p="V"><td><b>V9</b></td>
+    <td><b>让审批等待跨重启也读得出</b>：把等待秒数正式写进记忆格式（<code>MEM_FMT</code> 升 <code>v2</code> ＋ 兼容读 <code>v1</code>）</td>
+    <td class="ev"><code>迭代记录.md</code> v1.6 §6.2 立下的边界：<code>_opsui_wait</code> 是 step 对象上的私有属性，<code>MEM_FIELDS</code>（<code>:69-84</code>）不认它 → 落库那串里<b>根本没有 wait 这个键</b>（v1.7 基线 A 实测：payload 出现过的键只有八个 <code>_t / is_final_answer / observations / step_number / task / timing / token_usage / tool_calls</code>，<code>fmt</code> 仍是 v1）。<b>基线 B 顺手推翻了 v1.6 注释里的一句话</b>：屏上那张历史卡<b>一直带着</b>「（含审批 …）」（卡片正文走 <code>messages</code> 表，实测 4 条消息里 1 条含「含审批」）→ 真读不出的只有状态条 / <code>_stats</code> 那一串数</td>
+    <td>重启后回看一条跑过审批的旧会话，状态条读不出「当时等了多久」；<b>基线 C 又量到一条</b>：点旧会话时状态条报的是「上一次提问那条」，什么都没提问过时是空的 <code>0/8</code>——屏上是甲、条上是乙。日常影响小，但和 V6 的「跨重启接着记得」放在一起就不自洽</td>
+    <td><b>已做（v1.7）＝编解码多一格 ＋ 只读出口</b>：<code>MEM_FMT="v2"</code> ＋ <code>MEM_FMT_READ=("v1","v2")</code>（<code>:63</code> / <code>:68</code>）、<code>encode_memory</code> 的 <code>ActionStep</code> 分支写 <code>row["wait"]</code>（<code>:162-168</code>，真等过才写）、<code>decode_memory</code> 挂回 <code>step._opsui_wait</code>（<code>:225-229</code>）、新增 <code>_session_steps</code>（<code>:988-1004</code>）喂 <code>_stats(steps=…)</code>（<code>:749-752</code>），调用点是 <code>_select_session</code>（<code>:1160</code>）与 <code>_on_load</code>（<code>:1180</code>）。<b>白名单一个字没动</b>（<code>wait</code> 不在里面，离线 7d 断言模型读到的那串逐字不变）。实测：交付形态真重启后第一次加载即 <code>本题耗时 23.4s / 本题审批 20.7s</code>；库里新增 sid 8 <code>fmt=v2</code>、<code>wait=[20.672, 无]</code>，<b>旧 7 行 sha1 逐行不变</b>；离线 115 条（含 V9 二十二条）。<span class="key">代价</span>：兼容读<b>只朝一个方向</b> → 回滚把 v1.7 的账变成没记忆（本手册 §6.1 第 5 节）</td>
+    <td><span class="pill done">已上线 v1.7</span></td></tr>
+</table>
+
+<div class="card ok">
+  <b>我推荐的下一刀（v1.8）：</b><span class="key">先 <b>D8</b>（流式中刷新／关页面 → 这一题一行都不落库），再 <b>P0-4</b>（计划可见）</span>。
+  D8 是 v1.7 实跑抓出来的<b>数据完整性</b>问题（一屏字能整轮丢，两次超时留痕 <b>120,353ms</b> / <b>300,967ms</b>），基线已经写在 §6.1 第 7 节；P0-4 是<b>新功能</b>，地基（v1.3 的线程 ＋ 允许/拒绝键）本来就铺好了，往后排一格不亏。
+  <b>已上线</b>：V7 + V8 → <b>v1.6</b>（验收见 §6.2）、V9 → <b>v1.7</b>（验收见 §6.1）。
+  <b>更早五轮</b>（D5 + V5、V4 + P0-2、V1+V2+V3、D1+P0-5+P0-1）都按当时的推荐上线，「实际走向」记在 §6.3 ~ §6.7 的遗留里。
+  <b>D2</b>（staging 副本读不回来）v1.7 已按你点的 ② 定性：<b>故意闭环</b>，理由写进注释、行为零改动。
+</div>
+
+<h2 id="s5">5 迭代手册：一次迭代怎么留痕</h2>
+
+<h3>5.1 文件与命名</h3>
+<table>
+  <tr><th>文件</th><th>角色</th><th>谁改</th></tr>
+  <tr><td><code>ai学习/迭代记录.md</code></td><td><b>事实源</b>：一条迭代一节，倒序追加（新在上）</td><td>我写，你改；你改完的版本就是新的事实</td></tr>
+  <tr><td><code>ai学习/agent功能手册.html</code></td><td><b>视图</b>：本文件；第 4 节状态列 + 第 6 节记录由 md 回写</td><td>只由我按 md 重生成，不要手改 HTML</td></tr>
+  <tr><td><code>ai学习/README.md</code></td><td><b>代码剖析</b>：讲"现在是什么样"，不讲迭代史</td><td>能力面变化时同步对应小节</td></tr>
+  <tr><td><code>ai学习/.rollback/vX.Y/</code></td><td><b>代码存档</b>（v1.1 起）：这一版改过的 <code>my_*.py</code> 原样各存一份，回滚就是从这里 <code>cp</code> 回去。现有 <code>v1.0 / v1.1 / v1.2 / v1.3 / v1.4 / v1.5</code> 六套（共 12 个文件，<code>my_ui.py</code> + <code>my_coding_agent.py</code> 各一份）</td><td>我改代码<b>之前</b>先存；见 5.5</td></tr>
+  <tr><td><code>smolagents/.agent-history.sqlite3</code></td><td><b>运行数据</b>（v1.2 起）：侧栏的会话与消息，<b>加模型的记忆</b>（v1.5 的第三张表 <code>memory</code>），单文件。<b>不是代码、不进存档</b>；回滚只回代码，这个文件要不要留由你定（v1.1~v1.4 读不到 <code>memory</code> 表，留着也无害，实测过）</td><td>由 agent 进程自己写；清空就删这一个文件</td></tr>
+  <tr><td><code>ai学习/验收脚本/</code></td><td><b>复跑留痕</b>（2026-10-30 起）：v1.0~v1.7 八轮的脚本与输出按版本号分目录收在这里，<b>一个文件名都没删</b>（逐份 sha1）。本文与 <code>README.md</code>、<code>迭代记录.md</code> 里写的 <code>/tmp/v1*_…</code> 一律是<b>当时实跑的路径</b>，现在的入口是这个目录；哪些命令还跑得动写在 <code>验收脚本/README.md</code></td><td>我写，只增不删</td></tr>
+</table>
+<p>版本号规则：<b>主版本 = 交付形态变了</b>（换 UI、换启动方式）；<b>次版本 = 新增能力</b>（新工具、新面板）；<b>修订号 = 纯缺陷修复与调参</b>。<br>
+v1.1 的实际判定给了一条参照：<b>D1（缺陷）+ P0-5 + P0-1（两条新能力）打包做 → 记次版本 v1.1</b>，不是 <code>v1.0.1</code>——规则里的"修订号"只适用于<b>一个功能都没加</b>的那类改动。一条刀里既有止血又有新能力时，按<b>最大的那件</b>定版。</p>
+
+<h3>5.2 一条迭代记录的必填字段（模板，直接抄）</h3>
+<pre><code>## v1.1 · 2026-10-29 · 一句话主题
+
+### 1 这次解决什么（为什么现在做）
+不写"优化体验"。写触发事件：哪条缺口、什么现象、哪次跑挂。
+
+### 2 改动清单
+| 文件:行 | 改了什么 | 类型(新增/修改/删除) | 对应工单号 |
+
+### 3 新功能怎么用（用户视角，不含实现）
+双击→点哪儿→看到什么。每步可跟着做，不需要读代码。
+
+### 4 上线验收（必须是我当场跑过的真实输出）
+命令 + 关键输出行 + 通过判据。没跑过的一律写【未验证】。
+
+### 5 回滚方法
+一条命令回到 v1.0 的行为。做不出回滚方案的改动不算上线完。
+
+### 6 口径与数据变化
+token / 步数 / 工具数量 / 行为语义的前后对比。数字必须同题同步长。
+
+### 7 已知遗留（下次的输入）
+本次没做完的、新发现的缺陷，直接编号进第 4 节看板。</code></pre>
+
+<h3>5.3 上线动作顺序（我每次都按这七步走）</h3>
+<table>
+  <tr><th>步</th><th>动作</th><th>不这么做的后果</th></tr>
+  <tr><td>1</td><td>按工单号确认范围，<b>只动这几条</b></td><td>顺手重构，验收范围失控</td></tr>
+  <tr><td>2</td><td>改代码 → <b>读回磁盘确认存在</b>再宣布</td><td>宣布不存在的文件（我犯过）</td></tr>
+  <tr><td>3</td><td>实跑：起 <code>my_ui.py</code>，走一遍新功能</td><td>"类型检查过了"不等于功能在</td></tr>
+  <tr><td>4</td><td>跑四条验收（<code>lsof</code> / <code>who</code> / System Events 窗口数 / 日志尾）。<b>关停要走 <code>关闭Agent.command</code>，不要自己 <code>kill</code> python</b>——v1.2 就是因为直接 kill，<code>who</code> 里多留了一条 <code>ttys000</code> 的空闲 shell</td><td>残留进程与幽灵窗口</td></tr>
+  <tr><td>5</td><td>回滚演练一次<b>两个方向</b>：退回上一版能跑、再前进回来也能跑（存档见 5.5，恢复后用 <code>cmp</code> 确认逐字节一致）</td><td>出问题只能重装。v1.1 就是这么发现 <b>D3</b> 的</td></tr>
+  <tr><td>6</td><td>追加 <code>迭代记录.md</code> 一节</td><td>三周后没人知道为什么这么改</td></tr>
+  <tr><td>7</td><td>重生成 HTML：第 4 节状态、第 6 节记录、第 2 节能力面同步</td><td>手册变成过期广告</td></tr>
+</table>
+
+<h3>5.4 记录纪律（四条，违反等于没写）</h3>
+<ul class="tight">
+  <li><b>不许有无数字的形容词</b>："明显更快""体验更好"一律删；换成"单题累计 input 从 2,375 → 19,399"这种前后对比。</li>
+  <li><b>口径要写死</b>：token 是<b>累计</b>还是<b>单步</b>（<code>monitoring.py:86-111</code> 是累计，<code>ActionStep.token_usage</code> 是单步），混用等于骗自己。</li>
+  <li><b>没验证的不写结论</b>：标【未验证】或【待补】，不许推测成事实。</li>
+  <li><b>行为语义变了必须显式声明</b>：比如开启 <code>reset_agent_memory=True</code>，就要写清"从此不能跨题续聊"。v1.4 的第 6 节口径条就是这个执行样本——三处语义变化（点旧会话＝接着聊、刷新＝回到最近一条、<code>save()</code> 每次刷 <code>updated_at</code>）逐条列了前后。</li>
+</ul>
+
+<h3>5.5 存档规矩（v1.1 立，因为发现 git 靠不住）</h3>
+<div class="card bad">
+<p><code>my_agent.py / my_coding_agent.py / my_ui.py</code> 躺在 smolagents <b>克隆目录里</b>却是 <b>untracked</b>，所以 <code>git checkout</code> 回滚不了，而 <code>git clean -fd</code> 会把你所有定制一次删光（看板 <b>D3</b>）。改这些文件<b>之前</b>先存档：</p>
+<pre><code>RB=~/Desktop/study/ai学习/.rollback
+mkdir -p $RB/vX.Y && cp ~/Desktop/study/ai学习/smolagents/my_ui.py \
+   ~/Desktop/study/ai学习/smolagents/my_coding_agent.py $RB/vX.Y/</code></pre>
+<p>每改一版存一份，<b>上一版也要留着</b>——回滚方向（<code>cp $RB/v老/*</code>）和前进方向（<code>cp $RB/v新/*</code>）<b>两条都要当场演练</b>，用 <code>cmp</code> 确认恢复后与存档逐字节一致。演练时会挪开 <code>.agent-staging</code> 的，结束时按原 <code>mtime</code> 原样还原。</p>
+</div>
+
+<h2 id="s6">6 迭代记录（本版全文，之后倒序往上追加）</h2>
+
+<h3>6.1 v1.7 · 2026-10-30 · 「本题审批」跟着记忆进库：重启、点旧会话都读得出那一格（<b>V9</b>）</h3>
+<div class="src">范围按工单号锁定 <b>V9</b>（<code>my_coding_agent.py</code>、<code>my_agent.py</code>、上游源码零改动；<b>库 schema 零改动</b>，只是 payload 里多一个可选键；审批闸的<b>判定</b>、停止的语义、V7 的高亮、V8 的记账链路一行未碰——只在这条链的<b>末端</b>多写一格、多读一格）· 全文见 <code>迭代记录.md</code> v1.7 一节</div>
+
+<h4>1 这次解决什么</h4>
+<ul class="tight">
+  <li><b>基线先跑，被测模块换成归档的 <code>.rollback/v1.6/my_ui.py</code></b>（<code>/tmp/v17_base_v16.py</code> → <code>/tmp/v17_base_v16.out</code>，13 条全 PASS）。为什么不能用现网代码重跑：上线之后真实库里已经多了一条<b>真 v2</b> payload，拿 v1.7 代码原样跑会把"缺口复现"跑成"缺口已关"，数字就不配当基线。</li>
+  <li><b>A 缺口本体</b>：活进程里那一格看得见（<code>task_wait 0.61s</code>、pill 在），但落库那串里<b>根本没有 <code>wait</code> 这个键</b>——payload 出现过的键就八个（<code>_t / is_final_answer / observations / step_number / task / timing / token_usage / tool_calls</code>），<code>fmt</code> 仍是 v1。<b>B 重启回灌</b>：同一个库起第二个 <code>OpsUI</code>、回灌之后 <code>task_secs 0.66</code>（V6 的口径在）而 <b><code>task_wait 0.0</code></b>。<b>B 顺手推翻了 v1.6 注释里的一句话</b>：屏上那张历史卡<b>一直带着</b>「（含审批 …）」（卡片正文走 <code>messages</code> 表，实测 4 条消息里 1 条含「含审批」）→ 真读不出的只有状态条 / <code>_stats</code> 那一串数。</li>
+  <li><b>C 光进库没有出口</b>：「点一条旧会话」这条路<b>不回灌记忆</b>（<code>agent.memory</code> 还是空的那一份，<code>_bind_memory</code> 只在 <code>_respond</code> 开头），切到甲之后状态条仍是 <code>步数 0/8</code>。所以 V9 必须同时给状态条一个<b>读屏幕上这一条</b>的出口，否则这一格进了库也看不见。<b>D</b> 只把秒数挂回 step 对象的 <code>_opsui_wait</code>，pill、步骤卡标题、正文累计行<b>三处零改动</b>就显示 → 该改的是编解码。</li>
+  <li><b>E 升版本的代价</b>：只把 <code>MEM_FMT</code> 改成 v2、不做兼容读 → 真实库里那 <b>7 条 v1 payload 在 strict v2 下全体读空</b>（V6 当场作废）。<b>E1b 反面</b>（v1.6 原样的代码）读 v1.7 写的 v2 账<b>同样读空</b> → 兼容读<b>只朝一个方向</b>，回滚会把新账变成没记忆。</li>
+  <li><b>为什么不做成"点旧会话时顺手 <code>_bind_memory</code>"</b>：那条路会把 worker 线程正在读的记忆换掉（<code>_bind_memory</code> 上面"刻意不做"写着的那条理由），V5 的语义也不该由一次点击改动。所以走<b>只读</b>路径：进程里有这一份就读它的 <code>steps</code>，没有就按 V6 那条路 decode 库里那一串。</li>
+</ul>
+
+<h4>2 改动清单（<code>my_ui.py</code> 单文件，v1.7 现行号）</h4>
+<table>
+  <tr><th>文件:行</th><th>改了什么</th><th>类型</th><th>工单号</th></tr>
+  <tr><td><code>my_ui.py:63</code> / <code>:68</code></td><td><code>MEM_FMT = "v1" → "v2"</code>；新增 <code>MEM_FMT_READ = ("v1", "v2")</code>。注释点名那条反面证据（真实库那 7 条在 strict v2 下全读空＝基线 E1），并写明 v1 的步没有 wait、读出来按 0 处理、其余字段两版逐字相同</td><td>修改 / 新增</td><td>V9</td></tr>
+  <tr><td><code>my_ui.py:85-88</code></td><td><code>MEM_FIELDS</code> 之后加注释：<b>wait 不在这张表里</b>——表的口径是"下一轮模型读到的字段"，审批等待只是界面上的账，<code>to_messages()</code> 不认它，所以在 <code>encode_memory</code> 里单独走一条路</td><td>新增</td><td>V9</td></tr>
+  <tr><td><code>my_ui.py:162-168</code></td><td><code>encode_memory</code> 的 <code>ActionStep</code> 分支多写 <code>row["wait"] = round(_opsui_wait, 3)</code>，<b>只有真等过才写</b>（0 不占位）→ 没审批的会话编出来与 v1.6 逐字相同（只差 <code>fmt</code> 那两位），库里体积不涨</td><td>修改</td><td>V9</td></tr>
+  <tr><td><code>my_ui.py:179-180</code></td><td><code>decode_memory</code> 的版本判定 <code>data.get("fmt") != MEM_FMT</code> → <code>not in MEM_FMT_READ</code>；认不出的版本（v0、将来的 v3）<b>仍旧整块当没记忆，不猜着读</b></td><td>修改</td><td>V9</td></tr>
+  <tr><td><code>my_ui.py:203-223</code></td><td><code>ActionStep</code> 的解码分支从"一路 <code>append(构造调用)</code>"改成"先 <code>step = ActionStep(...)</code>，再决定挂不挂属性"</td><td>修改</td><td>V9</td></tr>
+  <tr><td><code>my_ui.py:225-229</code></td><td><code>if row.get("wait"): step._opsui_wait = float(row["wait"])</code>——v1 的老 payload 没这个键就读作 0、那一格不出现，<b>不是把整条会话判成没记忆</b></td><td>新增</td><td>V9</td></tr>
+  <tr><td><code>my_ui.py:894-896</code></td><td>领账那三行注释里的旧口径（"字段白名单不认它，所以<b>不会进记忆库</b>"）改成 v1.7 的事实。<b>第 7 步回写 README 时发现的</b>——不改行为、行数不变（三行换三行）</td><td>修改</td><td>V9</td></tr>
+  <tr><td><code>my_ui.py:749-752</code> / <code>:782</code></td><td><code>_stats(steps=None)</code> / <code>_status_html(state, steps=None)</code>：不传就是原样读 <code>agent.memory</code>（当前绑定那一份），传了就读那一条会话自己的步骤</td><td>修改</td><td>V9</td></tr>
+  <tr><td><code>my_ui.py:766-769</code></td><td><code>task_wait</code> 的注释重写（V8 写的是"进程内属性、回灌读 0"）；<b>顺手改掉一处过时的叙述</b>——"屏幕上那条历史卡也就不带审批那一格"，基线 B3 证明它一直在</td><td>修改</td><td>V9</td></tr>
+  <tr><td><code>my_ui.py:988-1004</code></td><td><b>新增 <code>_session_steps(sid)</code></b>：<code>_mem.get(sid)</code> 有就直接 <code>list(mem.steps)</code>（正在跑的那条账最全），否则 <code>decode_memory(self.hist.load_memory(sid))</code>；<b>只读</b>——不碰 <code>agent.memory</code>、不改绑定。docstring 里记着基线 C3 那条实测（切到甲之后步数仍是 <code>0/8</code>）</td><td>新增</td><td>V9</td></tr>
+  <tr><td><code>my_ui.py:1150-1153</code> / <code>:1160</code></td><td><code>_select_session</code> 第二个输出 <code>_status_html("idle")</code> → <code>_status_html("idle", self._session_steps(int(sid)))</code>。注释写明<b>不顺手在这里 <code>_bind_memory</code></b> 的两个理由</td><td>修改</td><td>V9</td></tr>
+  <tr><td><code>my_ui.py:1175-1180</code></td><td><code>_on_load</code> 同口径（<code>shown = self._session_steps(sid) if sid else None</code>）。注释点死这条是<b>重启后第一次看</b>的入口：新进程 <code>_mem</code> 是空的 → <b>刷新这一下就是「本题审批」跨重启最干净的验收动作</b></td><td>修改</td><td>V9</td></tr>
+  <tr><td><code>ai学习/.rollback/v1.7/</code></td><td>新增第八套存档（<code>my_ui.py</code> + <code>my_coding_agent.py</code>），<code>.rollback/</code> 共 <b>16</b> 份 / <b>8</b> 套</td><td>新增</td><td>回滚</td></tr>
+</table>
+<p>体量：<code>my_ui.py</code> <b>1,205 → 1,253 行</b>（63,316 → <b>67,362 B</b>；字符 50,717 → 53,019；<code>diff</code> 净 <b>+85 / −37</b>，15 个 hunk。这三个数是<b>第 7 步收尾时重算的</b>：<code>_stream_response</code> 那三行注释按 V9 的事实改过，行数不变、字节 +21，<code>diff</code> 因此比初稿的 <code>+83 / −35</code> 各多 2）。<code>my_coding_agent.py</code> <b>204 行 / 8,355 B 未动</b>（<code>cmp</code> 与 <code>.rollback/v1.6</code> 一致）。库 schema 零改动——<code>memory</code> 表还是那三列，只是 payload 里多一个<b>可选</b>键。</p>
+
+<h4>3 新功能怎么用</h4>
+<ul class="tight">
+  <li><b>重启之后刷新页面</b>：状态条上「本题审批 X.Xs」自己回来了（v1.6 这时候只剩「本题耗时」，那一格是空的）。</li>
+  <li><b>点侧栏任意一条旧会话</b>：状态条报的就是<b>那一条</b>的数。v1.6 这里报的是"上一次提问那条会话"，什么都没提问过时甚至是一份空的 <code>0/8</code>——屏上是甲、条上是乙。</li>
+  <li><b>v1 时代（v1.6 及更早）攒下的会话</b>：照读，「本题耗时」「本题 token」「步数」都在，只是<b>没有</b>「本题审批」那一格——那个数当年没进库，本轮不猜、不补。</li>
+  <li><b>没审批的题</b>：库里那一串不会多出 <code>wait</code> 这个键（往返重编零增长），界面也一格都不多。</li>
+  <li>「本题耗时 / 步骤总时长」的定义<b>仍然一字未动</b>（含等待）；要看纯执行时间还是 <code>总时长 − 审批</code>。</li>
+</ul>
+
+<h4>4 上线验收（当场跑过的真实输出）</h4>
+<p>离线 <code>/tmp/v17_test.py</code>（venv python，<code>_stream_response</code> / <code>agent.run</code> 打桩、临时库）：<b>115 条全 PASS、<code>FAILS: 无</code>、<code>exit=0</code></b>（<code>/tmp/v17_drill_forward.out</code>）。分节：1 编解码 16 / 2 落库与重启 23 / 3 D7 17 / 4 回归 10 / 5 V7 10 / 6 V8 17 / <b>7 V9 22</b>。v1.6 那 92 条原样搬过来全绿，其中三条按 V9 的新口径改过：<b>2b</b> 期望 <code>fmt</code> 从 v1 改成 v2、<b>6n 直接翻转</b>（v1.6 断言"<code>_opsui_wait</code> 进不了库"，V9 之后它必须进得去，键名是 <code>wait</code> 而不是私有属性名）、新增 <b>2b2</b>（没等过审批的一题 payload 里没有 <code>wait</code>）。第 7 节里最要紧的几条：<b>7a</b> 没等过审批的步 v2 编出来与归档的 v1.6 编码器<b>逐字相同</b>（对照模块用 <code>importlib</code> 把 <code>.rollback/v1.6/my_ui.py</code> 装进来比）、<b>7b</b> 真等过的步才多写，多出来的正好是 <code>, "wait": 12.346</code> 那 16 字节、<b>7c</b> 读回来挂回同一个私有属性（显示层一行没改）、<b>7d</b> 模型读到的那一串不掺这一格、<b>7e/7f</b> 真实库副本里 8 条 payload 全读得回且"新读 v1 == v1.6 读自己那一份"逐字段一样、<b>7g</b> 八条往返重编长度差 <code>[0,0,0,0,0,0,0,0]</code>、<b>7h</b> v1 无 wait 读作 0、<b>7i</b> <code>fmt:"v0"/"v3"</code> 整块拒读、<b>7j~7s</b> 端到端：<b>7l</b> 换一份全新 <code>AgentMemory</code> ＋ 新 <code>OpsUI</code>、只做一次 <code>_on_load</code>（＝"重启后刷新"那一下），「本题审批」自己回来且秒数就是库里那一格、<b>7m/7p</b> 这一路全程只读（<code>agent.memory</code> 仍是新那份空的、<code>_mem == {}</code>、点旧会话也不改绑定）、<b>7n/7o</b> 屏上是甲、条上就报甲：乙那一题不带那一格（别把甲的等待算给乙）、7q 换下一题不继承上一题读回来的等待、7s V7 回声守卫没回潮。</p>
+<table>
+  <tr><th>判据（在线·探测口 7861，真 qwen-plus，临时库；库里先用 <code>/tmp/v17_seed.py</code> 种两条<b>真 v1</b> payload——<b>用归档的 <code>.rollback/v1.6</code> 编码器现编</b>，415 / 414 字符（UTF-8 425 / 424 B）、<code>fmt=v1</code>、无 wait，不是手写的假 v1）</th><th>结果</th></tr>
+  <tr><td>第一轮之前（v1 兼容读的第一面）</td><td>新进程打开页面即 <code>_on_load</code> 绑最近一条「v1旧记忆-乙」：<code>本题耗时 12.5s</code>、<b><code>本题审批</code> 这格不存在</b>（<code>pillWait=null</code>）——读得动，只是不猜</td></tr>
+  <tr><td>挂着审批 20 秒 → 点允许</td><td>等待期间 <code>本题耗时 0.0s</code>、无「本题审批」、pill <code>待批 run_python</code>；点允许之后 <code>本题耗时 23.0s</code> ＋ <b><code>本题审批 20.7s</code></b>、步数 <code>2/8</code>、本题 <code>in 4,789 / out 39</code>、<code>Final answer: 21</code></td></tr>
+  <tr><td>落库那一串</td><td>sid 3：<b><code>fmt=v2</code></b>、3 步、<b><code>wait=[20.743, 无]</code></b>（领到账的那条 <code>ActionStep</code> 有、<code>final_answer</code> 那条没有）、<code>duration=[22.08, 0.97]</code>、965 字符（UTF-8 1,013 B）；<code>messages</code> 5 条</td></tr>
+  <tr><td><b>真重启</b>（<code>kill</code> → 同一个库重起 → 只做一次页面加载）</td><td>状态条 <b><code>本题耗时 23.0s / 本题审批 20.7s</code></b> ← 新进程的 <code>_mem</code> 是空的、一个 <code>_respond</code> 都没跑过，<b>这个数只能来自库里那一格</b></td></tr>
+  <tr><td>重启后点两条 v1 旧会话</td><td>甲 <code>本题耗时 41.0s</code>、乙 <code>12.5s</code>，两边<b>都没有</b>「本题审批」（兼容读不猜）；侧栏高亮跟着点走（<code>chk</code> 从第 1 格挪到点的那一格）→ V7 没回潮</td></tr>
+  <tr><td>只读路径没换成绑定</td><td>刷新／点击之后 <code>agent.memory</code> 仍是新进程那一份空的（基线 C2 的语义保持）；屏上是甲、条上也报甲，但下一次提问仍落进它自己那条</td></tr>
+</table>
+<table>
+  <tr><th>判据（在线·<b>交付形态</b> 7860，<code>我的Agent.app</code> 真启动器 ＋ 真 qwen-plus，库＝真实的 <code>smolagents/.agent-history.sqlite3</code>；<code>/tmp/v17_delivery.py</code> 经 CDP 9333 驱动 headless Chrome）</th><th>结果</th></tr>
+  <tr><td>等待单列 ＋ 进库</td><td>状态条 <code>本题耗时 23.4s</code> ＋ <b><code>本题审批 20.7s</code></b>；审批卡 <code>🟢 待批 · run_python · 已允许 · 等了 20.7s</code>；步骤卡 <code>🛠 第 1 步 · run_python · 🟢 成功 · 22.1s · 审批 20.7s · in 2,355/out 22</code> 与 <code>🛠 第 2 步 · final_answer · 🟢 成功 · 1.3s · in 2,438/out 17</code>（<b>没审批的那一步一格都不多</b>）；<code>Final answer: 21</code>；进程 <code>in 4,793 / out 39</code></td></tr>
+  <tr><td><b>真实库前后对照</b>（只读；<code>/tmp/v17_real_before.json</code> 是开工前抓的 sha1+len+fmt）</td><td>跑之前 <code>sessions 7 / messages 49 / memory 7 行</code> → 之后 <b><code>8 / 54 / 8</code></b>；<b>旧 7 行 sha1 逐行不变、零丢失</b>（<code>OLD ROWS CHANGED: 无</code>、<code>OLD ROWS GONE: 无</code>）；新增 sid 8：<code>fmt=v2</code>、<code>wait=[20.672, 无]</code>、967 字符（UTF-8 1,015 B）</td></tr>
+  <tr><td><b>真重启（走关闭器）</b></td><td><code>bash ~/Desktop/关闭Agent.command</code> → 重开 → 页面第一次加载即 <code>本题耗时 23.4s / 本题审批 20.7s</code>；四条卡片文字也在（那本来就走 <code>messages</code> 表，<b>不是</b>本轮的新能力）</td></tr>
+  <tr><td>重启后点一条真 v1 旧会话</td><td>「用 run_python 打印 4*5 的结果…」→ <code>本题耗时 1.1s</code>、<b>无「本题审批」</b></td></tr>
+  <tr><td>四条关停判据（两轮各跑一次）</td><td>7860 监听 <b>0</b> / Agent 专用 Chrome（<code>Application Support/AgentClient</code>）<b>0</b> / <code>who</code> 只剩 <b>console</b> / System Events <code>count of windows of process "Terminal"</code> = <b>0</b></td></tr>
+  <tr><td>日志零噪声</td><td>收工时 <code>.agent-ui.log</code> <b>2 行 / 106 B</b>，<code>grep -c</code> 七种模式（<code>Traceback</code> / <code>Error in callback</code> / <code>asyncio.exceptions</code> / <code>RuntimeError:</code> / <code>gradio.exceptions</code> / <code>ClosedClient</code> / <code>Event loop</code>）<b>全 0</b>。⚠️ 启动器用的是 <code>tee</code>（覆盖写），所以这份只留<b>最后一次</b>启动；中途那次 21 行的日志已被重开覆盖<b>【未留痕】</b></td></tr>
+  <tr><td><b>回滚演练（双向）</b></td><td>① <code>cp .rollback/v1.6/my_ui.py → smolagents/</code> ＋ <code>cmp</code> <b>逐字节一致</b> → 跑 v1.6 那份离线套件 <b>92 条全 PASS</b>（<code>/tmp/v17_drill_backward.out</code>，<code>exit=0</code>；文件里 <code>MEM_FMT</code> 读回 <code>"v1"</code>、1,205 行）② <code>cp .rollback/v1.7/my_ui.py</code> 回去 ＋ <code>cmp</code> 一致 → 再跑 v1.7 套件 <b>115 条全 PASS</b>。两个方向都只是磁盘上换文件、没有任何手工修；真实库没被演练碰过（离线套件全用临时库）；<b>第 7 步改了那三行注释之后这一整套演练原样重跑过一遍</b>（<code>/tmp/v17_drill.sh</code> → <code>/tmp/v17_drill_rerun.out</code>）：两个方向仍旧全绿，v1.7 方向另加两条锚点（注释本身改成「跟着记忆进库」这一句、以及 <code>_bind_memory</code> 仍旧没被接到点击路径上），收尾 <code>cmp</code> 现场 == <code>.rollback/v1.7</code></td></tr>
+  <tr><td><b>文档闸·README 行号重新对齐</b>（第 7 步的前半）<br/><code>/tmp/v17_map16.json</code>（difflib v1.6→v1.7 行映射 1,205 个键）<br/><code>/tmp/v17_readme_align.py</code>（提议器）＋ <code>/tmp/v17_readme_apply.py</code>（落盘器，带 <code>OVERRIDE</code> / <code>FORCE</code> / <code>SKIP</code> 与 <code>--write</code>）<br/>写入前整份备份 <code>/tmp/v17_README.before.md</code>（1,350 行 / 124,886 B）＋ <code>/tmp/v17_readme.diff</code></td><td>提议器逐条判这个号是 v1.6 时代还是更早的（判据：这句话的标识符/实体与那一版源码块、与 v1.7 目标块的重叠取高者），再按行映射搬到 v1.7，跨度做 def/class 扩展并修剪空行；落盘器按<b>列位置</b>从右往左替换。<b>四个「讲现状」范围（§6.3 / §8 / §9.1 / §9.4）里 233 条候选引用 → 替换 194 处</b>，对齐前后<b>总行数不变 1,350</b>。判据分布：HIT <b>181</b> / other-file <b>21</b>（讲的是上游那几个文件）/ same-HIT <b>12</b> / ZERO <b>9</b> / FORCE <b>5</b> / SKIP <b>3</b> / hist <b>2</b>。<b>事后两道扫</b>（<code>/tmp/v17_scan.py</code>，README 讲现状的范围 <b>368</b> 个行号）：越界（<code>:NNN &gt; 1,253</code>）<b>0</b> 条；指向空行 <b>1</b> 条——<code>:31-36</code>，是刻意保留的 v1.1 历史号</td></tr>
+  <tr><td><b>文档闸·README 现状 ＋ 手册自身</b>（第 7 步的后半）<br/>三个闸：<code>/tmp/v13_htmlcheck.py</code>（静态）· <code>/tmp/v17_manual_check_1440.js</code> ＋ <code>_1180.js</code>（<code>file://</code> 真打开，headless Chrome 9333）· <code>/tmp/mmd_extract.py</code> ＋ <code>/tmp/mmd_check.py</code>（README 逐块 <code>mermaid.render</code>，<b>并跑负控</b>）</td><td><b>README</b>：新增 <b>§6.3.9</b>（V9 全节），§6.3 标题与文首口径改到 <b>1,253 行</b>，§8 用<b>三条 V9 场景</b>（重启后刷新那一格回来 / 点旧会话状态条跟着屏幕上这一条走且全程只读 / 回滚把 v1.7 的账读成没记忆）替换掉 v1.6 立的那条「已知边界 → V9」，§9.1 补 <b>49、50</b> 两行，§9.3 补 <b>10、11</b> 两条命令，§9.4 第 12 条改「<b>八轮</b>」→ <b>1,350 → 1,445 行</b>（124,886 → <b>144,128 B</b>，<code>diff</code> 67 个 hunk、<b>+214 / −119</b>）。<b>Mermaid：块 24 → 25，「块数 25 / 产出 svg 25 / 语法错误 0」全部通过；负控「块数 2 / 产出 svg 2 / 语法错误 1」且 <code>exit=1</code></b>——排除「校验器假通过」。<br/><b>手册</b>：<b>这一轮第一次给它做机器对齐</b>（v1.6 只对过 README）——<code>/tmp/v17_manual_align.py</code> 提议 ＋ 落盘，<b>112 条候选引用里替换 85 处</b>（HIT 62 / FORCE 21 / other-file 12 / SKIP 6 / hist 4 / same-HIT 3 / ZERO 2 / same-ZERO 2），这一步<b>总行数不变 1,182</b>；再改 §2 与页眉版本 → v1.7、§2.1 三行（<code>my_ui.py</code> 1,253 / 库 8 会话 54 消息 8 记忆 / <code>.rollback</code> 16 份 8 套）、§2.5 新增 V9 行并把状态条那行的旧口径换掉、§4 看板 <b>36 → 37 行</b>（V9 转已上线、新立 D8、推荐下一刀改 v1.8）、§6 记录节整体 6.1–6.7 → 6.2–6.8 ＋ <b>4 处手册内部</b> <code>§6.x</code> 交叉引用跟着挪（README 与 <code>迭代记录.md</code> 的 <code>§6.x</code> 引用<b>不跟着挪</b>，那是另一个文件的编号）、新增 <b>§6.1 v1.7 全节 92 行</b> ＋ 本表这四行文档闸 <b>4 行</b> → <b>1,182 → 1,286 行</b>（262,862 B）。<b>静态闸</b>：未闭合 <code>[]</code>、配对错误 <b>0</b>、外部资源 <b>0</b>、死锚点 <code>[]</code>、看板 <b>37</b> 行、<code>data-st {todo 16, doing 0, done 18, na 3}</code>、<code>data-p {D 8, P0 5, P1 8, P2 7, V 9}</code>。<b>浏览器闸</b>：<code>title</code> 已是 v1.7、<code>rows 37</code>、<code>tables 32</code>，十个筛选器 <code>#cnt</code> 与可见行数<b>逐条相符</b>（<code>all 37 / bug 8 / p0 5 / p1 8 / p2 7 / v 9 / todo 16 / doing 0 / done 18 / na 3</code>），<code>overflowX=false</code> 在 <b>1425</b> 与 <b>1165</b> 两档视口都成立；截图 <code>/tmp/v17-manual.png</code> <b>229,146 B</b>、<code>/tmp/v17-manual-1180.png</code> <b>218,828 B</b>；输出 <code>/tmp/v17_manual_gate_1440.out</code> <code>_1180.out</code>。<b>手册的事后两道扫</b>（<code>/tmp/v17_scan.py</code>）：讲现状的范围＝§1–§5 ＋ <b>§6.1 自己这一节</b> ＋ §7，<b>本表这四行闸行不参与统计</b>——它们写的就是被纠正的旧号，算进去每轮数字都跟着行数涨，口径写死在脚本里。<b>238</b> 个行号，越界 <b>0</b> 条，指向空行 <b>3</b> 条，逐条定性全是该留的：<code>:171</code> 讲的是 <code>my_coding_agent.py</code>（160 字符归属窗口把它错当成 my_ui，<b>假阳性</b>），<code>:53-172</code> 与 <code>my_ui.py:450-500</code> 都带版本号、是历史叙述<br/><b>§7 那句「V9 的边界」改写成已上线之后，四个闸全部复跑一遍</b>：静态闸（看板 <b>37</b> 行、两分布、未闭合/配对/外部/死锚四项全 0）· 浏览器闸 <b>1,440</b> 与 <b>1,180</b> 两档（<code>title</code> v1.7、<code>rows 37</code>、<code>tables 32</code>、十个筛选器 <code>#cnt</code> 与可见行逐条相符、<code>overflowX=false</code>；截图 <b>229,146 B</b> 与 <b>218,828 B</b>）· 事后两道扫（README <b>368 / 0 / 1</b>、手册 <b>238 / 0 / 3</b>，闸行不参与）· Mermaid <b>25 / 25 / 0</b> 且 <code>exit=0</code>，负控 <b>2 / 2 / 1</b> 且 <code>exit=1</code>（<code>/tmp/v17_mmd_rerun.out</code>、<code>/tmp/v17_mmd_neg.out</code>）。<b>行号数从 260 变 258</b>：那一句改写完<b>不再引用任何行号</b>，少掉的 2 个正是原句里 <code>MEM_FIELDS</code> 后面那对范围号（一个范围两个号）；这里不落字面行号，否则本闸自己的计数又被顶回去。越界与空行的判定没变</td></tr>
+  <tr><td><b>文档闸自己被抓到并当场修掉的三处</b><br/>定位脚本：<code>/tmp/v17_wide.js</code> ～ <code>v17_wide9.js</code>（逐列量 min-content）＋ <code>/tmp/v17_bisect.js</code>（逐节点剔除定位）＋ <code>/tmp/v17_fixtry2.js</code>（候选写法实测）＋ <code>/tmp/v17_manual_fix.py</code>（落盘）</td><td>① <b>页眉漏改</b>：<code>&lt;title&gt;</code> 与 <code>.meta</code> 那行还写着 <b>v1.6</b>、上线的还是「V7 + V8」——浏览器闸把 <code>title</code> 打出来才看见，改成 v1.7 / V9。② <b>D8 那一行把整页顶成横向滚动</b>：<code>overflowX=true</code>，<code>scrollW</code> 在 1,440 档 <b>1,552</b>、1,180 档 <b>1,422</b>，§4.1 缺陷表的 min-content 从 <b>1,038 涨到 1,358</b>（容器 <code>.wrap</code> 1,080）。根因<b>不是长单词</b>——<code>overflow-wrap:anywhere</code> 与 <code>word-break:break-word</code> 都毫无效果（<code>/tmp/v17_wide4.js</code>），而是 <b>CJK 行首禁则</b>：<code>（</code> 之后与 <code>、</code> 之前都不许断行，于是「（<code>v17_drain.out</code>、<code>v17_finish.out</code>、<code>v17_peek.out</code>）」被粘成<b>一个原子块</b>，逐节点剔除量得删掉任意一份就回落 150~166px；再叠加状态胶囊 <code>white-space:nowrap</code> 的「未开工（v1.7 新立）」比别的行多占 <b>46px</b>（那颗胶囊 149px，别行 103px）。修法：冒号引出＋空格分隔三份留痕、把「v1.7 新立」挪出胶囊 → min-content 实测回到 <b>1,038</b>（与 D8 之前的那一行逐字相同），两档 <code>overflowX</code> 都回 false。<b>留痕一个文件名都没删。</b>③ <b>两处行号 off-by-one</b>（都由「指向空行」那道扫抓到，不是人眼看出来的）：<b>a)</b> <code>_select_session</code> 的 V9 注释块写作 <code>:1149-1153</code>，而 <b>1,149 是空行</b>、注释实际从 <b>1,150</b> 起 → <code>:1150-1153</code>；<b>b)</b> <code>_session_steps</code> 两种写法都有（<code>:988-1005</code> 与 <code>:988-1006</code>），而 <b>1,005 是空行</b>、1,006 已是下一节 <code># ---- 事件</code> 的注释 → 函数体实为 <code>:988-1004</code>。<b>手册 7 处 ＋ <code>迭代记录.md</code> 2 处</b>统一改成这两个号；README 里没有这两个号（它引的是 <code>:1155-1156</code> / <code>:1160</code> / <code>:988-1004</code>），扫过确认。<span class="r"><b>这条也说明 §2 改动清单里那一行在上线当时就写错了</b></span>，不是回写时才错的</td></tr>
+  <tr><td>文档闸·第三道扫：区间引用的<b>终点</b>（前两道扫看不见这一类错）<br/><code>/tmp/v17_scan3.py</code> 定位 · <code>/tmp/v17_scan3_fix.py</code> 落盘 · <code>/tmp/v17_README.before-scan3.md</code> 备份</td><td>前两道扫查的是单点（越界、指向空行），<b>写成 <code>:X-Y</code> 的区间引用，尾部吃进下一节它们查不出来</b>。这一道只问一件事：终点那一行是什么——<b>空行</b> / <b>下一个 def 或 class</b> / <b><code># ----</code> 分隔</b> / <b>顶格 <code># </code> 开场注释</b>；起点不查（起点是 def 或注释都正常）。<b>真实跨度从源码量</b>：def 行按缩进往下走到同级 <code>def</code>/<code>class</code>/<code># ----</code> 为止、修剪空行。<b>覆盖 248 个区间</b>（README 133 ＋ 手册 104 ＋ <code>迭代记录.md</code> 11；<b>四行闸行不参与</b>，与第一道扫同口径）。<b>改掉 14 处</b>。手册 12：<code>:782-805</code>→<code>:782-803</code>（<code>_status_html</code>，3 处）、<code>:961-1006</code>→<code>:961-986</code>（<code>_bind_memory</code>，3 处——v1.6 之前它确实到 1,006，是本轮新加的 <code>_session_steps</code> 把它截短的，<span class="r">对齐器只搬单点号，所以这种「区间被后面的插入截短」它一条也没报</span>）、<code>:691-748</code>→<code>:691-746</code>、<code>:806-960</code>→<code>:806-958</code>、<code>:831-960</code>→<code>:831-958</code>、<code>:63-234</code>→<code>:63-232</code>、<code>:132-230</code>→<code>:132-232</code>；<code>:640-689</code> 数字不动、把标签补全成「<code>_approval_card</code> ＋它的两个渲染小工具 <code>_fence</code> <code>_args_text</code>」（卡本身是 640-667，669 起是那两个小工具）。README 2：<code>:1162-1179</code>→<code>:1162-1180</code>（<code>_on_load</code> 的 <code>return</code> 在 1,180，原来少一行）。<b>这道扫自己的漏检也是它自己暴露的</b>：第一版正则 <code>(?&lt;![\w.]):X-Y</code> 里那个负向断言把 <code>my_ui.py:782-805</code> 这种<b>带文件名的写法整条跳过</b>（<code>py</code> 后面那个点撞了断言）；放开 <code>(?:my_ui\.py)?</code> 前缀之后覆盖面从 110 / 80 / 9 涨到 133 / 114 / 21（剔掉闸行是 133 / 104 / 11），多出来的那一类里就有 179 行索引的第一号引用。<b>改完复扫剩 7 条，逐条定性，没有一条是真错</b>：6 条是 <code>:69-88</code> 与 <code>:85-88</code>——终点 88 正好是 <code>MEM_FIELDS</code> 那段注释的最后一行，区间本来就该写到那儿（<b>本道的假阳性，规则里写明</b>）；1 条是 <code>:53-172</code>（§4.5 那行写着「v1.2 时是 :53-172」，历史叙述）。闸行里那些被纠错的旧号不参与，所以这个数不会随文档变长。<b>复跑</b>：README <b>1,445 行 / 144,128 B 一字未涨</b>（改的都是数字）；手册行数因本行 +1，见 §6.1 体量那行。四道闸全绿——静态（37 行、<code>data-st {16,0,18,3}</code>、<code>data-p {D8,P0 5,P1 8,P2 7,V 9}</code>、未闭合/配对/外部/死锚四项全 0）· 浏览器两档（1,440 与 1,180 视口 <code>overflowX=false</code>，<code>rows 37</code>、<code>tables 32</code>，截图 229,146 B 与 218,828 B）· 第一道扫（README 368 / 0 / 1、手册 238 / 0 / 3，闸行不参与）· Mermaid（25 / 25 / 0 且 <code>exit=0</code>，负控 2 / 2 / 1 且 <code>exit=1</code>）</td></tr>
+</table>
+<p><b>本轮实测出来的两条机制（决定了写法）</b>：① <b>假的 <code>agent.run</code> 必须 <code>yield</code> step 对象</b>——基线第一版让假 run 直接吐 <code>gr.ChatMessage</code> 列表，结果真 <code>_stream_response</code> 那个 <code>isinstance(payload, ActionStep)</code> 分支根本不进，等待永远领不走 → A/B/D 一片红（<code>/tmp/v17_dbg.py</code> 装的哨兵当场定位）。这既是踩坑，也正是"领账挂在 <code>ActionStep</code> 到达那一刻"这条设计的反证式证据。② <b>CDP 每份剧本开头都会 <code>Page.navigate</code>，中途去 peek 一下就是把正在流式的那一题掐断</b>——前两次跑（7861）就是这么丢的，而且<b>留了痕</b>：<code>bot=0</code>、库里一行消息一行记忆都没落、<code>until DONE</code> 跑到 120,353ms / 300,967ms 超时。<b>这是 v1.6 就有的行为，不是 V9 的回归</b> → 立新单 <b>D8</b>（见 §4.1 与第 7 节）。</p>
+<p><b>过程问题五条（如实记下）</b>：① <b>7f 第一次跑红</b>，不是代码错而是<b>样本库被这一轮的实跑改了</b>（真实库多了一条真 v2 payload，v1.6 那份代码读它就是 <code>[]</code>）→ 按事实重新基线：7f 只比 v1 那几条，v2 那条单独立 <b>7f2</b>（旧代码读空＝回滚边界）和 <b>7f3</b>（新代码读出 <code>wait</code>）→ 113 条变 <b>115</b> 条。② 基线脚本同理不能在上线后原样重跑，所以留了 <code>v17_base.py</code> ＋ <code>v17_base_v16.py</code> 两份。③ 在线花销按<b>当时屏上的进程档</b>记，三份都有留痕：被掐断那两个进程 <code>in 7,334 / out 63</code>、探测口干净一轮 <code>4,789 / 39</code>、交付形态 <code>4,793 / 39</code>，合计 <b>≈1.7 万 input / 141 output</b>；离线套件与基线<b>零模型调用</b>。④ 本轮在真实库里<b>只追加</b>（新增会话 8），旧 7 行逐字节未动。⑤ <b>第 7 步回写时抓到的一处单位口径错</b>：<code>/tmp/v17_dump.py</code> 那行印的是 <code>bytes=%d</code>，实际给的是 <code>len(payload)</code>——payload 是 TEXT，这个数是<b>字符</b>，UTF-8 字节数更大（965 字符 / 1,013 B；967 字符 / 1,015 B）。脚本已改成同时印 <code>chars=</code> 与 <code>utf8=B</code>，文档里两处按实测<b>两个数都写</b>；<code>sha1</code> 走的是 <code>encode()</code> 之后的字节，所以那 7 行逐行不变的断言不受影响。</p>
+
+<h4>5 回滚方法</h4>
+<p><code>cp .rollback/v1.6/my_ui.py .rollback/v1.6/my_coding_agent.py smolagents/</code>。行为退回两条：① 重启后旧步骤的「本题审批」又读不出来了（那一格随进程一起没）；② 点旧会话／刷新页面时状态条回到"报上一次提问那条、什么都没问时是 <code>0/8</code>"。V6 落库、V7 高亮、V8 单列、D7 停止、D5/V5/D6、v1.3 审批闸<b>都不受影响</b>——退回后的文件上跑 v1.6 那份 92 条就是绿的（<code>/tmp/v17_drill_backward.out</code>）。</p>
+<p><span class="r"><b>但这一轮的回滚不是无损的，和 v1.6 那条不一样</b></span>：v1.7 写的 payload <code>fmt</code> 是 <code>"v2"</code>，而 v1.6 的 <code>decode_memory</code> 见 <code>fmt != "v1"</code> 就整块读空（基线 <b>E1b</b> 实测：拿真 v2 账喂 v1.6 代码 → 读回 <code>[]</code>）。所以回滚之后 <b>v1.7 期间新建的会话在模型那一边变成"没记忆"</b>（侧栏还在、屏上字还在，追问会答不记得）；v1 时代的老账两边都不受影响。真要长期退回 v1.6，就把 v1.7 建的会话作废（删掉那几条会话），<b>别手工去改 payload 里的 <code>fmt</code></b>——那是改数据不是改代码。</p>
+
+<h4>6 口径与数据变化</h4>
+<ul class="tight">
+  <li><b>显式声明一处行为语义变化</b>：记忆格式升 <b>v2</b>，<code>ActionStep</code> 多一个<b>可选</b>键 <code>wait</code>（审批等待秒数，<code>round(…, 3)</code>）。真等过才写，0 不占位。</li>
+  <li><b>兼容读只朝一个方向</b>：新代码认 <code>("v1","v2")</code>，旧代码只认 <code>"v1"</code> → 旧读新＝没记忆（见第 5 节）。</li>
+  <li><b><code>MEM_FIELDS</code> 白名单一字未动</b>（<code>wait</code> 不在里面）：v1.5 定的"存的是下一轮模型读得到的字段"这条纪律保持住了，7d 断言的就是模型读到的那串逐字不变。所以 <code>wait</code> 是<b>界面上的账随记忆一起存</b>，不是模型上下文的一部分——它和 <code>timing</code>、<code>token_usage</code> 同一类。</li>
+  <li><b>体积</b>：每格 12~17 个字符（<code>, "wait": 20.743</code> 这一串是纯 ASCII，<b>字符数＝字节数</b>），只有领到账的那个 <code>ActionStep</code> 才有；真实库 8 条 payload「读进来再编回去」长度差全 0（7g）。基线 E3 数的量级：库里 17 条 <code>ActionStep</code> 全等一遍也就多 ≈200 B。</li>
+  <li><b>状态条口径变了（本轮唯一的界面行为变化）</b>：那串「本题」的数现在报的是<b>屏幕上这一条会话</b>，不再报"上一次提问的那条"。同一个数在不同会话之间来回切会跟着变——以前不会。<code>_stats()</code> 不传参时行为与 v1.6 逐字相同（7r 断言），改的只有两个调用点。</li>
+  <li><b>「本题耗时 / 步骤总时长」定义仍一字未动</b>（含等待）。</li>
+  <li><b>修掉一处过时的注释口径</b>：v1.6 在 <code>_stats</code> 上写"屏幕上那条历史卡也就不带审批那一格"——<b>实测是错的</b>，卡片正文走 <code>messages</code> 表，重启后那句「（含审批 21.0s）」一直都在；真缺口只在 <code>_stats</code>/状态条（基线 B3）。</li>
+  <li><b>token 口径未动</b>。同题同步长对照：第 1 步 <code>in 2,355/out 22</code> ＋ 第 2 步 <code>in 2,438/out 17</code> ＝ 本题 <code>4,793/39</code>；裸起步实测 <code>2,349</code>（v1.6 是 <code>2,344 / 2,349</code>，同级；差异仍是模型侧波动）。<b>进程档每次重启归零</b>这条定义没变。</li>
+  <li><b>体量</b>：主轮 <code>my_ui.py</code> 1,205 → 1,253 行、63,316 → <b>67,362 B</b>、净 <b>+85 / −37</b>；<code>.rollback/</code> 存档 <b>14 → 16 份</b>（7 → 8 套）；看板 <b>36 → 37 条</b>（V9 转已上线、新立 D8）。<b>第 8 步</b>（你一次点三件：#6 安装 ＋ 开 <code>验收脚本/</code> ＋ D2 ②）只碰 <code>my_coding_agent.py</code>：204 → <b>208 行</b>、8,355 → <b>8,889 B</b>、净 <b>+4 / −0</b>（全在注释）；<code>验收脚本/</code> 新建 <b>340 个原件</b>（收编 <b>320</b> ＋ 收编之后新写 <b>20</b>，逐份对过清单：320 份全部仍在）· <b>110 份</b> <code>run/</code> 副本 · <b>70 份</b>改写前备份 · <b>520 个文件 / 20 MB</b>；<b>第 8 步收尾复跑：四道闸全绿</b>——静态 <code>rows 37</code>／<code>data-st {16,0,18,3}</code>／未闭合·配对·外部·死锚四项 <code>0</code>；两档浏览器 <code>overflowX=false</code>（<code>inner==scrollW</code>：1,425 与 1,165）、十个筛选器 <code>#cnt</code> 与可见行数逐条相符；点扫 <b>368 / 0 / 1</b>＋<b>238 / 0 / 2</b>＋<b>39 / 0 / 0</b>；端点扫 <b>133＋105＋17＝255 个区间，剩 4 条全为定性保留</b>。输出留在 <code>验收脚本/v1.7/run/</code>（<code>v17_htmlcheck_1101.out</code>、<code>v17_scan_1101b.out</code>、<code>v17_scan3_1101b.out</code>、两份 <code>v17_manual_gate_1101b_*.out</code>）。<b>三份文档现值</b>（11-01 第 8 步收尾当场量的）：<code>README.md</code> <b>1,446 行 / 145,733 B</b>、本手册 <b>1,287 行 / 265,541 B</b>、<code>迭代记录.md</code> <b>867 行 / 164,358 B</b>；<code>.rollback/</code> <b>本轮不新增存档</b>（改动只有 4 行注释、AST 同形，回滚面＝删掉那 4 行；旧 <code>my_coding_agent.py</code> 仍在 <code>.rollback/v1.7/</code> 里，比对就是拿它做的）。</li>
+</ul>
+
+<h4>7 已知遗留</h4>
+<ul class="tight">
+  <li><b>新立 D8（本轮实跑暴露，两条路都有留痕，见 §4.1）</b>：正在流式（尤其挂在审批闸上等人点）的时候刷新页面或关页面，这一题<b>一行都不落库</b>——<code>_respond</code> 开头已经 <code>ensure</code> 建了会话行，屏上曾经有字，但消息与记忆都没写，那笔审批等待也一起蒸发。机制<b>【未验证】</b>：断开时 <code>finally</code> 的语义、阻塞中的闸怎么随断开结算（现在只能等 <code>APPROVAL_TIMEOUT=600s</code> 自己按拒绝结算）、以及"落半截"和"标已中断"选哪个。v1.5 那句"半截可接受"的前提是半截会落库，实测连半截都没有。</li>
+  <li><b>v1 时代的老账永远没有「本题审批」</b>：那个数从来没进库，本轮不猜、不补。<b>库里 v1 的行不会被回写升级</b>（旧 7 行 sha1 逐行不变就是这条的断言）→ 好处是回滚面小，代价是同一个库里两种格式长期并存，<code>MEM_FMT_READ</code> 得一直带着。</li>
+  <li><b>并行多工具时那一格等待挂在"第一个到达的 <code>ActionStep</code>"上</b>（v1.6 就写着这条），本轮所有题仍是单工具【未验证：多工具并行怎么分这两格】。</li>
+  <li><b>只读路径不改绑定</b>：点旧会话现在屏上／条上一致了，但 <code>agent.memory</code> 仍停在上一条提问的会话——这是 V5 的语义，本轮有意不动。<b>代价</b>：点甲看了两眼再提问，问题落进的是"新起的那条"而不是甲【未验证：多标签同开时 <code>_sid_shown</code> 的守卫】。真要让点击就换绑定，得先解决 <code>_bind_memory</code> 上面写的那条 worker 竞争。</li>
+  <li><b>验收脚本已经不在 <code>/tmp</code> 了</b>（2026-10-30 你点头「开 验收脚本先点」）：v1.0~v1.7 <b>八轮</b>的脚本与输出整体搬进 <code>ai学习/验收脚本/</code>，按版本号分目录，<b>一个文件名都没删</b>，搬前搬后逐份 sha1 比对 <b>0 不匹配</b>。落进去的可执行文本里，指向已收编产物的 <code>/tmp/xxx</code> 路径改写为 <code>验收脚本/&lt;版本&gt;/run/xxx</code>（<b>70 个文件被改、去重后 97 条规则</b>；改写前备份在 <code>gate/.before-rewrite/</code>）。复跑命令与已知不等价写在 <code>验收脚本/README.md</code>。<b>仍然留在 <code>/tmp</code> 的只有 18 个 Chrome profile 目录</b>（约 <b>186 MB</b>，那是浏览器闸的现场而不是产物）。<b>本轮新增</b>：<code>v17_d2_assert.py</code>（D2 的 15 条断言）、<code>gate/rewrite_tmp_paths.py</code>（搬家的工具，DRY-RUN 默认）。</li>
+  <li>仍欠点头：dify Docker Compose（#5）、<b>百炼 Key 轮换</b>、<code>gradio_ui.py:456</code> 的 <code>.capitalize()</code>、P0-4、<b>装 node 24</b>（<code>servers/package.json</code> 要 <code>&gt;=24</code>，本机 <code>22.20.0</code>）。<b>已销两条</b>：MCP servers <code>npm ci</code>（#6，装完 4/4 起得来、功能调用通）与 D2（②已做）。</li>
+</ul>
+<p><b>推荐下一刀 v1.8 = D8 先、P0-4 后</b>：D8 是本轮实跑抓出来的数据完整性问题（一屏字能整轮丢），基线已经写好；P0-4（计划可见）是新功能，地基（v1.3 的线程 ＋ 允许/拒绝键）本来就铺好了，往后排一格不亏。</p>
+
+<h3>6.2 v1.6 · 2026-10-30 · 侧栏高亮跟着绑定走 + 审批等待从步骤耗时里单列（<b>V7 + V8</b>）</h3>
+<div class="src">范围按工单号锁定 V7 + V8（<code>my_coding_agent.py</code>、<code>my_agent.py</code>、上游源码、库 schema 零改动；记忆编解码、审批闸的<b>判定</b>、停止的语义一行未碰——只从闸那里多读了一个秒数）· 全文见 <code>迭代记录.md</code> v1.6 一节</div>
+
+<h4>1 这次解决什么</h4>
+<ul class="tight">
+  <li><b>V7 的根因是"高亮"和"绑定"是两件事</b>：侧栏 Radio 的 <code>checked</code> 由浏览器自己的点击历史决定，而服务端决定"问题落进哪条"的是 <code>self._sid</code>，<code>_respond</code> / <code>_new_session</code> / <code>_on_load</code> 三条写路径<b>都不回写高亮</b>。点「＋ 新会话」之后屏幕换成空白、radio 却还亮着上一条 → 用户照着亮着的点＝点一个<b>值没变</b>的 radio → gradio 不派发 <code>change</code> → 问题落进新会话。v1.5 撞实了后果（<code>in 2,463</code>、答「不记得」），本轮在种子库上用真鼠标链路把它<b>原地复现</b>（下表"改之前"那一列）。</li>
+  <li><b>为什么不干脆每帧都带 value</b>：本轮实测 <b>gradio 6.30 服务端设 <code>value</code> 也会被算成一次 <code>.change</code> 送回后端</b>（设 <code>None</code> 同样送回，但都<b>不</b>触发 <code>.input</code>；用户点选才 <code>.change</code>/<code>.input</code>/<code>.select</code> 三件齐发）。流式期间 0.25s 一帧＝每秒两次空转事件，而且那条回调会和正在流式的抢同一个 chatbot 输出。所以方向反过来：<b><code>choices</code> 每帧刷、<code>value</code> 只在绑定真的换了那一次给</b>，再加"值没变＝回声"的守卫。</li>
+  <li><b>V8 的由来是 v1.5 §6.9 那句"本轮没改"</b>：<code>第 1 步 · run_python · 🟢 成功 · 272.9s</code> 而真执行约 1 秒——<b>271 秒是人在喝咖啡</b>。一个数分不清模型慢、工具慢还是没人点按钮。本轮把那一格拆出来，<b>总时长的定义一个字不改</b>（仍是框架 <code>timing.duration</code>，含等待）。</li>
+</ul>
+
+<h4>2 改动清单（<code>my_ui.py</code> 单文件，v1.6 现行号）</h4>
+<table>
+  <tr><th>文件:行</th><th>改了什么</th><th>类型</th><th>工单号</th></tr>
+  <tr><td><code>my_ui.py:37-40</code></td><td><code>APPROVAL_WAIT_MIN = 0.05</code>：不满 0.05 秒的"等待"不单列一格（存在的原因是 D7 那条"入队即随停止取消"，账上确有 0.0004 秒）</td><td>新增</td><td>V8</td></tr>
+  <tr><td><code>my_ui.py:363-378</code></td><td><code>Approval</code>：建单即 <code>waited = 0.0</code>；<code>decide()</code> 在<b>落定那一刻</b>记 <code>time.time()-created</code>；<code>wait()</code> 超时分支记 <code>APPROVAL_TIMEOUT</code></td><td>修改</td><td>V8</td></tr>
+  <tr><td><code>my_ui.py:518-521</code></td><td><b>类级</b> <code>_pending_wait</code>：记帐的是 worker 线程、取帐的是 UI 线程，和 <code>_run_seq</code> 同一个理由</td><td>新增</td><td>V8</td></tr>
+  <tr><td><code>my_ui.py:533-538</code></td><td><code>_run_wait</code>（本题累计里"其中等待"，与 <code>_run_secs</code> 同边界）、<code>_sid</code>（现在绑哪条）、<code>_sid_shown</code>（上次真推给浏览器的高亮）</td><td>新增</td><td>V7 / V8</td></tr>
+  <tr><td><code>my_ui.py:588-592</code></td><td><code>_gated_call</code>：<code>wait()</code> 之后在<b>同一个 <code>_gate_lock</code> 临界区</b>里过账，且过门槛才记</td><td>修改</td><td>V8</td></tr>
+  <tr><td><code>my_ui.py:621-632</code></td><td><code>_approval_card</code> 标题：结算后加 <code>· 等了 X.Xs</code>，<code>pending</code> 态不加</td><td>修改</td><td>V8</td></tr>
+  <tr><td><code>my_ui.py:700-723</code></td><td><code>_step_card</code>：标题 <code>22.1s · 审批 21.0s</code>、正文「本步 …（含审批 …）」、末行「本题累计 …（含审批 …）」</td><td>修改</td><td>V8</td></tr>
+  <tr><td><code>my_ui.py:745-748</code> / <code>:770-772</code></td><td><code>_stats</code> 新增 <code>task_wait</code>；<code>_status_html</code> 在「本题耗时」后按需追加「本题审批」pill（0 就不出现）</td><td>修改</td><td>V8</td></tr>
+  <tr><td><code>my_ui.py:816-822</code> / <code>:873-880</code></td><td>开局把上一题没领走的账清零；<code>ActionStep</code> 到达时<b>一次取干</b>并挂到那个 step 的私有属性 <code>_opsui_wait</code> 上（<b>不在 <code>MEM_FIELDS</code> 白名单里 → 不进记忆库</b>）</td><td>修改</td><td>V8</td></tr>
+  <tr><td><code>my_ui.py:968-987</code></td><td><b>新增 <code>_radio_update(force=False)</code></b>：<code>choices</code> 每帧给，<code>force or _sid_shown != _sid</code> 时才带 <code>value=_sid</code></td><td>新增</td><td>V7</td></tr>
+  <tr><td><code>my_ui.py:1007-1008</code> / <code>:1023</code></td><td><code>_respond</code>：<code>ensure</code> 之后记 <code>_sid</code>；每帧那条 radio 从裸 <code>gr.update(choices=…)</code> 改成 <code>self._radio_update</code></td><td>修改</td><td>V7</td></tr>
+  <tr><td><code>my_ui.py:1068-1074</code></td><td><code>_new_session</code>：<code>_sid = None</code> 并交 <code>_radio_update()</code> —— 那一刻库里还没有行，<b>把高亮清掉才是实话</b></td><td>修改</td><td>V7</td></tr>
+  <tr><td><code>my_ui.py:1098-1116</code></td><td><code>_select_session</code>：<code>if not sid or str(sid) == self._sid: return gr.update()×3</code>（守卫挡在 <code>int()</code> 之前、不抢 chatbot）；真切换时 <code>_sid</code> 与 <code>_sid_shown</code> 一起更新</td><td>修改</td><td>V7</td></tr>
+  <tr><td><code>my_ui.py:1125-1132</code></td><td><code>_on_load</code>：<code>_radio_update(force=True)</code> —— 绑谁亮谁（v1.5 是"绑着丙、一条都不亮"）</td><td>修改</td><td>V7</td></tr>
+  <tr><td><code>ai学习/.rollback/v1.6/</code></td><td>第七套存档，<code>.rollback/</code> 从 12 份变 <b>14 份</b></td><td>新增</td><td>回滚</td></tr>
+</table>
+<p>体量：<code>my_ui.py</code> <b>1,108 → 1,205 行</b>（55,774 → <b>63,316 B</b>，字符 46,071 → 50,717，<code>diff</code> 净 <b>+105 / −8</b>）。<code>my_coding_agent.py</code> <b>204 行 / 8,355 B 未动</b>（与 <code>.rollback/v1.5</code>、<code>.rollback/v1.6</code> 双份 <code>cmp</code> 一致）。上游源码与库 schema 零改动。</p>
+
+<h4>3 新功能怎么用</h4>
+<ul class="tight">
+  <li>点「＋ 新会话」→ 侧栏<b>一条都不亮</b>（那条会话还没建行）；想回刚才那条<b>直接点它</b>，屏幕和绑定一起回来（v1.5 这里第一下是空点，还会把问题送进新会话）。</li>
+  <li>刷新页面 → 亮着的就是你所在的那条；提问新建的会话<b>当场点亮</b>。</li>
+  <li>审批跑完 → 步骤卡 <code>22.1s · 审批 21.0s</code>、状态条 <code>本题审批 21.0s</code>、审批卡 <code>已允许 · 等了 21.0s</code>。没审批过<b>一格都不多</b>。</li>
+  <li>「本题耗时 / 步骤总时长」<b>定义没变</b>（含等待）；纯执行时间＝总时长减审批。重启回放的旧步骤读不出「审批」那一格（见 §2.5 V6 行 / 看板 <b>V9</b>）。</li>
+</ul>
+
+<h4>4 上线验收（当场跑过的真实输出）</h4>
+<p>离线 <code>/tmp/v16_test.py</code>：<b>92 条全 PASS，<code>FAILS: 无</code></b>＝v1.5 那 65 条原样搬过来全绿（编解码 16 / 落库重启 22 / D7 17 / 回归 10）＋ <b>5 V7 十条</b>（5b 刷新后不再"绑着不亮"、5d 回声三输出全空、<b>5g 新会话后点"刚才那条"是真切换</b>、5h <code>value=None</code> 的回声不崩、5j 整题只回送一次 value）＋ <b>6 V8 十七条</b>（6a 记在 <code>decide()</code> 那一刻、6d 入队即取消不过账、6g 两格并存且后者 ≤ 前者、6l 没审批一格不多、6m 换题清零、<b>6n <code>_opsui_wait</code> 进不了记忆库</b>、6o 总时长照旧进得去、6p/6q 审批卡门槛）。</p>
+<table>
+  <tr><th>V7 基线复现 → 同链路复跑（探测口 7861 · 种子库 3 条 · <b>零模型调用</b> · CDP 真鼠标）</th><th>v1.5（改之前）</th><th>v1.6（改之后）</th></tr>
+  <tr><td>打开页面</td><td><code>chk=[false,false,false]</code> 绑着丙却<b>一条都不亮</b></td><td><code>chk=[true,false,false]</code> 绑谁亮谁</td></tr>
+  <tr><td>点「＋ 新会话」</td><td><b><code>chk=[false,false,true]</code> 甲还亮着</b>，屏上已是「还没有会话」</td><td><code>chk=[false,false,false]</code> 与屏一致</td></tr>
+  <tr><td>点那条亮着的「甲」</td><td><b>空点</b>：<code>chk</code> 不变、气泡 0 条（<code>change</code> 没派发）</td><td><code>chk=[false,false,true]</code>，1 问 1 答回来</td></tr>
+  <tr><td>对照：点从没亮过的「乙」</td><td>正常</td><td>正常 → <b>差别只在"值没变的那一次"</b></td></tr>
+</table>
+<table>
+  <tr><th>判据（在线）</th><th>结果</th></tr>
+  <tr><td><b>V7 真模型（探测口 7861）</b></td><td>新会话问「记住 73」→ 该条<b>当场点亮</b>（<code>chk=[true,false,false,false]</code>）、<code>in 2,344/out 16</code>、<code>Final answer: 好</code>；点「＋ 新会话」→ 全不亮；<b>点回那条</b> → 屏上 1 问 1 答回来；追问 → <b><code>Final answer: 73</code></b>、<code>in 2,439</code>、进程 <code>4,783/33</code>，侧栏<b>没多出会话</b></td></tr>
+  <tr><td><b>V8 交付形态 7860</b></td><td>状态条 <code>本题耗时 22.9s</code> ＋ <b><code>本题审批 21.0s</code></b>；<code>第 1 步 · run_python · 🟢 成功 · 22.1s · 审批 21.0s · in 2,349/out 22</code>；<code>第 2 步 · final_answer · 🟢 成功 · 0.8s · in 2,433/out 17</code>（<b>没审批就没那一格</b>）；审批卡 <code>🟢 待批 · run_python · 已允许 · 等了 21.0s</code></td></tr>
+  <tr><td><b>V7＋V8 交付形态同一条链路</b></td><td>点「＋ 新会话」<code>chk=[false,false,false]</code> → 点 A 会话 <code>chk=[true,false,false]</code> 且 <code>Final answer: 21</code> 回屏 → 在它下面追问 <code>in 2,525/out 17</code>、<code>Final answer: 21</code>，会话数没增（<code>/tmp/v16_delivery.out</code>）</td></tr>
+  <tr><td><b>V8 长等待（探测口）</b></td><td>挂 <b>71.0s</b> 再点允许 → <code>本题耗时 72.9s</code> / <code>本题审批 71.0s</code>；等待期间 <code>本题耗时 0.0s</code>、pill <code>待批 run_python</code></td></tr>
+  <tr><td><b>D7 复测（门槛加完之后）</b></td><td>提问后 0.9s 按 ■ 停止：<code>awaitSeen 0</code>、<b>2.0s 自己收尾</b>、状态 <code>已停止</code>；卡片 <code>⚪ 已取消 · 1.1s · in 2,349/out 22</code> ＋ <code>⏹ 待批 · run_python · 随停止取消</code>，<b>「审批 0.0s」不再出现</b>（加门槛之前同一条路实测抓到 <code>⚪ 已取消 · 0.9s · 审批 0.0s</code>）</td></tr>
+  <tr><td>真实库（<b>只追加</b>）</td><td><code>sessions 7</code> / <code>messages 49</code> / <code>memory</code> 7 行，payload <code>[4042,537,1422,536,88,537,537]</code>（88 那条是 D7 停在建单之后的半截，只有 <code>TaskStep</code>）</td></tr>
+  <tr><td><b>回滚演练（双向）</b></td><td><code>cp .rollback/v1.5/* → 断言 → cp .rollback/v1.6/* → 断言 → cmp</code>：v1.5 方向 <b>25</b> 条全 PASS（V7 四锚点全不在、含"bug 本体在"；V8 六锚点全不在）、v1.6 方向 <b>31</b> 条全 PASS；<b>14 条共享清单两个方向都绿</b>（V6 编解码/memory 表/回灌/落库归属、D7 四锚点、D5、V5、D6、v1.3 审批闸）＝这两刀都是<b>加法式</b>。恢复后与存档<b>逐字节一致</b>，再跑离线 <b>92 条 <code>FAILS: 无</code></b></td></tr>
+  <tr><td>四条关停判据</td><td><code>bash 关闭Agent.command</code> 后：7860 监听 <b>0</b>、Agent 专用 Chrome <b>0</b>、<code>who</code> 只剩 <b>console</b>、System Events <code>count of windows of process "Terminal"</code> = <b>0</b></td></tr>
+  <tr><td>日志零噪声</td><td>收工前 <code>.agent-ui.log</code> <b>14 行 / 1,815 B</b>，七种模式（<code>Traceback</code> / <code>Error in callback</code> / <code>asyncio.exceptions</code> / <code>RuntimeError:</code> / <code>gradio.exceptions</code> / <code>ClosedClient</code> / <code>Event loop</code>）<b>全 0</b></td></tr>
+  <tr><td><b>文档闸·README 行号重新对齐</b>（第 7 步的前半）<br/><code>/tmp/v16_readme_align.py</code> 提议 ＋ <code>/tmp/v16_readme_apply.py</code> 落盘（不带 <code>--write</code> 只出干跑清单）</td><td>提议器逐条判这个号是 <b>v1.4 时代</b>还是 <b>v1.5 时代</b>的（判据：这句话的标识符/实体与那一版源码块、与 v1.6 目标块的重叠，取高者），再按 difflib 行映射搬到 v1.6，跨度做 def/class 扩展并修剪空行；落盘器按<b>列位置</b>从右往左替换，<code>OVERRIDE</code> 记人工改判、<code>SKIP_LINES</code> 排除别的文件。<b>161</b> 条引用（分布在 <b>97</b> 行上）对齐到 v1.6，<b>98</b> 行改动、总行数不变。判据分布：HIT <b>162</b> / TIE <b>4</b>（逐条人工判）/ ZERO <b>12</b>；人工改判合计 <b>7</b> 处进 <code>OVERRIDE</code>：<code>:874</code>→<code>:1186</code>、<code>:694</code>→<code>:730</code>、<code>:820</code>→<code>:1132</code>、<code>:1025-1035</code>→<code>:1118-1132</code>、<code>:401</code>→<code>:410</code>、<code>my_ui.py:584</code>→<code>:608</code>、<code>my_ui.py:564-567</code>→<code>:583-586</code>；另有 ZERO <b>12</b>（越界或本就指别的文件）与 skip <b>3</b>（历史引用）。<b>事后两道扫</b>：越界（<code>:NNN &gt; 1,205</code>）在 §6.3 / §8 / §9 范围内 <b>0</b> 条（其余 5 条命中全是 <code>agents.py</code>、<code>local_python_executor.py</code>、dify 的行号）；指向空行 <b>0</b> 条（唯一命中 <code>:31-36</code> 是刻意保留的 v1.1 历史号）。<b>保留不动的历史引用 4 处</b>：<code>:70-72</code>、<code>:310</code>、<code>my_ui.py:10</code> / <code>:4</code>、<code>:31-36</code>——它们是"哪一版在什么位置"的叙述，不是现状</td></tr>
+  <tr><td><b>文档闸·README 现状 ＋ 手册自身</b>（第 7 步的后半）<br/>三个闸：<code>/tmp/v13_htmlcheck.py</code>（静态）· <code>/tmp/v16_manual_check.js</code> ＋ <code>_1180.js</code>（<code>file://</code> 真打开）· <code>/tmp/mmd_extract.py</code> ＋ <code>/tmp/mmd_check.py</code>（README 逐块 <code>mermaid.render</code>，无头 Chrome ＋ 本地 <code>mermaid.min.js</code>，<b>并跑负控</b>）</td><td>README 新增 <b>§6.3.8</b>（V7 + V8 全节：根因、那条 gradio 实测语义、机制图、两张实测表、验证与回滚、四条边界），§6.3 标题与文首口径改到 <b>1,205 行</b>，§8 补 <b>3 个场景</b>（V7 高亮跟绑定 / V8 等待单列 / V9 已知边界），§9.1 补 <b>47、48</b> 两行，§9.4 补 <b>13</b> 条 → <b>1,271 → 1,350 行</b>（108,336 → <b>124,886 B</b>）。<b>Mermaid：块 <code>23 → 24</code>，<code>块数 24 / 产出 svg 24 / 语法错误 0</code>「全部通过」；负控 <code>语法错误 1</code> 且 <code>exit=1</code>——排除"校验器假通过"。</b>静态：<b>未闭合 <code>[]</code>、配对错误 0、外部资源 0、死锚点 <code>[]</code></b>，看板 <b>36</b> 行，<code>data-st {todo 16, doing 0, done 17, na 3}</code>，<code>data-p {D 7, P0 5, P1 8, P2 7, V 9}</code>。浏览器：<code>rows 36</code>、<code>tables 29</code>，十个筛选器 <code>#cnt</code> 与可见行数<b>逐条相符</b>（<code>all 36 / bug 7 / p0 5 / p1 8 / p2 7 / v 9 / todo 16 / doing 0 / done 17 / na 3</code>），<code>overflowX=false</code> 在 <b>1425</b> 与 <b>1165</b> 两档视口都成立（<code>inner == scrollW</code>）；状态胶囊 <b>V7 / V8＝已上线 v1.6</b>、<b>V9＝未开工（v1.6 新立）</b>、V6 / D7 仍是已上线 v1.5；截图 <code>/tmp/v16-manual.png</code>（<b>214,055 B</b>）。<b>这一行自己也被闸抓过一次</b>：初稿漏了一个 <code>&lt;/b&gt;</code>，静态闸当场报 <b>6 处错配</b>（连带 <code>&lt;/table&gt;</code> 之后全部串位），修完回到 0 处——文档闸对文档本身同样管用</td></tr>
+</table>
+<p><b>过程问题三条（如实记下）</b>：① 离线套件在 5i 挂死 100 秒以上——第 4 节末尾把 <code>_stream_response</code> 换回了真版本而 <code>agent.run</code> 还是等闸的假版本，<code>faulthandler</code> 打栈定位。② <b>「审批 0.0s」是实跑交付形态才露出来的</b>：离线当时只测了"该出现的地方出现了"，没测"不该出现时没出现"。③ token 花销按屏上的进程档记：探测口 <code>9,563/72</code> ＋ 交付形态 <code>7,307/56</code> ＋ 补跑 D7 <code>2,349/22</code> ＝ 有留痕的 <b>≈1.9 万 input</b>；另有三次 D7 复跑（会话 4/5/6）只打在终端<b>【未留痕】</b>，估 ≈2.4 千×3 → 本轮在线合计 <b>≈2.6 万 input</b>。</p>
+
+<h4>5 回滚方法</h4>
+<p><code>cp .rollback/v1.5/my_ui.py .rollback/v1.5/my_coding_agent.py smolagents/</code>。行为退回两条：① 新会话之后上一条仍亮着、照着点＝空点、问题落进新会话；② 审批等待重新并进唯一的时长格（<code>272.9s</code> 那种），状态条没有「本题审批」、审批卡没有「等了 X.Xs」。<b>V6 / D7 / D5 / V5 / D6 / 审批闸都不受影响</b>（双向断言里那 14 条共享清单两个方向都跑绿）。<b>数据不会坏</b>：本轮没建表、没改 <code>MEM_FMT</code>，v1.6 写的 payload 和 v1.5 是<b>同一个格式</b>；多显示的那格等待<b>从来没进过库</b>，所以也不存在"回滚后读出多余字段"。</p>
+
+<h4>6 口径与数据变化</h4>
+<ul class="tight">
+  <li><b>显式声明一处行为语义变化</b>：界面上「等待」第一次<b>单独可观测</b>（三处：状态条 / 步骤卡 / 审批卡）。<b>总时长那一格定义没动</b>，仍是 <code>timing.duration</code>（含等待）。</li>
+  <li><b>等待不进记忆库</b>：<code>_opsui_wait</code> 不在 <code>MEM_FIELDS</code>（<code>:64-80</code>）→ 重启回放的旧步骤读不出这一格；与 v1.5"只存 <code>to_messages()</code> 读到的字段"是同一条纪律，<b>写下来的边界，不是 bug</b>。要进库得升 <code>MEM_FMT</code> v2 → 已立 <b>V9</b>。</li>
+  <li><b>记账时刻</b>：<code>decide()</code> 那一刻（不是 worker 醒来那一刻）；超时记 <code>APPROVAL_TIMEOUT</code>。<b>门槛 0.05 秒在两处生效</b>（过账点 ＋ 审批卡标题），所以不会出现 pill 没有、卡片写 0.0s 的错位。</li>
+  <li><b>一次取干</b>：<code>_pending_wait</code> 由下一个到达的 <code>ActionStep</code> 领走并清零；换题开局清零。多工具并行仍只处理最早一条，那一格挂在第一个到的 <code>ActionStep</code> 上【并行多工具的分配方式<b>未验证</b>：本轮全是单工具题】。</li>
+  <li><b>token 口径一字未动</b>（纯界面层）。同题对照：<code>in 2,349/out 22</code> ＋ <code>in 2,433/out 17</code> ＝ 本题 <code>4,782/39</code>；追问 <code>in 2,525/out 17</code>；裸起步本轮 <code>2,344</code> / <code>2,349</code>。进程档每次重启归零。</li>
+  <li><b>体量</b>：<code>my_ui.py</code> <b>1,108 → 1,205 行</b>、<b>55,774 → 63,316 B</b>、净 <b>+105 / −8</b>；<code>.rollback/</code> <b>12 → 14 份</b>（6 → 7 套）；看板 <b>34 → 36 条</b>（V7/V8 转已上线，新立 <b>V9</b>）。</li>
+</ul>
+
+<h4>7 已知遗留</h4>
+<ul class="tight">
+  <li><b>「本题审批」跨重启读不出来 → 新立 V9</b>（§6 第 2 条）。要它进库得给记忆格式加字段并兼容读旧 payload。</li>
+  <li><b>等待是进程内的账</b>：<code>_pending_wait</code> 类级、<code>_run_wait</code> 实例级，换题/刷新归零——这是"本题"的定义。要看"今天总共等人点了多久"是跨题累计，另一张 V 单。</li>
+  <li><b>V7 的守卫假设"一个窗口"</b>：<code>_select_session</code> 按 <code>str(sid) == self._sid</code> 拦回声，两个标签页同时开着时，另一个标签的真实切换会被当成"值没变"退回【<b>未验证</b>：本轮全程单标签】。与 v1.5 那条"并发提问共用一个 agent"是同一类限制。</li>
+  <li><b>新会话不点亮</b>：因为那一刻库里还没有行。若哪天改成点「＋ 新会话」即建行，这里必须跟着改成"亮那一条"，否则又是一次高亮/绑定分家。</li>
+  <li><b>验收脚本仍在 <code>/tmp</code></b>：本轮新增 <code>v16_test.py</code>、<code>v16_rollback_check.py</code>、<code>v16_seed.py</code>、<code>v16_ui.py</code>、<code>v16_semantics.py</code>、<code>v16_cfg.py</code>、<code>v16_cdp.js</code>、<code>v16_read.js</code>、<code>v16_v7run.py</code>、<code>v16_v7live.py</code>、<code>v16_v8live.py</code>、<code>v16_delivery.py</code>、<code>v16_d7run.py</code>、<code>v16_iso.py</code>、<code>v16_add_tests.py</code>、<b>＋ 第 7 步文档闸那批</b> <code>v16_map14.json</code> / <code>v16_map15.json</code>（difflib 行映射）、<code>v16_readme_align.py</code>（提议器）、<code>v16_readme_apply.py</code>（落盘器，带 <code>OVERRIDE</code> / <code>SKIP_LINES</code> / <code>--write</code>）、<code>README.before-v16.md</code>（写入前整份备份）、<code>v16_readme.diff</code>、<code>v16_mmd_negative.md</code> ＋ 输出 <code>v16_base.before/after.txt</code>、<code>v16_v7live2.out</code>、<code>v16_v8live.out</code>、<code>v16_delivery.out</code>、<code>v16_d7c.out</code>、<code>v16_test3.out</code>。macOS 一重启就没，<b>等你点头开 <code>ai学习/验收脚本/</code></b>。</li>
+  <li>仍欠点头：dify Docker Compose（#5）、MCP servers <code>npm ci</code>（#6）、<b>百炼 Key 轮换</b>、<code>gradio_ui.py:456</code> 的 <code>.capitalize()</code>、D2、P0-4。</li>
+</ul>
+<p><b>推荐下一刀 v1.7 = V9（审批等待进记忆格式）</b>；P0-4（计划可见）继续往后排。</p>
+
+<h3>6.3 v1.5 · 2026-10-29 · 记忆落库：重启后模型那一边接着记得 + 停止落在待批之前不再死停（<b>V6 + D7</b>）</h3>
+<div class="src">范围按工单号锁定 V6 + D7（<code>my_coding_agent.py</code>、<code>my_agent.py</code>、上游源码零改动；审批闸、步骤卡、状态条一行未碰）· 全文见 <code>迭代记录.md</code> v1.5 一节</div>
+
+<h4>1 这次解决什么</h4>
+<ul class="tight">
+  <li><b>V6＝V5 的第二半</b>：v1.4 实测的边界——杀掉进程再开，选中旧会话接着问，屏上 4 行历史都在（库里读出来的），模型答 <code>Final answer: 不记得</code>，本题 <code>in 3,384</code>。<b>屏与记忆是两套账</b>。</li>
+  <li><b>为什么不是"重放屏幕文字"</b>：<code>agents.py:767-769</code> 的 <code>write_memory_to_messages()</code> ＝ <code>system_prompt.to_messages()</code> ＋ 逐条 <code>step.to_messages()</code>，模型读的是 <code>memory.steps</code>，不是 chatbot 那串给人看的卡片。重放屏幕文字要<b>重定「本题累计」的边界</b>，且 <code>in</code> 随历史线性涨。所以存<b>字段本身</b>。</li>
+  <li><b>存哪些字段有根据</b>：<code>steps</code> 里只会出现 <code>TaskStep</code>/<code>ActionStep</code>/<code>PlanningStep</code>——<code>FinalAnswerStep</code> 只 yield 不 append（<code>agents.py:609-611</code>），超步数时 <code>:636</code> append 的是<b>带 <code>AgentMaxStepsError</code> 的 ActionStep</b>。存这些＝存"模型下一轮读到的那一串"。</li>
+  <li><b>D7＝v1.4 定位的那条竞态</b>：<code>agents.py:470</code> 在新 run 开头把 <code>interrupt_switch</code> 清回 <code>False</code>，所以落在待批卡<b>之前</b>的停止等于空放，后到的待批没人结算（v1.4 实测死停 <b>142.4s</b>）。取 v1.4 §7 写下的两条修法里的<b>第 ② 条</b>：<code>_stop</code> 给本轮打取消号，闸入队那一刻看到号直接按 <code>cancelled</code> 结算。</li>
+</ul>
+
+<h4>2 改动清单</h4>
+<table>
+  <tr><th>文件:行</th><th>改了什么</th><th>类型</th><th>工单号</th></tr>
+  <tr><td><code>my_ui.py:17-27</code></td><td>import 补齐：<code>ActionStep / FinalAnswerStep / TaskStep / ToolCall</code> + <code>monitoring.Timing, TokenUsage</code> + <code>utils.make_json_serializable</code></td><td>修改</td><td>V6</td></tr>
+  <tr><td><code>my_ui.py:59-76</code></td><td><code>MEM_FMT = "v1"</code> + <code>MEM_FIELDS</code>：三种 step 的字段白名单，清单来自 <code>to_messages()</code>；<code>model_input_messages</code>（整段提示词，O(n²)）<b>不存</b></td><td>新增</td><td>V6</td></tr>
+  <tr><td><code>my_ui.py:78-118</code></td><td><code>_error_types()</code> 沿 <code>AgentError.__subclasses__()</code> 按类名索引；<code>_decode_error()</code> 用 <code>cls.__new__(cls)</code> ＋ <code>Exception.__init__</code> 造错误对象（正常构造会<b>当场</b> <code>log_error</code>，且 logger 必需）；<code>_decode_timing()</code>/<code>_decode_usage()</code> 避开派生字段（<code>Timing.duration</code> 是 property、<code>total_tokens</code> 是 <code>init=False</code>）</td><td>新增</td><td>V6</td></tr>
+  <tr><td><code>my_ui.py:119-150</code></td><td><b><code>encode_memory(steps)</code></b>：<code>tool_calls→[tc.dict()]</code>（OpenAI function 形状，<b>不是</b> <code>asdict</code>）、<code>error→{"type","message"}</code>；<b>文本字段原样存</b>——<code>make_json_serializable</code>（<code>utils.py:146-153</code>）会把<b>长得像 JSON 的字符串解析成 dict</b>，回放时观察值就变字</td><td>新增</td><td>V6</td></tr>
+  <tr><td><code>my_ui.py:153-211</code></td><td><b><code>decode_memory(blob)</code></b>：坏 JSON / <code>fmt</code> 不符 / 顶层不是 dict → <code>[]</code>（当作没记忆）；<b>单条坏了只跳过那一条</b>，不连坐；<code>PlanningStep</code> 的两个无默认字段显式交</td><td>新增</td><td>V6</td></tr>
+  <tr><td><code>my_ui.py:373-400</code></td><td><code>History</code> 文档改口 + DDL 追加 <code>CREATE TABLE IF NOT EXISTS memory(session_id … REFERENCES sessions(id) ON DELETE CASCADE, payload TEXT NOT NULL, updated_at REAL NOT NULL)</code>——<b>additive</b>，老库多一张表就能用</td><td>修改</td><td>V6</td></tr>
+  <tr><td><code>my_ui.py:465-478</code></td><td><code>save_memory(sid, payload)</code>（<code>INSERT OR REPLACE</code>，返字符数）/ <code>load_memory(sid)</code></td><td>新增</td><td>V6</td></tr>
+  <tr><td><code>my_ui.py:507-508</code></td><td><code>OpsUI</code> <b>类级</b> <code>_run_seq</code> / <code>_cancelled_before</code>：闸装在进程唯一的 agent 上，计数器必须同侧</td><td>新增</td><td>D7</td></tr>
+  <tr><td><code>my_ui.py:552-572</code></td><td><b><code>_gated_call</code></b>：入队与判停在<b>同一个临界区</b>——<code>with self._gate_lock: self._pending.append(ap); if _run_seq &lt;= _cancelled_before: ap.decide("cancelled")</code>。两种到达顺序全覆盖：闸先拿锁 → <code>_stop</code> 的 <code>_settle_all</code> 必看得见；<code>_stop</code> 先拿锁 → 入队即自判 cancelled。<b>窗口关死</b></td><td>修改</td><td>D7</td></tr>
+  <tr><td><code>my_ui.py:767-778</code></td><td><code>_stream_response</code>：计数器归零之后、<b>起 worker 线程之前</b>先领这一轮的号</td><td>修改</td><td>D7</td></tr>
+  <tr><td><code>my_ui.py:885-912</code></td><td><code>_bind_memory</code>：进程内未命中时 <code>decode_memory(self.hist.load_memory(sid))</code> → <code>mem.steps.extend(steps)</code>。只回灌 steps，<code>system_prompt</code> 与 <code>monitor</code> 不动</td><td>修改</td><td>V6</td></tr>
+  <tr><td><code>my_ui.py:980-986</code></td><td><code>_respond</code> 的 <code>finally</code>：<code>mem is not None</code> <b>且</b> <code>self._mem_sid == sid</code> 才落库（没绑定记忆的一题不建行；中途换会话别把别人的记忆盖过来）。worker 可能还在跑，<b>半截可接受</b></td><td>修改</td><td>V6</td></tr>
+  <tr><td><code>my_ui.py:992-1013</code></td><td><code>_stop</code>：先打取消号 → 再 <code>_settle_all("cancelled")</code> → 最后 <code>interrupt()</code>；docstring 补根因 <code>agents.py:470</code></td><td>修改</td><td>D7</td></tr>
+  <tr><td><code>ai学习/.rollback/v1.5/</code></td><td>第六套存档，<code>.rollback/</code> 从 10 份变 <b>12 份</b></td><td>新增</td><td>回滚</td></tr>
+</table>
+<p>体量：<code>my_ui.py</code> <b>893 → 1,108 行</b>（44,838 → <b>55,774 B</b>，<code>diff</code> 净 <b>+217 / −2</b>）。<code>my_coding_agent.py</code> <b>204 行 / 8,355 B 未动</b>（<code>cmp</code> 与 <code>.rollback/v1.4</code>、<code>.rollback/v1.5</code> 双份一致）。上游 <code>git status --porcelain</code> 仍只有三个 untracked 的 <code>my_*.py</code>，<code>git diff --name-only</code> <b>0 行</b>。</p>
+
+<h4>3 怎么用</h4>
+<ol class="tight">
+  <li><b>关掉再开，旧会话还记着</b>：问「请把数字 73 记住」→「关闭Agent」收工 → 再开 → 侧栏点那条 → 问「我刚才让你记住的数字是多少」→ 答 <b>73</b>（v1.4 答「不记得」）。</li>
+  <li><b>工具跑过的结果也在记忆里</b>：<code>run_python</code> 打印 <code>21</code> → 重启 → 问「刚才那次 run_python 打印出来的结果是什么」→ 答 <b>21</b>。</li>
+  <li><b>「＋ 新会话」仍然一无所知</b>：答「不记得」，本题 <code>in</code> 回到裸起步 <b>2,363</b>。持久化只针对<b>聊过的那条</b>。</li>
+  <li><b>停止落在待批之前不用再补一刀</b>：按 ■ 停止 → 走到<b>已停止</b>，不再卡「等待审批」等人手点 ✖。</li>
+  <li>被那样取消的调用<b>照样进记忆</b>：模型下一轮读到「用户按了停止，本次执行已取消，未产生任何副作用」。</li>
+  <li>两条边界：① <b>图片不入库</b>（<code>images</code>/<code>image_outputs</code>/<code>model_output_images</code>），重启后带图的观察值不进模型上下文；② 停在半截落的是<b>那一刻</b>的 steps。</li>
+</ol>
+
+<h4>4 上线验收（当场跑过的真实输出）</h4>
+<p><b>离线</b>：<code>/tmp/v15_test.py</code>（venv python，<code>_stream_response</code>/<code>agent.run</code> 打桩、临时库）——<b>65 条断言全 PASS，<code>FAILS: 无</code></b>。分组：编解码 <b>16</b>（1c 观察值 <code>{"ok": true, "n": 73}</code> 逐字保留、1f 恢复后 <code>type(step.error).__name__=="AgentParsingError"</code>、<b>1n 用框架自己的 <code>write_memory_to_messages()</code> 逐字比对回灌前后</b>、1p 图片字段不入库）· 落库重启 <b>22</b>（2h 回灌 4 步、2i 重启前后模型读到的那一串相同、<b>2l 重启后「本题累计」边界仍 300/13</b>、2t <code>DROP</code> memory 表后老库照常用、2v 未绑定记忆的一题不落库且不崩）· D7 <b>17</b>（3a 标记在先 → 1s 内返回、3c 原工具<b>零调用</b>、3d/3d2 <code>_unanswered()==[]</code> 且下一轮开局 <code>_pending.clear()</code>、3e/3f 未标记时老实等人、<b>3l 端到端</b> 0.2s 停止 → 3s 内自己结束、3m 观察值＝取消那句、3o 半截也落库带 <code>⏹</code>）· 回归 <b>10</b>（4a <code>⚪ 已取消</code> 判定、4b/4d 库里 <code>status</code> 合法、4g <code>outputs</code> 7/3/4、4h 门没套两层）。</p>
+<p><b>在线（交付形态 7860，真 qwen-plus；重启一律走 <code>关闭Agent.command</code>，pid 45372 → 46527 → 49146）</b>：</p>
+<table>
+  <tr><th>判据</th><th>方法</th><th>结果</th></tr>
+  <tr><td><b>V6 跨重启·记住</b></td><td>进程 1 两问 → 关停 → 再开 → 点旧会话问第三问</td><td><code>in 2,362 → 2,465</code> →（重启）→ <code>Final answer: 73</code>，<b>本题 <code>in 2,574</code></b>（裸起步 2,363，带上了历史）；再问 <code>in 2,675</code></td></tr>
+  <tr><td><b>V6 工具观察值也带着</b></td><td>审批跑 <code>print(3*7)</code> → 第二次重启后问</td><td>模型 <code>Final answer: 21</code>（<code>in 3,091</code>、进程归零 <code>3,091/17</code>）；库里那条 ActionStep 的观察值是逐字的 <code>exit=0</code>⏎<code>21</code></td></tr>
+  <tr><td>新会话仍隔离</td><td>重启后点「＋ 新会话」问同一题</td><td><code>Final answer: 不记得</code>，<code>in 2,363</code></td></tr>
+  <tr><td>审批 + 落库同屏</td><td>强制 <code>run_python</code> → 点 ✔ 允许</td><td><code>第 1 步 · run_python · 🟢 成功 · 272.9s · in 2,909/out 21</code> + <code>第 2 步 · final_answer · 🟢 成功 · 0.8s · in 2,987/out 17</code>；本题 <code>5,896/38</code>，进程 <code>16,289/109</code></td></tr>
+  <tr><td><b>D7 交付形态复测</b></td><td><code>/tmp/v15_d7.js</code>：提问后 <b>0.2s</b> 按 ■ 停止，观察 30s</td><td><code>awaitingSeen 0</code>（<b>从没进过</b>「等待审批」）、0.7s 停止中 → <b>1.2s 已停止</b>，此后 26s 全是已停止；v1.4 同一路死停 <b>142.4s</b></td></tr>
+  <tr><td>取消那一轮也进记忆</td><td><code>sqlite3</code> 直查 payload</td><td>session 1 里 <code>run_python {"code": "print('D7')"}</code> 的 <code>observations</code> ＝「用户按了停止，本次执行已取消，未产生任何副作用。」</td></tr>
+  <tr><td>库里形状</td><td><code>PRAGMA</code> + <code>json.loads</code></td><td>4 张表（<code>sessions/messages/memory/sqlite_sequence</code>）；两问后 payload <b>1,029 字符 / 4 步</b>，全跑完 <b>4,042 字符 / 15 步</b>；真实库 <code>40,960 B</code>、2 会话 / 27 行消息 / 2 行记忆</td></tr>
+  <tr><td><b>回滚演练（双向）</b></td><td><code>cp .rollback/v1.4/* → 断言 → cp .rollback/v1.5/* → 断言 → cmp</code></td><td>v1.4 方向 <b>15</b> 条全 PASS、v1.5 方向 <b>13</b> 条全 PASS，恢复后与存档<b>逐字节一致</b>，再跑离线 <b>65 条 <code>FAILS: 无</code></b></td></tr>
+  <tr><td><b>v1.4 代码读 v1.5 写过的库</b></td><td>拷库给 v1.4 的 <code>History</code> 读写 ＋ <b>真启动 v1.4 探测口</b></td><td><code>load(1)</code> 读出 <b>12 行</b>不减、<code>save()</code> 正常、<code>memory</code> 表<b>原地留着不碰</b>；v1.4 在 7861 上 <code>HTTP 200</code>、日志无 <code>Traceback</code></td></tr>
+  <tr><td>四条关停判据</td><td><code>bash ~/Desktop/关闭Agent.command</code> 后实测</td><td>7860 监听 <b>0</b>、AgentClient Chrome <b>0</b>、<code>who</code> 只剩 <b>console</b>、Terminal 窗口 <b>0</b></td></tr>
+  <tr><td>日志零噪声</td><td><code>.agent-ui.log</code>（15 行 / 1,850 B）<code>grep -c</code></td><td><code>Traceback</code> / <code>Error in callback</code> / <code>asyncio.exceptions</code> / <code>RuntimeError:</code> / <code>gradio.exceptions</code> / <code>ClosedClient</code> / <code>Event loop</code> <b>全 0</b></td></tr>
+</table>
+<p><b>两条过程问题如实记</b>：① 回滚演练 v1.4 方向<b>首跑 1 条 FAIL</b>，是断言把<b>字节</b>当<b>字符</b>（v1.4 是 44,838 B / 37,365 字符，中文注释 3 字节 1 字符）；改成「import 打出的字符数必须等于磁盘文件字符数」后复跑全绿。② 本轮开始前我用 <code>sqlite3.connect</code> 探测交付库路径时，<code>connect</code> 的副作用<b>建了个 0 字节</b>的 <code>smolagents/.agent-history.sqlite3</code>（该路径原本不存在），当场按文件名 <code>rm -f</code> 撤掉；现在那份是应用自己 22:22 建的，<b>没有既有数据被覆盖</b>。</p>
+
+<h4>5 回滚</h4>
+<p><code>cp .rollback/v1.4/my_ui.py .rollback/v1.4/my_coding_agent.py smolagents/</code>。行为退回「重启后答不记得」＋「停止落在待批之前会死停」。<b>数据不会坏</b>：<code>memory</code> 表是 additive 建的，v1.4 代码不认它（实测读同一份库正常、表原地留着），回滚<b>不删</b>已有 payload，再升回 v1.5 时旧 payload 照读（<code>fmt</code> 不符才降级成"没记忆"）。<b>但回滚会把 V6 和 D7 一起重新打开。</b></p>
+
+<h4>6 口径变化</h4>
+<ol class="tight">
+  <li><b>记忆档位</b>：每会话一份、只在进程里 → 每会话一份、<b>落库</b>。库里形式 <code>{"fmt":"v1","steps":[…]}</code>，一行一个 <code>session_id</code>。</li>
+  <li><b>存的是字段，不是屏幕文字</b>；<code>model_input_messages</code> 与图片三兄弟<b>不存</b> → 带图的观察值重启后进不了模型上下文【多图会话未验证】。</li>
+  <li><b>文本一律原样存</b>，只有 <code>action_output</code> 过 <code>make_json_serializable</code>（<code>utils.py:146-153</code> 会把像 JSON 的串解析成 dict，回放就变字）。</li>
+  <li><b>错误对象是"造"的</b>（<code>__new__</code> ＋ <code>Exception.__init__</code>）；<code>ToolCall</code> 存 OpenAI function 形状。</li>
+  <li><b>坏数据降级</b>：整块坏＝当作没记忆，单条坏＝跳过那一条。<b>不会</b>因一次异常废掉整条会话。</li>
+  <li><b>token 口径不变</b>，跨重启继续涨：<code>2,362 → 2,465 →</code>（重启）<code>2,574 → 2,675 →</code>（审批两步 <code>2,909 + 2,987</code>）<code>→</code>（二次重启）<code>3,091</code>；裸起步恒 <code>2,363</code>；<b>进程档每次重启归零</b>。</li>
+  <li><b>「本题累计」边界不受回灌影响</b>：回灌的是<b>上一题</b>的 steps，本题仍从 0 起算（离线 2l：300/13）。</li>
+  <li><b>停止的语义扩了一格</b>：<code>■ 停止</code> 现在覆盖"本轮之后到达的待批"；被取消的调用照样写进记忆并落库。</li>
+  <li><b>审批等待时间计入步骤耗时</b>（实测 <code>272.9s</code>，真执行 ~1s）：v1.3 起就是这口径，本轮<b>没改</b>。</li>
+  <li><b>体量</b>：<code>my_ui.py</code> <b>893 → 1,108 行</b>、<b>44,838 → 55,774 B</b>、净 <b>+217 / −2</b>；<code>.rollback/</code> <b>10 → 12 份</b>；看板 <b>33 → 34 条</b>（D7/V6 转已上线，新立 <b>V7</b> 侧栏选中态）。</li>
+</ol>
+
+<h4>7 遗留（下次的输入）</h4>
+<ul class="tight">
+  <li><b>侧栏选中态陈旧（v1.4 那条遗留本轮造成了真后果）→ 新立 V7</b>：点「＋ 新会话」后 radio 仍保留上一次的 <code>checked</code>，于是"点那条<b>高亮着的</b>旧会话"＝点了一个值没变的 radio → <b>不触发 change</b> → 问题落进新会话（探测口实测 <code>in 2,463</code>、答「不记得」，数据没坏、只是进错了门）。反证：<code>/tmp/v15_leg.js</code> 每次点击前先读 <code>before-checked</code>，<code>before-checked=0</code> 时一切正常。</li>
+  <li><b>半截落库</b>：停在待批上的那一轮，记忆里有 <code>TaskStep</code> 而无对应 <code>ActionStep</code>——与 v1.4 的停止语义一致，不是新问题。</li>
+  <li><b>取消号是类级</b>：一个标签按停止会让<b>所有</b>在飞的待批按 <code>cancelled</code> 结算【未验证，本轮始终一次一题】。</li>
+  <li><b>带图观察值不进持久记忆</b>；<b>多工具并行只处理最早一条</b>（v1.3 就在）。</li>
+  <li>仍欠你点头：dify Docker Compose（#5）、MCP servers <code>npm ci</code>（#6）、<b>百炼 Key 轮换</b>、<code>gradio_ui.py:456</code> 的 <code>.capitalize()</code>、D2、P0-4。</li>
+</ul>
+<p><b>推荐下一刀 v1.6 = V7（侧栏选中态同步，一句话改动、真后果）＋ 把审批等待时长从步骤耗时里单列</b>。P0-4 继续往后排。</p>
+
+<h3>6.4 v1.4 · 2026-10-29 · 连问不再吞前一题 + 会话级记忆隔离（<b>D5 + V5</b>，顺带修 <b>D6</b>）</h3>
+<div class="src">范围按工单号锁定 D5 + V5（<code>my_coding_agent.py</code>、<code>my_agent.py</code>、上游源码零改动；审批闸与步骤卡一行未碰）· 全文见 <code>迭代记录.md</code> v1.4 一节</div>
+
+<h4>1 这次解决什么</h4>
+<ul class="tight">
+  <li><b>D5</b>：同一页面连问两题、不点「＋ 新会话」，<b>前一题从屏上和历史库里双双消失</b>。三处叠加：<code>_respond()</code> 每轮从 <code>last = [user_msg] + msgs</code> 起（chatbot 是<b>整体替换</b>）；<code>History.save()</code> 是 <code>DELETE WHERE session_id=?</code> 的整条覆盖；<code>sid</code> 同时挂在 <code>box.submit</code> 的 inputs/outputs 上，第二轮沿用同一条会话。v1.3 实测：连问两题后 <code>sessions</code> 只新增 <b>1</b> 条（标题仍是<b>第一题</b>），<code>messages</code> 里只剩<b>第二题</b>那 3 行。</li>
+  <li><b>V5</b>：点旧会话只换屏上的字，不换 <code>agent.memory</code>（v1.3 是<b>进程级一份</b>）——"屏上看着接上了，模型那边其实是开局"。</li>
+  <li><b>为什么同一批</b>：屏上累加与记忆里累加是<b>同一件事的两面</b>。只做屏上，第二条提问仍会开一条新会话；只做记忆，屏上还是把前一题抹掉。</li>
+  <li><b>顺带一条 D6</b>：修 V5 的刷新路径时发现侧栏 <code>updated_at</code> 排序<b>从 v1.2 起就失真</b>（<code>UPDATE</code> 挂着 <code>WHERE title='新会话'</code>，有了标题就再也不刷）。以前只影响"刷新看到哪条"，v1.4 起它决定"下一条提问落进哪条"，顺序错了等于问错地方。</li>
+</ul>
+
+<h4>2 改动清单</h4>
+<table>
+  <tr><th>文件:行</th><th>改了什么</th><th>类型</th><th>工单号</th></tr>
+  <tr><td><code>my_ui.py:26</code></td><td>import 多带一个 <code>AgentMemory</code>（类定义在 <code>memory.py:214-232</code>）</td><td>修改</td><td>V5</td></tr>
+  <tr><td><code>my_ui.py:214-219</code></td><td><code>History</code> 文档改口：<code>save()</code> 是整条覆盖、只有喂完整列表才等价于追加；v1.4 起记忆按会话各存一份，<b>但只在进程里</b></td><td>修改</td><td>D5 / V5</td></tr>
+  <tr><td><code>my_ui.py:291-298</code></td><td><code>save()</code> 的 <code>UPDATE sessions</code> 改成<b>每次刷 <code>updated_at</code></b>，标题用 <code>CASE WHEN title='新会话' THEN ? ELSE title END</code> 保护</td><td>修改</td><td>D6</td></tr>
+  <tr><td><code>my_ui.py:335-338</code></td><td><code>__init__</code> 加 <code>self._mem: dict[int, AgentMemory] = {}</code> 与 <code>self._mem_sid</code>（会话 id → 那份记忆，不落库）</td><td>新增</td><td>V5</td></tr>
+  <tr><td><code>my_ui.py:690-709</code></td><td><b><code>_bind_memory(sid)</code></b>：把 <code>agent.memory</code> 换成这条会话自己那份。<b>只换引用</b>——<code>reset=False</code> 时框架会把新任务<b>追加</b>进 <code>self.memory</code>（<code>gradio_ui.py:310</code> 默认、<code>:389</code> 实传；<code>agents.py:477</code> 顺手同步 <code>system_prompt</code>）。刻意不传 <code>reset=True</code>（连 <code>monitor</code> 一起清零，<code>agents.py:478-480</code>），也刻意不在跑到一半换（worker 正在读 <code>self.memory.steps</code>）</td><td>新增</td><td>V5</td></tr>
+  <tr><td><code>my_ui.py:730-737</code></td><td><code>_respond</code>：<code>ensure(sid)</code> 之后立刻 <code>_bind_memory(sid)</code>；起点改成 <code>base = self.hist.load(sid)</code> + 本题 user 消息</td><td>修改</td><td>D5 / V5</td></tr>
+  <tr><td><code>my_ui.py:746-747</code></td><td>流式每一帧 <code>last = base + [user_msg] + list(msgs)</code>（v1.3 是 <code>[user_msg] + list(msgs)</code>）</td><td>修改</td><td>D5</td></tr>
+  <tr><td><code>my_ui.py:799-808</code></td><td><code>_select_session</code> 交出<b>第三个值 <code>int(sid)</code></b>：点旧会话连 State 一起换，下一条提问才落在这条会话上</td><td>修改</td><td>V5</td></tr>
+  <tr><td><code>my_ui.py:810-820</code></td><td><code>_on_load</code> 从闭包提成<b>方法</b>（可离线测），并把 <code>sid</code> 指到侧栏第一条（最近有动作那条）；空着 <code>sid</code> 的话下一条提问另开一条、刚看到的那串字被整体替换抹掉——D5 的另一条路径</td><td>修改</td><td>D5 / V5</td></tr>
+  <tr><td><code>my_ui.py:872-873</code>、<code>:880</code></td><td><code>radio.change</code> 的 <code>outputs</code> 多带 <code>sid</code>；<code>demo.load(fn=self._on_load, …)</code></td><td>修改</td><td>V5</td></tr>
+  <tr><td><code>ai学习/.rollback/v1.4/</code></td><td>第五套存档（<code>my_ui.py</code> + <code>my_coding_agent.py</code>），<code>.rollback/</code> 从 8 份变 <b>10 份</b></td><td>新增</td><td>回滚</td></tr>
+  <tr><td><code>ai学习/README.md</code> §6.3.6</td><td><b>新增一节</b>「v1.4：屏上的消息列表和 <code>agent.memory</code> 都按会话走」：换起点 / 换引用两个动作、为什么不能 <code>reset=True</code>、刷新与选中态三条边界，含 1 张新增 flowchart（第 <b>22</b> 块）</td><td>新增</td><td>—</td></tr>
+  <tr><td><code>ai学习/README.md</code> §8</td><td>新增一块 Gherkin「功能: 会话连续与记忆隔离」<b>7 条场景</b>（连问累加 / 新会话不记得 / 点旧会话接着聊 / 刷新落到最近一条 / 半截也落库 / 记忆只在进程里 / 回滚重开 D5）</td><td>新增</td><td>—</td></tr>
+  <tr><td><code>ai学习/README.md</code> §9.1</td><td>加 <b>35~40</b> 六行（<code>agents.py:477</code> 与 <code>:478-480</code>、<code>memory.py:214-232</code>、<code>gradio_ui.py:310</code>+<code>:389</code>、<code>my_ui.py:735</code>/<code>:747</code>、<code>:808</code>/<code>:873</code>/<code>:820</code>/<code>:880</code>、<code>:291-298</code>）</td><td>新增</td><td>—</td></tr>
+  <tr><td><code>ai学习/README.md</code> §9.4 + 全篇行号</td><td>§9.4 加第 <b>9、10</b> 条【待补】；<b>72 对</b>锚点从 v1.3 位置搬到 v1.4（每对唯一匹配）。README <b>1,166 行 / 90,426 B / 22 块 mermaid</b></td><td>修改</td><td>—</td></tr>
+</table>
+<p>体量：<code>my_ui.py</code> <b>850 → 893 行</b>（41,871 → <b>44,838 B</b>，<code>diff</code> 净 <b>+70 / −27</b>）。<code>my_coding_agent.py</code> <b>204 行 / 8,355 B 未动</b>（<code>cmp</code> 与 <code>.rollback/v1.3</code>、<code>.rollback/v1.4</code> 双份存档逐字节一致）。上游 smolagents 源码<b>仍是一行未改</b>。</p>
+<p>落盘后最后一次改动是<b>注释里的上游行号</b>（<code>agents.py:476</code> → <code>:477</code>、<code>:477-480</code> → <code>:478-480</code>，实测 <code>agents.py:476</code> 是空行），行数与字节数不变；已重新 <code>cp</code> 进 <code>.rollback/v1.4/</code> 并 <code>cmp</code> 确认，改后重跑离线 53 条断言 + 探测口连问两题（下表最后两行）。</p>
+
+<h4>3 怎么用</h4>
+<ol class="tight">
+  <li><b>连问不用点「＋ 新会话」</b>：问完第一题直接问第二题，屏上两问两答<b>都在</b>，侧栏仍只有<b>一条</b>会话（标题是最早那题）。</li>
+  <li>第一题「请把数字 73 记住」，第二题「我刚才让你记住的数字是多少」→ 答 <b>73</b>（v1.3 这里会把第一题整条吞掉）。</li>
+  <li>点<b>「＋ 新会话」</b> → 屏上清空，同样的问题答<b>「不记得」</b>：新会话不只是"新页面"，是<b>另一段记忆</b>。</li>
+  <li><b>点侧栏的旧会话</b> → 屏上回到那条对话，接着问就接在它的下文里（v1.3 是"屏上像接上了、其实另开一条"）。</li>
+  <li><b>刷新页面 / 重开应用</b> → 侧栏列出历次会话（按最近有动作排），屏上自动回到<b>最近一条</b>，直接接着问就落在这条里。</li>
+  <li>审批照常：累加之后，待批卡和步骤卡排在旧消息<b>下面</b>，旧的一条不丢。</li>
+  <li>要知道的边界：<b>重启进程后</b>旧会话的字还在屏上（库里读出来的），但那道题模型答<b>「不记得」</b>——记忆只在进程里，见 §7 与看板 <b>V6</b>。</li>
+</ol>
+
+<h4>4 上线验收（全部当场跑过）</h4>
+<p>离线 <code>/tmp/v14_test.py</code>（venv python，<code>_stream_response</code> 打桩、临时库、<code>TokenUsage</code> 逐题造数）：<b>53 条断言全 PASS，<code>FAILS: 无</code></b>。分组 0 安装门没被碰坏 / 1·2 D5 累加 / 3 记忆隔离 / 4 切会话绑定 / 5 审批闸幂等 / 6 卡片 / 6a 库里 <code>status</code> 合法（D4 没回潮）/ 7 刷新路径 / 8 侧栏排序（D6）/ 9 停止的半截也落库 / 10 一步都没跑也不吞历史。</p>
+<table>
+  <tr><th>判据</th><th>命令 / 方法</th><th>实测输出</th></tr>
+  <tr><td><b>D5 屏上累加</b></td><td>s1 首问 → s2 同会话第二问（探测口 7861，真 qwen-plus，<code>/tmp/v14_drive.js</code> 经 CDP 驱动）</td><td>屏上 <b>4</b> 行（两问两答都在），卡片 <code>第 1 步 … in 2,362</code> + <code>第 1 步 … in 2,464</code>；模型 <code>Final answer: 73</code></td></tr>
+  <tr><td><b>D5 库里累加</b></td><td><code>sqlite3</code> 直查 <code>/tmp/v14-live-hist.sqlite3</code></td><td><code>session 1</code> 一路长到 <b>26 行</b>、标题仍是第一题；<code>session 2</code>（新会话）<b>3 行</b></td></tr>
+  <tr><td><b>V5 新会话隔离</b></td><td>s3：点「＋ 新会话」后问同一题</td><td>模型 <code>Final answer: 不记得</code>；本题 <code>in 2,363</code>（回到裸起步，没带上文的约 100 个 token）</td></tr>
+  <tr><td><b>V5 点旧会话接着聊</b></td><td>s4：侧栏选中 73 那条 → 第三问</td><td>屏上回到那条的两问两答，第三问的卡 <code>第 1 步 · final_answer · 🟢 成功 · 0.8s · in 2,564/out 17</code>（历史越问越厚）</td></tr>
+  <tr><td><b>审批 + 累加同屏</b></td><td>s5：<code>run_python</code> 强制题，点 ✔ 允许（<code>12:19:40.096Z</code>）</td><td>待批卡出现时屏上<b>已有 3 张旧步骤卡</b>；允许后 <code>🟢 待批 · run_python · 已允许</code> + <code>第 1 步 · run_python · 🟢 成功 · 1.5s · in 2,672/out 21</code> + <code>第 2 步 · final_answer · 🟢 成功 · 0.8s · in 2,751/out 17</code>；本题累计 <code>in 5,423</code> = 2,672+2,751；进程 <code>in 15,176 / out 106</code> = 五问之和</td></tr>
+  <tr><td><b>交付形态跑的确实是 v1.4</b></td><td><code>我的Agent.app</code> → 7860，<code>V14URL=…:7860</code> 跑 s1,s2</td><td><code>s1 in 2,362</code> → <code>s2 in 2,465</code>、进程 <code>in 4,827</code>，屏上两问两答都在（与探测口的 2,464 差 1，属模型侧浮动，不是口径差）</td></tr>
+  <tr><td><b>D6 侧栏排序</b></td><td>离线 8a / 8b / 8c / 8d / 8e</td><td>两条新会话；最新动作那条排第一；<b>老会话一有动作就回到第一</b>（v1.2 起的 <code>WHERE</code> 会漏刷）；后续问题不改标题；空列表 <code>save()</code> 不把标题写成 <code>NULL</code></td></tr>
+  <tr><td>刷新路径</td><td>离线 7a / 7b / 7c</td><td>重载后 <code>sid</code> 指向最近一条、屏上是那条会话的<b>全部三问</b>、刷新后接着问<b>不会另开一条</b></td></tr>
+  <tr><td>停止的半截</td><td>离线 9a~9e、10a / 10b</td><td>半截也落库且<b>前几轮还在</b>；<code>⏹</code> 气泡 <code>status=done</code>；状态档=已停止；<code>sid</code> 不变；记忆里只多半截（<code>TaskStep</code> 进了、<code>ActionStep</code> 没进）；一步都没跑也不吞历史</td></tr>
+  <tr><td><b>记忆只在进程里</b>（V6 的实测边界）</td><td>重启探测口 → 选旧会话问「最早让你记住的数字」</td><td>屏上 4 行历史都在，模型 <code>Final answer: 不记得</code>；框架日志 <code>Step 3: Input tokens 9,015</code>（−5,631 = 本题 <b>3,384</b>，没有带上会话历史）</td></tr>
+  <tr><td><b>D7 复现 + 恢复</b>（新立，未修）</td><td><code>/tmp/v14_d7.js</code>（提问后 <b>0.2s</b> 按 ■ 停止）→ <code>/tmp/v14_d7fix.js</code>（不刷新，补点 ✖ 拒绝）</td><td>停止落在待批卡<b>之前</b>＝空放，后到的待批无人结算，界面死停 <code>状态/等待审批</code> + 胶囊 <code>待批/run_python</code>；挂了 <b>142.4s</b>（600s 超时不会自己解）。补点 ✖ 后 <b>0.0s 解开</b>：<code>⚪ 待批 · run_python · 已拒绝</code> → <code>第 1 步 · run_python · ⚪ 已拒绝 · 142.4s · in 2,690/out 20</code> → <code>⏹ 已停止：AgentError</code>。对照组（2.0s 按，卡在屏上）0.5s 内 <code>⏹ … 随停止取消</code>。<b>无数据丢失</b>（库里 14 行、<code>⏹</code> 气泡也落库）</td></tr>
+  <tr><td>侧栏选中态</td><td><code>__v14.selChecked()</code> 读 <code>#sessions input</code> 的 <code>checked</code></td><td>交出 <code>sid</code> 后仍是 <code>"0"</code>——<b>屏和内容接上了、高亮没跟</b>，记进 §7</td></tr>
+  <tr><td>采样粒度不是缺陷</td><td><code>/tmp/v14_state.js</code> 页内 120ms 采样</td><td>空闲 121ms → 生成中 722→8,160ms → 完成；驱动器 700ms 粒度抓不到 0.9s 的单步题（<code>startWait 60.5</code> 是<b>等待超时</b>，不是真等了 60 秒）</td></tr>
+  <tr><td>日志零噪声</td><td><code>/tmp/v14b-live.log</code> <code>grep -c</code> 七种模式</td><td><code>literal_error</code> / <code>ValidationError</code> / <code>ComponentProcessingError</code> / <code>Exception ignored</code> / <code>gradio.live</code> / <code>Traceback</code> / <code>TypeError</code> <b>全 0</b></td></tr>
+  <tr><td>四条关停判据</td><td><code>bash ~/Desktop/关闭Agent.command</code> 后实测（<b>没有</b> <code>kill</code> python）</td><td>7860 监听 <b>0</b>、Agent 专用 Chrome（<code>user-data-dir=…AgentClient</code>）<b>0</b>、<code>who</code> 只剩 <b>console</b>、System Events <code>count of windows of process "Terminal"</code> = <b>0</b>、日志 <code>gradio.live</code> / <code>Exception ignored</code> <b>0</b></td></tr>
+  <tr><td><b>回滚演练（双向）</b></td><td><code>cp .rollback/v1.3/* → 断言 → cp .rollback/v1.4/* → 断言 → cmp</code></td><td>v1.3 方向 10 条全 PASS（<code>py_compile</code>、<code>import my_ui</code> 后能构造 <code>create_app</code>、<b>850 行 / 41,871 B</b>、<b>没有</b> <code>_bind_memory</code>/<code>_mem_sid</code>/<code>AgentMemory</code>、<code>_respond</code> 仍从 <code>[user_msg]</code> 起、<code>radio.change</code> 只有两个输出、<code>_on_load</code> 是闭包且交 <code>None</code>、<code>save()</code> 仍带 <code>WHERE title='新会话'</code>、v1.3 的审批闸还在）。v1.4 方向 10 条全 PASS（<b>893 行 / 44,838 B</b>，以上全反），恢复后与存档<b>逐字节一致</b></td></tr>
+  <tr><td><b>改注释后复跑</b>（最后一刀是行号引用）</td><td>重启探测口（库换 <code>/tmp/v14b-live-hist.sqlite3</code>）跑 s1,s2</td><td><code>s1 in 2,362</code> → <code>s2 in 2,462</code>、进程 <code>in 4,824</code>，模型 <code>Final answer: 73</code>；库里 <b>1 条会话 / 6 行</b>，<code>rowid</code> 从 <b>4</b> 起——<code>save()</code> 是覆盖式重插，<b>顺序看 <code>ord</code> 不看 <code>rowid</code></b></td></tr>
+</table>
+
+<h4>5 回滚方法</h4>
+<pre><code>cp ~/Desktop/study/ai学习/.rollback/v1.3/my_ui.py \
+   ~/Desktop/study/ai学习/.rollback/v1.3/my_coding_agent.py \
+   ~/Desktop/study/ai学习/smolagents/</code></pre>
+<p>行为退回"连问两题会吞掉前一题、点旧会话只换屏不换记忆、刷新页面 <code>sid</code> 空着"。<code>my_coding_agent.py</code> 本轮未动，同拷一份只是让存档自洽。上游零改动，无需碰 <code>.venv</code>。会话库<b>表结构未变</b>，v1.4 累加出来的历史在 v1.3 下照样读得出来。</p>
+<p><span class="r"><b>但回滚会把 D5 重新打开</b></span>：v1.3 的 <code>save()</code> 是"整条覆盖 + 起点只留本题"，所以回滚后在同一条会话里再问一题，就会把 v1.4 攒下来的那串<b>覆盖掉</b>。回滚后要么每题先点「＋ 新会话」，要么先备份 <code>.agent-history.sqlite3</code>。</p>
+
+<h4>6 口径与数据变化</h4>
+<ol class="tight">
+  <li><b>屏上消息列表</b>：每一题从<b>库里那一串</b>起（<code>base + 本题 user + 本轮流式输出</code>）。chatbot 仍是<b>整体替换</b>，但替换的内容包含历史——"累加"是靠起点变了，不是靠 chatbot 变。</li>
+  <li><b><code>agent.memory</code>：进程级一份 → 每会话一份</b>（<code>_mem[sid]</code>）。切会话只换引用，<b>从不 <code>reset()</code></b>；<code>AgentMemory</code> 不落库（<code>memory.py:214-232</code> 没有 (de)serializer）。</li>
+  <li><b>行为语义变了（显式声明三处）</b>：① 点侧栏旧会话＝接着这条聊（v1.3＝另开一条）；② 刷新页面＝回到最近一条且 <code>sid</code> 一起指过去（v1.3＝<code>sid</code> 空，下一题另开）；③ <code>History.save()</code> 每次刷 <code>updated_at</code>（v1.3＝只有标题为「新会话」时才刷）。</li>
+  <li><b>token 三档口径不变</b>（本步 / 本题累计 / 进程累计），但<b>同会话内每题的 <code>in</code> 会往上走</b>：模型每次收到整段会话历史。实测 <code>2,362 → 2,464 → 2,564</code>（每题 <b>+约 100</b>，等于上一题的一问一答）；点「＋ 新会话」回到 <b>2,363</b>。这是记忆隔离的<b>代价</b>，不是 bug。</li>
+  <li><b>进程累计不变</b>（<code>monitor</code> 不被 reset）：s5 收尾进程 <code>in 15,176 / out 106</code> ＝ 五问之和；本题 <code>in 5,423</code>。</li>
+  <li><b><code>History</code> 的写法语义没变</b>（仍是整条覆盖），变的是<b>调用方喂的是完整列表</b>——"覆盖"第一次真正等价于"追加"。副作用：<code>messages.rowid</code> 每轮跳号（实测 <code>1,2,3 → 4..9</code>，重启后那一段到 <code>20..33</code>），<b>排序与去重一律看 <code>ord</code></b>。</li>
+  <li><b>侧栏排序看得到真动作了</b>（D6）：离线 8c 就是这条的正向断言。</li>
+  <li><b>审批、步骤卡、状态条档位：零改动</b>，v1.3 的七态、<code>🟢/⚪/🔴</code> 三档判定、600s 超时语义原样。</li>
+  <li><b>体量</b>：<code>my_ui.py</code> <b>850 → 893 行</b>、<b>41,871 → 44,838 B</b>、净 <b>+70 / −27</b>；<code>.rollback/</code> 存档 <b>8 → 10 份</b>；看板 <b>30 → 33 条</b>（D5/V5 转已上线，新立 D6 已修、D7 未修、V6 未开工）。</li>
+</ol>
+
+<h4>7 遗留（下次的输入）</h4>
+<ul class="tight">
+  <li><b>记忆只在进程里</b>（<b>V6</b>，§4.5）：重启后字还在、模型不记得（实测 <code>in 3,384</code>、<code>Final answer: 不记得</code>）。这是 V5 的<b>第二半</b>，两条路都要设计：序列化 <code>AgentMemory</code>，或每轮从库里<b>重放</b>成 <code>TaskStep</code>/<code>ActionStep</code>。</li>
+  <li><b>D7</b>（§4.1，本轮复现并定位，<b>未修</b>）：<code>agents.py:470</code> 在新 run 开头把 <code>interrupt_switch</code> 清回 <code>False</code>，所以落在待批卡<b>之前</b>的那一次停止等于空放。<b>临时办法</b>：再点一次 ✖ 拒绝或 ■ 停止。</li>
+  <li><b>【已立单 V7，见 §4.5】侧栏选中态与 <code>sid</code> 不同步</b>：v1.4 只当"高亮没跟"，<b>v1.5 撞出真后果</b>——点「＋ 新会话」后 radio 仍留着上一条的 <code>checked</code>，再点那条高亮的旧会话＝点了个没变的值，<b>不触发 change</b>，问题落进新会话（实测 <code>in 2,463</code>、答「不记得」，数据没坏、只是进错门）。本轮范围外，未改。</li>
+  <li><b>并发提问共用一个 agent</b>：<code>_mem_sid</code> 是<b>单值</b>，两个标签同时问会互相抢"当前绑到哪条会话"，<code>monitor</code> 同样共享。当前设计仍假设<b>一次只问一题</b>。</li>
+  <li><b>多工具并行只处理最早一条</b>（v1.3 就在）：【未验证，本轮题面全是单工具调用】。</li>
+  <li><b>累加只测到三问一答</b>：十几问之后 <code>in</code> 的增长曲线、什么时候挤到上下文上限，<b>没有数据</b>。</li>
+  <li>仍欠你点头：dify Docker Compose（#5）、MCP servers <code>npm ci</code>（#6）、<b>百炼 Key 轮换</b>、<code>gradio_ui.py:456</code> 的 <code>.capitalize()</code>、D2、P0-4、<b>D7</b>、<b>V6</b>。</li>
+</ul>
+<p><b>推荐下一刀 v1.5 = V6 记忆持久化 + D7 一并修</b>（D7 只是闸入队前少查一个标志，几十行，和 V6 同一片代码）。P0-4 继续往后排。</p>
+
+<h3>6.5 v1.3 · 2026-10-29 · 步骤卡片化 + 工具执行前审批（<b>V4 + P0-2</b>）</h3>
+<div class="src">范围按工单号锁定，其余一律未动 · 全文见 <code>迭代记录.md</code> v1.3 一节</div>
+
+<h4>1 这次解决什么</h4>
+<ul class="tight">
+  <li><b>V4</b>：v1.2 的消息流里，一步是 gradio 默认拼出的<b>三张</b>折叠卡（🛠️ 工具调用 / 📝 执行日志 / 📊 统计），彼此长得一样、<b>没有状态色</b>——跑挂的那一步和成功的那一步在屏幕上没区别。</li>
+  <li><b>P0-2</b>：<code>run_python</code> <b>不问就跑</b>。唯一的拦阻是 <code>my_coding_agent.py:165</code> 的正则黑名单，它拦得住"删库"，拦不住"往你磁盘写文件"；<code>write_file</code> 只是靠 staging <b>变相</b>审批。</li>
+  <li><b>为什么同一批</b>：审批 UI 正好要落在同一片消息流上，先卡片化再挂审批卡，比反过来省一次重写。</li>
+  <li><b>看板那句"需要设计"指什么</b>：阻塞式审批与流式生成器怎么共存。答案是<b>不能共存</b>——gradio 的生成器是被前端<b>同步推</b>着走的，里面 <code>Event.wait()</code> 会把整条事件循环钉死（连状态条都不刷新）。执行模型必须换：agent 进线程，UI 只轮询队列。</li>
+</ul>
+
+<h4>2 改动清单</h4>
+<table>
+  <tr><th>文件:行</th><th>改了什么</th><th>类型</th><th>工单号</th></tr>
+  <tr><td><code>my_ui.py:32</code></td><td><code>GATED_TOOLS = ("write_file", "run_python")</code>：<b>只拦会动东西的两只手</b>，三个只读工具不弹审批</td><td>新增</td><td>P0-2</td></tr>
+  <tr><td><code>my_ui.py:34-49</code></td><td><code>APPROVAL_TIMEOUT=600.0</code> / <code>DECISION_LABEL</code> / <code>DECISION_DOT</code> / <code>DENIED_OBSERVATION</code> / <code>DENIED_VERDICT</code>：五种终局、各自文案、交回模型的观察值</td><td>新增</td><td>P0-2</td></tr>
+  <tr><td><code>my_ui.py:106-115</code></td><td><code>DARK_CSS</code> 追加：允许键实底绿 <code>#238636</code>、拒绝键描边红、待批态文字黄 <code>#d29922</code></td><td>修改</td><td>P0-2 / V4</td></tr>
+  <tr><td><code>my_ui.py:174-181</code></td><td><code>STATE_LABEL</code> 多一档 <code>awaiting:"等待审批"</code>（七态）</td><td>修改</td><td>P0-2</td></tr>
+  <tr><td><code>my_ui.py:185-211</code></td><td><code>class Approval</code>：<code>uuid</code> + <code>created</code> + <code>threading.Event</code> + <code>decision</code>，<code>wait()</code> 带超时并把 <code>timeout</code> 落进 <code>decision</code></td><td>新增</td><td>P0-2</td></tr>
+  <tr><td><code>my_ui.py:319-320</code></td><td><code>_pending</code> 与 <code>_gate_lock</code> 挂<b>类</b>上：闸装在进程唯一的 agent 上，队列也必须是类级（实例级会踩"第二次开 UI 审批永远等不到答案"）</td><td>新增</td><td>P0-2</td></tr>
+  <tr><td><code>my_ui.py:335-358</code></td><td><code>_install_gate()</code>：<code>copy.copy(tool)</code> 后<b>只覆盖实例属性 <code>forward</code></b>（<code>tools.py:231-249</code> 的 <code>__call__</code> 末行），<code>__signature__</code> 手工保留，<code>_opsui_gated</code> 做幂等</td><td>新增</td><td>P0-2</td></tr>
+  <tr><td><code>my_ui.py:360-372</code></td><td><code>_gated_call()</code>：<code>bind_partial</code> 出参数 → 入队 → <code>wait()</code> → 只有 <code>allowed</code> 才调原 <code>forward</code></td><td>新增</td><td>P0-2</td></tr>
+  <tr><td><code>my_ui.py:374-396</code></td><td><code>_pending_snapshot()</code> / <code>_unanswered()</code> / <code>_decide()</code> / <code>_settle_all()</code></td><td>新增</td><td>P0-2</td></tr>
+  <tr><td><code>my_ui.py:398-421</code></td><td><code>_approval_card()</code>：标题 <code>🟡 待批 · 工具 · 等待审批</code>，正文工具名 + <b>完整参数</b></td><td>新增</td><td>P0-2 / V4</td></tr>
+  <tr><td><code>my_ui.py:423-441</code></td><td><code>_fence()</code>（正文含 <code>```</code> 时栅栏升级）/ <code>_args_text()</code>（超 1,200 字符截断并写明原长）</td><td>新增</td><td>V4</td></tr>
+  <tr><td><code>my_ui.py:443-493</code></td><td><b><code>_step_card()</code>（V4 的主体）</b>：一步一张卡，标题 <code>🛠 第 N 步 · 工具 · 判定 · 耗时 · in/out</code>，判定 <code>🟢 成功 / ⚪ 被拦 / 🔴 报错</code>（左边框同色）；正文四段思考 / 调用+参数 / 结果 / 数字</td><td>新增</td><td>V4</td></tr>
+  <tr><td><code>my_ui.py</code> 旧 <code>_stats_message()</code></td><td><b>删除</b>：v1.1 那张 📊 独立统计卡取消，数字进步骤卡标题与正文</td><td>删除</td><td>V4</td></tr>
+  <tr><td><code>my_ui.py:522-542</code></td><td><code>_status_html()</code>：多一颗<b>「待批」胶囊</b>（显示被拦的工具名）</td><td>修改</td><td>P0-2</td></tr>
+  <tr><td><code>my_ui.py:543-566</code></td><td><b><code>_worker()</code></b>：<code>agent.run(stream=True)</code> 搬进线程，事件塞 <code>queue.Queue</code>；<code>_abandoned</code> 置位就退出；生成器在<b>它自己的线程</b>里 <code>close()</code></td><td>新增</td><td>P0-2</td></tr>
+  <tr><td><code>my_ui.py:568-697</code></td><td><code>_stream_response()</code> <b>重写</b>：不再调 <code>super()</code>；起线程 → <code>q.get(timeout=0.25)</code> 轮询 → 步骤到达摘掉流式泡换步骤卡 → 审批卡循环（<b>存对象不存下标</b>、原地改 <code>content/metadata</code>；出卡与更新走同一套收尾判定才摘单）；<code>finally</code> 结算 + <code>interrupt()</code></td><td>重写</td><td>V4 / P0-2</td></tr>
+  <tr><td><code>my_ui.py:699-744</code></td><td><code>_respond()</code>：产出 <b>7 元组</b>（多允许、拒绝两键）；<code>unanswered</code> 决定按钮可见性与状态档位；<b>D4 修复点</b> <code>metadata.status: "complete" → "done"</code>（<code>chatbot.py:55</code> 的 <code>Literal</code>）</td><td>修改</td><td>P0-2 / D4</td></tr>
+  <tr><td><code>my_ui.py:750-763</code></td><td><code>_stop()</code>：<b>先 <code>_settle_all("cancelled")</code> 再 <code>interrupt()</code></b>——待批不结算，worker 会永远等在 <code>Event.wait()</code> 上</td><td>修改</td><td>P0-2</td></tr>
+  <tr><td><code>my_ui.py:789-790</code>、<code>:820-828</code></td><td><code>create_app()</code>：状态行插两枚按钮（<code>approve-btn</code> / <code>deny-btn</code>，<code>visible=False</code> 起步）；<code>.click</code> 只改 decision + 收起自己，<b>不碰 chatbot</b></td><td>修改</td><td>P0-2</td></tr>
+  <tr><td><code>ai学习/.rollback/v1.3/</code></td><td>第四套存档（<code>my_ui.py</code> + <code>my_coding_agent.py</code>），<code>.rollback/</code> 从 6 份变 <b>8 份</b></td><td>新增</td><td>回滚</td></tr>
+  <tr><td><code>ai学习/README.md</code> §6.3</td><td>新增 <b>§6.3.5</b>：审批闸（实例盖 <code>forward</code>）+ 线程驱动 + 卡片自绘的实现要点，含 1 张新增 flowchart（第 <b>21</b> 块）；§6.3.4 的换壳图重画成现状（含门与 7 元组输出）</td><td>修改</td><td>—</td></tr>
+  <tr><td><code>ai学习/README.md</code> §9.1</td><td>加 <b>30~34</b> 五行（<code>tools.py:231-249</code>、<code>agents.py:1361-1437</code>、<code>chatbot.py:55</code>、<code>my_ui.py:543-566</code>/<code>:568-697</code>、<code>DENIED_*</code> 两字典必须同步）；第 25、29 两行行号跟随代码刷新</td><td>修改</td><td>—</td></tr>
+  <tr><td><code>ai学习/README.md</code> 全篇行号</td><td>把 v1.2 留下的过期行号一次性搬到现状：§1.3 架构图、<code>:74</code>、§6.3.1 图（<code>:454/:455-457/:462</code> → <code>:842/:843-847/:850</code>）、§6.3.2 刹车图（<code>306-323</code> → <code>568-697</code> 并加 <code>_worker</code> 参与者）、§6.3.3 import 行、§6.3.4 四条实现点与 <code>History</code> 表、<code>DARK_CSS :19-127</code> → <code>:53-172</code></td><td>修改</td><td>—</td></tr>
+  <tr><td><code>ai学习/README.md</code> §8 + §9.4</td><td>新增一块 Gherkin（审批五条场景：允许 / 没执行的三种说法 / 只读不问 / 命令行不过闸 / 一步一张卡）；§9.4 加第 <b>8</b> 条【待补】</td><td>修改</td><td>—</td></tr>
+</table>
+<p><code>my_ui.py</code> <b>462 → 850 行</b>（22,562 → <b>41,871 B</b>，<code>diff</code> 净 <b>+432 / -44</b>）。<code>my_coding_agent.py</code> <b>204 行 / 8,355 B 未动</b>；上游 smolagents 源码<b>仍是一行未改</b>。</p>
+
+<h4>3 怎么用</h4>
+<ol class="tight">
+  <li>双击 <code>我的Agent</code>。提问后每一步是<b>一张</b>卡：标题一行读完 <code>🛠 第 1 步 · grep_files · 🟢 成功 · 1.6s · in 2,632/out 39</code>；成功绿、报错红、被拦灰。</li>
+  <li>模型要 <code>run_python</code> 或 <code>write_file</code> 时，屏上先出<b>黄色待批卡</b>（工具名 + 代码全文），状态条右侧亮起 <b>「✔ 允许」「✖ 拒绝」</b>，状态胶囊变<b>「等待审批」</b>，并多一颗「待批 · run_python」。</li>
+  <li>点<b>允许</b> → 执行，卡变 <code>🟢 … 已允许</code>，步骤卡正常出结果；点<b>拒绝</b> → <b>不执行</b>，步骤卡 <code>⚪ 已拒绝</code>，模型收到"未产生任何副作用"，通常改用只读工具或直接交结论。</li>
+  <li><b>■ 停止在待批时也管用</b>：等于拒绝所有待批，卡写 <code>⏹ … 随停止取消</code> + 步骤卡 <code>⚪ 已取消</code>。</li>
+  <li>只读三件（<code>read_file</code> / <code>list_dir</code> / <code>grep_files</code>）<b>不弹审批</b>。</li>
+  <li>一直不点：600 秒后按拒绝处理（<code>⏳ 超时未批</code>）。</li>
+  <li>命令行 <code>python my_coding_agent.py "…"</code> <b>没有审批</b>——闸只装在 UI 实例上。</li>
+</ol>
+
+<h4>4 上线验收（全部当场跑过）</h4>
+<table>
+  <tr><th>判据</th><th>命令 / 方法</th><th>结果</th></tr>
+  <tr><td>闸不污染别的调用方</td><td><code>/tmp/v13_test.py</code>「0 安装门」</td><td>模块级 <code>@tool</code> 对象未包、<code>read_file</code> 未包、<code>__signature__</code> 保留、两次 <code>OpsUI()</code> 不套娃 —— 离线 7 组 <b>40 条断言全过（0 FAIL）</b></td></tr>
+  <tr><td><b>允许</b>有真实副作用（探测口 7861，真 qwen-plus）</td><td><code>/tmp/v13_drive.js</code> 注入 <code>window.__v13</code>，题面强制一次 <code>run_python</code></td><td>待批卡 <b>2.1s</b> 出 → 点 ✔（<code>08:04:42.621Z</code>）→ <code>/tmp/v13-live-allow.txt</code> <b>存在</b>，mtime <code>16:04</code>；卡 <code>🟢 … 已允许</code>；步骤卡 <code>🛠 第 1 步 · run_python · 🟢 成功 · 2.2s · in 2,874/out 39</code>；状态条 <code>2/8 · in 5,849 / out 62 · 3.3s · 完成</code></td></tr>
+  <tr><td><b>拒绝</b>没有副作用</td><td>同驱动器，点 ✖（<code>08:04:56.977Z</code>）</td><td><code>/tmp/v13-live-deny.txt</code> <b>不存在</b>；卡 <code>⚪ 已拒绝</code>；步骤卡 <code>⚪ 已拒绝 · 1.3s · in 3,107/out 32</code>；第 2 步 <code>final_answer</code> 正常收尾</td></tr>
+  <tr><td><b>停止</b>等于拒绝待批</td><td>待批时点 ■（<code>08:05:11.393Z</code>）</td><td><code>/tmp/v13-live-stop.txt</code> <b>不存在</b>；卡 <code>⏹ … 随停止取消</code>；步骤卡 <code>⚪ 已取消 · 1.4s · in 3,343/out 31</code>；气泡 <code>⏹ 已停止：AgentError</code>；状态 <code>已停止</code>；worker 线程自己退干净（离线 4a/4b）</td></tr>
+  <tr><td>按钮只在有待批时出现</td><td>读 <code>#statusrow button</code> 的 <code>offsetParent</code></td><td>三条路 <code>visBefore</code> 全是 <code>✔:shown \| ✖:shown \| ■:shown</code>，点后只剩 <code>■ 停止:shown</code></td></tr>
+  <tr><td>一步一张卡（V4 正题）</td><td>离线「6 两步 = 两张卡」+ 在线标题数组</td><td>2 步 → <b>正好两张</b>；最终答案是<b>独立气泡</b>；思考不重复；📊 卡不再存在</td></tr>
+  <tr><td>数字口径没变</td><td>离线 6e + 在线与框架日志逐位比</td><td>第二张卡的"本题累计"是第一步的两倍；卡上 <code>in 2,874</code> = 日志 <code>[Step 1: Input tokens: 2,874]</code></td></tr>
+  <tr><td><code>write_file</code> 也被拦</td><td>离线直调 <code>agent.tools["write_file"]</code></td><td>入队 <code>('write_file','pending')</code> → 卡正文含参数全文 → 允许后只落 <code>.agent-staging/</code>，<b>原路径没有文件</b></td></tr>
+  <tr><td>超时按拒绝</td><td>离线把 <code>APPROVAL_TIMEOUT</code> 压到 1 秒</td><td><code>decision=timeout</code>、文案正确、<b>文件未生成</b>。<span class="key">600 秒在线那条路【未验证】</span></td></tr>
+  <tr><td><b>交付形态</b>跑的是 v1.3</td><td>起 launcher → <code>curl 127.0.0.1:7860/config</code> 解析组件树 → 再在该实例上跑一遍"允许"</td><td>4 枚按钮 = 新会话 / <code>approve-btn(False)</code> / <code>deny-btn(False)</code> / 停止；<code>chatbot 1</code>、<code>radio sessions</code>；实测待批卡 2.2s、<code>🟢 成功 · 2.3s · in 2,392/out 39</code>、文件 mtime <code>16:12</code></td></tr>
+  <tr><td>日志零噪声</td><td><code>grep -c</code>（交付实例 + 探测口本轮切片）</td><td><code>literal_error</code> / <code>ValidationError</code> / <code>ComponentProcessingError</code> / <code>Exception ignored</code> / <code>gradio.live</code> / <code>Traceback</code> <b>全 0</b></td></tr>
+  <tr><td>四条关停判据</td><td><code>bash 关闭Agent.command</code> 后实测（本轮不再手工 <code>kill</code>）</td><td>7860/7861/9333 监听 <b>0</b>、Agent 专用 Chrome <b>0</b>、残留 python <b>0</b>、<code>who</code> 只剩 <b>console</b>、Terminal 窗口 <b>0</b>。验证用的 <code>.agent-history.sqlite3</code>（5 条测试会话）按文件名删除</td></tr>
+  <tr><td>回滚演练（双向）</td><td><code>cp .rollback/v1.2 → 断言 → cp .rollback/v1.3 → 断言 → cmp</code></td><td>v1.2 方向：<code>_stats_message</code> 在、<b>无</b> <code>GATED_TOOLS/_step_card/_approval_card/threading</code>、闸 0、行数 463。v1.3 方向全反、闸 2 只、行数 851，恢复后<b>逐字节一致</b></td></tr>
+  <tr><td>README 的图没被改坏（第 7 步的另一半）</td><td>README 现有 <b>21</b> 个 Mermaid 块，逐块 <code>mermaid.render</code>（无头 Chrome + 本地 <code>mermaid.min.js</code>），<b>并跑负控</b></td><td><code>TOTAL 21 BAD 0</code>，svg 15,706 ~ 57,211 B。负控：故意写坏第 19 块（本轮新增那张 flowchart）→ <code>TOTAL 21 BAD 1</code>（<code>Parse error on line 3</code>），还原后 <code>BAD 0</code>——排除"校验器假通过"重演。块数 20 → 21 只多这一张，其余 20 张是<b>行号与参与者被搬到现状</b></td></tr>
+  <tr><td>手册 HTML 视图与 md 一致</td><td><code>/tmp/v13_htmlcheck.py</code>（静态：标签配对 / 外部资源 / 死锚点 / <code>data-st</code> 分布）+ <code>/tmp/v13_manual_check.js</code>（浏览器侧：<code>file://</code> 真打开，十个筛选器逐个点、读 <code>#cnt</code>、量 <code>scrollWidth</code>）</td><td>静态：未闭合 <code>[]</code>、配对错误 0、外部资源 0、死锚点 <code>[]</code>、看板 30 行。浏览器：<code>all 30 / bug 5 / p0 5 / p1 8 / p2 7 / v 5 / todo 17 / doing 0 / done 10 / na 3</code>，十个筛选器的 <code>#cnt</code> 与"可见行数"<b>逐条相符</b>；<code>overflowX=false</code>（视口 1425px）；V4 / P0-2 / D4 三行末列都是「已上线 v1.3」，D5 是「未开工（v1.3 新立）」</td></tr>
+</table>
+
+<h4>5 回滚方法</h4>
+<pre><code>cp ~/Desktop/study/ai学习/.rollback/v1.2/my_ui.py \\
+   ~/Desktop/study/ai学习/.rollback/v1.2/my_coding_agent.py \\
+   ~/Desktop/study/ai学习/smolagents/</code></pre>
+<p>行为退回"每步三张折叠卡 + 📊 统计卡、工具不问就跑、停止只在步边界生效"。会话库表结构未变，历史不受影响。</p>
+
+<h4>6 口径变化</h4>
+<ol class="tight">
+  <li><b>执行模型变了（最重要）</b>：agent 跑在<b>工作线程</b>，UI 以 0.25s 轮询队列。所以"能停下来等你点按钮"；代价是多线程 + 队列，<code>_pending</code> 必须类级。</li>
+  <li><b>卡片数</b>：一步从 <b>3 张 → 1 张</b>步骤卡；v1.1 的 📊 独立统计卡<b>取消</b>，数字进标题与正文。状态条胶囊仍在，且多一颗「待批」（<b>六 → 七颗</b>）。</li>
+  <li><b>判定三档</b>：<code>🟢 成功 / 🔴 报错 / ⚪ 已拒绝·已取消·超时未批</code>。<span class="key">被拦下的那一步在框架眼里是一次正常观察值</span>，<code>⚪</code> 不是失败。</li>
+  <li><b>停止的语义扩大</b>：v1.2「在步边界停」→ v1.3「在步边界停<b>并拒绝所有待批</b>」。</li>
+  <li><b>审批范围</b>：仅 <code>write_file</code>、<code>run_python</code>；超时 <b>600s</b> 按拒绝。</li>
+  <li><b>状态档位 6 → 7</b>：新增 <code>awaiting:"等待审批"</code>。</li>
+  <li><b>token 口径不变</b>（本步 / 本题累计 / 进程累计，累计口径同 v1.1/v1.2）。审批本身不加价（观察值替换的是工具输出），但被拒后模型多走一步 <code>final_answer</code>，实测多 <code>in 2,975 / out 23</code>。<b>与 v1.2 的同题 A/B 未做【未验证】</b>。</li>
+  <li><b>体量</b>：<code>my_ui.py</code> 462 → <b>850 行</b>、22,562 → <b>41,871 B</b>；<code>.rollback/</code> <b>6 → 8 份</b>。</li>
+</ol>
+
+<h4>7 遗留</h4>
+<ul class="tight">
+  <li><b>D4</b>（<code>status:"complete"</code> 让整帧 chatbot 输出被丢，v1.1 就在）——<b>本轮发现即修</b>，见 §4.1。</li>
+  <li><b>D5</b>（同页连问两题，前一题从屏与库双双消失，v1.2 就在）——<b>本轮实测撞上，未修</b>，已进 §4.1。</li>
+  <li><b>并发提问共用一个进程级 agent</b>：两个标签同时问会共享 <code>_pending</code> 与 <code>monitor</code>。当前设计假设一次只问一题。</li>
+  <li><b>一步内多工具并行</b>（<code>agents.py:1361-1437</code> 的 <code>ThreadPoolExecutor</code>）时按钮只处理<b>最早</b>那条待批【未验证，本轮题面都是单工具】。</li>
+  <li><b>🧭 计划步卡</b>分支（<code>_step_card()</code> 的 <code>PlanningStep</code>）本轮三条实测路都没触发【未验证】。</li>
+  <li>仍欠点头：dify Docker Compose、MCP servers <code>npm ci</code>、<b>百炼 Key 轮换</b>、<code>gradio_ui.py:456</code>、D2、P0-4、V5。</li>
+</ul>
+<p><b>推荐下一刀 v1.4 = D5 + V5</b>（会话跨题累加 + 切会话换 <code>agent.memory</code>，同一块肌肉）。P0-4 继续往后排。</p>
+
+<h3>6.6 v1.2 · 2026-10-29 · 界面换壳：状态条 + 深色 + 会话侧栏（<b>V1 + V2 + V3</b>，顺带关掉 <b>P0-3</b>）</h3>
+<div class="src">范围按工单号锁定，其余一律未动 · 全文见 <code>迭代记录.md</code> v1.2 一节</div>
+
+<h4>1 这次解决什么</h4>
+<p>v1.1 之后功能不缺，缺的是<b>长得像个产品</b>。对着截图比对的结论是：差距不在能力，在<b>信息架构</b>——v1.1 直接把 <code>gr.ChatInterface</code> 交出来，品牌尾巴、浅色底、无状态条、无会话列表，全是它的默认形态。范围 <b>V1 + V2 + V3</b>。</p>
+<ul class="tight">
+  <li><b>V1</b>：数在 v1.1 只以"每步一张折叠卡"沉在消息流底部，问一题要往下翻才看得全 → 要一条常驻状态条。</li>
+  <li><b>V2</b>：浅色主题 + 页脚三条 Gradio 链接。</li>
+  <li><b>V3（= P0-3）</b>：会话列表与历史持久化。v1.1 的 <code>save_history=True</code> 存在<b>浏览器 localStorage</b>（<code>chat_interface.py:145</code> docstring 原话），服务端没有一份可查的账。</li>
+</ul>
+
+<h4>2 改动清单</h4>
+<table>
+  <tr><th>文件:行</th><th>改了什么</th><th>类型</th><th>工单号</th></tr>
+  <tr><td><code>my_ui.py:15</code></td><td><code>DB_PATH = Path(__file__).resolve().parent / ".agent-history.sqlite3"</code>——按文件定位，不按 cwd，启动器 <code>cd smolagents</code> 与否都落在同一处</td><td>新增</td><td>V3</td></tr>
+  <tr><td><code>my_ui.py:19-127</code></td><td><code>DARK_CSS</code>：<code>:root</code> 变量同名覆盖 + 六处 gradio 硬编浅色的定点压制</td><td>新增</td><td>V2</td></tr>
+  <tr><td><code>my_ui.py:132-224</code></td><td><code>History</code>：两张表（<code>sessions</code> / <code>messages</code>）+ <code>ensure/choices/load/save</code>；<code>save</code> 是<b>整条覆盖写</b>，所以半截停止也落库、重复保存不会产生双份</td><td>新增</td><td>V3</td></tr>
+  <tr><td><code>my_ui.py:241-266</code></td><td><code>_stats()</code>：把 v1.1 塞在 <code>_stats_message()</code> 里的算法抽出来，一份数字两处显示</td><td>重构</td><td>V1</td></tr>
+  <tr><td><code>my_ui.py:288-304</code></td><td><code>_status_html()</code>：六颗胶囊（模型 / 步数 / 本题 token / 本题耗时 / 进程 token / 状态）</td><td>新增</td><td>V1</td></tr>
+  <tr><td><code>my_ui.py:306-323</code></td><td><code>_stream_response()</code>：<b>v1.1 那段一字未改</b>原样搬过来（<code>finally</code> 里 <code>interrupt()</code> + 主动 <code>close()</code> 吃 <code>RuntimeError</code>）</td><td>保留</td><td>P0-1</td></tr>
+  <tr><td><code>my_ui.py:325-339</code></td><td><code>_user_message()</code>：自建 Blocks 之后<b>用户那条气泡没人拼了</b>，得自己拼（首轮实测就漏在这）</td><td>新增</td><td>V3</td></tr>
+  <tr><td><code>my_ui.py:341-369</code></td><td><code>_respond()</code>：一次提问的编排，产出 5 元组（chatbot / 状态条 / 侧栏 / 输入框 / sid），异常分「步数用满」和「已停止」两路收尾</td><td>新增</td><td>V1 / V3</td></tr>
+  <tr><td><code>my_ui.py:374-382</code></td><td><code>_stop()</code>：自建刹车键的 handler，只置 <code>interrupt_switch</code></td><td>新增</td><td>V1</td></tr>
+  <tr><td><code>my_ui.py:393-455</code></td><td><code>create_app()</code> 覆盖：不再用 <code>gr.ChatInterface</code>，自己拼 <code>gr.Blocks</code>（侧栏 | 主区），<code>layout="panel"</code>、<code>analytics_enabled=False</code>，并挂 <code>demo.load</code></td><td>重写</td><td>V1 / V2 / V3</td></tr>
+  <tr><td><code>smolagents/.agent-history.sqlite3</code></td><td>新文件，首次提问时自动建；单库单文件，备份/清空都只动它</td><td>新增</td><td>V3</td></tr>
+  <tr><td><code>ai学习/.rollback/v1.2/</code></td><td>第三套存档（<code>my_ui.py</code> + <code>my_coding_agent.py</code>），与 v1.0 / v1.1 并列</td><td>新增</td><td>回滚</td></tr>
+</table>
+<p>上游 smolagents 源码<b>仍是一行未改</b>；<code>my_coding_agent.py</code>、<code>my_agent.py</code> 本轮未动（<code>cmp</code> 与 <code>.rollback/v1.1/</code> 逐字节一致）。<code>my_ui.py</code> <b>76 → 462 行</b>（3,816 → 22,562 B）。</p>
+
+<h4>3 怎么用</h4>
+<ol class="tight">
+  <li>双击桌面 <code>我的Agent</code>。开出来是深色窗口：左边一条会话栏，顶上一排状态胶囊，中间整行宽的消息流，底下输入框带橙色发送键。</li>
+  <li>直接提问。屏上第一行是<b>你自己的问题</b>，然后每步一张折叠卡（同 v1.1），最上面那条状态条实时跟着走。</li>
+  <li>生成中点状态条右侧的 <b>■ 停止</b>。语义同 v1.1：<b>跑完当前这一步才停</b>，点下去到「已停止」之间会等，这是设计不是卡住。</li>
+  <li>点侧栏任意一条 → 屏幕换成那次的记录，<b>只是回看</b>；此时再提问会<b>新开一条会话</b>，不会接在旧会话后面。</li>
+  <li>「＋ 新会话」→ 清屏，等你提问才真正建条目（点完什么都不问，不会留一条空会话）。</li>
+  <li>历史全在 <code>smolagents/.agent-history.sqlite3</code> 一个文件里。想清空就删它；换机器带走它，侧栏就跟着过来了。</li>
+  <li>彻底收摊仍同 v1.1：日志窗 <b>Ctrl-C</b>，或双击 <code>关闭Agent.command</code>。</li>
+</ol>
+
+<h4>4 上线验收（当场跑过的真实输出）</h4>
+<table>
+  <tr><th>判据</th><th>方法</th><th>结果</th></tr>
+  <tr><td>V2 深色壳<b>没有浅色残留</b></td><td>零安装 CDP（headless Chrome + Node 22 内置 WebSocket）遍历 <code>#main *</code> 读 <code>getComputedStyle().backgroundColor</code></td><td>浅色只剩三处：0 宽的隐藏 <code>input[data-testid=file-upload]</code>、故意留橙的 <code>button.submit-button</code>、自定的 user 行 <code>#1b2430</code>。<code>body</code> = <code>rgb(13,17,23)</code>；页脚 <code>display:none</code></td></tr>
+  <tr><td>消息流宽度正常</td><td>同上，量 <code>[data-testid=bot]</code> 到 <code>#main</code> 的祖先链</td><td><code>layout="panel"</code> 后链路 849→916（容器 950）。默认 <code>bubble</code> 会把气泡按内容收缩，实测折叠卡只有 <b>353px</b>——这就是第一版截图的样子</td></tr>
+  <tr><td>V1 状态条与折叠卡<b>同源不同处</b></td><td><code>_stats()</code> 一个函数出两处；与框架 <code>[Step N]</code> 日志逐位比</td><td>同题：状态条 <code>步数 1/8 · in 2,349 / out 19 · 1.1s</code>，日志 <code>[Step 1: Duration 1.06 seconds | Input tokens: 2,349 | Output tokens: 19]</code>——token <b>逐位相符</b></td></tr>
+  <tr><td>V3 历史<b>跨进程重启还在</b>（P0-3 的正题）</td><td>跑两轮 → <code>kill -TERM</code> 掉服务 → 用启动器同款命令重新拉起 7860 → CDP 读侧栏</td><td>重启后侧栏 <b>2 条会话</b>、自动展开最新一条（<b>7 个气泡</b>）。v1.1 这个位置是空的</td></tr>
+  <tr><td>「新会话」不产生垃圾条目</td><td>CDP 点「＋ 新会话」前后计数</td><td>气泡 <b>34 → 0</b>，会话数<b>保持 1</b>（不建空行），状态条回 <code>步数 0/8 · 状态 空闲</code></td></tr>
+  <tr><td>下一条提问开新会话</td><td>新会话后提一题（<code>1+1</code>，要求不调工具）</td><td>会话数 <b>1 → 2</b>，新条目标题取首问前 28 字</td></tr>
+  <tr><td>刹车：停在步边界（<b>确定性单测</b>）</td><td>驱动 <code>_respond</code> 生成器，第 3 个 yield 时调 <code>agent.interrupt()</code></td><td>终态 <b>「已停止」</b>，末条气泡 <code>⏹ 已停止：AgentError</code>，<b>7 条消息落库</b>（含用户那句），日志 <code>Exception ignored</code> <b>0</b></td></tr>
+  <tr><td>刹车：真实按钮（7861 探测口）</td><td>跑到 <code>步数 7/8</code> 时点「■ 停止」，12 秒后复采</td><td>步数 / 本题 token / 本题耗时三项<b>逐位冻结</b>（<code>7/8</code>、<code>35,256 / 196</code>、<code>10.3s</code>），状态先转「停止中」</td></tr>
+  <tr><td>停止边界的<b>例外</b>（实测撞上的）</td><td>那一题正好跨过 <code>max_steps</code></td><td><code>interrupt</code> 之后 while 循环已退出，<code>_handle_max_steps_reached</code> 在循环<b>外</b>又补一次收尾问答：<b>36.74s、+9,096 input token</b>，开关管不到它</td></tr>
+  <tr><td>四条关停判据</td><td><code>lsof</code> / <code>who</code> / System Events 窗口数 / 日志 grep</td><td>关停前 1 监听 → 后 <b>0</b>；终端窗口 <b>0</b>；<code>gradio.live=0</code>、<code>Exception ignored=0</code>。<b><code>who</code> 这次不干净</b>：多出一条 <code>ttys000</code>，因为我直接 <code>kill</code> python 没走启动器收尾链路（见第 7 节）</td></tr>
+  <tr><td>回滚演练（<b>双向</b>）</td><td><code>cp .rollback/v1.1/*</code> → 断言 → <code>cp .rollback/v1.2/*</code> → 断言 → <code>cmp</code></td><td>v1.1 方向：<code>py_compile OK</code>、<code>create_app()</code> 返回 <b><code>ChatInterface</code></b>、模块<b>没有</b> <code>DARK_CSS</code>。v1.2 方向：返回 <b><code>Blocks</code></b>、<code>History/DB_PATH</code> 在位，恢复后<b>逐字节一致</b></td></tr>
+  <tr><td>探测环境已收</td><td><code>lsof</code> 7860/7861；<code>pgrep -fl</code>；<code>pgrep -f remote-debugging-port</code></td><td>两个端口监听数均 <b>0</b>，无残留 python，scratch Chrome 已退</td></tr>
+</table>
+
+<h4>5 回滚</h4>
+<pre><code>cd ~/Desktop/study/ai学习
+cp .rollback/v1.1/my_ui.py .rollback/v1.1/my_coding_agent.py smolagents/   # 退 v1.1
+cp .rollback/v1.2/my_ui.py .rollback/v1.2/my_coding_agent.py smolagents/   # 再回到 v1.2</code></pre>
+<p>回滚<b>不动</b> <code>.agent-history.sqlite3</code>：v1.1 读不到它，留着不影响，只是侧栏没了。要连数据一起退干净，再 <code>rm smolagents/.agent-history.sqlite3</code>（<b>这一个文件，不是目录</b>）。</p>
+
+<h4>6 口径与数据变化（行为语义变了八处，显式声明）</h4>
+<ul class="tight">
+  <li><b>状态条和折叠卡是同一份数</b>：都出自 <code>_stats()</code>。以前"卡片一个算法、面板另一个算法"的漂移风险没有了。</li>
+  <li><b>侧栏历史是显示层，不是 agent 的记忆。</b>agent 的记忆仍跨会话不清零（<code>reset_agent_memory=False</code>）。点开旧会话只是把当时屏幕上说过话贴回来，<b>不代表模型还记得</b>。</li>
+  <li><b>状态条反映"当前进程 / 当前题"，不反映所选会话。</b>看着旧会话时它是 <code>步数 0/8 · 空闲</code>——这是对的，不是 bug。</li>
+  <li><b>下一条提问永远开新会话</b>，不会 append 到你正在看的那条旧会话里。要把历史接回上下文，得先做会话级记忆隔离（新单 <b>V5</b>）。</li>
+  <li><b>步数可以超过 max_steps 显示成 <code>9/8</code></b>：框架用满 8 步后不抛异常，而是补一步"给个结论"。这时状态胶囊显示<b>「步数用满」</b>（黄），不是「完成」。</li>
+  <li>token 三口径不变：本步 / 本题（最后一个 <code>TaskStep</code> 之后）/ 进程（<code>monitor</code>）。</li>
+  <li><b>「停止」= 停在步边界</b>，唯一例外是第 5 条那次循环外的收尾问答，实测 30 秒级 / 数千 token。</li>
+  <li><b>v1.1 存在浏览器 localStorage 的旧历史不迁移</b>（仍在 <code>~/Library/Application Support/AgentClient</code> 里，没删也没搬；要清就在浏览器里清，<b>别去删 profile</b>）。</li>
+</ul>
+
+<h4>7 遗留（下次的输入）</h4>
+<p>新立 <b>V4</b>（步骤卡片化）、<b>V5</b>（会话级记忆隔离）；<b>P0-3</b> 转已上线并<b>更正了 v1.0 的措辞</b>（见看板 4.2 那行）；侧栏<b>不搜索、不分组、不分页</b>，上限 50 条；panel 布局每条消息带一个复制按钮，视觉噪音暂留；<b>关停判据 2 这次不干净</b>——多出的 <code>ttys000</code> 是我直接 <code>kill</code> python 留下的空闲 shell（Terminal 窗口数已为 0，是幽灵窗口），下轮起验收一律走 <code>关闭Agent.command</code>。<b>D2</b> 仍挂着等你定性。仍欠：百炼 Key 轮换、<code>gradio_ui.py:456 .capitalize()</code> 标题补丁、dify 部署待点头、MCP servers <code>npm ci</code> 待点头。</p>
+
+<div class="card"><b>当时（v1.2 收尾）的推荐：下一刀 = V4（步骤卡片化）+ P0-2（工具执行前审批）。</b>理由：V4 继续把界面补齐到"能给别人看"，而 P0-2 的审批 UI 正好要落在<b>同一片消息流</b>上，一刀里两件事不打架；<b>D2</b> 要你定性而不是我动手，单独挂着。<br>
+<span class="key">实际走向（记在这里，不改上文）</span>：你点了这一刀——「看板推荐 v1.3 = V4 步骤卡片化 + P0-2 工具执行前审批，也做一下」，于是 v1.3 照此上线，验收见 §6.5。D2 仍未定性。</div>
+
+<h3>6.7 v1.1 · 2026-10-29 · 止血 + 成本上墙 + 刹车落地（<b>D1 + P0-5 + P0-1</b>）</h3>
+<div class="src">范围按工单号锁定，其余 19 条一律未动 · 全文见 <code>迭代记录.md</code> v1.1 一节</div>
+
+<h4>1 这次解决什么</h4>
+<p><b>D1</b>：UI 链路是 <code>my_ui.py → my_agent.py:8 → from my_coding_agent import …</code>，是 <b>import</b>，而创建沙箱目录的 <code>STAGING.mkdir()</code> 写在 <code>__main__</code> 分支里——永远不执行，目录一旦被清 <code>run_python</code> 就抛裸 <code>FileNotFoundError</code>。
+<b>P0-5</b>：看不见"这题跑到第几步、烧了多少 token"，要用满 <code>max_steps=8</code> 被 <code>AgentMaxStepsError</code> 打断才知道贵。
+<b>P0-1</b>：要一条点了之后<b>真的能停住服务端</b>的刹车。</p>
+
+<h4>2 改动清单</h4>
+<table>
+  <tr><th>文件:行</th><th>改了什么</th><th>类型</th><th>工单号</th></tr>
+  <tr><td><code>my_coding_agent.py:26-28</code></td><td><code>STAGING.mkdir()</code> 提到<b>模块级</b>，配两条注释写明"必须在 import 时执行"的原因</td><td>修改</td><td>D1</td></tr>
+  <tr><td><code>my_coding_agent.py</code>（原 <code>:200</code>）</td><td>删掉 <code>__main__</code> 里那份重复的 <code>mkdir</code>，避免两份来源互相掩盖</td><td>删除</td><td>D1</td></tr>
+  <tr><td><code>my_ui.py:10-47</code></td><td><code>OpsUI(GradioUI)</code> + <code>_stats_message()</code>：每步一张成本卡</td><td>新增</td><td>P0-5</td></tr>
+  <tr><td><code>my_ui.py:49-65</code></td><td><code>_stream_response()</code> 包住上游生成器，<code>finally</code> 里 <code>agent.interrupt()</code> + 主动 <code>inner.close()</code> 吃掉 <code>RuntimeError</code></td><td>新增</td><td>P0-1</td></tr>
+  <tr><td><code>my_ui.py:69</code></td><td><code>GradioUI(agent,…)</code> → <code>OpsUI(agent,…)</code></td><td>修改</td><td>P0-5 / P0-1</td></tr>
+  <tr><td><code>ai学习/.rollback/{v1.0,v1.1}/</code></td><td>两份被改文件的双版本存档（回滚靠它，因为这文件不在 git 里 → 新出 <b>D3</b>）</td><td>新增</td><td>回滚</td></tr>
+</table>
+<p>上游 smolagents 源码<b>一行未改</b>：全在 <code>OpsUI</code> 子类里，<code>super()</code> 的内部列表用副本 <code>list(msgs) + [stats]</code> 喂给 gradio。</p>
+
+<h4>3 怎么用</h4>
+<ul class="tight">
+  <li>照常提问。每步之后底部多一条<b>折叠栏</b>，<b>收起状态就能看见</b>：<code>📊 第 3/8 步 · 本题累计 in 12,345 / out 678 token · 本步 4.2s</code>，报错追加 <code>· 本步报错</code>；点开是本步 / 本题累计 / 进程累计三行。</li>
+  <li>生成中点右上 <b>Stop</b>：当前这步跑完就停，界面不再动。<b>停完直接问下一题，不用重启服务。</b></li>
+  <li>彻底收摊同 v1.0：<code>Ctrl-C</code> 或 <code>关闭Agent.command</code>。</li>
+</ul>
+
+<h4>4 上线验收（当场跑过的真实输出）</h4>
+<table>
+  <tr><th>判据</th><th>方法</th><th>结果</th></tr>
+  <tr><td>D1 消失（<b>成对复现</b>）</td><td>目录挪开 → <code>import my_agent</code> → 调 <code>run_python("print(42)")</code></td><td>v1.0：<code>目录存在: False</code> + <code>FileNotFoundError</code>；v1.1：<code>True</code> + <code>'exit=0\n42\n'</code></td></tr>
+  <tr><td>卡的数字不是我自己算着玩的</td><td>与框架 <code>[Step N]</code> 日志逐位比对</td><td>进程累计口径与 <code>monitor.get_total_token_counts()</code> <b>逐位相符</b>（同题 23,134 / 205）</td></tr>
+  <tr><td>停止真的停住</td><td>强迫 <code>sleep(30)</code>，第 12 秒点 Stop，之后每 10 秒采样 <code>grep -c '\[Step'</code></td><td><code>+36s 15 / +46s 15 / +56s 15</code> —— 30 秒零增长，进程存活</td></tr>
+  <tr><td>停完服务还可用</td><td>同会话再提交一题</td><td>重开 <code>New run</code> 横幅 → <code>[Step 16: Duration 1.22s | Input 76,021 | Output 1,252]</code> → <code>Final answer: 2</code>（<code>interrupt_switch</code> 由 <code>agents.py:470</code> 重置）</td></tr>
+  <tr><td>生成器噪声已消</td><td><code>grep -c 'Exception ignored'</code></td><td><b>0</b>。修 <code>inner.close()</code> 前每次 Stop 喷一条 <code>generator ignored GeneratorExit</code>（根因 <code>agents.py:599-602</code> 在 <code>finally</code> 里还有一次 <code>yield</code>）</td></tr>
+  <tr><td>四条关停判据</td><td><code>lsof</code> / <code>who</code> / System Events 窗口数 / 两份日志 grep</td><td>关停前 1 监听 → 后 <b>0</b>；<code>who</code> 只剩 <code>console</code>；窗口 <b>0</b>；<code>gradio.live=0</code></td></tr>
+  <tr><td>回滚演练（<b>双向</b>）</td><td><code>cp .rollback/v1.0/*</code> → 验 → <code>cp .rollback/v1.1/*</code> → 验</td><td>两方向各 <code>py_compile OK</code>，D1 那行的成对结果就是这两条命令跑出来的；恢复后 <code>cmp</code> <b>逐字节一致</b>；演练挪开的 <code>.agent-staging</code> 已原样还原（<code>mtime=Oct 29 09:46:27</code>）</td></tr>
+</table>
+
+<h4>5 回滚</h4>
+<p>两条 <code>cp</code> 命令（<code>.rollback/v1.0/</code> ↔ <code>.rollback/v1.1/</code>，见 <code>迭代记录.md</code> §5），<b>都已当场演练</b>。这里<b>没有 <code>git checkout</code> 可用</b> —— 三份 <code>my_*.py</code> 在克隆里是 untracked，已立项为 <b>D3</b>。</p>
+
+<h4>6 口径与数据变化（行为语义变了两处，显式声明）</h4>
+<ul class="tight">
+  <li><b>Stop 的语义 = 在步边界停，不打断正在执行的那一步。</b>那个 <code>sleep(30)</code> 最终是被 <code>run_python</code> 自己的 20 秒沙箱超时掐掉的（日志 <code>Observations: 超时 20 秒，已杀掉</code>），<b>不是被 stop 掐的</b>。</li>
+  <li><b>卡的步号是「本题内」（<code>agents.py:543</code> 每次置 1），控制台 <code>[Step N]</code> 是「进程内」（<code>monitoring.py:108</code> 的 <code>len(step_durations)</code>）。</b>因为 <code>reset_agent_memory</code> 默认 <code>False</code>，<b>从第二题起这两个数必然不同，不是 bug</b>。</li>
+  <li>体量：<code>my_ui.py</code> <b>15 行 / 452 B → 76 行 / 3,816 B</b>；<code>my_coding_agent.py</code> <b>202 → 204 行</b>。工具仍 <b>7</b> 项、<code>max_steps</code> 仍 <b>8</b>、模型仍 <b>qwen-plus</b>、端口仍 <b>7860</b>——一个没增一个没减。</li>
+  <li>新成本样本：「1+1、不许调工具」单步 <b>input 6,220 / output 16</b> token、<b>1.22 s</b>。底价来自 7 件工具描述全量进 system prompt。</li>
+</ul>
+
+<h4>7 遗留（下次的输入）</h4>
+<p>新立 <b>D3</b>（三份 <code>my_*.py</code> 不在版本控制里）；<b>P0-1 残余</b>：慢工具 stop 后仍要等自己返回，实测最长 21.57 s，要瞬间掐断得动沙箱执行器；<b>D2</b> 未动；纠正了看板两条错判（见 P0-1 行）。仍欠：百炼 Key 轮换、<code>gradio_ui.py:456 .capitalize()</code> 标题补丁、dify 部署待点头、MCP servers <code>npm ci</code> 待点头。</p>
+<div class="card"><b>当时（v1.1 收尾）的推荐：下一刀 = P0-2（工具执行前审批）+ D2。</b>理由：两条同属<b>写路径</b>——<code>write_file</code> 现在能直接落盘到 <code>ai学习</code>，而它暂存出去的副本又读不回来；一个主题，一刀切完。P0-3 / P0-4 是界面活，可后排。<br>
+<span class="key">实际走向（记在这里，不改上文）</span>：你把顺序换了——先看界面。你贴出 v1.1 的页面截图说「页面上和 qoder 和 workbuddy 差很多啊」，于是 v1.2 砍的是 <b>V1 + V2 + V3</b>，P0-3 顺手关掉；P0-2 与 D2 仍在原位。</div>
+
+<h3>6.8 v1.0 · 2026-10-28 · 功能基线建档（本轮<b>没有</b>改动 agent 任何代码）</h3>
+<h4>1 这次解决什么</h4>
+<p>你的 agent 已经能跑（8 步熔断、7 项工具、双击起、Ctrl-C 停），但<b>没有任何一处写下"它现在是什么、对着成熟产品缺什么"</b>。没有基线，之后的每次改动都无法判断是进步还是漂移。所以本次只做<b>测绘</b>。</p>
+
+<h4>2 本次产出</h4>
+<table>
+  <tr><th>文件</th><th>内容</th><th>体量</th></tr>
+  <tr><td><code>ai学习/README.md</code></td><td>四仓代码深度剖析（9 章、18 个 Mermaid 图：flowchart / classDiagram / sequenceDiagram / stateDiagram-v2、2 块 Gherkin 共 8 个场景、20 条关键代码位置表、7 条【待补】）</td><td>873 行 / ~54 KB</td></tr>
+  <tr><td><code>ai学习/agent功能手册.html</code></td><td>本文件：现状能力面 + WorkBuddy/Qoder 参照 + 22 条缺口看板 + 迭代手册</td><td>本次新增</td></tr>
+  <tr><td><code>ai学习/迭代记录.md</code></td><td>事实源，含 v1.0 这一节与 5.2 的空白模板</td><td>本次新增</td></tr>
+  <tr><td>关停链路（上半天完成）</td><td><code>my_ui.py</code> 加 <code>os._exit(0)</code>；launcher 生成三个协作文件（<code>/tmp/agent-win-close.sh.scpt</code> + <code>agent-win-detach.py</code> + <code>agent-win-close.sh</code>）；<code>关闭Agent.command</code> 第 3/4 步改为排除自身 tty + 延迟 5 秒交棒</td><td>已验两条路</td></tr>
+</table>
+
+<h4>3 本次测绘出的新缺陷（进了看板，未修）</h4>
+<p><b>D1</b> <code>run_python</code> 的沙箱目录创建在 <code>__main__</code> 分支里，走 UI 路径不会执行；<b>D2</b> staging 同时被拒绝名单挡住，agent 读不到自己暂存的副本。两条都是本轮扫出来的，<b>本轮没动代码</b>。</p>
+
+<h4>4 上线验收（当场跑过的真实输出）</h4>
+<table>
+  <tr><th>判据</th><th>命令</th><th>结果</th></tr>
+  <tr><td>18 个图全部语法通过<b>且</b>真渲染出 SVG</td><td>逐块 <code>mermaid.parse</code> + <code>mermaid.render</code>（headless Chrome + 本地 mermaid.min.js）</td><td><code>TOTAL 18 BAD 0</code>，SVG 字节数 15,721 ~ 57,235</td></tr>
+  <tr><td>校验器<b>能</b>抓到坏图（排除假通过）</td><td>塞进 2 个故意写坏的图重跑</td><td><code>91 FAIL</code> / <code>92 FAIL</code>，<code>TOTAL 20 BAD 2</code> —— 上一版校验器是假通过，本轮修好了</td></tr>
+  <tr><td>关停彻底</td><td><code>lsof -iTCP:7860 -sTCP:LISTEN</code> / <code>who</code> / System Events 窗口数</td><td>端口 0、进程 0、只剩 console、窗口 0，<b>无警告表</b>，日常 Chrome 未受影响</td></tr>
+  <tr><td>承重引用不是抄来的</td><td>回查 <code>agents.py:596-598</code>、<code>memory.py:138-148</code>、<code>utils.py:128</code>、<code>dify/…/nodes/agent_v2</code>、<code>servers/src/memory/package.json:16</code></td><td>全部存在且与文案一致（含 <code>AgentToolExecutionError</code> 继承 <code>AgentError</code> 因而被回灌而非中断）</td></tr>
+</table>
+
+<h4>5 回滚</h4>
+<p>本轮三个文件都是<b>新增</b>（除 README §6.5 一处文字更正，见第 7 步），回滚 = 删除 <code>agent功能手册.html</code> 与 <code>迭代记录.md</code>，不影响任何运行链路。</p>
+
+<h4>6 口径变化</h4>
+<p>无。功能面未变：仍是 7 项工具、<code>max_steps=8</code>、<code>qwen-plus</code>、单会话 <code>7860</code>。</p>
+
+<h4>7 本次同时纠正的一处旧错误</h4>
+<p><code>README.md</code> §6.5 原文写了 <code>Agent链路详解.app</code> 并称两份 HTML"外面套了手写 bundle"。<b>磁盘上不存在该 bundle</b>——<code>find ~/Desktop /Applications -maxdepth 2 -iname "*链路*"</code> 无结果，桌面上只有 <code>我的Agent.app</code>。已把该节改为"两份裸 HTML"，并把"中文路径会让 <code>--app=file://</code> 静默退化"那条降级为<b>【待补】未复验</b>。</p>
+
+<h2 id="s7">7 待补与不确定（别当结论用）</h2>
+<ul class="tight">
+  <li>【待补】WorkBuddy 全部证据来自<b>静态拆包</b>，我没运行它；文案→功能的映射可能有出入（例如 <code>collab</code> 有 1494 个键，但那是协同模块的大小，不等于功能数量）。路由未以字符串字面量存储，页面清单靠命名空间推断，粒度受限。</li>
+  <li>【待补】Qoder 一侧<b>没有拆 <code>app.asar</code></b>，用的是本会话实时可见的工具面；要精确对照需要补一次同样的解包。</li>
+  <li>【待补】第 4 节"代价"全是我的工程估计，<b>零次实测支撑</b>。真正做完 v1.1 才谈得上有基线数据。</li>
+  <li>【待补】缺口清单不含<b>你心里有但我扫不出来的</b>——我只对着两个参照物找差集。你实际每天用 agent 时被什么硌手，那部分只能你补。</li>
+  <li>【待补】D1/D2 是<b>本轮扫出的静态推断 + 半实测</b>：D1 的目录依赖我确认了 <code>:198</code> 在 <code>__main__</code> 分支、当前目录确实存在，但<b>没有真删掉目录去复现崩溃</b>（不想动你的 <code>.agent-staging</code>）。</li>
+  <li>【待补】深色与宽度的证据全部来自<b>无头 Chrome + CDP 的固定视口</b>（1440×960，探测口 7861）。你自己那扇 Chrome app 窗口（启动器写死 <code>--window-size=1180,900</code>）下，<b>v1.2 的六颗</b>胶囊会不会换行、<b>v1.3 加到七颗 + 两枚审批键</b>之后状态行会不会挤成一团，<b>都没有采过</b>。出现挤压请回报，别自己改 CSS。</li>
+  <li>【已上线 v1.6 ＋ v1.7】<b>审批等待时长单列（V8）</b>：等待不再和真执行挤在同一格里，状态条多「本题审批」、步骤卡多「· 审批 X.Xs」、审批卡多「等了 X.Xs」；<b>「本题耗时 / 总时长」的定义一字未动</b>（仍含等待）。<b>v1.6 那条"剩下的边界"（等待只挂在 <code>_opsui_wait</code> 上、<code>MEM_FIELDS</code> 不认它 → 跨重启读不出）已由 v1.7 的 V9 收掉</b>：<code>MEM_FMT</code> 升 <code>v2</code>、<code>encode_memory</code> 单独认 <code>wait</code> 这一格（<code>MEM_FIELDS</code> 白名单仍旧不认它，模型读到的那串逐字不变）、<code>decode_memory</code> 认 <code>("v1","v2")</code> 并把它挂回同一个私有属性 → 显示层一行没改。<b>现在的边界换成三条</b>：① <b>v1 时代（v1.6 及更早）的老账永远没有那一格</b>——那个数当年没进库，本轮不猜不补，库里 v1 的行也不会被回写升级；② 兼容读<b>只朝一个方向</b>，回滚到 v1.6 会把 v1.7 期间新建的会话读成"没记忆"；③ 并行多工具时那一格仍挂在<b>第一个到达</b>的 <code>ActionStep</code> 上【未验证：多工具怎么分】。见 §4.5 看板的 V9 行、§2.5 的 V9 行与 §6.1</li>
+  <li>【未验证】<b>审批超时 600 秒</b>只做过离线验证（把常量压到 1 秒跑），在线挂 10 分钟没人点这条路没走过。</li>
+  <li>【未验证】<b>一步内多个工具并行</b>时的审批：框架在 <code>agents.py:1361-1437</code> 用 <code>ThreadPoolExecutor</code> 跑 N&gt;1 的调用，队列里会同时躺多条待批，而允许/拒绝只处理<b>最早</b>那条。v1.3 那三条实测路的题面都是<b>单工具调用</b>，并行场景一次都没触发；v1.6 的 V8 只在<b>单条待批</b>的题面上采过数，"一步 N 条待批时等待格怎么算"<b>没有数据</b>。</li>
+  <li>【未验证】<code>_step_card()</code> 的 <b>🧭 计划步</b>分支（<code>my_ui.py:697-703</code>）v1.3 那三条路都没触发过——qwen-plus 在这些题面上没产出 <code>PlanningStep</code>；v1.4 的六条在线路同样没有；v1.6 的四份留痕（<code>/tmp/v16_delivery.out</code>、<code>v16_v7live2.out</code>、<code>v16_v8live.out</code>、<code>v16_d7c.out</code>）里 <code>计划步</code> 各 <b>0</b> 次。v1.5 的在线留痕已不在 <code>/tmp</code>，那一轮<b>说不了</b>。计划可见（P0-4）要不要做、长什么样，还缺这一手实测。</li>
+  <li>【已上线 v1.5，剩两块没测】<b>记忆持久化（V6）</b>：序列化格式、回灌路径、"本题累计"边界都已实测（离线 65 条 + 交付形态跨两次重启）。<b>仍缺的</b>：① <b>带图的观察值</b>故意不入库，多图会话重启后到底缺什么<b>没有数据</b>；② <code>PlanningStep</code> 那条分支（<code>my_ui.py:189-201</code>）在 v1.5 的编解码里是<b>照字段写了</b>，但 qwen-plus 到现在没在这些题面上产出过计划步 → <b>计划步的存取往返【未验证】</b>。</li>
+  <li>【已修 v1.5，v1.6 复测，仍欠一条】<b>D7</b> 在<b>交付形态 7860</b> 上复测过 0.2s 那一路：从没进过「等待审批」、1.2s 落到已停止。v1.6 又跑了<b>越过 <code>APPROVAL_WAIT_MIN</code> 门槛</b>的那一路（<code>/tmp/v16_d7c.out</code>）：<code>awaitSeen</code> 仍为 <b>0</b>、按停止后 <b>2.012s</b> 落到「已停止」（<code>本题耗时 1.1s</code>），状态条 <code>pillWait</code> 为 <b>null</b>、步骤卡标题里没有「审批」那一格——<b>没有写出 <code>审批 0.0s</code></b>，靠的正是 0.05 秒门槛（见 §4.5 的 V8 行）。<b>"线上真等满 600 秒会怎样"仍然没有数据</b>（只做过把常量压到 1 秒的离线验证）。</li>
+  <li>【待补】累加与持久化的<b>规模上限</b>：v1.5 最长的一条跑到<b>五问 / 15 步 / payload 4,042 字符</b>（<code>in 2,362 → 2,465 → 2,574 → 2,675 → 3,091</code>，其中含一次多步工具调用）。十几问之后 <code>in</code> 的曲线、什么时候挤到上下文上限、<code>payload</code> 会不会胀到拖慢启动，<b>仍然没有数据</b>。</li>
+  <li>【已上线 v1.6，剩一条遗留】<b>侧栏选中态与 <code>sid</code> 同步（V7）</b>：v1.4 交出 <code>sid</code> 之后 <code>#sessions input</code> 的 <code>checked</code> 一直是 <code>0</code>，v1.6 把 <code>checked</code> 改成由 <code>self._sid</code> 单向驱动（<code>my_ui.py:1007-1025</code>），「＋ 新会话」之后那条空点已经消灭。<b>仍缺的</b>：新会话此刻在库里<b>还没有行</b>（第一问下去才 <code>ensure</code> 出来），所以没有"那一条"可亮——<code>_new_session</code>（<code>:1107-1113</code>）的处理是把 <code>_sid</code> 置 <code>None</code>、<b>清空高亮</b>（这才是实话，留着上一条亮着就是这个 bug 本体）。观感上就是"按了＋新会话，侧栏一根都不亮"，<b>要等第一问按下去</b>（<code>_respond</code> 开头 <code>hist.ensure()</code> 真插进行、<code>:1045-1047</code>）那一根才亮起来；要不要给未入库的新会话<b>占一行</b>，<b>没立单</b>。</li>
+  <li>【待补】<b>并发提问</b>：两个标签同时问会共用同一个 agent，<code>_mem_sid</code> 是<b>单值</b>，v1.5 起 <code>_run_seq</code>/<code>_cancelled_before</code> 也是<b>类级</b>——一个标签按停止会让<b>所有</b>在飞的待批一起被结算。当前设计仍假设<b>一次只问一题</b>，这条从没实测过。</li>
+  <li>【说明，不是缺陷】<code>生成中</code> 胶囊在 0.9s 的单步题上抓不到：那是<b>驱动器 700ms 的采样粒度</b>，页内 120ms 采样证明状态确实闪过（空闲 121ms → 生成中 722→8,160ms → 完成）。下次给驱动器加页内事件缓冲。</li>
+  <li>【已收编 2026-10-30】<b>验收脚本已进语料</b>：下面三批复跑脚本原先躺在 <code>/tmp</code>，现已整体搬入 <code>ai学习/验收脚本/&lt;版本号&gt;/</code>，<b>文件名一个没改</b>（逐份 sha1，0 不匹配）。清单里保留 <code>/tmp/…</code> 写法，因为那记录的是当时实跑的路径；现在的入口与复跑命令见 <code>验收脚本/README.md</code>。
+    <ul class="tight">
+      <li><code>/tmp/v16_test.py</code>（离线 <b>92</b> 条：编解码 16 / 落库重启 22 / D7 17 / 回归 10 / <b>V7 10</b> / <b>V8 17</b>）· 最新一轮输出 <code>/tmp/v16_test3.out</code> · <code>/tmp/v16_rollback_check.py</code>（双向 <b>25 / 31</b> 条）</li>
+      <li><code>/tmp/v16_cdp.js</code>（CDP 驱动器）· <code>/tmp/v16_read.js</code> · <code>/tmp/v16_cfg.py</code> · <code>/tmp/v16_ui.py</code>（探测口装配）· <code>/tmp/v16_seed.py</code> · <code>/tmp/v16_semantics.py</code>（gradio Radio 语义实测）</li>
+      <li>在线留痕（<b>本轮还在</b>）：<code>/tmp/v16_base.before.txt</code> / <code>v16_base.after.txt</code> / <code>v16_v7live2.out</code> / <code>v16_v8live.out</code> / <code>v16_delivery.out</code> / <code>v16_d7c.out</code> / <code>v16_final.diff</code></li>
+      <li><code>/tmp/v15_test.py</code>（离线 <b>65</b> 条）· <code>/tmp/v15_ui.py</code>（探测口装配）· <code>/tmp/v15_rollback_check.py</code>（双向 + 跨版本读库）· <code>/tmp/v15_drive.js</code>（s1~s5）· <code>/tmp/v15_d7.js</code> · <code>/tmp/v15_leg.js</code> / <code>v15_leg_tool.js</code> · <code>/tmp/v15_appr.js</code> / <code>v15_appr2.js</code>。<b>脚本在，那一轮的 <code>.out</code> 留痕已经不在 <code>/tmp</code></b>（本轮 <code>ls /tmp/v15_*.out</code> 无匹配）→ §6.3 的数字只能靠 md 抄录对证</li>
+      <li><code>/tmp/v14_test.py</code>（离线 53 条断言）· <code>/tmp/v14_ui.py</code> · <code>/tmp/v14_drive.js</code>（s1~s5）· <code>/tmp/v14_state.js</code> · <code>/tmp/v14_stop2.js</code> · <code>/tmp/v14_d7.js</code> / <code>v14_d7fix.js</code> / <code>v14_rollback_check.py</code></li>
+      <li><code>/tmp/v14_board.js</code>（看板实点）· <code>/tmp/v13_htmlcheck.py</code>（静态自检）</li>
+      <li><code>/tmp/mmd_extract.py</code> · <code>/tmp/mmd_check.py</code> · <code>/tmp/mmd_run2.sh</code> · <code>/tmp/mermaid.min.js</code>（mermaid 闸）</li>
+    </ul>
+    <b>2026-10-30 你点了「开 验收脚本先点」，这条已经办完</b>：v1.0~v1.7 <b>八轮</b>的脚本与输出整体收进 <code>ai学习/验收脚本/</code>（按版本号分目录，一个文件名没删，逐份 sha1 0 不匹配），复跑命令与「哪几条现在跑不得」写在 <code>验收脚本/README.md</code>。搬完之后 <code>run/</code> 目录会在原件旁边长出来（复跑产物只覆盖 <code>run/</code> 里的同名副本，<b>原件不再被复跑写坏</b>）；已收编的旧输出按字节冻结，清单校验仍然过。</li>
+  <li>【待补】<code>smolagents/.env</code> 里那条百炼 Key 曾出现在聊天里，<b>轮换这件事还欠着</b>。它不属于功能缺口，但属于同一份体检结果。</li>
+</ul>
+
+<footer>
+  v1.6 · 建档 2026-10-28 · 回写 2026-10-30 · 离线自包含（样式与脚本内联，不加载任何外部资源）<br>
+  事实源：<code>~/Desktop/study/ai学习/迭代记录.md</code> · 代码剖析：<code>~/Desktop/study/ai学习/README.md</code><br>
+  本页状态列与第 6 节由我按 md 回写；手改 HTML 会被下次重生成覆盖。
+</footer>
+
+</div>
+<script>
+/* 第 4 节的筛选器：无外部依赖，离线可用 */
+function filterBoard(kind,btn){
+  var rows=document.querySelectorAll('tr[data-st]');
+  var n=0;
+  rows.forEach(function(r){
+    var st=r.getAttribute('data-st');
+    var show=(kind==='all')||(kind==='todo'&&st==='todo')||(kind==='doing'&&st==='doing')
+             ||(kind==='done'&&st==='done')||(kind==='na'&&st==='na')||(kind==='p0'&&r.getAttribute('data-p')==='P0')
+             ||(kind==='p1'&&r.getAttribute('data-p')==='P1')
+             ||(kind==='p2'&&r.getAttribute('data-p')==='P2')
+             ||(kind==='v'&&r.getAttribute('data-p')==='V')
+             ||(kind==='bug'&&r.getAttribute('data-p')==='D');
+    r.style.display=show?'':'none'; if(show)n++;
+  });
+  document.querySelectorAll('.bar button').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  document.getElementById('cnt').textContent='显示 '+n+' / '+rows.length+' 条';
+}
+</script>
+</body>
+</html>

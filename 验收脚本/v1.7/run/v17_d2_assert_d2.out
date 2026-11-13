@@ -1,0 +1,17 @@
+PASS  0a 归档在位（没有归档这条等价就没法证）
+PASS  1a 去掉注释后 AST 与 v1.7 归档完全同形（＝行为零改动）
+PASS  1b 模块 docstring 一字未改（工具 docstring 由 1a 的整树比对兜住）
+PASS  1c DENY_NAMES 集合本身没变（只加了它上面的注释）
+PASS  1d SKIP_DIRS 集合本身没变
+PASS  2a 理由写在拒绝名单的正上方（不是写在别处）
+PASS  2b 写明「唯一出口是你自己在终端执行的 cp」
+PASS  2c 写明这是闭环、并且不许再打开
+PASS  2d 注释里带了定性日期，便于日后判断这条是新账还是老账
+PASS  3a 读 staging 里的副本被拒（PermissionError）
+PASS  3b 读 staging 目录本身被拒（PermissionError）
+PASS  3c 连『往 staging 写』也一并被拒（入口只有内部那次拼接）（PermissionError）
+PASS  3d 越界路径仍然先被 ROOT 收敛挡掉（PermissionError）
+PASS  3e 名单外的正常路径照样读得通（边界不是把门全关）
+PASS  3f write_file 的落点 agent 自己 guarded 不进来（闭环确实焊死）
+
+FAILS: 无

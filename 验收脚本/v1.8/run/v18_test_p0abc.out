@@ -1,0 +1,50 @@
+1-行为一致 smolagents/my_ui.py         PASS old=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习/smolagents/my_ui.py')) new=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习/smolagents/my_ui.py'))
+1-行为一致 .                           PASS old=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习')) new=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习'))
+1-行为一致 <空>                         PASS old=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习')) new=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习'))
+1-行为一致   smolagents                PASS old=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习/smolagents')) new=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习/smolagents'))
+1-行为一致 /Users/gaoying/Deskt        PASS old=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习')) new=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习'))
+1-行为一致 smolagents                  PASS old=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习/smolagents')) new=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习/smolagents'))
+1-行为一致 smolagents/nope-does        PASS old=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习/smolagents/nope-does-not-exist.txt')) new=('ok', PosixPath('/Users/gaoying/Desktop/study/ai学习/smolagents/nope-does-not-exist.txt'))
+1-行为一致 /Users/gaoying/Deskt        PASS old=('PermissionError', '/Users/gaoying/Desktop/study') new=('PermissionError', '/Users/gaoying/Desktop/study')
+1-行为一致 /Users/gaoying/Deskt        PASS old=('PermissionError', '/Users/gaoying/Desktop/study') new=('PermissionError', '/Users/gaoying/Desktop/study')
+1-行为一致 /tmp                        PASS old=('PermissionError', '/private/tmp') new=('PermissionError', '/private/tmp')
+1-行为一致 ~/Desktop                   PASS old=('PermissionError', '/Users/gaoying/Desktop') new=('PermissionError', '/Users/gaoying/Desktop')
+1-行为一致 ~/Desktop/study/ai学习        PASS old=('PermissionError', '/Users/gaoying/Desktop/etc/passwd') new=('PermissionError', '/Users/gaoying/Desktop/etc/passwd')
+1-行为一致 人生/                         PASS old=('FileNotFoundError', '/Users/gaoying/Desktop/study/ai学习/人生') new=('FileNotFoundError', '/Users/gaoying/Desktop/study/ai学习/人生')
+1-行为一致 职业规划/                       PASS old=('FileNotFoundError', '/Users/gaoying/Desktop/study/ai学习/职业规划') new=('FileNotFoundError', '/Users/gaoying/Desktop/study/ai学习/职业规划')
+1-行为一致 smolagents/.env             PASS old=('PermissionError', '拒绝访问凭证或依赖目录：/Users/gaoying/Desktop/study/ai学习/smolagents/.env') new=('PermissionError', '拒绝访问凭证或依赖目录：/Users/gaoying/Desktop/study/ai学习/smolagents/.env')
+1-行为一致 /Users/gaoying/Deskt        PASS old=('PermissionError', '拒绝访问凭证或依赖目录：/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/bin') new=('PermissionError', '拒绝访问凭证或依赖目录：/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/bin')
+1-行为一致 /Users/gaoying/Deskt        PASS old=('FileNotFoundError', '/Users/gaoying/Desktop/study/ai学习/不存在-绝对路径') new=('FileNotFoundError', '/Users/gaoying/Desktop/study/ai学习/不存在-绝对路径')
+1-覆盖面(三种结局都在表里)                    PASS {'ok': 7, 'PermissionError': 7, 'FileNotFoundError': 3}
+2-绝对不存在文案一字未动                      PASS '路径不存在：/Users/gaoying/Desktop/study/ai学习/不存在-绝对路径'
+3-越界含「报出根」                         PASS 
+3-越界含「穷举没有的手」                      PASS 
+3-越界含「指路到用户终端」                     PASS 
+3-越界含「堵住『找管理员开权限』」                 PASS 
+3-越界含「不许换路径重试」                     PASS 
+3-相对不存在含「原样回显给的是模型自己写的那串」          PASS 
+3-相对不存在含「拼接结果」                     PASS 
+3-相对不存在含「不猜根」                      PASS 
+3-相对不存在含「承认读不到根外」                  PASS 
+3-相对不存在含「堵住同参重试」                   PASS 
+3-相对不存在含「给一条能走的路」                  PASS 
+3-相对分支仍是不存在那一支                     PASS 「越界」三个字在新文案里是指路，不是改判：走的仍是 FileNotFoundError 这一支
+4-凭证目录仍拒且文案未改                      PASS '拒绝访问凭证或依赖目录：/Users/gaoying/Desktop/study/ai学习/smolagents/.env'
+4-staging 仍拒                       PASS 
+5-description 穷举不进 prompt          PASS my_coding_agent.description 里的独有串不在 system_prompt
+5-description 老串也不进 prompt         PASS 
+5-进了 prompt：list_dir docstring     PASS 
+5-进了 prompt：write_file docstring   PASS 
+5-进了 prompt：write_file docstring 负向穷举 PASS 
+5-prompt 增量 = 146 字符               PASS old=4796 new=4942 delta=+146
+5-报错文案不占固定开销                       PASS 
+6-my_agent description 全           PASS max_drawdown
+6-my_agent description 全           PASS annualized_volatility
+6-my_agent description 全           PASS read_file
+6-my_agent description 全           PASS list_dir
+6-my_agent description 全           PASS grep_files
+6-my_agent description 全           PASS write_file
+6-my_agent description 全           PASS run_python
+6-my_agent description 全           PASS 没有删除／移动／重命名
+
+全绿  FAIL=0

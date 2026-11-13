@@ -1,0 +1,365 @@
+候选 182 条 {'HIT': 162, 'skip': 3, 'ZERO': 12, 'TIE': 4, 'NO-MAP': 1}
+  63 HIT    my_ui.py:1038      -> :1135          cur    [v15 ov=(2, 2)] src=⌖def create_app(self):⌖ tgt=⌖def create_app(self):⌖ def create_app(self):⌖def create_app(self):
+        ctx ‖        GR["OpsUI(GradioUI)<br/>自建 Blocks · my_ui.py:1038<br/>会话库 History ‖
+  63 HIT    my_ui.py:373       -> :382           cur    [v15 ov=(1, 1)] src=⌖class History:⌖ tgt=⌖class History:⌖ class History:⌖class History:
+        ctx ‖/>自建 Blocks · my_ui.py:1038<br/>会话库 History · my_ui.py:373<br/>审批门 · my_ui.p‖
+  63 HIT    my_ui.py:527       -> :546           cur    [v15 ov=(1, 1)] src=⌖def _install_gate(self) -> None:⌖ tgt=⌖def _install_gate(self) -> None:⌖ def _install_gate(self) -> None:⌖def _install_gate(self) -> None:
+        ctx ‖1038<br/>会话库 History · my_ui.py:373<br/>审批门 · my_ui.py:527"]‖
+  77 HIT    my_ui.py:1101-1104 -> :1198-1201     cur    [v15 ov=(2, 2)] src=⌖share=False,⌖ tgt=⌖css=DARK_CSS,⌖ share=False,⌖css=DARK_CSS,
+        ctx ‖*服务只绑 `127.0.0.1`、`share=False`**（`smolagents/my_ui.py:1101-1104`，v1.1 前在 `:‖
+  77 skip   :70-72             ->                HIST   
+        ctx ‖e`**（`smolagents/my_ui.py:1101-1104`，v1.1 前在 `:70-72`）。框架默认是 `share: bool = ‖
+ 629 ZERO   :22-33             -> :22-35         cur    [v14 ov=(0, 0)] src=⌖PlanningStep,⌖ tgt=⌖# 超时按拒绝处理：题可以重问，worker 线程挂着不放会永远占住 agent。⌖ PlanningStep,⌖# 超时按拒绝处理：题可以重问，worker 线程挂着不放会永远占住 agent。
+        ctx ‖口径写在代码里**，不是行业黑话：最大回撤 = 相对历史峰值的最大跌幅，同时回吐发生区间（`:22-33`）；年化波动率 = 日收益率标准差（样本方差，‖
+ 629 ZERO   :42-49             -> :48-55         cur    [v14 ov=(0, 0)] src=⌖DECISION_DOT = {"pending": "🟡", "allowed": "🟢", "denied": "⚪⌖ tgt=⌖DENIED_VERDICT = {"denied": "已拒绝", "cancelled": "已取消", "time⌖ DECISION_DOT = {"pending": "🟡", "allowed": "🟢", "denied": "⚪⌖DENIED_VERDICT = {"denied": "已拒绝", "cancelled": "已取消", "time
+        ctx ‖`:22-33`）；年化波动率 = 日收益率标准差（样本方差，分母 n-1）× √252（`:42-49`）。‖
+ 639 HIT    my_ui.py:1100      -> :1197          cur    [v15 ov=(4, 4)] src=⌖OpsUI(agent, file_upload_folder="./data").launch(⌖ tgt=⌖OpsUI(agent, file_upload_folder="./data").launch(⌖ OpsUI(agent, file_upload_folder="./data").launch(⌖OpsUI(agent, file_upload_folder="./data").launch(
+        ctx ‖    L["OpsUI(agent).launch()<br/>my_ui.py:1100"] --> D{"share 参‖
+ 641 HIT    my_ui.py:1101-1104 -> :1198-1201     cur    [v15 ov=(1, 1)] src=⌖share=False,⌖ tgt=⌖css=DARK_CSS,⌖ share=False,⌖css=DARK_CSS,
+        ctx ‖    D -->|"写死 share=False 与 127.0.0.1<br/>my_ui.py:1101-1104"| LOCAL["只有‖
+ 642 HIT    my_ui.py:1108      -> :1205          cur    [v15 ov=(2, 2)] src=⌖os._exit(0)⌖ tgt=⌖os._exit(0)⌖ os._exit(0)⌖os._exit(0)
+        ctx ‖["Ctrl-C 后端口释放但进程挂在非守护线程<br/>→ 显式 os._exit(0)，my_ui.py:1108"]‖
+ 647 HIT    my_ui.py:868       -> :923           cur    [v15 ov=(3, 3)] src=⌖yield list(msgs)⌖ tgt=⌖yield list(msgs)⌖ yield list(msgs)⌖yield list(msgs)
+        ctx ‖自己维护那份内部列表、每次 `yield list(msgs)` 交副本给 gradio（`my_ui.py:868`；v1.1/v1.2 是 `lis‖
+ 647 ZERO   :310               -> :499           cur    [v14 ov=(0, 0)] src=⌖⌖ tgt=⌖⌖ ⌖
+        ctx ‖py:868`；v1.1/v1.2 是 `list(msgs) + [stats]` 在 `:310`，v1.3 把统计并进了步骤卡，见 6.3.5）。‖
+ 657 HIT    :642-691           -> :672-727       cur    [v15 ov=(3, 3)] src=⌖def _step_card(self, step) -> gr.ChatMessage | None:⌖ tgt=⌖)⌖ def _step_card(self, step) -> gr.ChatMessage | None:⌖)
+        ctx ‖*：一个 step 只出一张卡，上面那串数字并进了步骤卡的标题（`_step_card`，`:642-691`；标题拼装 `:671-675`，末行 `‖
+ 657 HIT    :671-675           -> :705-710       cur    [v15 ov=(3, 3)] src=⌖title = (⌖ tgt=⌖)⌖ title = (⌖)
+        ctx ‖上面那串数字并进了步骤卡的标题（`_step_card`，`:642-691`；标题拼装 `:671-675`，末行 `:686-688`），三档口径一‖
+ 657 HIT    :686-688           -> :721-724       cur    [v15 ov=(3, 3)] src=⌖parts.append(⌖ tgt=⌖)⌖ parts.append(⌖)
+        ctx ‖题（`_step_card`，`:642-691`；标题拼装 `:671-675`，末行 `:686-688`），三档口径一字未改。下面这张表和"为什么‖
+ 669 HIT    :757-765           -> :800-808       cur    [v15 ov=(3, 3)] src=⌖finally:⌖ tgt=⌖q.put(("done", None))⌖ finally:⌖q.put(("done", None))
+        ctx ‖rker 线程**，于是"关内层生成器"这一步只能跟着挪进那条线程的 `finally`（`:757-765`），`_stream_response` ‖
+ 669 HIT    :873-882           -> :928-937       cur    [v15 ov=(5, 5)] src=⌖finally:⌖ tgt=⌖self._settle_all("cancelled")⌖ finally:⌖self._settle_all("cancelled")
+        ctx ‖的 `finally` 只剩三个动作——置放弃标记、`interrupt()`、结算待批（`:873-882`）：‖
+ 675 HIT    my_ui.py:767-882   -> :810-937       cur    [v15 ov=(2, 2)] src=⌖def _stream_response(self, message, history):  # noqa: ARG00⌖ tgt=⌖self._settle_all("cancelled")⌖ def _stream_response(self, message, history):  # noqa: ARG00⌖self._settle_all("cancelled")
+        ctx ‖  participant O as OpsUI._stream_response<br/>my_ui.py:767-882‖
+ 676 HIT    my_ui.py:742-765   -> :785-808       cur    [v15 ov=(1, 1)] src=⌖def _worker(self, task: str, files, q: queue.Queue) -> None:⌖ tgt=⌖q.put(("done", None))⌖ def _worker(self, task: str, files, q: queue.Queue) -> None:⌖q.put(("done", None))
+        ctx ‖    participant W as _worker 线程<br/>my_ui.py:742-765‖
+ 679 HIT    :678               -> :928           cur    [v14 ov=(1, 1)] src=⌖finally:⌖ tgt=⌖finally:⌖ finally:⌖finally:
+        ctx ‖    G->>O: 关掉这层生成器（finally 在 :678）‖
+ 681 HIT    :685               -> :935           cur    [v14 ov=(3, 3)] src=⌖self._abandoned.set()⌖ tgt=⌖self._abandoned.set()⌖ self._abandoned.set()⌖self._abandoned.set()
+        ctx ‖    O->>W: _abandoned.set()（:685）→ 那个 for 循环下一轮 break‖
+ 682 HIT    :570               -> :805           cur    [v14 ov=(3, 3)] src=⌖inner.close()⌖ tgt=⌖inner.close()⌖ inner.close()⌖inner.close()
+        ctx ‖>>W: 生成器被弃 → 它的 finally 在起它的线程里 inner.close()（:570）‖
+ 684 HIT    :571-572           -> :806-807       cur    [v14 ov=(3, 3)] src=⌖except RuntimeError:⌖ tgt=⌖pass⌖ except RuntimeError:⌖pass
+        ctx ‖    A-->>W: 该 RuntimeError 由 W 自己吃掉（:571-572），否则 stderr 每次 Stop 喷一‖
+ 686 ZERO   :545-547           -> :780-782       cur    [v14 ov=(0, 0)] src=⌖for k, v in pills⌖ tgt=⌖return f'<div id="statusbar" class="st-{state}">{inner}</div⌖ for k, v in pills⌖return f'<div id="statusbar" class="st-{state}">{inner}</div
+        ctx ‖hile 顶部检查 interrupt_switch → raise AgentError（:545-547）‖
+ 696 TIE    my_ui.py:15        -> :15            cur    [v14 ov=(2, 2)] src=⌖from my_agent import agent⌖ tgt=⌖from my_agent import agent⌖ from my_agent import agent⌖from my_agent import agent
+        ctx ‖ `if __name__ == "__main__"` 分支里，而 UI 的真实链路是 `my_ui.py:15 → my_agent.py:8 → ‖
+ 696 ZERO   my_ui.py:10        -> :10            cur    [v14 ov=(0, 0)] src=⌖import time⌖ tgt=⌖import time⌖ import time⌖import time
+        ctx ‖ my_coding_agent import …`（v1.2 前那条 import 在 `my_ui.py:10`，更早 `:4`）——**impor‖
+ 696 skip   :4                 ->                HIST   
+        ctx ‖import …`（v1.2 前那条 import 在 `my_ui.py:10`，更早 `:4`）——**import 不执行 `__main__`*‖
+ 706 HIT    my_ui.py:929-986   -> :1004-1066     cur    [v15 ov=(4, 4)] src=⌖def _respond(self, message, sid):⌖ tgt=⌖yield last, self._status_html(state), radio(), gr.update(), ⌖ def _respond(self, message, sid):⌖yield last, self._status_html(state), radio(), gr.update(), 
+        ctx ‖>|"box.submit"| R["_respond(message, sid)<br/>my_ui.py:929-986"]‖
+ 707 HIT    :712               -> :988           cur    [v14 ov=(1, 1)] src=⌖def _user_message(self, message):⌖ tgt=⌖def _user_message(self, message):⌖ def _user_message(self, message):⌖def _user_message(self, message):
+        ctx ‖    R --> U["_user_message<br/>:712 自建用户气泡"]‖
+ 708 HIT    :575               -> :810           cur    [v14 ov=(1, 1)] src=⌖def _stream_response(self, message, history):  # noqa: ARG00⌖ tgt=⌖def _stream_response(self, message, history):  # noqa: ARG00⌖ def _stream_response(self, message, history):  # noqa: ARG00⌖def _stream_response(self, message, history):  # noqa: ARG00
+        ctx ‖    R --> S["_stream_response<br/>:575 v1.1 的刹车语义原样保留<br/>v1.3 起‖
+ 709 HIT    :550               -> :785           cur    [v14 ov=(4, 4)] src=⌖def _worker(self, task: str, files, q: queue.Queue) -> None:⌖ tgt=⌖def _worker(self, task: str, files, q: queue.Queue) -> None:⌖ def _worker(self, task: str, files, q: queue.Queue) -> None:⌖def _worker(self, task: str, files, q: queue.Queue) -> None:
+        ctx ‖    S --> W["threading.Thread → _worker :550<br/>agent.run(stream=True‖
+ 711 HIT    :367               -> :571           cur    [v14 ov=(1, 1)] src=⌖def _gated_call(self, name: str, original, args: tuple, kwar⌖ tgt=⌖def _gated_call(self, name: str, original, args: tuple, kwar⌖ def _gated_call(self, name: str, original, args: tuple, kwar⌖def _gated_call(self, name: str, original, args: tuple, kwar
+        ctx ‖    W --> GT["工具实例上的审批门<br/>_gated_call :367（见 6.3.5）"]‖
+ 712 TIE    :502               -> :730           cur    [v14 ov=(1, 1)] src=⌖def _stats(self) -> dict:⌖ tgt=⌖def _stats(self) -> dict:⌖ def _stats(self) -> dict:⌖def _stats(self) -> dict:
+        ctx ‖    S --> ST["_stats :502 一份数字"]‖
+ 713 HIT    :450               -> :672           cur    [v14 ov=(1, 1)] src=⌖def _step_card(self, step) -> gr.ChatMessage | None:⌖ tgt=⌖def _step_card(self, step) -> gr.ChatMessage | None:⌖ def _step_card(self, step) -> gr.ChatMessage | None:⌖def _step_card(self, step) -> gr.ChatMessage | None:
+        ctx ‖    ST --> C1["_step_card :450 一步一张卡<br/>卡末行就是原来的统计卡"]‖
+ 714 HIT    :529               -> :761           cur    [v14 ov=(1, 1)] src=⌖def _status_html(self, state: str) -> str:⌖ tgt=⌖def _status_html(self, state: str) -> str:⌖ def _status_html(self, state: str) -> str:⌖def _status_html(self, state: str) -> str:
+        ctx ‖    ST --> C2["_status_html :529 顶部胶囊<br/>有待批时多一颗「待批」"]‖
+ 716 HIT    :277               -> :451           cur    [v14 ov=(2, 2)] src=⌖def save(self, sid: int, messages) -> None:⌖ tgt=⌖def save(self, sid: int, messages) -> None:⌖ def save(self, sid: int, messages) -> None:⌖def save(self, sid: int, messages) -> None:
+        ctx ‖   R -->|"finally"| H["History.save 整条覆盖写<br/>:277，DELETE 在 :289"]‖
+ 716 HIT    :289               -> :463           cur    [v14 ov=(2, 2)] src=⌖c.execute("DELETE FROM messages WHERE session_id = ?", (sid,⌖ tgt=⌖c.execute("DELETE FROM messages WHERE session_id = ?", (sid,⌖ c.execute("DELETE FROM messages WHERE session_id = ?", (sid,⌖c.execute("DELETE FROM messages WHERE session_id = ?", (sid,
+        ctx ‖lly"| H["History.save 整条覆盖写<br/>:277，DELETE 在 :289"]‖
+ 718 HIT    :880               -> :1192          cur    [v14 ov=(3, 3)] src=⌖demo.load(fn=self._on_load, outputs=[radio, sid, status, cha⌖ tgt=⌖demo.load(fn=self._on_load, outputs=[radio, sid, status, cha⌖ demo.load(fn=self._on_load, outputs=[radio, sid, status, cha⌖demo.load(fn=self._on_load, outputs=[radio, sid, status, cha
+        ctx ‖    L["demo.load :880"] --> DB2["History.choice‖
+ 719 TIE    :843               -> :1155          cur    [v14 ov=(1, 1)] src=⌖stop_btn = gr.Button("■ 停止", variant="stop", scale=0, min_wi⌖ tgt=⌖stop_btn = gr.Button("■ 停止", variant="stop", scale=0, min_wi⌖ stop_btn = gr.Button("■ 停止", variant="stop", scale=0, min_wi⌖stop_btn = gr.Button("■ 停止", variant="stop", scale=0, min_wi
+        ctx ‖    SB["■ 停止 :843"] -->|"interrupt + 结算待批"|‖
+ 724 HIT    my_ui.py:1038-1096 -> :1135-1193     cur    [v15 ov=(4, 4)] src=⌖def create_app(self):⌖ tgt=⌖return demo⌖ def create_app(self):⌖return demo
+        ctx ‖往消息流旁边插侧栏、也没有口子把状态条提到输入框上方。所以 `create_app()`（`my_ui.py:1038-1096`）整体覆盖成 `gr.‖
+ 725 HIT    :913-927           -> :988-1002      cur    [v15 ov=(6, 6)] src=⌖def _user_message(self, message):⌖ tgt=⌖return gr.ChatMessage(role="user", content=text)⌖ def _user_message(self, message):⌖return gr.ChatMessage(role="user", content=text)
+        ctx ‖屏幕第一行会凭空消失、库里也没有。**必须自己拼**（`_user_message()`，`:913-927`），而且只拼显示、不重跑 `_proces‖
+ 726 HIT    :1058              -> :1155          cur    [v15 ov=(8, 8)] src=⌖stop_btn = gr.Button("■ 停止", variant="stop", scale=0, min_wi⌖ tgt=⌖stop_btn = gr.Button("■ 停止", variant="stop", scale=0, min_wi⌖ stop_btn = gr.Button("■ 停止", variant="stop", scale=0, min_wi⌖stop_btn = gr.Button("■ 停止", variant="stop", scale=0, min_wi
+        ctx ‖8` 点它，照样跑到 `9/8` 才完。所以 `stop_btn=False`，刹车改由 `:1058` 的自建「■ 停止」→ `_stop()`（`:‖
+ 726 HIT    :992-1012          -> :1076-1096     cur    [v15 ov=(3, 3)] src=⌖def _stop(self):⌖ tgt=⌖return self._status_html("stopping")⌖ def _stop(self):⌖return self._status_html("stopping")
+        ctx ‖btn=False`，刹车改由 `:1058` 的自建「■ 停止」→ `_stop()`（`:992-1012`）→ `agent.interrupt(‖
+ 727 HIT    :1095              -> :1192          cur    [v15 ov=(6, 6)] src=⌖demo.load(fn=self._on_load, outputs=[radio, sid, status, cha⌖ tgt=⌖demo.load(fn=self._on_load, outputs=[radio, sid, status, cha⌖ demo.load(fn=self._on_load, outputs=[radio, sid, status, cha⌖demo.load(fn=self._on_load, outputs=[radio, sid, status, cha
+        ctx ‖测重载后侧栏是空的——这恰好是 V3 要消灭的那个缺陷。解法是挂 `demo.load`（`:1095`，回调 `:1025-1035`）把库里的会话重‖
+ 727 HIT    :1025-1035         -> :1118-1129     cur    [v15 ov=(5, 5)] src=⌖def _on_load(self):⌖ tgt=⌖return gr.update(choices=ch), (int(ch[0][1]) if ch else None⌖ def _on_load(self):⌖# V7：高亮跟着它一起给（force）——v1.5 这里是"绑着丙、侧栏一条都不亮"，
+        ctx ‖这恰好是 V3 要消灭的那个缺陷。解法是挂 `demo.load`（`:1095`，回调 `:1025-1035`）把库里的会话重新推一遍，并自动展开最‖
+ 729 HIT    :373-488           -> :382-497       cur    [v15 ov=(18, 18)] src=⌖class History:⌖ tgt=⌖return int(cur.lastrowid)⌖ class History:⌖return int(cur.lastrowid)
+        ctx ‖`History`（`:373-488`）管**三张表**：`sessions(i‖
+ 733 HIT    :30                -> :30            cur    [v15 ov=(4, 4)] src=⌖DB_PATH = Path(__file__).resolve().parent / ".agent-history.⌖ tgt=⌖DB_PATH = Path(__file__).resolve().parent / ".agent-history.⌖ DB_PATH = Path(__file__).resolve().parent / ".agent-history.⌖DB_PATH = Path(__file__).resolve().parent / ".agent-history.
+        ctx ‖PATH` 用 `Path(__file__).resolve()` 而不是 cwd | `:30` | 启动器 `cd smolagents` 与否都‖
+ 734 HIT    :442-463           -> :451-472       cur    [v15 ov=(2, 2)] src=⌖def save(self, sid: int, messages) -> None:⌖ tgt=⌖)⌖ def save(self, sid: int, messages) -> None:⌖)
+        ctx ‖| `save()` 是**整条覆盖写**（先删后插全量） | `:442-463`，`DELETE` 在 `:454` | ‖
+ 734 HIT    :454               -> :463           cur    [v15 ov=(2, 2)] src=⌖c.execute("DELETE FROM messages WHERE session_id = ?", (sid,⌖ tgt=⌖c.execute("DELETE FROM messages WHERE session_id = ?", (sid,⌖ c.execute("DELETE FROM messages WHERE session_id = ?", (sid,⌖c.execute("DELETE FROM messages WHERE session_id = ?", (sid,
+        ctx ‖` 是**整条覆盖写**（先删后插全量） | `:442-463`，`DELETE` 在 `:454` | 半截停止的那次也落库；重复保存不会产生双份消‖
+ 735 HIT    :449-450           -> :458-459       cur    [v15 ov=(5, 5)] src=⌖if d.get("role") == "user" and title is None:⌖ tgt=⌖title = content.strip().replace("\n", " ")[:28] or None⌖ if d.get("role") == "user" and title is None:⌖title = content.strip().replace("\n", " ")[:28] or None
+        ctx ‖前 **28** 字，且只在仍是「新会话」时写；`updated_at` 每次存都刷 | `:449-450` 取值，`:460-463` 那条 `CA‖
+ 735 HIT    :460-463           -> :469-472       cur    [v15 ov=(5, 5)] src=⌖c.execute(⌖ tgt=⌖)⌖ c.execute(⌖)
+        ctx ‖仍是「新会话」时写；`updated_at` 每次存都刷 | `:449-450` 取值，`:460-463` 那条 `CASE WHEN title ‖
+ 736 HIT    :425-430           -> :434-439       cur    [v15 ov=(3, 3)] src=⌖def choices(self, limit: int = 50):⌖ tgt=⌖return [(r[1], str(r[0])) for r in rows]⌖ def choices(self, limit: int = 50):⌖return [(r[1], str(r[0])) for r in rows]
+        ctx ‖oices()` 按 `updated_at DESC` 取，上限 **50** 条 | `:425-430` | 不搜索、不分组、不分页——这是 v1‖
+ 737 HIT    :401               -> :410           cur    [v15 ov=(1, 1)] src=⌖CREATE TABLE IF NOT EXISTS memory(⌖ tgt=⌖CREATE TABLE IF NOT EXISTS memory(⌖ CREATE TABLE IF NOT EXISTS memory(⌖CREATE TABLE IF NOT EXISTS memory(
+        ctx ‖**一条会话一行**（主键就是 `session_id`），返回存了多少字符 | DDL `:401`，方法 `:465-473`，读回 `:475-4‖
+ 737 HIT    :465-473           -> :474-482       cur    [v15 ov=(4, 4)] src=⌖def save_memory(self, sid: int, payload: str) -> int:⌖ tgt=⌖return len(blob)⌖ def save_memory(self, sid: int, payload: str) -> int:⌖return len(blob)
+        ctx ‖（主键就是 `session_id`），返回存了多少字符 | DDL `:401`，方法 `:465-473`，读回 `:475-478` | 和 `s‖
+ 737 HIT    :475-478           -> :484-487       cur    [v15 ov=(1, 1)] src=⌖def load_memory(self, sid: int):⌖ tgt=⌖return row[0] if row else None⌖ def load_memory(self, sid: int):⌖return row[0] if row else None
+        ctx ‖_id`），返回存了多少字符 | DDL `:401`，方法 `:465-473`，读回 `:475-478` | 和 `save()` 同样是覆盖式，‖
+ 739 HIT    :446-451           -> :455-460       cur    [v15 ov=(8, 8)] src=⌖d = dataclasses.asdict(m) if dataclasses.is_dataclass(m) els⌖ tgt=⌖rows.append((sid, i, d.get("role") or "assistant", content, ⌖ d = dataclasses.asdict(m) if dataclasses.is_dataclass(m) els⌖rows.append((sid, i, d.get("role") or "assistant", content, 
+        ctx ‖ssage.metadata` 的 JSON（`role`/`content` 各自一列，`:446-451` 先用 `dataclasses.asdi‖
+ 739 HIT    :439               -> :448           cur    [v15 ov=(7, 7)] src=⌖out.append(gr.ChatMessage(role=role, content=content, metada⌖ tgt=⌖out.append(gr.ChatMessage(role=role, content=content, metada⌖ out.append(gr.ChatMessage(role=role, content=content, metada⌖out.append(gr.ChatMessage(role=role, content=content, metada
+        ctx ‖lass 拍平成字典再拆），`load()` 拿它重建 `gr.ChatMessage`（`:439`），所以折叠卡、报错条这类带 `metadata.‖
+ 741 HIT    :213-332           -> :217-336       cur    [v15 ov=(18, 18)] src=⌖DARK_CSS = """⌖ tgt=⌖"""⌖ DARK_CSS = """⌖"""
+        ctx ‖深色壳（`DARK_CSS`，`:213-332`）分两类活：一类是 `:root` 变量同‖
+ 741 HIT    :265-275           -> :269-279       cur    [v15 ov=(18, 18)] src=⌖/* P0-2 审批键：平时不可见（visible=False），有待批项时才由后端点亮。 */⌖ tgt=⌖#statusbar.st-awaiting .pill-state i, #statusbar.st-awaiting⌖ /* P0-2 审批键：平时不可见（visible=False），有待批项时才由后端点亮。 */⌖#statusbar.st-awaiting .pill-state i, #statusbar.st-awaiting
+        ctx ‖，这就是第一版截图里右边空一大片的原因。v1.3 在这段 CSS 里追加了审批相关的规则（`:265-275`：待批胶囊的描边、`#approve-bt‖
+ 748 HIT    :527-550           -> :546-569       cur    [v15 ov=(11, 11)] src=⌖def _install_gate(self) -> None:⌖ tgt=⌖self.agent.tools[name] = wrapped_tool⌖ def _install_gate(self) -> None:⌖self.agent.tools[name] = wrapped_tool
+        ctx ‖的 `output_type` 包装全都不受影响。套法见 `_install_gate`（`:527-550`）：`copy.copy(base)` 换‖
+ 748 HIT    :541               -> :560           cur    [v15 ov=(11, 11)] src=⌖wrapped_tool = copy.copy(base)⌖ tgt=⌖wrapped_tool = copy.copy(base)⌖ wrapped_tool = copy.copy(base)⌖wrapped_tool = copy.copy(base)
+        ctx ‖gate`（`:527-550`）：`copy.copy(base)` 换一个新实例再盖（`:541`、`:548-550`），**不去改 `my_co‖
+ 748 HIT    :548-550           -> :567-569       cur    [v15 ov=(2, 2)] src=⌖wrapped_tool.forward = gated⌖ tgt=⌖self.agent.tools[name] = wrapped_tool⌖ wrapped_tool.forward = gated⌖self.agent.tools[name] = wrapped_tool
+        ctx ‖:527-550`）：`copy.copy(base)` 换一个新实例再盖（`:541`、`:548-550`），**不去改 `my_coding_ag‖
+ 750 HIT    :547               -> :566           cur    [v15 ov=(5, 5)] src=⌖gated.__signature__ = inspect.signature(original)⌖ tgt=⌖gated.__signature__ = inspect.signature(original)⌖ gated.__signature__ = inspect.signature(original)⌖gated.__signature__ = inspect.signature(original)
+        ctx ‖__signature__ = inspect.signature(original)`（`:547`）。不保签名的话，`*a, **kw` 会把参数吞‖
+ 750 HIT    :555               -> :574           cur    [v15 ov=(7, 7)] src=⌖bound = dict(inspect.signature(original).bind_partial(*args,⌖ tgt=⌖bound = dict(inspect.signature(original).bind_partial(*args,⌖ bound = dict(inspect.signature(original).bind_partial(*args,⌖bound = dict(inspect.signature(original).bind_partial(*args,
+        ctx ‖了它，`bind_partial(*args, **kwargs).arguments`（`:555`）能把参数还原成字典——**展示用的和执行用的是同‖
+ 751 HIT    :539               -> :558           cur    [v15 ov=(2, 2)] src=⌖if base is None or getattr(base, "_opsui_gated", False):⌖ tgt=⌖if base is None or getattr(base, "_opsui_gated", False):⌖ if base is None or getattr(base, "_opsui_gated", False):⌖if base is None or getattr(base, "_opsui_gated", False):
+        ctx ‖- 幂等标记 `_opsui_gated`（`:539`、`:549`）。多个 `OpsUI` 实例（离线‖
+ 751 HIT    :549               -> :568           cur    [v15 ov=(1, 1)] src=⌖wrapped_tool._opsui_gated = True⌖ tgt=⌖wrapped_tool._opsui_gated = True⌖ wrapped_tool._opsui_gated = True⌖wrapped_tool._opsui_gated = True
+        ctx ‖- 幂等标记 `_opsui_gated`（`:539`、`:549`）。多个 `OpsUI` 实例（离线测试里反复建）‖
+ 752 HIT    :502-503           -> :511-512       cur    [v15 ov=(3, 3)] src=⌖_pending: list[Approval] = []⌖ tgt=⌖_gate_lock = threading.Lock()⌖ _pending: list[Approval] = []⌖_gate_lock = threading.Lock()
+        ctx ‖- `_pending` 和 `_gate_lock` 挂在**类**上（`:502-503`），不是实例上。因为门守的是**进程里那一‖
+ 754 HIT    :34                -> :34            cur    [v15 ov=(3, 3)] src=⌖GATED_TOOLS = ("write_file", "run_python")⌖ tgt=⌖GATED_TOOLS = ("write_file", "run_python")⌖ GATED_TOOLS = ("write_file", "run_python")⌖GATED_TOOLS = ("write_file", "run_python")
+        ctx ‖`GATED_TOOLS = ("write_file", "run_python")`（`:34`）；`read_file` / `list_dir`‖
+ 756 HIT    :742-765           -> :785-808       cur    [v15 ov=(7, 7)] src=⌖def _worker(self, task: str, files, q: queue.Queue) -> None:⌖ tgt=⌖q.put(("done", None))⌖ def _worker(self, task: str, files, q: queue.Queue) -> None:⌖q.put(("done", None))
+        ctx ‖3 把 `agent.run(stream=True)` 挪进 `_worker` 线程（`:742-765`），事件塞 `queue.Queue`；`‖
+ 756 HIT    :767-882           -> :810-937       cur    [v15 ov=(8, 8)] src=⌖def _stream_response(self, message, history):  # noqa: ARG00⌖ tgt=⌖self._settle_all("cancelled")⌖ def _stream_response(self, message, history):  # noqa: ARG00⌖self._settle_all("cancelled")
+        ctx ‖2-765`），事件塞 `queue.Queue`；`_stream_response`（`:767-882`）变成一条**只取队列**的壳，用 `q.‖
+ 756 HIT    :794               -> :841           cur    [v15 ov=(8, 8)] src=⌖kind, payload = q.get(timeout=0.25)⌖ tgt=⌖kind, payload = q.get(timeout=0.25)⌖ kind, payload = q.get(timeout=0.25)⌖kind, payload = q.get(timeout=0.25)
+        ctx ‖-882`）变成一条**只取队列**的壳，用 `q.get(timeout=0.25)`（`:794`）驱动。关键一点：**空转的那 0.25 秒也要走‖
+ 756 HIT    :843-865           -> :898-920       cur    [v15 ov=(8, 8)] src=⌖for ap in self._pending_snapshot():⌖ tgt=⌖self._pending.remove(ap)⌖ for ap in self._pending_snapshot():⌖self._pending.remove(ap)
+        ctx ‖25)`（`:794`）驱动。关键一点：**空转的那 0.25 秒也要走一遍渲染判定**（`:843-865`），否则待批卡要等下一个 agent 事件‖
+ 760 HIT    :728               -> :1004          cur    [v14 ov=(2, 2)] src=⌖def _respond(self, message, sid):⌖ tgt=⌖def _respond(self, message, sid):⌖ def _respond(self, message, sid):⌖def _respond(self, message, sid):
+        ctx ‖    T["提问 box.submit"] --> RS["_respond :728<br/>7 元组输出"]‖
+ 761 HIT    :575               -> :810           cur    [v14 ov=(2, 2)] src=⌖def _stream_response(self, message, history):  # noqa: ARG00⌖ tgt=⌖def _stream_response(self, message, history):  # noqa: ARG00⌖ def _stream_response(self, message, history):  # noqa: ARG00⌖def _stream_response(self, message, history):  # noqa: ARG00
+        ctx ‖    RS --> SR["_stream_response :575<br/>UI 线程 · q.get 0.25s"]‖
+ 762 HIT    :550               -> :785           cur    [v14 ov=(4, 4)] src=⌖def _worker(self, task: str, files, q: queue.Queue) -> None:⌖ tgt=⌖def _worker(self, task: str, files, q: queue.Queue) -> None:⌖ def _worker(self, task: str, files, q: queue.Queue) -> None:⌖def _worker(self, task: str, files, q: queue.Queue) -> None:
+        ctx ‖    SR -->|"起线程"| WK["_worker :550<br/>agent.run stream=True‖
+ 765 HIT    :367               -> :571           cur    [v14 ov=(3, 3)] src=⌖def _gated_call(self, name: str, original, args: tuple, kwar⌖ tgt=⌖def _gated_call(self, name: str, original, args: tuple, kwar⌖ def _gated_call(self, name: str, original, args: tuple, kwar⌖def _gated_call(self, name: str, original, args: tuple, kwar
+        ctx ‖->|"self.forward 已被实例属性盖住"| GATE["_gated_call :367<br/>Approval 入类级 _pending‖
+ 765 HIT    :322               -> :511           cur    [v14 ov=(4, 4)] src=⌖_pending: list[Approval] = []⌖ tgt=⌖_pending: list[Approval] = []⌖ _pending: list[Approval] = []⌖_pending: list[Approval] = []
+        ctx ‖E["_gated_call :367<br/>Approval 入类级 _pending :322"]‖
+ 766 HIT    :206               -> :374           cur    [v14 ov=(1, 1)] src=⌖def wait(self) -> str:⌖ tgt=⌖def wait(self) -> str:⌖ def wait(self) -> str:⌖def wait(self) -> str:
+        ctx ‖    GATE --> WAIT["ap.wait 600s :206<br/>只阻塞 worker 这一条线程"]‖
+ 767 HIT    :405               -> :621           cur    [v14 ov=(1, 1)] src=⌖def _approval_card(self, ap: Approval, waited: float) -> gr.⌖ tgt=⌖def _approval_card(self, ap: Approval, waited: float) -> gr.⌖ def _approval_card(self, ap: Approval, waited: float) -> gr.⌖def _approval_card(self, ap: Approval, waited: float) -> gr.
+        ctx ‖"每轮扫 _pending_snapshot"| CARD["_approval_card :405<br/>🟡 待批 · 参数原样贴出"]‖
+ 769 TIE    :877               -> :1189          cur    [v14 ov=(3, 3)] src=⌖allow_btn.click(fn=lambda: self._decide("allowed"), outputs=⌖ tgt=⌖allow_btn.click(fn=lambda: self._decide("allowed"), outputs=⌖ allow_btn.click(fn=lambda: self._decide("allowed"), outputs=⌖allow_btn.click(fn=lambda: self._decide("allowed"), outputs=
+        ctx ‖    BTN -->|"✔ 允许 :877"| OK["_decide allowed :38‖
+ 769 HIT    :388               -> :604           cur    [v14 ov=(2, 2)] src=⌖def _decide(self, decision: str):⌖ tgt=⌖def _decide(self, decision: str):⌖ def _decide(self, decision: str):⌖def _decide(self, decision: str):
+        ctx ‖    BTN -->|"✔ 允许 :877"| OK["_decide allowed :388<br/>decision + Event.set"‖
+ 770 HIT    :878               -> :1190          cur    [v14 ov=(2, 2)] src=⌖deny_btn.click(fn=lambda: self._decide("denied"), outputs=[s⌖ tgt=⌖deny_btn.click(fn=lambda: self._decide("denied"), outputs=[s⌖ deny_btn.click(fn=lambda: self._decide("denied"), outputs=[s⌖deny_btn.click(fn=lambda: self._decide("denied"), outputs=[s
+        ctx ‖    BTN -->|"✖ 拒绝 :878"| NO["_decide denied"]‖
+ 771 HIT    :874               -> :929           cur    [v15 ov=(2, 2)] src=⌖# v1.1 验过的刹车语义，搬进线程版：⌖ tgt=⌖# v1.1 验过的刹车语义，搬进线程版：⌖ # v1.1 验过的刹车语义，搬进线程版：⌖# v1.1 验过的刹车语义，搬进线程版：
+        ctx ‖    BTN -->|"■ 停止 :874"| STOP["_stop :784 → _set‖
+ 771 HIT    :784               -> :1076          cur    [v14 ov=(3, 3)] src=⌖def _stop(self):⌖ tgt=⌖def _stop(self):⌖ def _stop(self):⌖def _stop(self):
+        ctx ‖    BTN -->|"■ 停止 :874"| STOP["_stop :784 → _settle_all cancelled :‖
+ 771 HIT    :400               -> :616           cur    [v14 ov=(1, 1)] src=⌖def _settle_all(self, decision: str) -> None:⌖ tgt=⌖def _settle_all(self, decision: str) -> None:⌖ def _settle_all(self, decision: str) -> None:⌖def _settle_all(self, decision: str) -> None:
+        ctx ‖74"| STOP["_stop :784 → _settle_all cancelled :400"]‖
+ 773 HIT    :44                -> :50            cur    [v14 ov=(1, 1)] src=⌖DENIED_OBSERVATION = {⌖ tgt=⌖DENIED_OBSERVATION = {⌖ DENIED_OBSERVATION = {⌖DENIED_OBSERVATION = {
+        ctx ‖    NO --> OBS["观察值 DENIED_OBSERVATION :44<br/>写明未产生任何副作用"]‖
+ 776 HIT    :450               -> :672           cur    [v14 ov=(2, 2)] src=⌖def _step_card(self, step) -> gr.ChatMessage | None:⌖ tgt=⌖def _step_card(self, step) -> gr.ChatMessage | None:⌖ def _step_card(self, step) -> gr.ChatMessage | None:⌖def _step_card(self, step) -> gr.ChatMessage | None:
+        ctx ‖    EXEC --> STEP["_step_card :450<br/>🟢 成功 · 秒 · token"]‖
+ 780 HIT    :799-810           -> :846-857       cur    [v15 ov=(6, 6)] src=⌖if isinstance(payload, ChatMessageStreamDelta):⌖ tgt=⌖changed = True⌖ if isinstance(payload, ChatMessageStreamDelta):⌖changed = True
+        ctx ‖**一条流上现在有三种卡，身份存对象不存下标。** 流式思考气泡（`:799-810`）、审批卡（`:843-865`）、步骤卡‖
+ 780 HIT    :843-865           -> :898-920       cur    [v15 ov=(6, 6)] src=⌖for ap in self._pending_snapshot():⌖ tgt=⌖self._pending.remove(ap)⌖ for ap in self._pending_snapshot():⌖self._pending.remove(ap)
+        ctx ‖流上现在有三种卡，身份存对象不存下标。** 流式思考气泡（`:799-810`）、审批卡（`:843-865`）、步骤卡（`:811-829`）都往同一‖
+ 780 HIT    :811-829           -> :858-884       cur    [v15 ov=(6, 6)] src=⌖elif isinstance(payload, ActionStep | PlanningStep | FinalAn⌖ tgt=⌖changed = True⌖ elif isinstance(payload, ActionStep | PlanningStep | FinalAn⌖changed = True
+        ctx ‖下标。** 流式思考气泡（`:799-810`）、审批卡（`:843-865`）、步骤卡（`:811-829`）都往同一个 `msgs` 列表里写。审批‖
+ 780 HIT    :786               -> :833           cur    [v15 ov=(6, 6)] src=⌖cards: dict[str, gr.ChatMessage] = {}   # 审批单 id -> 那张卡（存对象，⌖ tgt=⌖cards: dict[str, gr.ChatMessage] = {}   # 审批单 id -> 那张卡（存对象，⌖ cards: dict[str, gr.ChatMessage] = {}   # 审批单 id -> 那张卡（存对象，⌖cards: dict[str, gr.ChatMessage] = {}   # 审批单 id -> 那张卡（存对象，
+        ctx ‖29`）都往同一个 `msgs` 列表里写。审批卡按 `ap.id` 存**卡片对象**（`:786`、`:850-851`），更新时**原地改** `‖
+ 780 HIT    :850-851           -> :905-906       cur    [v15 ov=(6, 6)] src=⌖cards[ap.id] = self._approval_card(ap, waited)⌖ tgt=⌖msgs.append(cards[ap.id])⌖ cards[ap.id] = self._approval_card(ap, waited)⌖msgs.append(cards[ap.id])
+        ctx ‖一个 `msgs` 列表里写。审批卡按 `ap.id` 存**卡片对象**（`:786`、`:850-851`），更新时**原地改** `content‖
+ 780 HIT    :858-859           -> :913-914       cur    [v15 ov=(6, 6)] src=⌖cards[ap.id].content = new.content⌖ tgt=⌖cards[ap.id].metadata = new.metadata⌖ cards[ap.id].content = new.content⌖cards[ap.id].metadata = new.metadata
+        ctx ‖:850-851`），更新时**原地改** `content` / `metadata`（`:858-859`）——因为步骤事件到达时会 `pop` 掉‖
+ 780 HIT    :813               -> :860           cur    [v15 ov=(6, 6)] src=⌖msgs.pop(stream_idx)  # 思考已经并进卡片正文，不留两份⌖ tgt=⌖msgs.pop(stream_idx)  # 思考已经并进卡片正文，不留两份⌖ msgs.pop(stream_idx)  # 思考已经并进卡片正文，不留两份⌖msgs.pop(stream_idx)  # 思考已经并进卡片正文，不留两份
+        ctx ‖adata`（`:858-859`）——因为步骤事件到达时会 `pop` 掉那条流式气泡（`:813`），任何存过的下标从那一刻起都不作数（踩过：按下标‖
+ 780 HIT    :862-865           -> :917-920       cur    [v15 ov=(6, 6)] src=⌖if ap.decision != "pending":⌖ tgt=⌖self._pending.remove(ap)⌖ if ap.decision != "pending":⌖self._pending.remove(ap)
+        ctx ‖不作数（踩过：按下标写回，把刚生成的步骤卡盖成了审批卡）。摘单也挪到"画上收尾状态之后"（`:862-865`）：先前有一版只在更新分支里摘，结果**点‖
+ 782 HIT    :642-691           -> :672-727       cur    [v15 ov=(6, 6)] src=⌖def _step_card(self, step) -> gr.ChatMessage | None:⌖ tgt=⌖)⌖ def _step_card(self, step) -> gr.ChatMessage | None:⌖)
+        ctx ‖**V4：一个 step 一张卡。** `_step_card`（`:642-691`）把上游那 5~6 条无差别折叠卡并成一条‖
+ 782 HIT    :671-675           -> :705-710       cur    [v15 ov=(6, 6)] src=⌖title = (⌖ tgt=⌖)⌖ title = (⌖)
+        ctx ‖`）把上游那 5~6 条无差别折叠卡并成一条，标题带工具名、结果色点、秒数和 token（`:671-675`），正文依次是模型思考、调用参数、结果、报‖
+ 782 HIT    :686-688           -> :721-724       cur    [v15 ov=(6, 6)] src=⌖parts.append(⌖ tgt=⌖)⌖ parts.append(⌖)
+        ctx ‖ken（`:671-675`），正文依次是模型思考、调用参数、结果、报错，末行是本题累计（`:686-688`）。数字仍然必须写进 `metadata.‖
+ 784 HIT    :37-43             -> :41-47         cur    [v15 ov=(1, 1)] src=⌖DECISION_LABEL = {⌖ tgt=⌖}⌖ DECISION_LABEL = {⌖}
+        ctx ‖** 拒绝 / 停止取消 / 超时无人批，在审批卡上是 `DECISION_LABEL`（`:37-43`）的「已拒绝 / 随停止取消 / 超时未批」，‖
+ 784 HIT    :51                -> :55            cur    [v15 ov=(1, 1)] src=⌖DENIED_VERDICT = {"denied": "已拒绝", "cancelled": "已取消", "time⌖ tgt=⌖DENIED_VERDICT = {"denied": "已拒绝", "cancelled": "已取消", "time⌖ DENIED_VERDICT = {"denied": "已拒绝", "cancelled": "已取消", "time⌖DENIED_VERDICT = {"denied": "已拒绝", "cancelled": "已取消", "time
+        ctx ‖「已拒绝 / 随停止取消 / 超时未批」，在步骤卡上是 `DENIED_VERDICT`（`:51`）的「已拒绝 / 已取消 / 超时未批」，交回模型的‖
+ 784 HIT    :46-50             -> :50-54         cur    [v15 ov=(1, 1)] src=⌖DENIED_OBSERVATION = {⌖ tgt=⌖}⌖ DENIED_OBSERVATION = {⌖}
+        ctx ‖拒绝 / 已取消 / 超时未批」，交回模型的是 `DENIED_OBSERVATION`（`:46-50`）三条写明"未产生任何副作用"的话。步骤卡靠正‖
+ 784 HIT    :661               -> :691           cur    [v15 ov=(2, 2)] src=⌖withheld = next((DENIED_VERDICT[k] for k, v in DENIED_OBSERV⌖ tgt=⌖withheld = next((DENIED_VERDICT[k] for k, v in DENIED_OBSERV⌖ withheld = next((DENIED_VERDICT[k] for k, v in DENIED_OBSERV⌖withheld = next((DENIED_VERDICT[k] for k, v in DENIED_OBSERV
+        ctx ‖`（`:46-50`）三条写明"未产生任何副作用"的话。步骤卡靠正文反查命中哪一条来上色（`:661`），所以**这三个字典必须同步改**，改一个不改另‖
+ 786 HIT    :873-882           -> :928-937       cur    [v15 ov=(11, 11)] src=⌖finally:⌖ tgt=⌖self._settle_all("cancelled")⌖ finally:⌖self._settle_all("cancelled")
+        ctx ‖**停止要多结算一处。** `_stream_response` 的 `finally`（`:873-882`）现在是三件事：`_abandoned.s‖
+ 786 HIT    :770-772           -> :813-815       cur    [v15 ov=(11, 11)] src=⌖self._settle_all("cancelled")⌖ tgt=⌖self._pending.clear()⌖ self._settle_all("cancelled")⌖self._pending.clear()
+        ctx ‖线程还挂在 `wait()` 上，`agent` 也就永远占着。换题开局同样先结算再摘除（`:770-772`）。‖
+ 788 HIT    :973               -> :1053          cur    [v15 ov=(9, 9)] src=⌖metadata={"title": f"⏹ {STATE_LABEL[state]}：{type(exc).__nam⌖ tgt=⌖metadata={"title": f"⏹ {STATE_LABEL[state]}：{type(exc).__nam⌖ metadata={"title": f"⏹ {STATE_LABEL[state]}：{type(exc).__nam⌖metadata={"title": f"⏹ {STATE_LABEL[state]}：{type(exc).__nam
+        ctx ‖ingError`，**整条 chatbot 输出直接丢掉**。已改成 `"done"`（`:973`）。这条坑的通用形态是：折叠卡里任何字段不合 sc‖
+ 796 HIT    :442-463           -> :451-472       cur    [v15 ov=(7, 7)] src=⌖def save(self, sid: int, messages) -> None:⌖ tgt=⌖)⌖ def save(self, sid: int, messages) -> None:⌖)
+        ctx ‖ FROM messages WHERE session_id=?` 的**整条覆盖**（`:442-463`，`DELETE` 在 `:454`）——‖
+ 796 HIT    :454               -> :463           cur    [v15 ov=(7, 7)] src=⌖c.execute("DELETE FROM messages WHERE session_id = ?", (sid,⌖ tgt=⌖c.execute("DELETE FROM messages WHERE session_id = ?", (sid,⌖ c.execute("DELETE FROM messages WHERE session_id = ?", (sid,⌖c.execute("DELETE FROM messages WHERE session_id = ?", (sid,
+        ctx ‖ession_id=?` 的**整条覆盖**（`:442-463`，`DELETE` 在 `:454`）——它只有在调用方喂进**完整列表**时才等价于‖
+ 796 HIT    :1081-1085         -> :1178-1182     cur    [v15 ov=(9, 9)] src=⌖box.submit(⌖ tgt=⌖)⌖ box.submit(⌖)
+        ctx ‖`sid` 同时挂在 `box.submit` 的 inputs 和 outputs 上（`:1081-1085`），所以第二轮**沿用同一条会话**。‖
+ 796 HIT    :936               -> :1013          cur    [v15 ov=(13, 13)] src=⌖base = self.hist.load(sid)⌖ tgt=⌖base = self.hist.load(sid)⌖ base = self.hist.load(sid)⌖base = self.hist.load(sid)
+        ctx ‖只能是一条：起点从库里那一串起（`base = self.hist.load(sid)`，`:936`；每一帧 `last = base + [user‖
+ 796 HIT    :948               -> :1028          cur    [v15 ov=(13, 13)] src=⌖last = base + [user_msg] + list(msgs)⌖ tgt=⌖last = base + [user_msg] + list(msgs)⌖ last = base + [user_msg] + list(msgs)⌖last = base + [user_msg] + list(msgs)
+        ctx ‖；每一帧 `last = base + [user_msg] + list(msgs)`，`:948`）。**覆盖语义一个字都没改**，改的是喂给它的那‖
+ 798 HIT    :885-910           -> :940-965       cur    [v15 ov=(11, 11)] src=⌖def _bind_memory(self, sid: int) -> None:⌖ tgt=⌖self._mem_sid = sid⌖ def _bind_memory(self, sid: int) -> None:⌖self._mem_sid = sid
+        ctx ‖**V5 的核心动作只有"换引用"这一件事。** `_bind_memory(sid)`（`:885-910`）把 `agent.memory` 指向 ‖
+ 798 HIT    :522-523           -> :541-542       cur    [v15 ov=(5, 5)] src=⌖self._mem: dict[int, AgentMemory] = {}⌖ tgt=⌖self._mem_sid: int | None = None⌖ self._mem: dict[int, AgentMemory] = {}⌖self._mem_sid: int | None = None
+        ctx ‖`（`:885-910`）把 `agent.memory` 指向 `_mem[sid]`（`:522-523` 那两个字段），依据是框架的两行事实：`G‖
+ 801 HIT    :694               -> :944           cur    [v14 ov=(5, 5)] src=⌖框架会把新任务**追加**进 self.memory（agents.py:477 还会顺手把 system_prompt⌖ tgt=⌖框架会把新任务**追加**进 self.memory（agents.py:477 还会顺手把 system_prompt⌖ 框架会把新任务**追加**进 self.memory（agents.py:477 还会顺手把 system_prompt⌖框架会把新任务**追加**进 self.memory（agents.py:477 还会顺手把 system_prompt
+        ctx ‖y.steps`，中途换引用等于把一条会话的历史灌进另一条的当前步，`_stats()`（`:694`）那条"最后一个 `TaskStep` 之后"的本‖
+ 801 HIT    :932               -> :1009          cur    [v15 ov=(4, 4)] src=⌖self._bind_memory(sid)⌖ tgt=⌖self._bind_memory(sid)⌖ self._bind_memory(sid)⌖self._bind_memory(sid)
+        ctx ‖TaskStep` 之后"的本题边界也会跟着错位。所以只在 `_respond` 开头调（`:932`）。‖
+ 806 HIT    :300               -> :489           cur    [v14 ov=(2, 2)] src=⌖def ensure(self, sid):⌖ tgt=⌖def ensure(self, sid):⌖ def ensure(self, sid):⌖def ensure(self, sid):
+        ctx ‖["提问 message + sid"] --> EN["hist.ensure(sid) :300"]‖
+ 807 HIT    :690               -> :940           cur    [v14 ov=(2, 2)] src=⌖def _bind_memory(self, sid: int) -> None:⌖ tgt=⌖def _bind_memory(self, sid: int) -> None:⌖ def _bind_memory(self, sid: int) -> None:⌖def _bind_memory(self, sid: int) -> None:
+        ctx ‖    EN --> BM["_bind_memory(sid) :690"]‖
+ 815 HIT    :267               -> :441           cur    [v14 ov=(2, 2)] src=⌖def load(self, sid: int):⌖ tgt=⌖def load(self, sid: int):⌖ def load(self, sid: int):⌖def load(self, sid: int):
+        ctx ‖    SWAP --> BASE["base = hist.load(sid) :267"]‖
+ 818 HIT    :737               -> :1015          cur    [v14 ov=(2, 2)] src=⌖last: list = base + [user_msg]⌖ tgt=⌖last: list = base + [user_msg]⌖ last: list = base + [user_msg]⌖last: list = base + [user_msg]
+        ctx ‖   RUN --> FR["每一帧 last = base + 本题 + 本轮流<br/>:737 与 :747"]‖
+ 818 HIT    :747               -> :1028          cur    [v14 ov=(2, 2)] src=⌖last = base + [user_msg] + list(msgs)⌖ tgt=⌖last = base + [user_msg] + list(msgs)⌖ last = base + [user_msg] + list(msgs)⌖last = base + [user_msg] + list(msgs)
+        ctx ‖--> FR["每一帧 last = base + 本题 + 本轮流<br/>:737 与 :747"]‖
+ 819 HIT    :777               -> :1058          cur    [v14 ov=(5, 5)] src=⌖self.hist.save(sid, last)  # 停止时生成器被关掉，这一句保证半截内容也落库⌖ tgt=⌖self.hist.save(sid, last)  # 停止时生成器被关掉，这一句保证半截内容也落库⌖ self.hist.save(sid, last)  # 停止时生成器被关掉，这一句保证半截内容也落库⌖self.hist.save(sid, last)  # 停止时生成器被关掉，这一句保证半截内容也落库
+        ctx ‖    FR --> SV["finally：hist.save(sid, last) :777<br/>整条覆盖，所以喂进去的必须是完整列表"]‖
+ 820 HIT    :873               -> :1185          cur    [v14 ov=(3, 3)] src=⌖radio.change(fn=self._select_session, inputs=[radio], output⌖ tgt=⌖radio.change(fn=self._select_session, inputs=[radio], output⌖ radio.change(fn=self._select_session, inputs=[radio], output⌖radio.change(fn=self._select_session, inputs=[radio], output
+        ctx ‖    SEL["侧栏 radio.change :873"] -->|"交出第三个值 int(sid) :8‖
+ 820 HIT    :808               -> :1116          cur    [v14 ov=(1, 2)] src=⌖return self.hist.load(int(sid)), self._status_html("idle"), ⌖ tgt=⌖return self.hist.load(int(sid)), self._status_html("idle"), ⌖ return self.hist.load(int(sid)), self._status_html("idle"), ⌖return self.hist.load(int(sid)), self._status_html("idle"), 
+        ctx ‖["侧栏 radio.change :873"] -->|"交出第三个值 int(sid) :808"| BM‖
+ 821 HIT    :880               -> :1192          cur    [v14 ov=(3, 3)] src=⌖demo.load(fn=self._on_load, outputs=[radio, sid, status, cha⌖ tgt=⌖demo.load(fn=self._on_load, outputs=[radio, sid, status, cha⌖ demo.load(fn=self._on_load, outputs=[radio, sid, status, cha⌖demo.load(fn=self._on_load, outputs=[radio, sid, status, cha
+        ctx ‖    LD["demo.load :880"] -->|"最近一条的消息 + 它的 sid :‖
+ 821 HIT    :820               -> :1129          cur    [v14 ov=(2, 2)] src=⌖return gr.update(choices=ch), (int(ch[0][1]) if ch else None⌖ tgt=⌖return gr.update(choices=ch), (int(ch[0][1]) if ch else None⌖ # V7：高亮跟着它一起给（force）——v1.5 这里是"绑着丙、侧栏一条都不亮"，⌖# V7：高亮跟着它一起给（force）——v1.5 这里是"绑着丙、侧栏一条都不亮"，
+        ctx ‖   LD["demo.load :880"] -->|"最近一条的消息 + 它的 sid :820"| BM‖
+ 824 HIT    :1088              -> :1185          cur    [v15 ov=(10, 10)] src=⌖radio.change(fn=self._select_session, inputs=[radio], output⌖ tgt=⌖radio.change(fn=self._select_session, inputs=[radio], output⌖ radio.change(fn=self._select_session, inputs=[radio], output⌖radio.change(fn=self._select_session, inputs=[radio], output
+        ctx ‖** 三处一起改：`radio.change` 的 `outputs` 多带 `sid`（`:1088`）、`_select_session` 交出 `‖
+ 824 HIT    :1014-1023         -> :1098-1116     cur    [v15 ov=(4, 7)] src=⌖def _select_session(self, sid):⌖ tgt=⌖return self.hist.load(int(sid)), self._status_html("idle"), ⌖ def _select_session(self, sid):⌖return self.hist.load(int(sid)), self._status_html("idle"), 
+        ctx ‖id`（`:1088`）、`_select_session` 交出 `int(sid)`（`:1014-1023`）、`demo.load` 的回调把 ‖
+ 824 HIT    :1025-1035         -> :1118-1129     cur    [v15 ov=(3, 3)] src=⌖def _on_load(self):⌖ tgt=⌖return gr.update(choices=ch), (int(ch[0][1]) if ch else None⌖ def _on_load(self):⌖# V7：高亮跟着它一起给（force）——v1.5 这里是"绑着丙、侧栏一条都不亮"，
+        ctx ‖4-1023`）、`demo.load` 的回调把 `_on_load` 从闭包提成方法（`:1025-1035`）并同样交出 `sid`。为什么刷新那‖
+ 826 HIT    :460-463           -> :469-472       cur    [v15 ov=(10, 10)] src=⌖c.execute(⌖ tgt=⌖)⌖ c.execute(⌖)
+        ctx ‖WHEN title = '新会话' THEN ? ELSE title END` 保住（`:460-463`）。离线 8c 就是这条的正向断言：老会话‖
+ 836 HIT    my_ui.py:60-75     -> :64-79         cur    [v15 ov=(1, 1)] src=⌖MEM_FIELDS = {⌖ tgt=⌖}⌖ MEM_FIELDS = {⌖}
+        ctx ‖StepsError` 的 ActionStep**），白名单 `MEM_FIELDS`（`my_ui.py:60-75`）就是按 `to_messag‖
+ 842 HIT    :88-103            -> :92-107        cur    [v15 ov=(11, 11)] src=⌖def _decode_error(d):⌖ tgt=⌖return err⌖ def _decode_error(d):⌖return err
+        ctx ‖ption.__init__(err, message)` 再手设 `.message`（`:88-103`）。能落库的只有**类名**，所以 `_er‖
+ 842 HIT    :78-85             -> :82-89         cur    [v15 ov=(5, 5)] src=⌖def _error_types() -> dict:⌖ tgt=⌖return out⌖ def _error_types() -> dict:⌖return out
+        ctx ‖s()` 沿 `AgentError.__subclasses__()` 递归建类名索引（`:78-85`）——恢复出来 `type(step.erro‖
+ 843 HIT    :106-118           -> :110-120       cur    [v15 ov=(1, 1)] src=⌖def _decode_timing(d):⌖ tgt=⌖⌖ def _decode_timing(d):⌖return TokenUsage(input_tokens=int(d["input_tokens"]), outpu
+        ctx ‖ns` 是 `init=False`，`dict()` 出来的键比构造参数多，只能挑着交（`:106-118`）。‖
+ 846 HIT    :153-209           -> :157-213       cur    [v15 ov=(6, 6)] src=⌖def decode_memory(blob) -> list:⌖ tgt=⌖return steps⌖ def decode_memory(blob) -> list:⌖return steps
+        ctx ‖坏数据的降级路径是**分层的**（`decode_memory`，`:153-209`）：整块坏 JSON / `fmt` 不符‖
+ 851 HIT    my_ui.py:119-150   -> :123-154       cur    [v15 ov=(2, 2)] src=⌖def encode_memory(steps) -> str:⌖ tgt=⌖return json.dumps({"fmt": MEM_FMT, "steps": rows}, ensure_as⌖ def encode_memory(steps) -> str:⌖return json.dumps({"fmt": MEM_FMT, "steps": rows}, ensure_as
+        ctx ‖py:477"] --> A2["encode_memory(mem.steps)<br/>my_ui.py:119-150"]‖
+ 852 HIT    my_ui.py:984-985   -> :1064-1065     cur    [v15 ov=(5, 5)] src=⌖if mem is not None and self._mem_sid == sid:⌖ tgt=⌖self.hist.save_memory(sid, encode_memory(mem.steps))⌖ if mem is not None and self._mem_sid == sid:⌖self.hist.save_memory(sid, encode_memory(mem.steps))
+        ctx ‖个条件<br/>mem is not None 且 _mem_sid == sid<br/>my_ui.py:984-985"]‖
+ 854 HIT    my_ui.py:401       -> :410           cur    [v15 ov=(2, 2)] src=⌖CREATE TABLE IF NOT EXISTS memory(⌖ tgt=⌖CREATE TABLE IF NOT EXISTS memory(⌖ CREATE TABLE IF NOT EXISTS memory(⌖CREATE TABLE IF NOT EXISTS memory(
+        ctx ‖ory 表：一行一个 session_id<br/>INSERT OR REPLACE · my_ui.py:401 与 :465-473")]‖
+ 854 HIT    :465-473           -> :474-482       cur    [v15 ov=(4, 4)] src=⌖def save_memory(self, sid: int, payload: str) -> int:⌖ tgt=⌖return len(blob)⌖ def save_memory(self, sid: int, payload: str) -> int:⌖return len(blob)
+        ctx ‖ion_id<br/>INSERT OR REPLACE · my_ui.py:401 与 :465-473")]‖
+ 855 HIT    my_ui.py:905-907   -> :960-962       cur    [v15 ov=(4, 4)] src=⌖steps = decode_memory(self.hist.load_memory(sid))⌖ tgt=⌖mem.steps.extend(steps)⌖ steps = decode_memory(self.hist.load_memory(sid))⌖mem.steps.extend(steps)
+        ctx ‖y 未命中<br/>decode_memory(load_memory(sid))<br/>my_ui.py:905-907"]‖
+ 860 HIT    :401               -> :617           cur    [v14 ov=(1, 1)] src=⌖"""停止 / 换题时把没人管的审批结算掉，否则 worker 线程会一直挂在 wait() 上。"""⌖ tgt=⌖"""停止 / 换题时把没人管的审批结算掉，否则 worker 线程会一直挂在 wait() 上。"""⌖ """停止 / 换题时把没人管的审批结算掉，否则 worker 线程会一直挂在 wait() 上。"""⌖"""停止 / 换题时把没人管的审批结算掉，否则 worker 线程会一直挂在 wait() 上。"""
+        ctx ‖有三处，两处刻意保持小。** `History` 加一张 additive 的表（DDL `:401`，方法 `save_memory` `:465-4‖
+ 860 HIT    :465-473           -> :474-482       cur    [v15 ov=(2, 2)] src=⌖def save_memory(self, sid: int, payload: str) -> int:⌖ tgt=⌖return len(blob)⌖ def save_memory(self, sid: int, payload: str) -> int:⌖return len(blob)
+        ctx ‖ 加一张 additive 的表（DDL `:401`，方法 `save_memory` `:465-473` / `load_memory` `:47‖
+ 860 HIT    :475-478           -> :484-487       cur    [v15 ov=(2, 2)] src=⌖def load_memory(self, sid: int):⌖ tgt=⌖return row[0] if row else None⌖ def load_memory(self, sid: int):⌖return row[0] if row else None
+        ctx ‖，方法 `save_memory` `:465-473` / `load_memory` `:475-478`）；`_bind_memory`（`:88‖
+ 860 HIT    :885-910           -> :940-965       cur    [v15 ov=(13, 13)] src=⌖def _bind_memory(self, sid: int) -> None:⌖ tgt=⌖self._mem_sid = sid⌖ def _bind_memory(self, sid: int) -> None:⌖self._mem_sid = sid
+        ctx ‖` / `load_memory` `:475-478`）；`_bind_memory`（`:885-910`）在进程内 `_mem` 未命中时回灌 s‖
+ 860 HIT    :976-986           -> :1056-1066     cur    [v15 ov=(14, 14)] src=⌖finally:⌖ tgt=⌖yield last, self._status_html(state), radio(), gr.update(), ⌖ finally:⌖yield last, self._status_html(state), radio(), gr.update(), 
+        ctx ‖动（否则「进程累计」作废，见 6.3.6）；`_respond` 的 `finally`（`:976-986`）在 `hist.save(sid, la‖
+ 875 HIT    :507-508           -> :516-517       cur    [v15 ov=(5, 5)] src=⌖_run_seq: int = 0⌖ tgt=⌖_cancelled_before: int = 0⌖ _run_seq: int = 0⌖_cancelled_before: int = 0
+        ctx ‖. **类级**计数器 `_run_seq` / `_cancelled_before`（`:507-508`）。闸装在**进程唯一**的那个 agen‖
+ 875 HIT    :502-503           -> :511-512       cur    [v15 ov=(5, 5)] src=⌖_pending: list[Approval] = []⌖ tgt=⌖_gate_lock = threading.Lock()⌖ _pending: list[Approval] = []⌖_gate_lock = threading.Lock()
+        ctx ‖t 上，所以计数器必须和 `_pending`、`_gate_lock` 同侧（也是类级，`:502-503`）；放实例上就出现"A 领的号管不住 A ‖
+ 876 HIT    :777-778           -> :824-825       cur    [v15 ov=(4, 4)] src=⌖with self._gate_lock:⌖ tgt=⌖OpsUI._run_seq += 1⌖ with self._gate_lock:⌖OpsUI._run_seq += 1
+        ctx ‖器归零之后、**起 worker 线程之前**`OpsUI._run_seq += 1`（`:777-778`）。号没领上就开工，闸读到的还是上一轮的号‖
+ 877 HIT    :564-567           -> :583-586       cur    [v15 ov=(11, 11)] src=⌖with self._gate_lock:⌖ tgt=⌖ap.decide("cancelled")⌖ with self._gate_lock:⌖ap.decide("cancelled")
+        ctx ‖3. **入队与判停在同一个临界区**（`_gated_call`，`:564-567`）：`with self._gate_lo‖
+ 878 HIT    :1007-1012         -> :1091-1096     cur    [v15 ov=(4, 4)] src=⌖with self._gate_lock:⌖ tgt=⌖return self._status_html("stopping")⌖ with self._gate_lock:⌖return self._status_html("stopping")
+        ctx ‖4. `_stop`（`:1007-1012`）先领取消号，再 `_settle_a‖
+ 903 HIT    :35                -> :35            cur    [v15 ov=(1, 1)] src=⌖# 超时按拒绝处理：题可以重问，worker 线程挂着不放会永远占住 agent。⌖ tgt=⌖# 超时按拒绝处理：题可以重问，worker 线程挂着不放会永远占住 agent。⌖ # 超时按拒绝处理：题可以重问，worker 线程挂着不放会永远占住 agent。⌖# 超时按拒绝处理：题可以重问，worker 线程挂着不放会永远占住 agent。
+        ctx ‖关停脚本只认三样东西（`关闭Agent.command:28`、`:35`、`:39`）：7860 上命令行含 `my_ui.‖
+ 903 ZERO   :39                -> :45            cur    [v14 ov=(0, 0)] src=⌖"cancelled": "随停止取消",⌖ tgt=⌖"cancelled": "随停止取消",⌖ "cancelled": "随停止取消",⌖"cancelled": "随停止取消",
+        ctx ‖关停脚本只认三样东西（`关闭Agent.command:28`、`:35`、`:39`）：7860 上命令行含 `my_ui.py` 的监‖
+ 903 ZERO   :72                -> :236           cur    [v14 ov=(0, 0)] src=⌖/* gradio 把浅色值硬写在 body 自己的规则里（非 @media），只改 var 覆盖不到它，得直接压。 *⌖ tgt=⌖/* gradio 把浅色值硬写在 body 自己的规则里（非 @media），只改 var 覆盖不到它，得直接压。 *⌖ /* gradio 把浅色值硬写在 body 自己的规则里（非 @media），只改 var 覆盖不到它，得直接压。 *⌖/* gradio 把浅色值硬写在 body 自己的规则里（非 @media），只改 var 覆盖不到它，得直接压。 *
+        ctx ‖ile 的 `SingletonLock`。批量收终端窗口时**把自己那一扇排除在外**（`:72`），改在脚本 exit 之后由脱离会话的 close‖
+ 903 ZERO   :53                -> :217           cur    [v14 ov=(0, 0)] src=⌖DARK_CSS = """⌖ tgt=⌖DARK_CSS = """⌖ DARK_CSS = """⌖DARK_CSS = """
+        ctx ‖外**（`:72`），改在脚本 exit 之后由脱离会话的 closer 延时 5 秒收（`:53`）。‖
+1162 ZERO   :159               -> :323           cur    [v14 ov=(0, 0)] src=⌖}⌖ tgt=⌖}⌖ }⌖}
+        ctx ‖ify/api/core/workflow/workflow_entry.py:119`、`:159`、`:208` | 工作流入口 → graphon‖
+1162 ZERO   :208               -> :376           cur    [v14 ov=(0, 0)] src=⌖self.decision = "timeout"⌖ tgt=⌖self.decision = "timeout"⌖ self.decision = "timeout"⌖self.decision = "timeout"
+        ctx ‖/core/workflow/workflow_entry.py:119`、`:159`、`:208` | 工作流入口 → graphon Engine‖
+1164 ZERO   :945               -> :1025          cur    [v15 ov=(0, 0)] src=⌖state = "stopped"  # 生成器被中途关掉（刷新页面）时走的就是这个值⌖ tgt=⌖state = "stopped"  # 生成器被中途关掉（刷新页面）时走的就是这个值⌖ state = "stopped"  # 生成器被中途关掉（刷新页面）时走的就是这个值⌖state = "stopped"  # 生成器被中途关掉（刷新页面）时走的就是这个值
+        ctx ‖| `dify/api/services/app_dsl_service.py:187`、`:945` | DSL 导入 / 导出：应用即 YAML |‖
+1167 NO-MAP :1134              ->                cur    
+        ctx ‖| 17 | `servers/src/memory/index.ts:780`、`:1134` | tools / resources 注册的‖
+1175 HIT    my_ui.py:642-691   -> :672-727       cur    [v15 ov=(3, 3)] src=⌖def _step_card(self, step) -> gr.ChatMessage | None:⌖ tgt=⌖)⌖ def _step_card(self, step) -> gr.ChatMessage | None:⌖)
+        ctx ‖| 25 | `smolagents/my_ui.py:642-691` | 步骤卡把数字写进 `‖
+1175 skip   :31-36             ->                HIST   
+        ctx ‖不是正文：gradio 折叠组收起时**正文不在 DOM 里**（v1.1 独立统计卡在 `:31-36`，v1.3 起并进这张卡） |‖
+1177 ZERO   :371-372           -> :575-576       cur    [v14 ov=(0, 0)] src=⌖except (TypeError, ValueError):⌖ tgt=⌖bound = {"args": list(args), "kwargs": kwargs}⌖ except (TypeError, ValueError):⌖bound = {"args": list(args), "kwargs": kwargs}
+        ctx ‖| 27 | `chat_interface.py:145`、`:371-372` | 两条实测纠正：① `save_his‖
+1179 HIT    my_ui.py:30        -> :30            cur    [v15 ov=(7, 7)] src=⌖DB_PATH = Path(__file__).resolve().parent / ".agent-history.⌖ tgt=⌖DB_PATH = Path(__file__).resolve().parent / ".agent-history.⌖ DB_PATH = Path(__file__).resolve().parent / ".agent-history.⌖DB_PATH = Path(__file__).resolve().parent / ".agent-history.
+        ctx ‖| 29 | `smolagents/my_ui.py:30` | `DB_PATH` 按 `Pa‖
+1180 HIT    my_ui.py:527-550   -> :546-569       cur    [v15 ov=(8, 8)] src=⌖def _install_gate(self) -> None:⌖ tgt=⌖self.agent.tools[name] = wrapped_tool⌖ def _install_gate(self) -> None:⌖self.agent.tools[name] = wrapped_tool
+        ctx ‖上而不动上游、不动模块级 `@tool` 对象（v1.3 `_install_gate`，`my_ui.py:527-550`） |‖
+1181 HIT    my_ui.py:584       -> :826           cur    [v14 ov=(1, 1)] src=⌖⌖ tgt=⌖⌖ ⌖
+        ctx ‖428-1434`）。阻塞式审批因此可能一次收到多条待批，而 UI 的按钮只结算最早那条（`my_ui.py:584`）——**并行审批是已知缺口，不是‖
+1183 HIT    my_ui.py:742-765   -> :785-808       cur    [v15 ov=(4, 4)] src=⌖def _worker(self, task: str, files, q: queue.Queue) -> None:⌖ tgt=⌖q.put(("done", None))⌖ def _worker(self, task: str, files, q: queue.Queue) -> None:⌖q.put(("done", None))
+        ctx ‖| 33 | `smolagents/my_ui.py:742-765`、`:767-882` |‖
+1183 HIT    :767-882           -> :810-937       cur    [v15 ov=(4, 4)] src=⌖def _stream_response(self, message, history):  # noqa: ARG00⌖ tgt=⌖self._settle_all("cancelled")⌖ def _stream_response(self, message, history):  # noqa: ARG00⌖self._settle_all("cancelled")
+        ctx ‖| 33 | `smolagents/my_ui.py:742-765`、`:767-882` | 线程 + 队列的驱动骨架：`_wor‖
+1184 HIT    my_ui.py:46-51     -> :50-55         cur    [v15 ov=(1, 1)] src=⌖DENIED_OBSERVATION = {⌖ tgt=⌖DENIED_VERDICT = {"denied": "已拒绝", "cancelled": "已取消", "time⌖ DENIED_OBSERVATION = {⌖DENIED_VERDICT = {"denied": "已拒绝", "cancelled": "已取消", "time
+        ctx ‖| 34 | `smolagents/my_ui.py:46-51` | `DENIED_OBSE‖
+1185 HIT    my_ui.py:885-910   -> :940-965       cur    [v15 ov=(6, 6)] src=⌖def _bind_memory(self, sid: int) -> None:⌖ tgt=⌖self._mem_sid = sid⌖ def _bind_memory(self, sid: int) -> None:⌖self._mem_sid = sid
+        ctx ‖就是这两行——一 reset 连 `monitor` 一起清零，「进程累计」口径当场作废（`my_ui.py:885-910`） |‖
+1186 HIT    my_ui.py:119-209   -> :123-213       cur    [v15 ov=(2, 2)] src=⌖def encode_memory(steps) -> str:⌖ tgt=⌖return steps⌖ def encode_memory(steps) -> str:⌖return steps
+        ctx ‖(de)serializer**——框架不给口子，所以 v1.5 的 V6 是自己写字段（`my_ui.py:119-209`），而不是给 `Agent‖
+1188 HIT    my_ui.py:936       -> :1013          cur    [v15 ov=(6, 6)] src=⌖base = self.hist.load(sid)⌖ tgt=⌖base = self.hist.load(sid)⌖ base = self.hist.load(sid)⌖base = self.hist.load(sid)
+        ctx ‖| 38 | `smolagents/my_ui.py:936`、`:948` | D5 的全部修‖
+1188 HIT    :948               -> :1028          cur    [v15 ov=(6, 6)] src=⌖last = base + [user_msg] + list(msgs)⌖ tgt=⌖last = base + [user_msg] + list(msgs)⌖ last = base + [user_msg] + list(msgs)⌖last = base + [user_msg] + list(msgs)
+        ctx ‖| 38 | `smolagents/my_ui.py:936`、`:948` | D5 的全部修法就这两行：起点是库里那一串（‖
+1189 HIT    my_ui.py:1014      -> :1098          cur    [v15 ov=(3, 5)] src=⌖def _select_session(self, sid):⌖ tgt=⌖def _select_session(self, sid):⌖ def _select_session(self, sid):⌖def _select_session(self, sid):
+        ctx ‖| 39 | `smolagents/my_ui.py:1014`、`:1088`、`:1025`‖
+1189 HIT    :1088              -> :1185          cur    [v15 ov=(8, 8)] src=⌖radio.change(fn=self._select_session, inputs=[radio], output⌖ tgt=⌖radio.change(fn=self._select_session, inputs=[radio], output⌖ radio.change(fn=self._select_session, inputs=[radio], output⌖radio.change(fn=self._select_session, inputs=[radio], output
+        ctx ‖| 39 | `smolagents/my_ui.py:1014`、`:1088`、`:1025`、`:1095` | V5 的接‖
+1189 HIT    :1025              -> :1118          cur    [v15 ov=(3, 3)] src=⌖def _on_load(self):⌖ tgt=⌖def _on_load(self):⌖ def _on_load(self):⌖def _on_load(self):
+        ctx ‖| 39 | `smolagents/my_ui.py:1014`、`:1088`、`:1025`、`:1095` | V5 的接线：`_sele‖
+1189 HIT    :1095              -> :1192          cur    [v15 ov=(8, 8)] src=⌖demo.load(fn=self._on_load, outputs=[radio, sid, status, cha⌖ tgt=⌖demo.load(fn=self._on_load, outputs=[radio, sid, status, cha⌖ demo.load(fn=self._on_load, outputs=[radio, sid, status, cha⌖demo.load(fn=self._on_load, outputs=[radio, sid, status, cha
+        ctx ‖| `smolagents/my_ui.py:1014`、`:1088`、`:1025`、`:1095` | V5 的接线：`_select_sessi‖
+1190 HIT    my_ui.py:460-463   -> :469-472       cur    [v15 ov=(6, 6)] src=⌖c.execute(⌖ tgt=⌖)⌖ c.execute(⌖)
+        ctx ‖| 40 | `smolagents/my_ui.py:460-463` | `updated_a‖
+1191 HIT    my_ui.py:119-150   -> :123-154       cur    [v15 ov=(2, 2)] src=⌖def encode_memory(steps) -> str:⌖ tgt=⌖return json.dumps({"fmt": MEM_FMT, "steps": rows}, ensure_as⌖ def encode_memory(steps) -> str:⌖return json.dumps({"fmt": MEM_FMT, "steps": rows}, ensure_as
+        ctx ‖ges()`。所以持久化要存的是 **steps 的字段**而不是屏上的卡片文字；编码在 `my_ui.py:119-150`，回灌在 `:905-90‖
+1191 HIT    :905-907           -> :960-962       cur    [v15 ov=(5, 5)] src=⌖steps = decode_memory(self.hist.load_memory(sid))⌖ tgt=⌖mem.steps.extend(steps)⌖ steps = decode_memory(self.hist.load_memory(sid))⌖mem.steps.extend(steps)
+        ctx ‖s 的字段**而不是屏上的卡片文字；编码在 `my_ui.py:119-150`，回灌在 `:905-907` |‖
+1192 HIT    my_ui.py:60-75     -> :64-79         cur    [v15 ov=(1, 1)] src=⌖MEM_FIELDS = {⌖ tgt=⌖}⌖ MEM_FIELDS = {⌖}
+        ctx ‖xStepsError` 的 ActionStep。字段白名单 `MEM_FIELDS`（`my_ui.py:60-75`）就是照这个集合列的 |‖
+1194 HIT    my_ui.py:564-567   -> :799-802       cur    [v14 ov=(3, 3)] src=⌖q.put(("err", exc))⌖ tgt=⌖# yield（agents.py:599-602），关的时候会顶回来一条 RuntimeError，自己接住，⌖ q.put(("err", exc))⌖# yield（agents.py:599-602），关的时候会顶回来一条 RuntimeError，自己接住，
+        ctx ‖，中断的是**空闲的** agent（空放），后到的待批没人结算。修法不在上游这一行，在 `my_ui.py:564-567` 那个临界区 |‖
+1195 HIT    my_ui.py:507-508   -> :516-517       cur    [v15 ov=(7, 7)] src=⌖_run_seq: int = 0⌖ tgt=⌖_cancelled_before: int = 0⌖ _run_seq: int = 0⌖_cancelled_before: int = 0
+        ctx ‖| 45 | `smolagents/my_ui.py:507-508`、`:777-778`、`‖
+1195 HIT    :777-778           -> :824-825       cur    [v15 ov=(5, 5)] src=⌖with self._gate_lock:⌖ tgt=⌖OpsUI._run_seq += 1⌖ with self._gate_lock:⌖OpsUI._run_seq += 1
+        ctx ‖| 45 | `smolagents/my_ui.py:507-508`、`:777-778`、`:1007-1012` | 取消号三件‖
+1195 HIT    :1007-1012         -> :1091-1096     cur    [v15 ov=(5, 5)] src=⌖with self._gate_lock:⌖ tgt=⌖return self._status_html("stopping")⌖ with self._gate_lock:⌖return self._status_html("stopping")
+        ctx ‖5 | `smolagents/my_ui.py:507-508`、`:777-778`、`:1007-1012` | 取消号三件套：**类级** `_‖
+1196 HIT    my_ui.py:984-985   -> :1064-1065     cur    [v15 ov=(3, 3)] src=⌖if mem is not None and self._mem_sid == sid:⌖ tgt=⌖self.hist.save_memory(sid, encode_memory(mem.steps))⌖ if mem is not None and self._mem_sid == sid:⌖self.hist.save_memory(sid, encode_memory(mem.steps))
+        ctx ‖| 46 | `smolagents/my_ui.py:984-985` | 记忆落库的两个条件：‖

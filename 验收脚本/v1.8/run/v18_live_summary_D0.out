@@ -1,0 +1,144 @@
+场景 D0：21:06 原题面连问两遍：第一遍看熔断掐短，第二遍看换题清零
+app 就绪 4.1s（/config 200 40799B）
+起点 epoch 1793720950.646 ｜ 杀掉时刻 未杀
+未杀（这一路是刷新页面或正常跑完，进程归收尾的 SIGTERM 处理）
+探针配置（boot.epoch）：
+  t=  0.000  boot.epoch             t0=1793720949.589271 pid=28767 timeout=600.0 gradio=6.30.0 planning=None
+浏览器侧：
+{
+ "__navigate0": 1793720950982,
+ "D0-peek#at": 1793720956998,
+ "D0-peek": 0,
+ "D1-new#at": 1793720957000,
+ "D1-new#click": "clicked@186,134",
+ "D2-read#at": 1793720959528,
+ "D2-read": "模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 空闲",
+ "D3-ask-1#at": 1793720959530,
+ "D3-ask-1#type": "clicked-submit",
+ "D4-await-busy-1#at": 1793720959557,
+ "D4-await-busy-1#waitedMs": 20066,
+ "D4-await-busy-1#pred": "NO:模型 qwen-plus 步数 1/8 本题 token in 0 / out 0 本题耗时 0.3s 进程 token in 0 / out 0 状态 已停止",
+ "D5-await-done-1#at": 1793720979623,
+ "D5-await-done-1#waitedMs": 2,
+ "D5-await-done-1#pred": "YES:bot=2 | 模型 qwen-plus 步数 1/8 本题 token in 0 / out 0 本题耗时 0.3s 进程 token in 0 / out 0 状态 已停止",
+ "D6-status-1#at": 1793720979625,
+ "D6-status-1": "模型 qwen-plus 步数 1/8 本题 token in 0 / out 0 本题耗时 0.3s 进程 token in 0 / out 0 状态 已停止",
+ "D7-mark-1#at": 1793720979627,
+ "D7-mark-1": "bot=2 重复未执行=N 重复熔断=N 成功卡=Y 报错卡=N",
+ "D8-ask-2#at": 1793720979628,
+ "D8-ask-2#type": "clicked-submit",
+ "D9-await-busy-2#at": 1793720979655,
+ "D9-await-busy-2#waitedMs": 20049,
+ "D9-await-busy-2#pred": "NO:模型 qwen-plus 步数 1/8 本题 token in 0 / out 0 本题耗时 0.2s 进程 token in 0 / out 0 状态 已停止",
+ "D10-await-done-2#at": 1793720999704,
+ "D10-await-done-2#waitedMs": 1,
+ "D10-await-done-2#pred": "YES:bot=4 | 模型 qwen-plus 步数 1/8 本题 token in 0 / out 0 本题耗时 0.2s 进程 token in 0 / out 0 状态 已停止",
+ "D11-status-2#at": 1793720999705,
+ "D11-status-2": "模型 qwen-plus 步数 1/8 本题 token in 0 / out 0 本题耗时 0.2s 进程 token in 0 / out 0 状态 已停止",
+ "D12-mark-2#at": 1793720999706,
+ "D12-mark-2": "bot=4 重复未执行=N 重复熔断=N 成功卡=Y 报错卡=N"
+}
+
+服务端（v18_ui.py 的包装）：
+t=  0.000  boot.epoch             t0=1793720949.589271 pid=28767 timeout=600.0 gradio=6.30.0 planning=None
+t=  0.005  dup.install            new=grep_files,list_dir,run_python,write_file,annualized_volatility,max_drawdown,read_file already=- total=7 limit=2
+t=  1.742  plan.update            visible=False chars=0 reading=- sid=None
+t=  1.749  on_load                sid=None steps=0 kinds=- screen_stepno=None screen_in=None screen_out=None screen_wait=0.0 mem_held=[] db_memory=- wall=1.735
+t=  9.975  respond.enter          sid=None
+t=  9.976  poller.start           timeout=600.0
+t=  9.986  stream.enter           sid=1
+t=  9.986  settle_all.enter       decision=cancelled ids=-
+t=  9.986  settle_all.exit        decision=cancelled
+t= 10.326  settle_all.enter       decision=cancelled ids=-
+t= 10.326  settle_all.exit        decision=cancelled
+t= 10.326  stream.exception       exc=AgentGenerationError frames=1
+t= 10.327  stream.finally         frames=1
+t= 10.330  save.enter             sid=1 msgs=3 before=sessions=sid=1 messages=0 memory=0
+t= 10.334  save.exit              sid=1 after=sessions=sid=1 messages=3 memory=0
+t= 10.334  save_memory.enter      sid=1 chars=259
+t= 10.337  save_memory.exit       sid=1 changed_rows=259 after=sessions=sid=1 messages=3 memory=1
+t= 10.346  respond.finally        frames=2 pending=0 unanswered=0
+t= 10.985  poll.pending           n=0 state=- unanswered=0
+t= 11.996  poll.pending           n=0 state=- unanswered=0
+t= 13.004  poll.pending           n=0 state=- unanswered=0
+t= 14.013  poll.pending           n=0 state=- unanswered=0
+t= 15.022  poll.pending           n=0 state=- unanswered=0
+t= 16.030  poll.pending           n=0 state=- unanswered=0
+t= 17.040  poll.pending           n=0 state=- unanswered=0
+t= 18.053  poll.pending           n=0 state=- unanswered=0
+t= 19.063  poll.pending           n=0 state=- unanswered=0
+t= 20.074  poll.pending           n=0 state=- unanswered=0
+t= 21.083  poll.pending           n=0 state=- unanswered=0
+t= 22.084  poll.pending           n=0 state=- unanswered=0
+t= 23.091  poll.pending           n=0 state=- unanswered=0
+t= 24.102  poll.pending           n=0 state=- unanswered=0
+t= 25.112  poll.pending           n=0 state=- unanswered=0
+t= 26.122  poll.pending           n=0 state=- unanswered=0
+t= 27.131  poll.pending           n=0 state=- unanswered=0
+t= 28.140  poll.pending           n=0 state=- unanswered=0
+t= 29.146  poll.pending           n=0 state=- unanswered=0
+t= 30.076  respond.enter          sid=1
+t= 30.077  stream.enter           sid=1
+t= 30.077  settle_all.enter       decision=cancelled ids=-
+t= 30.078  settle_all.exit        decision=cancelled
+t= 30.153  poll.pending           n=0 state=- unanswered=0
+t= 30.259  settle_all.enter       decision=cancelled ids=-
+t= 30.259  settle_all.exit        decision=cancelled
+t= 30.259  stream.exception       exc=AgentGenerationError frames=1
+t= 30.260  stream.finally         frames=1
+t= 30.261  save.enter             sid=1 msgs=6 before=sessions=sid=1 messages=3 memory=1
+t= 30.268  save.exit              sid=1 after=sessions=sid=1 messages=6 memory=1
+t= 30.268  save_memory.enter      sid=1 chars=495
+t= 30.270  save_memory.exit       sid=1 changed_rows=495 after=sessions=sid=1 messages=6 memory=1
+t= 30.282  respond.finally        frames=2 pending=0 unanswered=0
+t= 31.161  poll.pending           n=0 state=- unanswered=0
+t= 32.171  poll.pending           n=0 state=- unanswered=0
+t= 33.179  poll.pending           n=0 state=- unanswered=0
+t= 34.187  poll.pending           n=0 state=- unanswered=0
+t= 35.197  poll.pending           n=0 state=- unanswered=0
+t= 36.204  poll.pending           n=0 state=- unanswered=0
+t= 37.214  poll.pending           n=0 state=- unanswered=0
+t= 38.224  poll.pending           n=0 state=- unanswered=0
+t= 39.232  poll.pending           n=0 state=- unanswered=0
+t= 40.240  poll.pending           n=0 state=- unanswered=0
+t= 41.245  poll.pending           n=0 state=- unanswered=0
+t= 42.255  poll.pending           n=0 state=- unanswered=0
+t= 43.261  poll.pending           n=0 state=- unanswered=0
+t= 44.262  poll.pending           n=0 state=- unanswered=0
+t= 45.272  poll.pending           n=0 state=- unanswered=0
+t= 46.283  poll.pending           n=0 state=- unanswered=0
+t= 47.292  poll.pending           n=0 state=- unanswered=0
+t= 48.300  poll.pending           n=0 state=- unanswered=0
+t= 49.308  poll.pending           n=0 state=- unanswered=0
+t= 50.317  poll.pending           n=0 state=- unanswered=0
+t= 51.322  poll.pending           n=0 state=- unanswered=0
+t= 52.332  poll.pending           n=0 state=- unanswered=0
+t= 53.336  poll.pending           n=0 state=- unanswered=0
+t= 54.347  poll.pending           n=0 state=- unanswered=0
+t= 55.353  poll.pending           n=0 state=- unanswered=0
+t= 56.362  poll.pending           n=0 state=- unanswered=0
+t= 57.371  poll.pending           n=0 state=- unanswered=0
+
+跑完之后： 库里： {'sessions': 1, 'messages': 6, 'memory': 1} | messages 按会话 [(1, 6)]
+库里的记忆步型：
+  sid=1 {'TaskStep': 2, 'ActionStep': 2} 顺序=T,A,T,A token按步型in/out=TaskStep:0/0 ActionStep:0/0 合计=in 0/out 0
+库里的正文命中的句子：
+  一个工具都没跑=0 没有进模型的记忆=0 批准这一步就被中断=0 等待你批准这份计划=0 计划全文=0 ｜ 全文 627 字符
+计数：
+  respond.enter                  2
+  respond.GeneratorExit          0
+  respond.finally                2
+  stream.GeneratorExit           0
+  save.enter                     2
+  save.exit                      2
+  save_memory.enter              2
+  save.RAISED                    0
+  mark.enter                     0
+  mark.exit                      0
+  on_load                        1
+  dup.install                    1
+  dup.call                       0
+  dup.call kind=run              0
+  dup.call kind=warn             0
+  dup.call kind=fuse             0
+  ap.wait.enter                  0

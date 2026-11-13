@@ -1,0 +1,38 @@
+t=  0.000  boot.epoch             t0=1793714262.050604 pid=95768 timeout=600.0 gradio=6.30.0
+[v18_ui] port=7872 db=/Users/gaoying/Desktop/study/ai学习/验收脚本/v1.8/run/v18_live_B3.sqlite3 log=/Users/gaoying/Desktop/study/ai学习/验收脚本/v1.8/run/v18_probe_B3.server.log
+* Running on local URL:  http://127.0.0.1:7872
+* To create a public link, set `share=True` in `launch()`.
+t=  1.664  on_load                sid=None steps=0 kinds=- screen_stepno=None screen_in=None screen_out=None screen_wait=0.0 mem_held=[] db_memory=- wall=1.662
+t=  2.689  on_load                sid=None steps=0 kinds=- screen_stepno=None screen_in=None screen_out=None screen_wait=0.0 mem_held=[] db_memory=- wall=2.683
+t= 10.759  respond.enter          sid=None
+t= 10.766  poller.start           timeout=600.0
+t= 10.787  stream.enter           sid=1
+t= 10.788  settle_all.enter       decision=cancelled ids=-
+t= 10.788  settle_all.exit        decision=cancelled
+╭──────────────────────────── New run - smolagents ────────────────────────────╮
+│                                                                              │
+│ 用 run_python 打印 3*7 的结果，最后只回那个数字，不要重复调用工具            │
+│                                                                              │
+╰─ OpenAIModel - qwen-plus ────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+t= 11.766  poll.pending           n=0 state=- unanswered=0
+{"tool": "run_python", "arguments": "{"code": "print(3 * 7)"}"}                 ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'run_python' with arguments: {'code': 'print(3 * 7)'}          │
+╰──────────────────────────────────────────────────────────────────────────────╯
+t= 12.224  ap.wait.enter          id=1c3d58 tool=run_python timeout=600.0
+t= 12.771  poll.pending           n=1 state=1c3d58:pending unanswered=1
+t= 13.773  poll.pending           n=1 state=1c3d58:pending unanswered=1
+t= 14.778  poll.pending           n=1 state=1c3d58:pending unanswered=1
+t= 15.781  poll.pending           n=1 state=1c3d58:pending unanswered=1
+t= 16.783  poll.pending           n=1 state=1c3d58:pending unanswered=1
+t= 17.787  poll.pending           n=1 state=1c3d58:pending unanswered=1
+t= 18.792  poll.pending           n=1 state=1c3d58:pending unanswered=1
+t= 19.798  poll.pending           n=1 state=1c3d58:pending unanswered=1
+t= 20.799  poll.pending           n=1 state=1c3d58:pending unanswered=1
+t= 21.804  poll.pending           n=1 state=1c3d58:pending unanswered=1
+Keyboard interruption in main thread... closing server.
+t= 22.808  poll.pending           n=1 state=1c3d58:pending unanswered=1
+t= 23.813  poll.pending           n=1 state=1c3d58:pending unanswered=1
+t= 24.818  poll.pending           n=1 state=1c3d58:pending unanswered=1
+t= 25.822  poll.pending           n=1 state=1c3d58:pending unanswered=1
+t= 26.828  poll.pending           n=1 state=1c3d58:pending unanswered=1

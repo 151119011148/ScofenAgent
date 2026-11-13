@@ -1,0 +1,135 @@
+--- ../.rollback/v1.3/my_ui.py	2026-10-29 16:15:50
++++ my_ui.py	2026-10-29 17:06:12
+@@ -23,7 +23,7 @@
+     agglomerate_stream_deltas,
+ )
+ from smolagents.gradio_ui import _clean_model_output, _process_final_answer_step
+-from smolagents.memory import ActionStep, FinalAnswerStep, TaskStep
++from smolagents.memory import ActionStep, AgentMemory, FinalAnswerStep, TaskStep
+ 
+ DB_PATH = Path(__file__).resolve().parent / ".agent-history.sqlite3"
+ 
+@@ -211,10 +211,12 @@
+ 
+ 
+ class History:
+-    """会话侧栏的存储层：只存**显示层**的那串消息。
++    """会话侧栏的存储层：存**显示层**的那串消息，一条会话一行行按 ord 存。
+ 
+-    agent 真正的记忆在 agent.memory，它是进程级的、切会话不清零（见 迭代记录.md 的口径一节）。
+-    所以侧栏里点开旧会话，看到的只是当时屏幕上说过什么，不代表模型还记得。
++    save() 是「整条会话覆盖」（先 DELETE 再按 ord 重插），不是追加——它只有在调用方
++    喂进完整列表时才等价于追加，D5 修的就是这个前提（见 _respond 的 base）。
++    agent 真正的记忆在 agent.memory，v1.4 起按会话各存一份（见 _bind_memory），
++    但那份只在进程里，重启即空：库里能翻到旧对话的字，模型却不记得（看板 V5 的【待补】）。
+     """
+ 
+     def __init__(self, path: Path):
+@@ -329,6 +331,10 @@
+         self._run_in = 0
+         self._run_out = 0
+         self._run_secs = 0.0
++        # V5：会话 id -> 那份记忆。只在进程里，不落库（AgentMemory 没有 (de)serializer，
++        # memory.py:214-232），所以重启后旧会话只剩屏幕上的字。见 _bind_memory。
++        self._mem: dict[int, AgentMemory] = {}
++        self._mem_sid: int | None = None
+         self._install_gate()
+ 
+     # ---- P0-2：审批门 ---------------------------------------------------------------
+@@ -679,6 +685,28 @@
+             self.agent.interrupt()
+             self._settle_all("cancelled")
+ 
++    # ---- V5：会话级记忆隔离 ---------------------------------------------------------
++    def _bind_memory(self, sid: int) -> None:
++        """把 agent.memory 换成这条会话自己的那份。
++
++        只需要换引用：agent.run() 走的是 reset=False（GradioUI 的默认，gradio_ui.py:310），
++        框架会把新任务**追加**进 self.memory（agents.py:476 还会顺手把 system_prompt 同步过去），
++        所以「谁的记忆」等于「起 worker 那一刻 self.memory 指向谁」。
++
++        两个刻意不做的事：
++        - 不传 reset=True：那会连 monitor 一起清零（agents.py:477-480），「进程累计」口径就废了。
++        - 不在跑到一半换：worker 线程正在读 self.memory.steps，中途换等于把一条会话的历史
++          灌进另一条的当前步，_stats() 的本题边界也会跟着错位。所以只在 _respond 开头调。
++        """
++        if self._mem_sid == sid:
++            return
++        mem = self._mem.get(sid)
++        if mem is None:
++            mem = AgentMemory(self.agent.system_prompt)
++            self._mem[sid] = mem
++        self.agent.memory = mem
++        self._mem_sid = sid
++
+     # ---- 事件 --------------------------------------------------------------
+     def _user_message(self, message):
+         """把输入框的值转成一条 user 气泡。
+@@ -699,8 +727,13 @@
+     def _respond(self, message, sid):
+         """一次提问。产出 7 元组，顺序必须和 outputs 完全一致。"""
+         sid = self.hist.ensure(sid)
++        self._bind_memory(sid)
++        # D5：这一题的消息**追加**在会话已有消息之后，不是从头起。chatbot 的输出是整体替换、
++        # History.save() 又是整条会话覆盖，所以起点必须是库里那一串——v1.3 从这里
++        # `[user_msg]` 起头，连问两题就把前一题从屏上和历史库里一起抹掉了。
++        base = self.hist.load(sid)
+         user_msg = self._user_message(message)
+-        last: list = [user_msg]
++        last: list = base + [user_msg]
+         cleared = False
+         self._state = "running"
+         # Radio 的更新只能给 gr.update(choices=...)；直接交一个 choices 列表会被
+@@ -710,7 +743,7 @@
+         state = "stopped"  # 生成器被中途关掉（刷新页面）时走的就是这个值
+         try:
+             for msgs in self._stream_response(message, []):
+-                last = [user_msg] + list(msgs)
++                last = base + [user_msg] + list(msgs)
+                 box = gr.update(value=None) if not cleared else gr.update()
+                 cleared = True
+                 un = bool(self._unanswered())
+@@ -763,12 +796,15 @@
+         return self._status_html("stopping")
+ 
+     def _select_session(self, sid):
+-        # 不往 sid 里写值：选中会话只换屏上的消息，下一条提问仍开一个新会话。
+-        # 想"接着旧话题问"得先做会话级记忆隔离（看板 V5），现在 agent 的记忆是进程级的，
+-        # 把 sid 记进 State 只会让新消息混进旧会话，看起来对、其实是两码事。
++        """点旧会话：屏幕换消息，**sid 也一起换**（V5）。
++
++        v1.3 只换消息、不动 sid，于是下一条提问照样落进一条新会话——屏上看着接上了，
++        模型那边其实是开局。现在把选中的 id 写回 State，_respond 开头就会 _bind_memory
++        到这条会话自己的记忆上，问的才是同一件事。
++        """
+         if not sid:
+-            return gr.update(), gr.update()
+-        return self.hist.load(int(sid)), self._status_html("idle")
++            return gr.update(), gr.update(), gr.update()
++        return self.hist.load(int(sid)), self._status_html("idle"), int(sid)
+ 
+     # ---- 外壳 --------------------------------------------------------------
+     def create_app(self):
+@@ -820,7 +856,8 @@
+                 outputs=[chatbot, status, radio, box, sid, allow_btn, deny_btn],
+             )
+             new_btn.click(fn=self._new_session, outputs=[sid, chatbot, status, radio])
+-            radio.change(fn=self._select_session, inputs=[radio], outputs=[chatbot, status])
++            # 点旧会话要连 sid 一起换，否则下一条提问仍落进新会话（V5）。
++            radio.change(fn=self._select_session, inputs=[radio], outputs=[chatbot, status, sid])
+             stop_btn.click(fn=self._stop, outputs=[status])
+             # 审批键只改 decision + 点亮/收起自己，不碰 chatbot：
+             # 那条流式生成器还活着，消息列表由它独占，两边写同一个输出会互相盖掉。
+@@ -830,9 +867,11 @@
+             def _on_load():
+                 # 刷新页面时 gradio 不会重跑 create_app，Radio 的 choices 还是建应用那一刻的
+                 # 空表——实测重载后侧栏是空的。必须挂 load 把库里的会话重新推一遍。
++                # sid 也要跟着给：屏上显示的是最近一条会话，sid 空着的话下一条提问
++                # 会另开一条，屏幕被整体替换，刚看到的那串字就找不回来了（D5 的另一条路径）。
+                 ch = self.hist.choices()
+                 msgs = self.hist.load(int(ch[0][1])) if ch else []
+-                return gr.update(choices=ch), None, self._status_html("idle"), msgs
++                return gr.update(choices=ch), (int(ch[0][1]) if ch else None), self._status_html("idle"), msgs
+ 
+             demo.load(fn=_on_load, outputs=[radio, sid, status, chatbot])
+         return demo

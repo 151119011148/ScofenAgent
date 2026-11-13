@@ -1,0 +1,10 @@
+{
+ "F0-read": "{\"chk\":[true,false,false],\"labs\":[\"新会话\",\"v1旧记忆-乙\",\"v1旧记忆-甲\"],\"userN\":0,\"botN\":0,\"last\":null,\"cardTitles\":[],\"heads\":[],\"state\":\"空闲\",\"pillRun\":\"本题耗时 27.2s\",\"pillWait\":\"本题审批 26.0s\",\"pillPending\":\"待批 run_python\"}",
+ "F1-approve#click": "NO-ELEMENT",
+ "F2-maybe-again#waitedMs": 30089,
+ "F2-maybe-again#pred": "NO:模型 qwen-plus 步数 1/8 本题 token in 2,355 / out 21 本题耗时 27.2s 本题审批 26.0s 进程 token in 2,355 / out 21 待批 run_python 状态 空闲",
+ "F3-approve-again#click": "NO-ELEMENT",
+ "F4-wait-done#waitedMs": 300967,
+ "F4-wait-done#pred": "NO:busy=false|bot=0|模型 qwen-plus 步数 1/8 本题 token in 2,355 / out 21 本题耗时 27.2s 本题审批 26.0s 进程 token in 2,355 / o",
+ "F5-read": "{\"chk\":[true,false,false],\"labs\":[\"新会话\",\"v1旧记忆-乙\",\"v1旧记忆-甲\"],\"userN\":0,\"botN\":0,\"last\":null,\"cardTitles\":[],\"heads\":[],\"state\":\"空闲\",\"pillRun\":\"本题耗时 27.2s\",\"pillWait\":\"本题审批 26.0s\",\"pillPending\":\"待批 run_python\"}"
+}

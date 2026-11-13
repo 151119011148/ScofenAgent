@@ -1,0 +1,146 @@
+36a37,40
+> # V8 的显示门槛：不满 0.05 秒的"等待"不值得单列一格。存在这条主要是「入队即随停止取消」
+> # 那一路（D7）——单子挂上去不到一毫秒就结了算，账上确实有 0.0004 秒，屏上写「审批 0.0s」
+> # 就纯属噪声了（交付形态实测抓到：⚪ 已取消 · 0.9s · 审批 0.0s）。
+> APPROVAL_WAIT_MIN = 0.05
+358a363,365
+>         # V8：等待时长在 decision 落定那一刻就记好（不是等 worker 线程醒来才记），
+>         # 这样审批卡第一次画收尾状态时就已经带着这个数。
+>         self.waited = 0.0
+363a371
+>             self.waited = time.time() - self.created
+368a377
+>             self.waited = APPROVAL_TIMEOUT
+508a518,521
+>     # V8：审批等待的秒数在这里过账——记账的是 worker 线程（_gated_call 醒来那一刻），
+>     # 取账的是 UI 线程（收到 ActionStep 那一刻）。和 _run_seq 同一个理由：门只装在进程
+>     # 那一个 agent 上，装门的实例和画卡的实例可能不是同一个，放实例上会把账落在没人看的那边。
+>     _pending_wait: float = 0.0
+519a533,538
+>         # V8：本题累计里「其中审批等待」那一格，和 _run_secs 同边界（见 _step_card 末行）。
+>         self._run_wait = 0.0
+>         # V7：侧栏高亮跟着它走，不再由点击历史决定（见 _select_session）。
+>         self._sid: str | None = None
+>         # 上一次真的推给浏览器的高亮值。只在它和 _sid 不一致时才带 value（见 _radio_update）。
+>         self._sid_shown: str | None = None
+568a588,592
+>         # V8：这一格等待不并进「步骤耗时」的定义，而是单独记账，由下一个到达的 ActionStep
+>         # 领走、在卡片和状态条里单列出来（口径见 _step_card / _stats）。
+>         with self._gate_lock:
+>             if ap.waited >= APPROVAL_WAIT_MIN:
+>                 OpsUI._pending_wait += ap.waited
+602c626,632
+<         title = f"{dot} 待批 · {ap.tool} · {label}" + (f" · 共 {n} 项待批" if state == "pending" and n > 1 else "")
+---
+>         title = (
+>             f"{dot} 待批 · {ap.tool} · {label}"
+>             + (f" · 共 {n} 项待批" if state == "pending" and n > 1 else "")
+>             # V8：结算之后标题就固定了（drawn 的键不再变），所以这里用 decide() 那一刻记下的
+>             # 精确等待秒数，不用现场 time.time()-created——后者会把「工具又跑了多久」也算进来。
+>             + ("" if state == "pending" or ap.waited < APPROVAL_WAIT_MIN else f" · 等了 {ap.waited:.1f}s")
+>         )
+670c700,704
+<         foot = f"本步 {secs:.1f}s · in {tk.input_tokens:,} / out {tk.output_tokens:,}" if (secs and tk) else "本步 计时或 token 未记录"
+---
+>         # V8：这一格里有多少是「在等人点审批」。secs 仍是框架量到的整步时长（口径不变），
+>         # 单列出来的这一格只加不改，读的人第一次就能把「真执行 1s」和「干等 271s」分开看。
+>         wait = getattr(step, "_opsui_wait", 0.0) or 0.0
+>         span = f"{secs:.1f}s" + (f"（含审批 {wait:.1f}s）" if wait else "") if secs else ""
+>         foot = f"本步 {span} · in {tk.input_tokens:,} / out {tk.output_tokens:,}" if (secs and tk) else "本步 计时或 token 未记录"
+673a708
+>             + (f" · 审批 {wait:.1f}s" if wait else "")
+687a723
+>             + (f"（含审批 {self._run_wait:.1f}s）" if self._run_wait else "")
+708a745,748
+>             # V8：本题里有多少秒是在等审批。挂在 step 对象上（_stream_response 领账那一刻写的），
+>             # 所以它是**本进程这一轮**的数——重启后回灌进来的老步骤没有这个标记，读作 0，
+>             # 屏幕上那条历史卡也就不带「审批」那一格。
+>             "task_wait": sum(getattr(s, "_opsui_wait", 0.0) or 0.0 for s in cur),
+729d768
+<             ("进程 token", f"in {s['mon_in']:,} / out {s['mon_out']:,}"),
+730a770,773
+>         # V8：平时不占一格，只有本题真的等人批过才出现（多数提问一个审批都没有）。
+>         if s["task_wait"]:
+>             pills.append(("本题审批", f"{s['task_wait']:.1f}s"))
+>         pills.append(("进程 token", f"in {s['mon_in']:,} / out {s['mon_out']:,}"))
+772a816,818
+>             # V8：换题开局把上一题没被领走的等待清零。会留下账只有两种情况——停止落在
+>             # 待批上（那一步压根没生成 ActionStep），或 worker 还挂着；都不该记到新题头上。
+>             OpsUI._pending_wait = 0.0
+775a822
+>         self._run_wait = 0.0
+825a873,880
+>                                     # V8：把门那边攒下的等待领到这一步上（一次取干，不留在账上
+>                                     # 漂到下一步去）。写的是 step 对象的一个私有属性，
+>                                     # encode_memory 的字段白名单不认它，所以不会进记忆库。
+>                                     with self._gate_lock:
+>                                         waited, OpsUI._pending_wait = OpsUI._pending_wait, 0.0
+>                                     if waited:
+>                                         payload._opsui_wait = waited
+>                                         self._run_wait += waited
+912a968,987
+>     def _radio_update(self, force: bool = False):
+>         """侧栏那条 Radio 的更新（V7）：choices 每帧都刷，value 只在绑定真的换了时给。
+> 
+>         为什么必须带上 value：v1.5 的 bug 是"高亮和绑定不是一回事"——点「＋ 新会话」之后
+>         上一条还亮着，于是"点那条亮着的"＝点了一个值没变的 radio，gradio 不派发 change，
+>         问题就落进了新会话。现在反过来，亮哪一条由 self._sid 单向决定。
+> 
+>         为什么不能每帧都带：服务端设 value 会被 gradio 当成一次 change 送回后端（本轮实测：
+>         程序化设值触发 .change、不触发 .input），流式期间每 0.25 秒一帧，那样就是每秒两次
+>         空转事件；真送回的那一次由 _select_session 的守卫原样退回。
+> 
+>         force 是给 _on_load 用的：刷新页面后浏览器那一侧的 Radio 是全新的（没勾选），
+>         但服务端这个 OpsUI 对象还是刚才那一个、_sid_shown 没变，不强迫就永远不补那一下。
+>         """
+>         ch = self.hist.choices()
+>         if force or self._sid_shown != self._sid:
+>             self._sid_shown = self._sid
+>             return gr.update(choices=ch, value=self._sid)
+>         return gr.update(choices=ch)
+> 
+931a1007,1008
+>         # V7：高亮跟着「现在绑的是哪条」走，不是跟着点击历史走（见 _select_session）。
+>         self._sid = str(sid)
+943c1020,1023
+<         radio = lambda: gr.update(choices=self.hist.choices())  # noqa: E731
+---
+>         # V7：连 value 一起给，但只在绑定真的换了那一次给——服务端设 value 会被 gradio
+>         # 当成一次 change 送回来（本轮实测：程序化设值只触发 .change，不触发 .input），
+>         # 流式期间每 0.25 秒一帧，每次都设就等于每秒多空转两次事件。
+>         radio = self._radio_update
+990c1070,1074
+<         return None, [], self._status_html("idle"), gr.update(choices=self.hist.choices())
+---
+>         # V7：新会话此刻在库里还没有行（第一问下去才 ensure 出来），所以没有"那一条"可亮——
+>         # 把高亮清掉才是实话。留着上一条的高亮就是这个 bug 本体：用户照着亮着的那条点，
+>         # 点的却是一个值没变的 radio，change 不派发，问题落进新会话。
+>         self._sid = None
+>         return None, [], self._status_html("idle"), self._radio_update()
+1019a1104,1109
+> 
+>         V7 加的守卫：这个回调不再只由点击触发。gradio 6.30 里**服务端设 value 也算一次
+>         change**（本轮实测：程序化 gr.update(value=...) 触发 .change、不触发 .input，
+>         连 value=None 都会送回一次 None），所以 _respond / _new_session / _on_load 推上去
+>         的高亮会原样送回后端。值没变的那一次就是回声，必须三个输出全交 gr.update()——
+>         这条生成器和正在流式的那条会抢同一个 chatbot 输出，抢赢就把刚画出来的步骤卡盖掉。
+1021c1111
+<         if not sid:
+---
+>         if not sid or str(sid) == self._sid:
+1022a1113,1115
+>         self._sid = str(sid)
+>         # 浏览器那一侧已经是你点的那条了，账跟着记上，下一帧就不必再回送一次 value。
+>         self._sid_shown = self._sid
+1032c1125,1126
+<         msgs = self.hist.load(int(ch[0][1])) if ch else []
+---
+>         sid = int(ch[0][1]) if ch else None
+>         msgs = self.hist.load(sid) if sid else []
+1035c1129,1132
+<         return gr.update(choices=ch), (int(ch[0][1]) if ch else None), self._status_html("idle"), msgs
+---
+>         # V7：高亮跟着它一起给（force）——v1.5 这里是"绑着丙、侧栏一条都不亮"，
+>         # 用户看不出自己在哪条会话里，也就有了后面那两次点错门。
+>         self._sid = str(sid) if sid else None
+>         return self._radio_update(force=True), sid, self._status_html("idle"), msgs

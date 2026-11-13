@@ -1,0 +1,24 @@
+      A 落库前：进程内这一格的 task_wait: 0.61
+PASS  A1 本题审批 pill 在活进程里看得见
+      A2 payload 里出现过的键: ['_t', 'is_final_answer', 'observations', 'step_number', 'task', 'timing', 'token_usage', 'tool_calls']
+PASS  A3 等待**没有**进库（这就是 V9 要关的缺口）
+PASS  A4 fmt 仍是 v1
+      B 重启回灌后：steps 类型: ['TaskStep', 'ActionStep']
+      B task_wait / task_secs: (0.0, 0.66)
+PASS  B1 回灌能读出本题耗时（V6 的口径在）
+PASS  B2 但「本题审批」读不出来＝0（缺口复现）
+      B 库里消息条数 / 含「含审批」的条数: (4, 1)
+PASS  B3 屏上那张历史卡反而带着文字（卡片正文走 messages 表，含审批那句重启后也在）
+PASS  D1 挂回去之后 pill 立刻读得出（不用改 _stats/_status_html）
+PASS  D2 步骤卡标题也能带这一格（_step_card 读的就是同一个属性）
+PASS  C1 两条会话各有各的记忆（V5 在）
+PASS  C2 **点旧会话不回灌记忆**：agent.memory 还是空的那一份（_bind_memory 只在 _respond 开头）
+      C3 此刻状态条报的是谁的数（屏上已切到甲）: <div id="statusbar" class="st-idle"><span class="pill"><b>模型</b><i>qwen-plus</i></span><span class="pill"><b>步数</b><i>0/8</i></span><span class="pill"><b>本题 token</b><i>i
+PASS  E0 真实库里有 v1 时代的记忆行可当样本
+PASS  E1 **只升版本号不做兼容读＝库里那几条 v1 旧账全体读空**（V6 当场作废）
+PASS  E1b v1.6 原样的代码读 v1.7 写的 v2 账＝整块读空（回滚后的边界，要写进 §7）
+      E2 真实 payload 体积（字节）: [88, 536, 537, 537, 537, 967, 1422, 4042]
+      E3 真实库里 ActionStep 条数 / 每格 wait 大约多写: (17, 12)
+
+TMP: /var/folders/j2/r0bmf8nx1c939yt40kkrwhxw0000gn/T/v17-79u8eued
+FAILS: 无

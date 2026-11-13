@@ -1,0 +1,29 @@
+DB -> /tmp/v15-live-hist.sqlite3
+* Running on local URL:  http://127.0.0.1:7861
+* To create a public link, set `share=True` in `launch()`.
+╭──────────────────────────── New run - smolagents ────────────────────────────╮
+│                                                                              │
+│ 请把数字 73 记住，然后调用 final_answer                                      │
+│ 只回一句「记住了」。不要调用其他任何工具。                                   │
+│                                                                              │
+╰─ OpenAIModel - qwen-plus ────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{"tool": "final_answer", "arguments": "{"answer": "\u8bb0\u4f4f\u4e86"}"}       ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'final_answer' with arguments: {'answer': '记住了'}            │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Observations: 记住了
+Final answer: 记住了
+[Step 1: Duration 0.99 seconds| Input tokens: 2,362 | Output tokens: 17]
+╭──────────────────────────── New run - smolagents ────────────────────────────╮
+│                                                                              │
+│ 我刚才让你记住的数字是多少？只回那个数字本身。调用                           │
+│ final_answer，不要调用其他任何工具。                                         │
+│                                                                              │
+╰─ OpenAIModel - qwen-plus ────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+{"tool": "final_answer", "arguments": "{"answer": "73"}"}                       ╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'final_answer' with arguments: {'answer': '73'}                │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Observations: 73
+Final answer: 73
+[Step 2: Duration 0.92 seconds| Input tokens: 4,827 | Output tokens: 34]

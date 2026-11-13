@@ -1,0 +1,32 @@
+blocks: 25
+  1  flowchart        flowchart TB
+  2  flowchart        flowchart LR
+  3  classDiagram     classDiagram
+  4  sequenceDiagram  sequenceDiagram
+  5  stateDiagram     stateDiagram-v2
+  6  flowchart        flowchart BT
+  7  sequenceDiagram  sequenceDiagram
+  8  flowchart        flowchart LR
+  9  flowchart        flowchart TB
+ 10  sequenceDiagram  sequenceDiagram
+ 11  flowchart        flowchart TD
+ 12  flowchart        flowchart LR
+ 13  flowchart        flowchart LR
+ 14  sequenceDiagram  sequenceDiagram
+ 15  flowchart        flowchart TD
+ 16  flowchart        flowchart LR
+ 17  sequenceDiagram  sequenceDiagram
+ 18  flowchart        flowchart TD
+ 19  flowchart        flowchart TD
+ 20  flowchart        flowchart TD
+ 21  flowchart        flowchart LR
+ 22  flowchart        flowchart LR
+ 23  flowchart        flowchart LR
+ 24  stateDiagram     stateDiagram-v2
+ 25  sequenceDiagram  sequenceDiagram
+extract exit=0
+块数 25 / 产出 svg 25 / 语法错误 0
+全部通过
+check exit=0
+块数 25 / 产出 svg 25 / 语法错误 0
+全部通过

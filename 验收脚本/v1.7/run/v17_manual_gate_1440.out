@@ -1,0 +1,33 @@
+URL file:///Users/gaoying/Desktop/study/ai%E5%AD%A6%E4%B9%A0/agent%E5%8A%9F%E8%83%BD%E6%89%8B%E5%86%8C.html | rows 37
+LAYOUT {"title":"我的Agent 功能手册与迭代看板 — v1.7","rows":37,"tables":32,"inner":1425,"scrollW":1425,"overflowX":false,"barWrap":"wrap"}
+STCOUNT {"done":18,"na":3,"todo":16}
+FILTERS
+all   | cnt=显示 37 / 37 条 | 可见行=37
+bug   | cnt=显示 8 / 37 条 | 可见行=8
+p0    | cnt=显示 5 / 37 条 | 可见行=5
+p1    | cnt=显示 8 / 37 条 | 可见行=8
+p2    | cnt=显示 7 / 37 条 | 可见行=7
+v     | cnt=显示 9 / 37 条 | 可见行=9
+todo  | cnt=显示 16 / 37 条 | 可见行=16
+doing | cnt=显示 0 / 37 条 | 可见行=0
+done  | cnt=显示 18 / 37 条 | 可见行=18
+na    | cnt=显示 3 / 37 条 | 可见行=3
+PILLS
+  V9    | data-st=done | 末列=已上线 v1.7
+  V7    | data-st=done | 末列=已上线 v1.6
+  V8    | data-st=done | 末列=已上线 v1.6
+  D8    | data-st=todo | 末列=未开工 v1.7 新立
+  V6    | data-st=done | 末列=已上线 v1.5
+  D7    | data-st=done | 末列=已上线 v1.5
+  P0-4  | data-st=todo | 末列=未开工
+SEC6
+6.1 v1.7 · 2026-10-30 · 「本题审批」跟着记忆进库：重启、点旧会话都读得出那一格（V9）
+6.2 v1.6 · 2026-10-30 · 侧栏高亮跟着绑定走 + 审批等待从步骤耗时里单列（V7 + V8）
+6.3 v1.5 · 2026-10-29 · 记忆落库：重启后模型那一边接着记得 + 停止落在待批之前不再死停（V6 
+6.4 v1.4 · 2026-10-29 · 连问不再吞前一题 + 会话级记忆隔离（D5 + V5，顺带修 D6）
+6.5 v1.3 · 2026-10-29 · 步骤卡片化 + 工具执行前审批（V4 + P0-2）
+6.6 v1.2 · 2026-10-29 · 界面换壳：状态条 + 深色 + 会话侧栏（V1 + V2 + V3，顺带
+6.7 v1.1 · 2026-10-29 · 止血 + 成本上墙 + 刹车落地（D1 + P0-5 + P0-1）
+6.8 v1.0 · 2026-10-28 · 功能基线建档（本轮没有改动 agent 任何代码）
+DEAD-ANCHORS []
+SHOT /tmp/v17-manual.png

@@ -1,0 +1,113 @@
+t=  0.000  boot.epoch             t0=1793713621.86563 pid=93304 timeout=600.0 gradio=6.30.0
+t=  2.228  on_load                sid=None steps=0 kinds=- screen_stepno=None screen_in=None screen_out=None screen_wait=0.0 mem_held=[] db_memory=- wall=2.226
+t= 10.004  respond.enter          sid=None
+t= 10.006  poller.start           timeout=600.0
+t= 10.024  stream.enter           sid=1
+t= 10.024  settle_all.enter       decision=cancelled ids=-
+t= 10.024  settle_all.exit        decision=cancelled
+t= 11.227  poll.pending           n=0 state=- unanswered=0
+t= 11.540  ap.wait.enter          id=f283a6 tool=run_python timeout=600.0
+t= 12.260  poll.pending           n=1 state=f283a6:pending unanswered=1
+t= 13.273  poll.pending           n=1 state=f283a6:pending unanswered=1
+t= 14.282  poll.pending           n=1 state=f283a6:pending unanswered=1
+t= 15.292  poll.pending           n=1 state=f283a6:pending unanswered=1
+t= 16.338  poll.pending           n=1 state=f283a6:pending unanswered=1
+t= 16.584  respond.GeneratorExit  frames=7
+t= 16.584  respond.finally        frames=7 pending=1 unanswered=1
+t= 16.584  stream.GeneratorExit   frames=7
+t= 16.585  stream.finally         frames=7
+t= 16.585  settle_all.enter       decision=cancelled ids=f283a6
+t= 16.585  ap.decide              id=f283a6 tool=run_python want=cancelled before=pending after=cancelled waited=5.045
+t= 16.585  ap.wait.exit           id=f283a6 tool=run_python decision=cancelled waited=5.045
+t= 16.585  settle_all.exit        decision=cancelled
+t= 16.587  settle_all.enter       decision=cancelled ids=f283a6
+t= 16.588  ap.decide              id=f283a6 tool=run_python want=cancelled before=cancelled after=cancelled waited=5.045
+t= 16.588  settle_all.exit        decision=cancelled
+t= 16.588  mark.enter             pending=1 registered=1 mem=2 steps=T,A last_msgs=3
+t= 16.588  mark.exit              msgs=4 wait_per_actionstep=[5.045] tail=⏹ 已中断 · 审批空等 5.0s
+t= 16.590  save.enter             sid=1 msgs=4 before=read-failed:ProgrammingError: Cannot operate on a closed database.
+t= 16.594  save.exit              sid=1 after=read-failed:ProgrammingError: Cannot operate on a closed database.
+t= 16.594  save_memory.enter      sid=1 chars=365
+t= 16.597  save_memory.exit       sid=1 changed_rows=365 after=read-failed:ProgrammingError: Cannot operate on a closed database.
+t= 17.348  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 18.272  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 19.205  on_load                sid=1 steps=2 kinds=T,A screen_stepno=1 screen_in=2355 screen_out=22 screen_wait=5.045 mem_held=['1'] db_memory=read-failed:ProgrammingError: Cannot operate on a closed database. wall=19.202
+t= 19.275  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 20.279  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 21.284  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 22.287  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 23.293  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 24.298  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 25.326  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 26.333  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 27.337  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 28.342  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 29.346  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 30.351  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 31.358  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 32.379  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 33.384  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 34.389  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 35.394  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 36.398  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 37.404  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 38.409  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 39.413  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 40.418  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 41.423  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 42.427  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 43.433  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 44.441  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 45.445  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 46.450  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 47.454  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 48.466  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 49.472  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 50.477  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 51.481  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 52.486  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 53.491  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 54.496  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 55.501  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 56.507  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 57.512  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 58.515  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 59.518  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 60.523  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 61.529  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 62.534  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 63.539  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 64.544  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 65.550  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 66.555  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 67.560  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 68.565  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 69.570  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 70.575  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 71.580  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 72.585  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 73.587  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 74.592  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 75.596  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 76.601  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 77.605  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 78.610  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 79.615  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 80.620  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 81.623  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 82.628  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 83.633  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 84.639  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 85.644  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 86.648  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 87.653  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 88.659  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 89.664  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 90.668  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 91.673  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 92.678  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 93.680  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 94.685  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 95.690  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 96.695  poll.pending           n=1 state=f283a6:cancelled unanswered=0
+t= 97.700  poll.pending           n=1 state=f283a6:cancelled unanswered=0

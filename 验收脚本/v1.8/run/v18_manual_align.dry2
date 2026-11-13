@@ -1,0 +1,137 @@
+  128 my_ui.py:30        same-HIT   -> my_ui.py:30        | DB_PATH = Path(__file__).resolve().parent / ".agent-history.sqlite3"
+  130 :8                 other-file -> :8                 | import sqlite3
+  147 my_ui.py:34        same-HIT   -> my_ui.py:34        | GATED_TOOLS = ("write_file", "run_python")
+  164 :910               SKIP       -> :910               | """D8：断开（刷新页面 / 关页面）这一路的收尾，返回要落库的那一串消息。
+  168 :470               other-file -> :470               | self.decision = decision
+  168 :546               other-file -> :546               | out = []
+  172 :226               other-file -> :226               | model_output_message=None,
+  179 my_ui.py:782-803   HIT        -> my_ui.py:1194-1215 | def _status_html(self, state: str, steps=None) -> str:
+  179 :236-355           HIT        -> :267-404           | DARK_CSS = """
+  179 :289-297           HIT        -> :320-328           | #statusrow #approve-btn button {
+  179 :691-746           HIT        -> :1085-1158         | def _step_card(self, step) -> gr.ChatMessage | None:
+  179 :640-689           FORCE      -> :966-1084          | def _approval_card(self, ap: Approval, waited: float, shown: str | Non
+  179 :565-621           FORCE      -> :670-730           | def _install_gate(self) -> None:
+  179 :806-958           FORCE      -> :1218-1396         | def _worker(self, task: str, files, q: queue.Queue) -> None:
+  179 :961-986           HIT        -> :1399-1424         | def _bind_memory(self, sid: int) -> None:
+  179 :1007-1025         HIT        -> :1445-1463         | def _radio_update(self, force: bool = False):
+  179 :1043-1105         HIT        -> :1481-1580         | def _respond(self, message, sid):
+  179 :1183-1241         HIT        -> :1670-1746         | def create_app(self):
+  179 :988-1004          HIT        -> :1426-1442         | def _session_steps(self, sid: int) -> list:
+  179 :63-232            FORCE      -> :94-263            | MEM_FMT = "v2"
+  182 :749-780           HIT        -> :1161-1192         | def _stats(self, steps=None) -> dict:
+  182 :782-803           HIT        -> :1194-1215         | def _status_html(self, state: str, steps=None) -> str:
+  182 :988-1004          HIT        -> :1426-1442         | def _session_steps(self, sid: int) -> list:
+  183 :357-365           HIT        -> :406-425           | STATE_LABEL = {
+  183 :625-637           other-file -> :625-637           | # 和 _pending 同一个理由放类上：门装在进程唯一的那个 agent 上，装门的实例和收尾的实例
+  184 :50-55             HIT        -> :57-62             | DENIED_OBSERVATION = {
+  185 :382-397           HIT        -> :463-478           | # V8：等待时长在 decision 落定那一刻就记好（不是等 worker 线程醒来才记），
+  187 :806-829           HIT        -> :1218-1241         | def _worker(self, task: str, files, q: queue.Queue) -> None:
+  187 :530-531           HIT        -> :611-612           | _pending: list[Approval] = []
+  187 :535-536           HIT        -> :616-617           | _run_seq: int = 0
+  187 :537-540           HIT        -> :618-621           | # V8：审批等待的秒数在这里过账——记账的是 worker 线程（_gated_call 醒来那一刻），
+  188 :36                HIT        -> :39                | APPROVAL_TIMEOUT = 600.0
+  189 :285-293           HIT        -> :316-324           | height: 30px;
+  190 :1007-1025         HIT        -> :1445-1463         | def _radio_update(self, force: bool = False):
+  191 :1027-1041         HIT        -> :1465-1479         | def _user_message(self, message):
+  192 :1115-1135         HIT        -> :1592-1612         | def _stop(self):
+  192 my_ui.py:602-605   HIT        -> my_ui.py:703-706   | with self._gate_lock:
+  192 :1131-1132         HIT        -> :1608-1609         | OpsUI._cancelled_before = OpsUI._run_seq
+  193 :1052              HIT        -> :1493              | base = self.hist.load(sid)
+  193 :1067              HIT        -> :1508              | last = base + [user_msg] + list(msgs)
+  194 :961-986           HIT        -> :1399-1424         | def _bind_memory(self, sid: int) -> None:
+  194 :560-561           HIT        -> :658-659           | self._mem: dict[int, AgentMemory] = {}
+  194 :389               other-file -> :389               | /* P1-a：「重复熔断」单独一色（蓝）。红是给「你按了停止」的，黄是给「步数用满」的，
+  194 :1137-1160         FORCE      -> :1614-1638         | def _select_session(self, sid):
+  194 :1162-1180         HIT        -> :1645-1663         | def _on_load(self):
+  195 :489               HIT        -> :570               | "UPDATE sessions SET updated_at = ?, title = CASE WHEN title = '新会话' T
+  196 :429               HIT        -> :510               | CREATE TABLE IF NOT EXISTS memory(
+  196 :69-84             HIT        -> :100-115           | MEM_FIELDS = {
+  196 :162-168           HIT        -> :193-199           | # V9：审批等待那一格。_stream_response 领账时把它写在 step._opsui_wait 上，
+  196 :63                HIT        -> :94                | MEM_FMT = "v2"
+  196 :68                HIT        -> :99                | MEM_FMT_READ = ("v1", "v2")
+  196 :179-180           HIT        -> :210-211           | if not isinstance(data, dict) or data.get("fmt") not in MEM_FMT_READ:
+  196 :225-229           HIT        -> :256-260           | # V9：这一格里有多少秒是等人批。v1 的老 payload 没有这个键，读出来就是
+  197 :535-536           HIT        -> :616-617           | _run_seq: int = 0
+  197 :846               HIT        -> :1268              | OpsUI._run_seq += 1
+  197 :1131              HIT        -> :1608              | OpsUI._cancelled_before = OpsUI._run_seq
+  197 :602-605           HIT        -> :703-706           | with self._gate_lock:
+  198 :382-397           FORCE      -> :463-478           | # V8：等待时长在 decision 落定那一刻就记好（不是等 worker 线程醒来才记），
+  198 :607-611           HIT        -> :708-712           | # V8：这一格等待不并进「步骤耗时」的定义，而是单独记账，由下一个到达的 ActionStep
+  198 :894-901           HIT        -> :1321-1328         | # V8：把门那边攒下的等待领到这一步上（一次取干，不留在账上
+  198 :37-40             FORCE      -> :40-43             | # V8 的显示门槛：不满 0.05 秒的"等待"不值得单列一格。存在这条主要是「入队即随停止取消」
+  198 :837-843           HIT        -> :1252-1263         | # V8：换题开局把上一题没被领走的等待清零。会留下账只有两种情况——停止落在
+  199 :162-168           HIT        -> :193-199           | # V9：审批等待那一格。_stream_response 领账时把它写在 step._opsui_wait 上，
+  199 :988-1004          HIT        -> :1426-1442         | def _session_steps(self, sid: int) -> list:
+  199 :749-752           HIT        -> :1161-1164         | def _stats(self, steps=None) -> dict:
+  199 :782               HIT        -> :1194              | def _status_html(self, state: str, steps=None) -> str:
+  199 :1150-1153         HIT        -> :1628-1631         | V9：状态条改成报**屏幕上这一条**的数（_session_steps，只读）。以前这里调
+  199 :1160              HIT        -> :1638              | # P0-4：面板跟着屏幕上这一条走（和 V9 的状态条同一个理由：不能"屏上是甲、
+  199 :1175-1180         HIT        -> :1658-1663         | # V9：状态条同样按屏幕上这一条报（和 _select_session 一个口径）。这一条是**重启后
+  287 :178               SKIP       -> :178               | elif f == "token_usage":
+  292 :153               other-file -> :153               | return Timing(start_time=float(d["start_time"]), end_time=d.get("end_t
+  292 :32-36             other-file -> :32-36             | # P0-2：只拦「会动东西」的两只手。只读工具（read_file / list_dir / grep_files）不弹审批，
+  300 my_ui.py:4         FORCE      -> my_ui.py:15        | from my_agent import agent
+  306 my_ui.py:1092      HIT        -> my_ui.py:1562      | gr.ChatMessage(role="assistant", content=content, metadata={"title": t
+  312 my_ui.py:1049-1054 HIT        -> my_ui.py:1490-1495 | # D5：这一题的消息**追加**在会话已有消息之后，不是从头起。chatbot 的输出是整体替换、
+  312 :1067              HIT        -> :1508              | last = base + [user_msg] + list(msgs)
+  312 :1162-1180         HIT        -> :1645-1663         | def _on_load(self):
+  316 my_ui.py:289-291   SKIP       -> my_ui.py:289-291   | color: var(--body-text-color) !important;
+  318 my_ui.py:488-491   HIT        -> my_ui.py:569-572   | c.execute(
+  324 my_ui.py:535-536   HIT        -> my_ui.py:616-617   | _run_seq: int = 0
+  324 :1131              HIT        -> :1608              | OpsUI._cancelled_before = OpsUI._run_seq
+  324 :602-605           HIT        -> :703-706           | with self._gate_lock:
+  324 :846               HIT        -> :1268              | OpsUI._run_seq += 1
+  341 my_ui.py:821-829   HIT        -> my_ui.py:1233-1241 | finally:
+  341 :470               other-file -> :470               | self.decision = decision
+  341 :546               other-file -> :546               | out = []
+  341 my_ui.py:306-323   SKIP       -> my_ui.py:306-323   | background: #21262d !important;
+  341 :374               SKIP       -> :374               | #main { padding: 12px 16px; }
+  341 my_ui.py:750-763   SKIP       -> my_ui.py:750-763   | # 套两层就是同一次重复被记两次账，第 2 次重复就触发了熔断。
+  347 my_ui.py:34        same-HIT   -> my_ui.py:34        | GATED_TOOLS = ("write_file", "run_python")
+  347 :405-428           SKIP       -> :405-428           | 
+  347 :387-398           FORCE      -> :468-479           | def decide(self, decision: str) -> None:
+  347 :806-829           HIT        -> :1218-1241         | def _worker(self, task: str, files, q: queue.Queue) -> None:
+  347 :831-958           HIT        -> :1243-1396         | def _stream_response(self, message, history):  # noqa: ARG002
+  353 my_ui.py:401-516   HIT        -> my_ui.py:482-597   | class History:
+  353 :1240              HIT        -> :1745              | demo.load(fn=self._on_load, outputs=[radio, sid, status, chatbot, plan
+  358 my_ui.py:648-653   SKIP       -> my_ui.py:648-653   | self._run_out = 0
+  365 my_ui.py:749-780   HIT        -> my_ui.py:1161-1192 | def _stats(self, steps=None) -> dict:
+  417 :910               SKIP       -> :910               | """D8：断开（刷新页面 / 关页面）这一路的收尾，返回要落库的那一串消息。
+  456 my_ui.py:749-780   HIT        -> my_ui.py:1161-1192 | def _stats(self, steps=None) -> dict:
+  456 :782-803           HIT        -> :1194-1215         | def _status_html(self, state: str, steps=None) -> str:
+  462 my_ui.py:236-355   HIT        -> my_ui.py:267-404   | DARK_CSS = """
+  462 :53-172            SKIP       -> :53-172            | }
+  468 my_ui.py:401-516   HIT        -> my_ui.py:482-597   | class History:
+  468 :1231              HIT        -> :1727              | new_btn.click(fn=self._new_session, outputs=[sid, chatbot, status, rad
+  468 :1233              HIT        -> :1729              | radio.change(fn=self._select_session, inputs=[radio], outputs=[chatbot
+  468 :1240              HIT        -> :1745              | demo.load(fn=self._on_load, outputs=[radio, sid, status, chatbot, plan
+  474 my_ui.py:450-500   SKIP       -> my_ui.py:450-500   | 两边不会抢同一个输出。
+  480 my_ui.py:961-986   HIT        -> my_ui.py:1399-1424 | def _bind_memory(self, sid: int) -> None:
+  480 :560-561           HIT        -> :658-659           | self._mem: dict[int, AgentMemory] = {}
+  480 :389               other-file -> :389               | /* P1-a：「重复熔断」单独一色（蓝）。红是给「你按了停止」的，黄是给「步数用满」的，
+  486 my_ui.py:69-84     HIT        -> my_ui.py:100-115   | MEM_FIELDS = {
+  486 :132-232           HIT        -> :163-263           | def encode_memory(steps) -> str:
+  486 :975-984           HIT        -> :1413-1422         | mem = self._mem.get(sid)
+  486 :1102-1104         HIT        -> :1577-1579         | mem = self._mem.get(sid)
+  492 my_ui.py:1007-1025 HIT        -> my_ui.py:1445-1463 | def _radio_update(self, force: bool = False):
+  492 :1046-1047         HIT        -> :1487-1488         | # V7：高亮跟着「现在绑的是哪条」走，不是跟着点击历史走（见 _select_session）。
+  492 :1107-1113         HIT        -> :1582-1588         | def _new_session(self):
+  492 :1162-1180         HIT        -> :1645-1663         | def _on_load(self):
+  492 :1137-1160         HIT        -> :1614-1638         | def _select_session(self, sid):
+  502 :69-84             HIT        -> :100-115           | MEM_FIELDS = {
+  504 :63                HIT        -> :94                | MEM_FMT = "v2"
+  504 :68                HIT        -> :99                | MEM_FMT_READ = ("v1", "v2")
+  504 :162-168           HIT        -> :193-199           | # V9：审批等待那一格。_stream_response 领账时把它写在 step._opsui_wait 上，
+  504 :225-229           HIT        -> :256-260           | # V9：这一格里有多少秒是等人批。v1 的老 payload 没有这个键，读出来就是
+  504 :988-1004          HIT        -> :1426-1442         | def _session_steps(self, sid: int) -> list:
+  504 :749-752           HIT        -> :1161-1164         | def _stats(self, steps=None) -> dict:
+  504 :1160              HIT        -> :1638              | # P0-4：面板跟着屏幕上这一条走（和 V9 的状态条同一个理由：不能"屏上是甲、
+  504 :1180              HIT        -> :1663              | # P0-4：面板同样从这条会话的记忆里读（MEM_FIELDS["PlanningStep"] 带着 plan 原文，
+ 1233 :198               SKIP       -> :198               | if waited:
+ 1238 my_ui.py:697-703   HIT        -> my_ui.py:1091-1108 | if isinstance(step, PlanningStep):
+ 1239 my_ui.py:189-201   HIT        -> my_ui.py:220-232   | elif kind == "PlanningStep":
+ 1242 my_ui.py:1007-1025 HIT        -> my_ui.py:1445-1463 | def _radio_update(self, force: bool = False):
+ 1242 :1107-1113         HIT        -> :1582-1588         | def _new_session(self):
+ 1242 :1045-1047         HIT        -> :1486-1488         | sid = self.hist.ensure(sid)
+替换 109 处
+干跑（未写入）；写后总行数应为 1287

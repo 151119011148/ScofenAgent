@@ -1,0 +1,13 @@
+t=  0.206  boot                       port=7871 frames=20 approval_timeout=20.0 auto_allow=False t0_epoch=1793584420.409
+t=  1.630  event.load                 
+t=  8.418  gen.start                  message=这道题用来测断开
+t=  8.419  wait.enter                 tool=run_python timeout=20.0
+t= 11.573  event.load                 
+t= 11.793  gen.finally                state=GeneratorExit frames=11 threads=6
+t= 28.423  wait.timeout               tool=run_python after=20.0
+t= 28.423  wait.exit                  decision=timeout
+t= 30.440  worker.alive               tick=4 decision=timeout
+t= 32.456  worker.alive               tick=8 decision=timeout
+t= 34.474  worker.alive               tick=12 decision=timeout
+t= 36.495  worker.alive               tick=16 decision=timeout
+t= 37.505  worker.exit                ticks=18 decision=timeout

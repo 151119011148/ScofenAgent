@@ -1,0 +1,22 @@
+B1-01 活 model 的 read 超时=60s            PASS Timeout(connect=5.0, read=60.0, write=60.0, pool=60.0)
+B1-02 connect 仍是 5s（没被我顺手放宽）           PASS 
+B1-03 活 model 的 max_retries=2          PASS 实际 2
+B1-04 常量读数                             PASS 
+B1-05 my_agent 用的是同一份常量                PASS {'timeout': Timeout(connect=5.0, read=60.0, write=60.0, pool=60.0), 'max_retries': 2}
+B1-06 my_coding_agent 那一路也带上刹车         PASS 
+B1-07 改前默认 read=600s（这就是那半小时）          PASS Timeout(connect=5.0, read=600, write=600, pool=600)
+B1-08 不写 client_kwargs 时 SDK 默认 max_retries=2（共三次尝试） PASS 实际 2
+B1-09 框架 retryer 不重试超时                 PASS 
+B1-10 框架 retryer 管的是 429               PASS 
+B1-11 retryer 读数（3 次 / 60s 间隔）只作用于限流   PASS 
+B1-12 非流式：挂住的请求会自己死                    PASS APITimeoutError: Request timed out.
+B1-13 用的就是我给的 1 秒（不是 600 秒）            PASS 耗时 1.09s
+B1-14 max_retries=0 → 只打了一次            PASS 连接 1
+B1-15 请求确实到了 /v1/chat/completions      PASS ['POST /chat/completions HTTP/1.1']
+B1-16 流式同样自己死                          PASS APITimeoutError: Request timed out.
+B1-17 流式耗时也在 1 秒档                      PASS 耗时 1.01s
+B1-18 重试到最后照样抛 APITimeoutError（不会静默成功） PASS APITimeoutError
+B1-19 max_retries=2 → 3 个连接、每个各等一个 read timeout PASS 连接 3、耗时 4.27s
+B1-20 按改前 read=600 推：600s×3 = 30 分钟    PASS 
+
+全绿  20 条断言，失败 0

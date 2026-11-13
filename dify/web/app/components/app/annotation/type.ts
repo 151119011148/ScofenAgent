@@ -1,0 +1,17 @@
+export type EmbeddingModelConfig = {
+  embedding_provider_name: string
+  embedding_model_name: string
+}
+
+export const AnnotationEnableStatus = {
+  enable: 'enable',
+  disable: 'disable',
+} as const
+
+export type AnnotationEnableStatus =
+  (typeof AnnotationEnableStatus)[keyof typeof AnnotationEnableStatus]
+
+export const JobStatus = {
+  completed: 'completed',
+  error: 'error',
+} as const

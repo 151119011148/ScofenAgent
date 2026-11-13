@@ -1,0 +1,10 @@
+/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/lib/python3.13/site-packages/gradio/utils.py:1379: UserWarning: Expected 2 arguments for function <function <lambda> at 0x10e2d3600>, received 1.
+  warnings.warn(
+/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/lib/python3.13/site-packages/gradio/utils.py:1383: UserWarning: Expected at least 2 arguments for function <function <lambda> at 0x10e2d3600>, received 1.
+  warnings.warn(
+* Running on local URL:  http://127.0.0.1:7862
+* To create a public link, set `share=True` in `launch()`.
+/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/lib/python3.13/site-packages/gradio/helpers.py:1193: UserWarning: Unexpected argument. Filling with None.
+  warnings.warn("Unexpected argument. Filling with None.")
+/Users/gaoying/Desktop/study/ai学习/smolagents/.venv/lib/python3.13/site-packages/gradio/helpers.py:1193: UserWarning: Unexpected argument. Filling with None.
+  warnings.warn("Unexpected argument. Filling with None.")

@@ -1,0 +1,120 @@
+解析失败：模型没按格式吐
+PASS  1a 四步都回来、类型一致
+PASS  1b 恢复出的记忆和原记忆等长
+PASS  1c 观察值逐字保留（没被解析成 dict）
+PASS  1d 文本字段原样：task/plan/model_output/code_action
+PASS  1e 工具调用还原成真 ToolCall（id/name/arguments 齐）
+PASS  1f 报错步类型保住、str() 与 dict() 都对
+PASS  1g 计时与 token 口径不丢（duration 是派生属性）
+PASS  1h is_final_answer 的 False 不被当成 None 丢掉
+PASS  1i 认不出的步类型跳过、不硬存
+PASS  1j 坏数据一律当没记忆
+PASS  1k 单条坏了只丢那一条（其余照旧）
+PASS  1l 未知报错类型退回 AgentError
+PASS  1m 空记忆编出来是空列表
+PASS  1n 模型读到的那一串：恢复后与恢复前逐字相同（框架自己的 write_memory_to_messages）
+PASS  1o 那一串里确实带着题面与观察值（不是空比对）
+PASS  1p 图片类字段不入库（本轮口径：只存文本）
+PASS  2a 起点：库里没有会话
+PASS  2b 一问之后记忆落了库（v1.7 起 fmt 为 v2）
+PASS  2b2 没等过审批的一题：payload 里没有 wait 这一格（不写 0，库里体积不涨）
+PASS  2c 存的就是那两步（Task+Action）
+PASS  2d 库里存的 observation 与模型看过的一致
+PASS  2e 连问两题：同一 sid、记忆里四步都在
+PASS  2f 一条会话一行（覆盖式，不是越问越多行）
+PASS  2g 重启后进程内记忆是空的
+PASS  2h 绑定时从库里把那一串读回来了
+PASS  2i 模型那边接得上：重启后读到的那一串与重启前逐字相同
+PASS  2j 重启后接着问：屏上三问（D5 没回潮）
+PASS  2k 第三题也进了库（六步）
+PASS  2l 重启后「本题累计」的边界没漂（最后一个 TaskStep 之后，不是整段会话）
+PASS  2m 新会话另开一条、记忆只有它自己
+PASS  2n 旧会话那一行没被新会话盖掉
+PASS  2o 重启后点旧会话：读到的还是那条自己的（不串题）
+PASS  2p 库里两条会话两行记忆
+PASS  2q 老会话（库里没记忆行）不崩、读出来是空
+PASS  2r 老会话屏上的字照样读得出来（messages 表没动）
+PASS  2s 老会话第一次新问之后也有记忆行了
+PASS  2t 没有 memory 表的老库：重建出来、messages 不受影响
+PASS  2u 重建后写记忆仍然可用
+PASS  2v 没绑定记忆的一题：屏上照常、库里不落记忆行
+PASS  3a 停止在先：闸不等点按钮就返回了（v1.4 这里是永远不返回）
+PASS  3b 交回模型的观察值 = 取消那一句
+PASS  3c 原工具一次都没被调用（没有任何副作用）
+PASS  3d 没留人：待批列表空、按钮不该亮
+PASS  3d2 已结算的那条留在登记表里也不碍事：下一轮开局整体摘除
+PASS  3e 未标记： worker 挂在闸上等审批（0.3s 后仍未返回）
+PASS  3f 点「允许」后照旧执行、观察值是工具的真返回
+PASS  3g 允许之后待批清空
+PASS  3h 卡出现后按停止：立刻解开（对照组）
+PASS  3i 这一按也留了取消号：后续入队不会再挂
+PASS  3j 下一轮没被上一按的停止影响：仍等人审批
+PASS  3k 拒绝路径没变（原工具没跑、观察值是拒绝那句）
+用户已中断执行
+PASS  3l 端到端：按停止后整条流在 3s 内自己结束（v1.4 是死停在等待审批）
+PASS  3m 工具那一步没执行、也没等人（观察值=取消那句）
+PASS  3n 收尾没有待批、状态不是「等待审批」
+PASS  3o 半截照样落库、屏上有 ⏹ 那句
+PASS  3p 停止那一轮的半截进了记忆库（TaskStep 在、ActionStep 也在）
+PASS  4a 步骤卡把「随停止取消」认成 ⚪ 已取消（不是 🟢 成功）
+PASS  4b 审批卡三种状态的 status 仍是 pending/done
+PASS  4c D5 累加仍在（新会话一问一答三条）
+PASS  4d 库里每条 status 合法（D4 没回潮）
+PASS  4e _select_session 仍交三个值、第三个是 int sid
+PASS  4f _on_load 仍交四个值
+PASS  4g 接线没变：submit 7 输出 / radio.change 3 输出 / load 4 输出
+PASS  4h 审批闸仍在、没套成两层
+PASS  4i 第二个实例不重复装门
+PASS  4j 领号那一句确实在真 _stream_response 里
+PASS  5a _on_load 交出的 radio 带着 value，且就是 sid 那一格
+PASS  5b 刷新页面后不再是「绑着某条、侧栏一条都不亮」（v1.5 实测 chk 全 false）
+PASS  5c 点一条没亮过的会话：真切换，交回它自己的消息
+PASS  5d 值没变的那一次（服务端设 value 的回声）三个输出全空、不抢 chatbot
+PASS  5e 点过之后下一帧不必再回送 value（流式期间只刷 choices）
+PASS  5f 「＋ 新会话」把高亮清掉，而不是留着上一条骗人
+PASS  5g 新会话之后点「刚才那条」是真切换（v1.5 这里是空点，问题落进新会话）
+PASS  5h value=None 的回声不崩（守卫挡在 int() 之前）
+PASS  5i 提问新建的那条会话当场被点亮
+PASS  5j 整题只回送一次 value（其余帧只刷 choices，不给 gradio 每秒空转两次事件）
+PASS  6a 等待秒数在 decision 落定那一刻就记好（卡片第一次画收尾状态就带得上）
+PASS  6b 超时路径也记等待（记的是门槛那一格，不是现场时钟）
+PASS  6c 门结算完把这一格等待过账（等下一个到达的 ActionStep 领走）
+PASS  6d 入队即按取消：毫秒级的那点等待根本不过账（交付形态实测抓到过「审批 0.0s」这种噪声）
+PASS  6p 审批卡同一条门槛：没等人就别写「等了 0.0s」
+PASS  6q 真等了 7 秒的（被拒绝也一样）要写出「等了 7.0s」
+PASS  6e 端到端：等了 0.5 秒的审批点了「允许」，工具就真跑了（观察值是 run_python 的返回）
+PASS  6f 步骤卡标题多出「审批 X.Xs」这一格（总时长那格口径不变）
+PASS  6g 标题里两格并存：总时长（框架口径不变）在前、审批等待单列在后，且后者 <= 前者
+PASS  6h 正文末行「本题累计」写明含审批多少
+PASS  6i 审批卡结算后标题带着「等了 X.Xs」
+PASS  6j 状态条多出「本题审批」那一格
+PASS  6k 等待挂到了那个 step 对象上、_run_wait 也累加了
+PASS  6l 没有审批的一题：标题/正文/状态条都不多出那一格
+PASS  6m 换题开局把上一题没领走的账清零（7.7s 不会漂到新题头上）
+PASS  6n V9 翻转：等待那一格跟着记忆进库（键名是 wait，不是私有属性名），回灌挂回同一个属性
+PASS  6o 但总时长照旧进得去（V6 的口径没被 V8 碰坏）
+PASS  7z0 对照模块导进来了：它自己那份的 MEM_FMT 仍是 v1、读集合也只有一个版本
+PASS  7a 没等过审批的步：v2 编出来和 v1.6 编码器逐字相同（只差 fmt 那两位）
+PASS  7b 真等过的步才多写这一格，多出来的就是那一段（键名用 wait，不写私有属性名）
+PASS  7c 读回来挂回 step._opsui_wait：显示层（_stats / _step_card）本来就认这个属性，一行没改
+PASS  7d 模型读到的那一串不掺进这一格（wait 只是界面上的账，to_messages 不认）
+PASS  7e 真实库里的 v1 payload 在新代码下全部读得回（升版本不失忆）
+PASS  7f 逐条对得上：新代码读 v1 的结果和 v1.6 代码读自己那一份一模一样（兼容读不是只读个壳）
+      7g 真实库 7 条会话「读进来再编回去」的长度差（字节）： [0, 0, 0, 0, 0, 0, 0]
+PASS  7g 重编往返零增长（v2 只给真有等待的步加那一格，不预先占位）
+PASS  7h v1 的 payload 里没有 wait：读出来是 0（那一格不出现），不是把整条会话判成没记忆
+PASS  7i 认不出的版本号仍旧整块拒读（v0、将来的 v3 不猜着读）
+PASS  7j 端到端第一步（v1.6 的 V8 没回潮）：活进程里状态条有「本题审批」
+PASS  7k 落库那一串：fmt=v2，等过的那条 ActionStep 带着和进程内一致的 wait
+PASS  7l **重启后刷新页面这一下就是验收动作**：状态条上「本题审批」自己回来了，数就是那一格的秒数
+PASS  7m 走的是只读那条路：agent.memory 没被换、绑定也没动（V5 语义一字未改）
+PASS  7n 乙这一题没有审批：状态条不该带那一格（别把甲的等待算给乙）
+PASS  7o 点旧会话：状态条报的是**屏幕上这一条**，「本题审批」跟着回来了
+PASS  7p 这一按不改绑定：_mem_sid 还是乙、agent.memory 里只有乙自己的题面
+PASS  7q 旧会话里接着问：本题边界仍是最后一个 TaskStep 之后，回灌的老步骤不并入本题
+PASS  7r _stats() 不传参时行为不变（老调用点一个都没动）
+PASS  7s V7 没回潮：值没变的那一次仍旧三个输出全空、不碰 chatbot
+
+TMP DB: /var/folders/j2/r0bmf8nx1c939yt40kkrwhxw0000gn/T/v17-8f_k5dp8/hist.sqlite3 | sessions: 10
+memory rows: [(1, 1022), (5, 341), (6, 278), (7, 280), (8, 499), (9, 319), (10, 800), (11, 325)]
+FAILS: 无

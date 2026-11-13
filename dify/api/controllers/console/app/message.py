@@ -1,0 +1,413 @@
+import logging
+from http import HTTPStatus
+from uuid import UUID
+
+from flask_restx import Resource
+from pydantic import BaseModel, Field, field_validator
+
+from controllers.common.controller_schemas import MessageFeedbackPayload as _MessageFeedbackPayloadBase
+from controllers.common.errors import InternalServerError as InternalServerHTTPError
+from controllers.common.errors import MessageFeedbackRatingRequiredError, NotFoundError, UnauthorizedError
+from controllers.common.fields import SimpleResultResponse
+from controllers.common.rbac import AgentId, PlainApp, RBACCheck
+from controllers.common.schema import query_params_from_model, register_response_schema_models, register_schema_models
+from controllers.console import console_ns
+from controllers.console.app.error import (
+    AppNotFoundError,
+    AppUnavailableError,
+    CompletionRequestError,
+    ProviderModelCurrentlyNotSupportError,
+    ProviderNotInitializeError,
+    ProviderQuotaExceededError,
+)
+from controllers.console.explore.error import AppSuggestedQuestionsAfterAnswerDisabledError
+from controllers.console.flask_admission import console_account_admission
+from controllers.console.wraps import (
+    RBACPermission,
+    model_validate,
+)
+from core.entities.execution_extra_content import ExecutionExtraContentDomainModel
+from core.errors.error import ModelCurrentlyNotSupportError, ProviderTokenNotInitError, QuotaExceededError
+from enums.account import TenantAccountRole
+from extensions.ext_application_services import application_services
+from fields.base import ResponseModel
+from fields.conversation_fields import (
+    MessageDetail as BaseMessageDetailResponse,
+)
+from fields.message_fields import SuggestedQuestionsResponse
+from graphon.model_runtime.errors.invoke import InvokeError
+from libs.external_api import error_responses
+from libs.helper import dump_response, uuid_value
+from machinery.context import RequestContext
+from models.enums import FeedbackRating
+from models.model import AppMode
+from services.agent.errors import AgentNotFoundError, AgentVersionNotFoundError
+from services.app.agent_app_contracts import AgentAppNotFoundError
+from services.app.console_service import ConsoleAppNotFoundError
+from services.app_definition_query_service import AppDefinitionUnavailableError
+from services.entities.message_entities import MessageAccount
+from services.errors.conversation import ConversationNotExistsError
+from services.errors.message import (
+    FeedbackRatingRequiredError,
+    FirstMessageNotExistsError,
+    MessageActorNotFoundError,
+    MessageNotExistsError,
+    SuggestedQuestionsAfterAnswerDisabledError,
+)
+
+logger = logging.getLogger(__name__)
+
+
+class ChatMessagesQuery(BaseModel):
+    conversation_id: str = Field(..., description="Conversation ID")
+    first_id: str | None = Field(default=None, description="First message ID for pagination")
+    limit: int = Field(default=20, ge=1, le=100, description="Number of messages to return (1-100)")
+
+    @field_validator("first_id", mode="before")
+    @classmethod
+    def empty_to_none(cls, value: str | None) -> str | None:
+        if value == "":
+            return None
+        return value
+
+    @field_validator("conversation_id", "first_id")
+    @classmethod
+    def validate_uuid(cls, value: str | None) -> str | None:
+        if value is None:
+            return value
+        return uuid_value(value)
+
+
+class AppMessageFeedbackPayload(_MessageFeedbackPayloadBase):
+    message_id: str = Field(..., description="Message ID")
+
+    @field_validator("message_id")
+    @classmethod
+    def validate_message_id(cls, value: str) -> str:
+        return uuid_value(value)
+
+
+class MessageDetailResponse(BaseMessageDetailResponse):
+    extra_contents: list[ExecutionExtraContentDomainModel] = Field(default_factory=list)
+
+
+class MessageInfiniteScrollPaginationResponse(ResponseModel):
+    limit: int
+    has_more: bool
+    data: list[MessageDetailResponse]
+
+
+register_schema_models(
+    console_ns,
+    ChatMessagesQuery,
+    AppMessageFeedbackPayload,
+)
+register_response_schema_models(
+    console_ns,
+    SuggestedQuestionsResponse,
+    MessageDetailResponse,
+    MessageInfiniteScrollPaginationResponse,
+    SimpleResultResponse,
+)
+
+
+@console_ns.route("/apps/<uuid:app_id>/chat-messages")
+class ChatMessageListApi(Resource):
+    @error_responses(AppNotFoundError, AppUnavailableError)
+    @console_ns.doc("list_chat_messages")
+    @console_ns.doc(description="Get chat messages for a conversation with pagination")
+    @console_ns.doc(params={"app_id": "Application ID", **query_params_from_model(ChatMessagesQuery)})
+    @console_ns.response(HTTPStatus.OK, "Success", console_ns.models[MessageInfiniteScrollPaginationResponse.__name__])
+    @console_ns.response(HTTPStatus.NOT_FOUND, "Conversation not found")
+    @console_account_admission(
+        allowed_roles=frozenset({TenantAccountRole.OWNER, TenantAccountRole.ADMIN, TenantAccountRole.EDITOR}),
+        rbac_checks=(RBACCheck(RBACPermission.APP_VIEW_LAYOUT, PlainApp()),),
+    )
+    @model_validate(ChatMessagesQuery)
+    def get(self, req_data: ChatMessagesQuery, context: RequestContext, app_id: UUID) -> dict[str, object]:
+        try:
+            app = application_services().apps.console.get_reference(context, str(app_id))
+        except ConsoleAppNotFoundError as exc:
+            raise AppNotFoundError() from exc
+        if app.mode not in (AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT, AppMode.AGENT):
+            raise AppNotFoundError("App mode does not support chat messages")
+        return _list_chat_messages(args=req_data, context=context, app_id=app.id)
+
+
+@console_ns.route("/agent/<uuid:agent_id>/chat-messages")
+class AgentChatMessageListApi(Resource):
+    @error_responses(AgentNotFoundError, AppUnavailableError)
+    @console_ns.doc("list_agent_chat_messages")
+    @console_ns.doc(description="Get Agent App chat messages for a conversation with pagination")
+    @console_ns.doc(params={"agent_id": "Agent ID"})
+    @console_ns.doc(params=query_params_from_model(ChatMessagesQuery))
+    @console_ns.response(HTTPStatus.OK, "Success", console_ns.models[MessageInfiniteScrollPaginationResponse.__name__])
+    @console_ns.response(HTTPStatus.NOT_FOUND, "Agent or conversation not found")
+    @console_account_admission(
+        allowed_roles=frozenset({TenantAccountRole.OWNER, TenantAccountRole.ADMIN, TenantAccountRole.EDITOR}),
+        rbac_checks=(RBACCheck(RBACPermission.AGENT_TEST_AND_RUN, AgentId()),),
+    )
+    @model_validate(ChatMessagesQuery)
+    def get(self, req_data: ChatMessagesQuery, context: RequestContext, agent_id: UUID) -> dict[str, object]:
+        try:
+            app_id = application_services().agent_apps.access.resolve_existing_runtime_app_id(context, str(agent_id))
+        except AgentAppNotFoundError as exc:
+            raise AgentNotFoundError() from exc
+        return _list_chat_messages(args=req_data, context=context, app_id=app_id)
+
+
+@console_ns.route("/apps/<uuid:app_id>/feedbacks")
+class MessageFeedbackApi(Resource):
+    @error_responses(AppNotFoundError, AppUnavailableError, MessageFeedbackRatingRequiredError)
+    @console_ns.doc("create_message_feedback")
+    @console_ns.doc(description="Create or update message feedback (like/dislike)")
+    @console_ns.doc(params={"app_id": "Application ID"})
+    @console_ns.expect(console_ns.models[AppMessageFeedbackPayload.__name__])
+    @console_ns.response(
+        HTTPStatus.OK, "Feedback updated successfully", console_ns.models[SimpleResultResponse.__name__]
+    )
+    @console_ns.response(HTTPStatus.NOT_FOUND, "Message not found")
+    @console_ns.response(HTTPStatus.FORBIDDEN, "Insufficient permissions")
+    @console_account_admission()
+    @model_validate(AppMessageFeedbackPayload)
+    def post(self, req_data: AppMessageFeedbackPayload, context: RequestContext, app_id: UUID) -> dict[str, object]:
+        try:
+            app = application_services().apps.console.get_reference(context, str(app_id))
+        except ConsoleAppNotFoundError as exc:
+            raise AppNotFoundError() from exc
+        return _update_message_feedback(args=req_data, context=context, app_id=app.id)
+
+
+@console_ns.route("/agent/<uuid:agent_id>/feedbacks")
+class AgentMessageFeedbackApi(Resource):
+    @error_responses(AgentNotFoundError, AppUnavailableError, MessageFeedbackRatingRequiredError)
+    @console_ns.doc("create_agent_message_feedback")
+    @console_ns.doc(description="Create or update Agent App message feedback")
+    @console_ns.doc(params={"agent_id": "Agent ID"})
+    @console_ns.expect(console_ns.models[AppMessageFeedbackPayload.__name__])
+    @console_ns.response(
+        HTTPStatus.OK, "Feedback updated successfully", console_ns.models[SimpleResultResponse.__name__]
+    )
+    @console_ns.response(HTTPStatus.NOT_FOUND, "Agent or message not found")
+    @console_account_admission(rbac_checks=(RBACCheck(RBACPermission.AGENT_TEST_AND_RUN, AgentId()),))
+    @model_validate(AppMessageFeedbackPayload)
+    def post(self, req_data: AppMessageFeedbackPayload, context: RequestContext, agent_id: UUID) -> dict[str, object]:
+        try:
+            app_id = application_services().agent_apps.access.resolve_existing_runtime_app_id(context, str(agent_id))
+        except AgentAppNotFoundError as exc:
+            raise AgentNotFoundError() from exc
+        return _update_message_feedback(args=req_data, context=context, app_id=app_id)
+
+
+@console_ns.route("/apps/<uuid:app_id>/chat-messages/<uuid:message_id>/suggested-questions")
+class MessageSuggestedQuestionApi(Resource):
+    @error_responses(
+        AgentVersionNotFoundError,
+        AppNotFoundError,
+        AppSuggestedQuestionsAfterAnswerDisabledError,
+        AppUnavailableError,
+        CompletionRequestError,
+        ProviderModelCurrentlyNotSupportError,
+        ProviderNotInitializeError,
+        ProviderQuotaExceededError,
+    )
+    @console_ns.doc("get_message_suggested_questions")
+    @console_ns.doc(description="Get suggested questions for a message")
+    @console_ns.doc(params={"app_id": "Application ID", "message_id": "Message ID"})
+    @console_ns.response(
+        HTTPStatus.OK,
+        "Suggested questions retrieved successfully",
+        console_ns.models[SuggestedQuestionsResponse.__name__],
+    )
+    @console_ns.response(HTTPStatus.BAD_REQUEST, "App or model provider unavailable, or generation failed")
+    @console_ns.response(HTTPStatus.UNAUTHORIZED, "Account authentication required")
+    @console_ns.response(HTTPStatus.FORBIDDEN, "Insufficient permissions or suggested questions disabled")
+    @console_ns.response(HTTPStatus.NOT_FOUND, "App, message, or conversation not found")
+    @console_ns.response(HTTPStatus.INTERNAL_SERVER_ERROR, "Unexpected server error")
+    @console_account_admission(rbac_checks=(RBACCheck(RBACPermission.APP_VIEW_LAYOUT, PlainApp()),))
+    def get(self, context: RequestContext, app_id: UUID, message_id: UUID) -> dict[str, object]:
+        try:
+            app = application_services().apps.console.get_reference(context, str(app_id))
+        except ConsoleAppNotFoundError as exc:
+            raise AppNotFoundError() from exc
+        if app.mode not in (AppMode.CHAT, AppMode.AGENT_CHAT, AppMode.ADVANCED_CHAT, AppMode.AGENT):
+            raise AppNotFoundError("App mode does not support suggested questions")
+        return _get_message_suggested_questions(
+            context=context, app_id=app.id, app_mode=app.mode, message_id=message_id
+        )
+
+
+@console_ns.route("/agent/<uuid:agent_id>/chat-messages/<uuid:message_id>/suggested-questions")
+class AgentMessageSuggestedQuestionApi(Resource):
+    @error_responses(
+        AgentNotFoundError,
+        AgentVersionNotFoundError,
+        AppSuggestedQuestionsAfterAnswerDisabledError,
+        AppUnavailableError,
+        CompletionRequestError,
+        ProviderModelCurrentlyNotSupportError,
+        ProviderNotInitializeError,
+        ProviderQuotaExceededError,
+    )
+    @console_ns.doc("get_agent_message_suggested_questions")
+    @console_ns.doc(description="Get suggested questions for an Agent App message")
+    @console_ns.doc(params={"agent_id": "Agent ID", "message_id": "Message ID"})
+    @console_ns.response(
+        HTTPStatus.OK,
+        "Suggested questions retrieved successfully",
+        console_ns.models[SuggestedQuestionsResponse.__name__],
+    )
+    @console_ns.response(HTTPStatus.BAD_REQUEST, "App or model provider unavailable, or generation failed")
+    @console_ns.response(HTTPStatus.UNAUTHORIZED, "Account authentication required")
+    @console_ns.response(HTTPStatus.FORBIDDEN, "Insufficient permissions or suggested questions disabled")
+    @console_ns.response(HTTPStatus.NOT_FOUND, "Agent, message, or conversation not found")
+    @console_ns.response(HTTPStatus.INTERNAL_SERVER_ERROR, "Unexpected server error")
+    @console_account_admission(rbac_checks=(RBACCheck(RBACPermission.AGENT_TEST_AND_RUN, AgentId()),))
+    def get(self, context: RequestContext, agent_id: UUID, message_id: UUID) -> dict[str, object]:
+        try:
+            app_id = application_services().agent_apps.access.resolve_existing_runtime_app_id(context, str(agent_id))
+        except AgentAppNotFoundError as exc:
+            raise AgentNotFoundError() from exc
+        return _get_message_suggested_questions(
+            context=context, app_id=app_id, app_mode=AppMode.AGENT, message_id=message_id
+        )
+
+
+@console_ns.route("/apps/<uuid:app_id>/messages/<uuid:message_id>")
+class MessageApi(Resource):
+    @error_responses(AppNotFoundError, AppUnavailableError)
+    @console_ns.doc("get_message")
+    @console_ns.doc(description="Get message details by ID")
+    @console_ns.doc(params={"app_id": "Application ID", "message_id": "Message ID"})
+    @console_ns.response(
+        HTTPStatus.OK, "Message retrieved successfully", console_ns.models[MessageDetailResponse.__name__]
+    )
+    @console_ns.response(HTTPStatus.NOT_FOUND, "Message not found")
+    @console_account_admission(rbac_checks=(RBACCheck(RBACPermission.APP_VIEW_LAYOUT, PlainApp()),))
+    def get(self, context: RequestContext, app_id: UUID, message_id: UUID) -> dict[str, object]:
+        try:
+            app = application_services().apps.console.get_reference(context, str(app_id))
+        except ConsoleAppNotFoundError as exc:
+            raise AppNotFoundError() from exc
+        return _get_message_detail(context=context, app_id=app.id, message_id=message_id)
+
+
+@console_ns.route("/agent/<uuid:agent_id>/messages/<uuid:message_id>")
+class AgentMessageApi(Resource):
+    @error_responses(AgentNotFoundError, AppUnavailableError)
+    @console_ns.doc("get_agent_message")
+    @console_ns.doc(description="Get Agent App message details by ID")
+    @console_ns.doc(params={"agent_id": "Agent ID", "message_id": "Message ID"})
+    @console_ns.response(
+        HTTPStatus.OK, "Message retrieved successfully", console_ns.models[MessageDetailResponse.__name__]
+    )
+    @console_ns.response(HTTPStatus.NOT_FOUND, "Agent or message not found")
+    @console_account_admission(rbac_checks=(RBACCheck(RBACPermission.AGENT_TEST_AND_RUN, AgentId()),))
+    def get(self, context: RequestContext, agent_id: UUID, message_id: UUID) -> dict[str, object]:
+        try:
+            app_id = application_services().agent_apps.access.resolve_existing_runtime_app_id(context, str(agent_id))
+        except AgentAppNotFoundError as exc:
+            raise AgentNotFoundError() from exc
+        return _get_message_detail(context=context, app_id=app_id, message_id=message_id)
+
+
+def _list_chat_messages(*, args: ChatMessagesQuery, context: RequestContext, app_id: str) -> dict[str, object]:
+    try:
+        page = application_services().message_queries.get_console_page(
+            app_id=app_id,
+            app_owner_tenant_id=context.active_workspace_id,
+            account_id=context.account_id,
+            conversation_id=args.conversation_id,
+            first_id=args.first_id,
+            limit=args.limit,
+        )
+    except AppDefinitionUnavailableError as exc:
+        raise AppUnavailableError() from exc
+    except MessageActorNotFoundError as exc:
+        raise UnauthorizedError("Account no longer exists") from exc
+    except ConversationNotExistsError as exc:
+        raise NotFoundError("Conversation Not Exists.") from exc
+    except FirstMessageNotExistsError as exc:
+        raise NotFoundError("First message not found") from exc
+    return dump_response(MessageInfiniteScrollPaginationResponse, page)
+
+
+def _update_message_feedback(
+    *, args: AppMessageFeedbackPayload, context: RequestContext, app_id: str
+) -> dict[str, object]:
+    try:
+        application_services().message_feedbacks.set_admin_feedback(
+            app_id=app_id,
+            app_owner_tenant_id=context.active_workspace_id,
+            account_id=context.account_id,
+            message_id=args.message_id,
+            rating=FeedbackRating(args.rating) if args.rating is not None else None,
+            content=args.content,
+        )
+    except AppDefinitionUnavailableError as exc:
+        raise AppUnavailableError() from exc
+    except MessageActorNotFoundError as exc:
+        raise UnauthorizedError("Account no longer exists") from exc
+    except MessageNotExistsError as exc:
+        raise NotFoundError("Message Not Exists.") from exc
+    except FeedbackRatingRequiredError as exc:
+        raise MessageFeedbackRatingRequiredError() from exc
+    return dump_response(SimpleResultResponse, {"result": "success"})
+
+
+def _get_message_suggested_questions(
+    *, context: RequestContext, app_id: str, app_mode: str, message_id: UUID
+) -> dict[str, object]:
+    try:
+        questions = application_services().message_suggested_questions.get_suggested_questions(
+            app_id=app_id,
+            app_owner_tenant_id=context.active_workspace_id,
+            expected_app_mode=app_mode,
+            actor=MessageAccount(account_id=context.account_id),
+            invoke_from="debugger",
+            message_id=str(message_id),
+        )
+    except AppDefinitionUnavailableError as exc:
+        raise AppUnavailableError() from exc
+    except MessageActorNotFoundError as exc:
+        raise UnauthorizedError("Account no longer exists") from exc
+    except MessageNotExistsError as caught_error:
+        raise NotFoundError("Message not found") from caught_error
+    except ConversationNotExistsError as caught_error:
+        raise NotFoundError("Conversation not found") from caught_error
+    except ProviderTokenNotInitError as ex:
+        raise ProviderNotInitializeError(ex.description) from ex
+    except QuotaExceededError as caught_error:
+        raise ProviderQuotaExceededError() from caught_error
+    except ModelCurrentlyNotSupportError as caught_error:
+        raise ProviderModelCurrentlyNotSupportError() from caught_error
+    except InvokeError as e:
+        raise CompletionRequestError(e.description) from e
+    except SuggestedQuestionsAfterAnswerDisabledError as caught_error:
+        raise AppSuggestedQuestionsAfterAnswerDisabledError() from caught_error
+    except AgentVersionNotFoundError:
+        # The legacy Agent config reader still owns this HTTP error.
+        # Remove this compatibility case when it exposes a domain error.
+        raise
+    except Exception as caught_error:
+        logger.exception("internal server error.")
+        raise InternalServerHTTPError() from caught_error
+
+    return dump_response(SuggestedQuestionsResponse, {"data": questions})
+
+
+def _get_message_detail(*, context: RequestContext, app_id: str, message_id: UUID) -> dict[str, object]:
+    try:
+        message = application_services().message_queries.get_console_message(
+            app_id=app_id,
+            app_owner_tenant_id=context.active_workspace_id,
+            account_id=context.account_id,
+            message_id=str(message_id),
+        )
+    except AppDefinitionUnavailableError as exc:
+        raise AppUnavailableError() from exc
+    except MessageActorNotFoundError as exc:
+        raise UnauthorizedError("Account no longer exists") from exc
+    except MessageNotExistsError as exc:
+        raise NotFoundError("Message Not Exists.") from exc
+    return dump_response(MessageDetailResponse, message)

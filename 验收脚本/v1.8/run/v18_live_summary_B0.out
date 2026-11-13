@@ -1,0 +1,88 @@
+场景 B0：对照：正常点允许，跑到答完（证明日志里那几行在正常路上会出现）
+app 就绪 4.1s（/config 200 39082B）
+起点 epoch 1793713983.507 ｜ 杀掉时刻 未杀
+未杀（这一路是刷新页面或正常跑完，进程归收尾的 SIGTERM 处理）
+浏览器侧：
+{
+ "__navigate0": 1793713983668,
+ "P0-peek#at": 1793713989686,
+ "P0-peek": 0,
+ "P1-new#at": 1793713989689,
+ "P1-new#click": "clicked@186,134",
+ "P2-read#at": 1793713992205,
+ "P2-read": "模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 状态 空闲",
+ "P3-ask#at": 1793713992208,
+ "P3-ask#type": "clicked-submit",
+ "P4-await#at": 1793713992223,
+ "P4-await#waitedMs": 2012,
+ "P4-await#pred": "YES:模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 等待审批",
+ "P5-hold#at": 1793713994236,
+ "P6-status-before#at": 1793713998236,
+ "P6-status-before": "模型 qwen-plus 步数 0/8 本题 token in 0 / out 0 本题耗时 0.0s 进程 token in 0 / out 0 待批 run_python 状态 等待审批",
+ "P7-bot-before#at": 1793713998238,
+ "P7-bot-before": 2,
+ "P7b-mark-before#at": 1793713998239,
+ "P7b-mark-before": "bot=2 已中断标题=N 空等字样=N 随中断取消=N 随停止取消=N 还在等审批=Y",
+ "P8-approve#at": 1793713998241,
+ "P8-approve#click": "clicked@409,43",
+ "P9-await-done#at": 1793713998255,
+ "P9-await-done#waitedMs": 1003,
+ "P9-await-done#pred": "YES:bot=4 | 模型 qwen-plus 步数 2/8 本题 token in 4,790 / out 39 本题耗时 6.8s 本题审批 4.9s 进程 token in 4,790 / out 39 状态 完成",
+ "P10-after-peek-bot#at": 1793713999258,
+ "P10-after-peek-bot": 4,
+ "P11-after-status#at": 1793713999260,
+ "P11-after-status": "模型 qwen-plus 步数 2/8 本题 token in 4,790 / out 39 本题耗时 6.8s 本题审批 4.9s 进程 token in 4,790 / out 39 状态 完成",
+ "P12-mark-after#at": 1793713999262,
+ "P12-mark-after": "bot=4 已中断标题=N 空等字样=N 随中断取消=N 随停止取消=N 还在等审批=N"
+}
+
+服务端（v18_ui.py 的三层包装）：
+t=  0.000  boot.epoch             t0=1793713982.5682292 pid=94797 timeout=600.0 gradio=6.30.0
+t=  1.382  on_load                sid=None steps=0 kinds=- screen_stepno=None screen_in=None screen_out=None screen_wait=0.0 mem_held=[] db_memory=- wall=1.379
+t=  9.659  respond.enter          sid=None
+t=  9.659  poller.start           timeout=600.0
+t=  9.670  stream.enter           sid=1
+t=  9.670  settle_all.enter       decision=cancelled ids=-
+t=  9.670  settle_all.exit        decision=cancelled
+t= 10.663  poll.pending           n=0 state=- unanswered=0
+t= 10.750  ap.wait.enter          id=7a3562 tool=run_python timeout=600.0
+t= 11.668  poll.pending           n=1 state=7a3562:pending unanswered=1
+t= 12.673  poll.pending           n=1 state=7a3562:pending unanswered=1
+t= 13.677  poll.pending           n=1 state=7a3562:pending unanswered=1
+t= 14.682  poll.pending           n=1 state=7a3562:pending unanswered=1
+t= 15.683  poll.pending           n=1 state=7a3562:pending unanswered=1
+t= 15.690  ap.decide              id=7a3562 tool=run_python want=allowed before=pending after=allowed waited=4.94
+t= 15.690  ap.wait.exit           id=7a3562 tool=run_python decision=allowed waited=4.94
+t= 16.533  settle_all.enter       decision=cancelled ids=-
+t= 16.534  settle_all.exit        decision=cancelled
+t= 16.534  stream.finally         frames=16
+t= 16.534  stream.normal-end      frames=16
+t= 16.535  save.enter             sid=1 msgs=5 before=sessions=sid=1 messages=0 memory=0
+t= 16.537  save.exit              sid=1 after=sessions=sid=1 messages=5 memory=0
+t= 16.538  save_memory.enter      sid=1 chars=966
+t= 16.540  save_memory.exit       sid=1 changed_rows=966 after=sessions=sid=1 messages=5 memory=1
+t= 16.548  respond.finally        frames=17 pending=0 unanswered=0
+t= 16.689  poll.pending           n=0 state=- unanswered=0
+t= 17.694  poll.pending           n=0 state=- unanswered=0
+t= 18.699  poll.pending           n=0 state=- unanswered=0
+t= 19.703  poll.pending           n=0 state=- unanswered=0
+t= 20.708  poll.pending           n=0 state=- unanswered=0
+t= 21.713  poll.pending           n=0 state=- unanswered=0
+t= 22.718  poll.pending           n=0 state=- unanswered=0
+t= 23.722  poll.pending           n=0 state=- unanswered=0
+t= 24.726  poll.pending           n=0 state=- unanswered=0
+t= 25.731  poll.pending           n=0 state=- unanswered=0
+
+跑完之后： 库里： {'sessions': 1, 'messages': 5, 'memory': 1} | messages 按会话 [(1, 5)]
+计数：
+  respond.enter            1
+  respond.GeneratorExit    0
+  respond.finally          1
+  stream.GeneratorExit     0
+  save.enter               1
+  save.exit                1
+  save_memory.enter        1
+  save.RAISED              0
+  mark.enter               0
+  mark.exit                0
+  on_load                  1
